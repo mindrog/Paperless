@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  풀 패키지명을 namespace작성한다
+그래야지만 mapper 인터페이스에서 함수 호출시
+매핑해서 sql을 실행할 수 있다. -->
+<mapper namespace="com.ss.paperless.report.ReportDTO">
+	
+	
+</mapper>
