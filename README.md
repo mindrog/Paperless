@@ -6,10 +6,10 @@
 </ul>
 
 <h4>사용 API 목록</h4>
-<ul>
-  <oi>ckeditor5</oi>
-  <oi>FullCalendar</oi>
-  <oi>pdf 변환기 api-itext</oi>
-  <oi>네이버 윅스 이메일 인증 api</oi>
-  <oi>AWS 알림 API - Amazon SNS</oi>
-</ul>
+<ol>
+  <li>ckeditor5</li>
+  <li>FullCalendar</li>
+  <li>pdf 변환기 api-itext</li>
+  <li>네이버 윅스 이메일 인증 api</li>
+  <li>AWS 알림 API - Amazon SNS</li>
+</ol>
