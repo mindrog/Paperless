@@ -9,8 +9,9 @@
    width: 10vw;
    border: none;
    margin: 3vh 0vw 3vh 0vw;
-   font-size: 1em;
-   font-weight: bold;
+   font-size: 1.1em;
+   font-weight: 900;
+   font-family: 'ONE-Mobile-Regular';
 }
 .footer_compant_info_compname{
     
@@ -20,4 +21,77 @@
 .footer_compant_info{
 
    
+}
+header{
+    display: flex;
+    position: fixed;
+    background-color: white;
+}
+.logo_Img{
+    width: 30vw;
+    height: 10vh;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.menu_Container{
+    width: 40vw;
+    height: 10vh;
+    
+}
+.btn_Container{
+    width: 30vw;
+    height: 10vh;
+    background-color: btn_Container;
+}
+.Header-logo{
+    width:40%;
+    height: auto;
+}
+.logo_Img_start{
+    width: 100vw;
+    height: 10vh;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.Header-logo-start{
+    width: 15%;
+    height: auto;
+}
+.header-one, .header-two {
+    transition: all 0.3s ease; /* 모든 속성에 애니메이션 효과 추가 */
+}
+
+.logo_Img_start, .logo_Img {
+    transition: transform 0.3s ease; /* 로고 크기 변경에 애니메이션 효과 추가 */
+}
+.header_btn{
+    width: 5vw;
+   border: none;
+   margin: 3vh 0vw 3vh 0vw;
+   font-size: 1.1em;
+   font-weight: 900;
+   font-family: 'ONE-Mobile-Regular';
+}
+.main_cont_1{
+    width: 100%;
+    height: 90vh;
+    background-color: aqua;
+}
+.main_cont_2{
+    width: 100vw;
+    height: 90vh;
+    background-color: blue;
+}
+.main_cont_3{
+    width: 100vw;
+    height: 90vh;
+}
+.main_cont_4{
+    width: 100vw;
+    height: 90vh;
+    background-color: blueviolet;
 }
