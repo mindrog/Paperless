@@ -9,14 +9,23 @@
 .gridItem {
     background-color: #f8f9fa;
     border: 1px solid #ddd;
-    padding: 20px;
+    padding: 10px;
     text-align: center;
     height: 350px;
     display: flex;
     flex-direction: column;
+    color: #2e3d86;
 }
 
 .table {
     text-align: center;
     justify-items: center;
+    color: #000000;
+}
+
+.titleBorder {
+    border: '1px solid #2e3d86';
+    width: '10%';
+    margin-bottom: '30px';
+    margin-top: '0px';
 }
