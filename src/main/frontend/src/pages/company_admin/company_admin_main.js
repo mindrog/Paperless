@@ -11,6 +11,7 @@ function Company_admin_main() {
                         <div className={styles.gridContainer}>
                             <div className={styles.gridItem}>
                                 <h3 className='coltitle'>메일함</h3>
+                                <hr style={{ border: '1px solid #2e3d86', width: '15%', marginBottom: '30px', marginTop: '0px' }} />
                                 <table className={styles.table}>
                                     <thead>
                                         <tr>
@@ -44,7 +45,8 @@ function Company_admin_main() {
                             </div>
                             <div className={styles.gridItem}>
                                 <h3 className='coltitle'>최신 결재 보고서</h3>
-                                <table className="table">
+                                <hr style={{ border: '1px solid #2e3d86', width: '15%', marginBottom: '30px', marginTop: '0px' }} />
+                                <table  className={styles.table}>
                                     <thead>
                                         <tr>
                                         <th scope="col">no</th>
@@ -75,8 +77,14 @@ function Company_admin_main() {
                                     </tbody>
                                 </table>
                             </div>
-                            <div className={styles.gridItem}>통계자료</div>
-                            <div className={styles.gridItem}>캘린더</div>
+                            <div className={styles.gridItem}>
+                                <h3 className='coltitle'>통계자료</h3>
+                                <hr style={{ border: '1px solid #2e3d86', width: '15%', marginBottom: '30px', marginTop: '0px' }} />
+                            </div>
+                            <div className={styles.gridItem}>
+                                <h3 className='coltitle'>캘린더</h3>
+                                <hr style={{ border: '1px solid #2e3d86', width: '15%', marginBottom: '30px', marginTop: '0px' }} />
+                            </div>
                         </div>
                     </div>
                 </div>
