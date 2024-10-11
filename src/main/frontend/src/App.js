@@ -4,6 +4,7 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import Header from './pages/layout/header';
 import Footer from './pages/layout/footer';
+import Menubar from './pages/layout/menubar';
 import Home from './pages/layout/home';
 import Inquiry from './pages/common/inquiry';
 import Login from './pages/layout/login';
@@ -43,8 +44,9 @@ function App() {
     return (
         <div className='App'>
             <div className='Header'>
-            <Header />
+                <Header />
             </div>
+            {/* <Menubar /> */}
                 <main className='app'>
                     <Router>
                         <Routes>
@@ -54,7 +56,6 @@ function App() {
                             <Route path='/Login' element={<Login />} />
                             <Route path='/Email_Auth' element={<Email_Auth />} />
                             <Route path='/inquiry/wirte' element={<Inquiry_write/>}/>
-                        
                             <Route path='/System/admin/inquiry' element={<System_admin_inquiry />} />
                             <Route path='/System/admin/member' element={<System_admin_member />} />
                             <Route path='/Company/admin/' element={<Company_admin_main />} />
