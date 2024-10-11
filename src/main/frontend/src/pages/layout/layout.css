@@ -1,0 +1,23 @@
+.footer_btn_container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+
+}
+.footer_btn{
+   width: 10vw;
+   border: none;
+   margin: 3vh 0vw 3vh 0vw;
+   font-size: 1em;
+   font-weight: bold;
+}
+.footer_compant_info_compname{
+    
+    font-weight: bolder;
+    margin-bottom: 1vh;
+}
+.footer_compant_info{
+
+   
+}
