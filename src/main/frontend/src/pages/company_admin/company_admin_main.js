@@ -1,10 +1,13 @@
 import React from 'react';
 import styles from '../../styles/company/company_main.module.css'; 
 import '../../styles/style.css';
+import Menubar from '../layout/menubar';
+
 
 function Company_admin_main() {
     return (
         <div className="container-xl conbox1">
+            <Menubar />
             <div className={styles.back}>
                 <div className="container text-center">
                     <div className={styles.mainbox}>

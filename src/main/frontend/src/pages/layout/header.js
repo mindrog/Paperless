@@ -2,31 +2,33 @@ import React, { useState, useEffect } from 'react';
 import './layout.css';
 import logo from '../../img/logo-img.png';
 
-const HeaderOne = ({ logoSize }) => (
+const HeaderOne = ({ logoSize, toggleMenu }) => (
     <header className='header-one'>
         <div className='logo_Img_start'>
+            {/* 햄버거 아이콘이 중간 화면에서만 보이도록 className 적용 */}
+                <i className="material-icons hamburger" onClick={toggleMenu}>menu</i>
             <img src={logo} className='Header-logo-start' alt='Logo One' style={{ transform: `scale(${logoSize})` }} />
         </div>
     </header>
 );
 
-const HeaderTwo = () => (
+const HeaderTwo = ({ toggleMenu }) => (
     <header className='header-two'>
-        <div className='logo_Img' >
+        <div className='logo_Img'>
             <img src={logo} className='Header-logo' alt='Logo Two' />
         </div>
         <div className='menu_Container'>
-           
+
         </div>
         <div className='btn_Container'>
-           <button type='button' className='header_btn'>문의하기</button>
-           <button type='button' className='header_btn'>신청하기</button>
-           <button type='button' className='header_btn'>로그인</button>
+            <button type='button' className='header_btn'>문의하기</button>
+            <button type='button' className='header_btn'>신청하기</button>
+            <button type='button' className='header_btn'>로그인</button>
         </div>
     </header>
 );
 
-const Header = () => {
+const Header = ({ toggleMenu }) => {
     const [lastScrollY, setLastScrollY] = useState(0);
     const [headerToShow, setHeaderToShow] = useState('one');
     const [logoSize, setLogoSize] = useState(1); // 초기 로고 크기
@@ -56,9 +58,9 @@ const Header = () => {
 
     return (
         <>
-            {headerToShow === 'one' ? <HeaderOne logoSize={logoSize} /> : <HeaderTwo logoSize={logoSize} />}
+            {headerToShow === 'one' ? <HeaderOne logoSize={logoSize} toggleMenu={toggleMenu} /> : <HeaderTwo toggleMenu={toggleMenu} />}
         </>
     );
-}
+};
 
 export default Header;

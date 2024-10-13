@@ -1,0 +1,212 @@
+/* 전체 레이아웃 */
+/* .header {
+  display: flex;
+  height: 100vh; /* 화면 전체 높이로 설정 
+} 
+*/
+
+/* 고정된 왼쪽 메뉴바 */
+.menubar {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin-top:100px;
+  width: 200px; /* 메뉴바 너비 */
+  height: 80%; /* 화면 전체 높이 */
+  background-color: #2e3d86; /*배경색 설정 */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0 20px 20px 0;
+  transition: transform 0.3s ease;
+  /* justify-content: center; */
+}
+
+.menubar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.menubar li {
+  padding: 5px;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* 메뉴 선택 시 호버 효과 */
+/* .menubar li:hover {
+  background-color: #555;
+} */
+
+/* 페이지 내용이 메뉴바 옆으로 위치하도록 설정 */
+.content {
+  margin-left: 200px; 
+}
+
+.profilbox{
+  border-radius: 0 20px 20px 0;
+  border: 2px solid white;
+  border-radius: 10%;
+  padding: 15px 5px 25px 5px;
+}
+
+.profiltitle {
+  padding-left: 20px;
+  display: flex;
+}
+
+.image {
+  width: 30%;
+  height: 30%;
+  margin-top: 14px;
+  margin-right: 10px;
+  border-radius: 100%;
+}
+
+.profilbox i {
+  margin-right:10px;
+}
+
+.menuList {
+  list-style: none;
+  /* display: flex; */
+  gap: 10px;
+  text-align: left;
+}
+
+.menuList li {
+  cursor: pointer;
+  margin: 5px;
+}
+
+.dropdownToggle {
+  display: block;
+  width: 180px; /* 버튼이 부모 요소의 전체 너비를 차지하도록 */
+  text-align: center; 
+  padding-left: 20px;
+  padding-right: 60px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px; 
+  background-color: #2e3d86;
+  color:white;
+  outline: none; /* 포커스 시 outline 제거 */
+}
+
+.dropdownToggle:hover {
+  font-weight: bold;
+  outline: none;
+}
+
+.dropdownToggle:focus {
+  outline: none; 
+}
+
+.dropdownMenu {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s ease;
+  background-color: #2e3d86;
+  list-style: none;
+  margin-top: 5px;
+  padding: 0;
+  font-size: 8px;
+  outline: none; /* 포커스 시 outline 제거 */
+}
+
+.dropdownMenu.open {
+  height: 300px; /* 드롭다운이 열렸을 때 높이 설정 */
+}
+
+.dropdownMenu li {
+  padding: 8px 12px;
+  cursor: pointer;
+  outline: none;
+}
+
+.dropdownMenu li:hover {
+  font-weight: bold;
+  outline: none; 
+  box-shadow: none; 
+}
+
+.dropdownMenu li:focus {
+  font-weight: bold;
+  outline: none; 
+  box-shadow: none; 
+}
+
+.sublist {
+  width: 150px;
+  background: none;
+  border: none;   
+  outline: none;  
+  box-shadow: none; 
+  color:white;
+  justify-items: center;
+  font-size: 14px;
+  padding-left: 10px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.submenu {
+  width: 150px;
+  background: none;
+  border: none;   
+  outline: none;  
+  box-shadow: none; 
+  color:white;
+  justify-items: center;
+  vertical-align: middle;
+  font-size: 12px;
+  padding-right: 10px;
+  padding-top:0;
+}
+
+.submenu:hover {
+  font-weight: bold;
+}
+
+.subDropdownMenu {
+  margin-top: 10px;
+}
+
+.lastsubmenu {
+  width: 150px;
+  background: none;
+  border: none; 
+  padding-top:8px;
+  padding-left: 35px;    
+  outline: none;  
+  box-shadow: none; 
+  color:white;
+  justify-items: center;
+  font-size: 12px;
+}
+
+.innerSubDropdownMenu li {
+  margin: 0;
+}
+
+
+/* 메뉴바 아이콘 */
+.arrowIcon {
+  transition: transform 0.3s ease;
+  font-size: 20px;
+  margin-right: 5px;
+  margin-left: 0px;
+}
+
+.open .arrowIcon {
+  transform: rotate(-90deg); /* 화살표를 오른쪽으로 돌림 */
+}
+
+
+
+@media screen and (max-width: 992px) {
+  .menubar {
+    display: none; /* 메뉴바 숨기기 */
+  }
+}
