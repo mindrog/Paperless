@@ -1,0 +1,42 @@
+.mypageContainer {
+    margin-left: 220px;
+    padding: 20px;
+}
+
+.profiletitle {
+    margin-left: 20px;
+    padding: 10px;
+}
+
+.mypageProfil {
+    display: flex;
+}
+
+.profiltitle {
+    padding-left: 30px;
+    padding-top: 25px;
+    text-align: center; 
+}
+
+.profiltitle p {
+    text-align: left;
+}
+
+.image {
+    border-radius: 100%;
+}
+   
+.titlename {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+  
+.titlename .userName {
+    font-size: 25px;
+}
+  
+.titlename .userGrade {
+    margin-left: 6px;
+    font-size: 18px;
+}

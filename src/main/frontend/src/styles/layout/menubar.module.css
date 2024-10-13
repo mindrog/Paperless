@@ -20,7 +20,19 @@
   flex-direction: column;
   border-radius: 0 20px 20px 0;
   transition: transform 0.3s ease;
-  /* justify-content: center; */
+  
+  max-height: 380px; /* 기본 높이 설정 */
+  /* overflow: hidden; 높이를 넘는 부분을 숨김 */
+  transition: max-height 0.3s ease-in-out; /*높이가 부드럽게 조정되도록 전환 효과 추가 */
+}
+
+/* 드롭다운이 열릴 때 자동으로 높이 조정 */
+.menubar.open {
+  max-height: 80%; /* 드롭다운 열렸을 때의 최대 높이, 충분히 큰 값으로 설정 */
+}
+
+.subDropdownMenu.open {
+  max-height: auto;
 }
 
 .menubar ul {
@@ -34,9 +46,19 @@
   cursor: pointer;
 }
 
-/* 메뉴 선택 시 호버 효과 */
+.iconbox {
+  padding:5px;
+  margin-top: 15px;
+  margin-left: 10px;
+}
+
+.iconbox i {
+  margin-right: 20px;
+  font-size: 30px;
+}
+
+/* 메뉴 선택 시 호버 효과  */
 /* .menubar li:hover {
-  background-color: #555;
 } */
 
 /* 페이지 내용이 메뉴바 옆으로 위치하도록 설정 */
@@ -52,20 +74,23 @@
 }
 
 .profiltitle {
-  padding-left: 20px;
+  padding-left: 8px;
+  text-align: center; 
+}
+
+.titlename {
   display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.image {
-  width: 30%;
-  height: 30%;
-  margin-top: 14px;
-  margin-right: 10px;
-  border-radius: 100%;
+.titlename .userName {
+  font-size: 25px;
 }
 
-.profilbox i {
-  margin-right:10px;
+.titlename .userGrade {
+  margin-left: 6px;
+  font-size: 18px;
 }
 
 .menuList {
@@ -189,21 +214,6 @@
 .innerSubDropdownMenu li {
   margin: 0;
 }
-
-
-/* 메뉴바 아이콘 */
-.arrowIcon {
-  transition: transform 0.3s ease;
-  font-size: 20px;
-  margin-right: 5px;
-  margin-left: 0px;
-}
-
-.open .arrowIcon {
-  transform: rotate(-90deg); /* 화살표를 오른쪽으로 돌림 */
-}
-
-
 
 @media screen and (max-width: 992px) {
   .menubar {
