@@ -95,3 +95,29 @@ header{
     height: 90vh;
     background-color: blueviolet;
 }
+
+/* 메뉴 햄버거 아이콘  */
+.hamburger {
+    color:#2e3d86;
+    position: absolute;
+    left: 0; /* 화면의 왼쪽에 위치하게 함 */
+    top: 50%; /* 아이콘을 세로 중간에 맞추기 위해 */
+    padding-left:25px;
+    transform: translateY(-50%);
+    cursor: pointer; /* 커서 모양을 포인터로 변경 */
+    display: none; /* 기본적으로 숨기기 */
+    outline: none;
+}
+
+@media screen and (max-width: 992px) {
+    .hamburger {
+        display: block; /* 중간 화면 크기일 때 보이기 */
+    }
+}
+
+/* 큰 화면에서는 햄버거 아이콘 숨기기 */
+@media screen and (min-width: 993px) {
+    .hamburger {
+        display: none; /* 큰 화면에서는 다시 숨기기 */
+    }
+}

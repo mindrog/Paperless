@@ -24,6 +24,7 @@ import Company_user_draft_write from './pages/company_user/company_user_draft_wr
 import Company_user_draft_detail from './pages/company_user/company_user_draft_detail';
 import Company_user_dratf_list from './pages/company_user/company_user_draft_list';
 import Company_user_chat from './pages/company_user/company_user_chat';
+import Menubar from './pages/layout/menubar';
 import './App.css';
 import './styles/style.css';
 
@@ -38,11 +39,21 @@ function App() {
             .catch(error => console.log(error));
     }, []);
 
+    // 메뉴바
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
+
     return (
         <Router>
             <div className='App'>
                 <div className='Header'>
                     <Header />
+                </div>
+                <div className='Menubar'>
+                    <Menubar isMenuOpen={isMenuOpen} />
                 </div>
                 <main className='app'>
                     <Routes>
