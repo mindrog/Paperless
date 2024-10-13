@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from '../../styles/layout/menubar.module.css'; // CSS 모듈 사용 시
 
 const Menubar = ({ isMenuOpen }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDocDropdownOpen, setIsDocDropdownOpen] = useState(false); // 기안 문서함 상태
     const [isFormDropdownOpen, setIsFormDropdownOpen] = useState(false); // 기안 양식 상태
+
+    const location = useLocation(); 
+    const navigate = useNavigate();
+
+    // 경로에 따라 프로필 이름 변경
+    const profileName = location.pathname.toLowerCase().startsWith('/company/admin') 
+                        ? '강동원' 
+                        : location.pathname.toLowerCase().startsWith('/company/user') 
+                        ? '배수지' 
+                        : '사용자'; 
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -18,8 +28,6 @@ const Menubar = ({ isMenuOpen }) => {
     const toggleFormDropdown = () => {
         setIsFormDropdownOpen(!isFormDropdownOpen);
     };
-
-    const navigate = useNavigate();
 
     const handleEmployeeMypage = () => {
         navigate('/Company/user/mypage');
@@ -41,19 +49,23 @@ const Menubar = ({ isMenuOpen }) => {
         navigate('/Company/user/draft/write');
     }
 
-
     return (
-        <nav className={`${styles.menubar} ${isMenuOpen ? styles.showMenu : ''}`}>
+        <nav className={`${styles.menubar} ${isMenuOpen ? styles.showMenu : ''} ${isDropdownOpen ? styles.open : ''}`}>
             <div className={styles.menubar}>
                 <div className={styles.profil}>
                     <div className={styles.profilbox}>
                         <div className={styles.profiltitle}>
-                            <img src="https://via.placeholder.com/150" alt="Profile" className={styles.image} />
-                            <h2>배수지</h2>
+                            <p>기획전략팀</p>
+                            <div className={styles.titlename}>
+                                <div className={styles.userName}>{profileName}</div>
+                                <div className={styles.userGrade}>대리</div>
+                            </div>
                         </div>
-                        <i className="material-icons noti">notifications</i>
-                        <i className="material-icons mail">mail</i>
-                        <i className="material-icons chat">chat_bubble</i>
+                        <div className={styles.iconbox}>
+                            <i className="material-icons">notifications</i>
+                            <i className="material-icons">mail</i>
+                            <i className="material-icons">chat_bubble</i>
+                        </div>
                     </div>
                 </div>
 
@@ -65,22 +77,14 @@ const Menubar = ({ isMenuOpen }) => {
                     </li>
                     <li className={styles.dropdown}>
                         <button onClick={toggleDropdown} className={styles.dropdownToggle}>
-                            {/* 상위 드롭다운 메뉴 기안 관리 */}
-                            {/* <i className={`material-icons ${styles.arrowIcon} ${isDropdownOpen ? styles.open : ''}`}>
-                                {isDropdownOpen ? 'chevron_right' : 'expand_more'}
-                            </i> */}
                             📑 기안 관리
                         </button>
                         {/* 기안 관리 하위 메뉴 */}
                         {isDropdownOpen && (
                             <div className={styles.subDropdownMenu}>
                                 <ul>
-                                    {/* 기안 문서함 */}
                                     <li>
                                         <button onClick={toggleDocDropdown} className={styles.submenu}>
-                                            <i className={`material-icons ${styles.arrowIcon} ${isDocDropdownOpen ? styles.open : ''}`}>
-                                                {isDocDropdownOpen ? 'chevron_right' : 'expand_more'}
-                                            </i>
                                             🗂️ 기안 문서함
                                         </button>
                                         {isDocDropdownOpen && (
@@ -91,12 +95,8 @@ const Menubar = ({ isMenuOpen }) => {
                                             </ul>
                                         )}
                                     </li>
-                                    {/* 기안 양식 */}
                                     <li>
                                         <button onClick={toggleFormDropdown} className={styles.submenu}>
-                                            <i className={`material-icons ${styles.arrowIcon} ${isFormDropdownOpen ? styles.open : ''}`}>
-                                                {isFormDropdownOpen ? 'chevron_right' : 'expand_more'}
-                                            </i>
                                             📑 기안 양식
                                         </button>
                                         {isFormDropdownOpen && (
@@ -117,11 +117,15 @@ const Menubar = ({ isMenuOpen }) => {
                             📅 일정 관리
                         </button>
                     </li>
-                    <li className={styles.dropdown}>
-                        <button onClick={handleEmployeeManagementClick} className={styles.sublist}>
-                            ⚙️ 직원 관리
-                        </button>
-                    </li>
+
+                    {/* '/Company/admin' 또는 '/company/admin'으로 시작하는 경로에서만 직원 관리 보이기 */}
+                    {location.pathname.toLowerCase().startsWith('/company/admin') && (
+                        <li className={styles.dropdown}>
+                            <button onClick={handleEmployeeManagementClick} className={styles.sublist}>
+                                ⚙️ 직원 관리
+                            </button>
+                        </li>
+                    )}
                 </ul>
             </div>
         </nav>
