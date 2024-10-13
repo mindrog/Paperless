@@ -52,9 +52,7 @@ function App() {
                 <div className='Header'>
                     <Header />
                 </div>
-                <div className='Menubar'>
-                    <Menubar isMenuOpen={isMenuOpen} />
-                </div>
+                <MenubarToggle isMenuOpen={isMenuOpen} />
                 <main className='app'>
                     <Routes>
                         <Route path='/' element={<Home />} />
@@ -87,13 +85,28 @@ function App() {
     );
 }
 
+function MenubarToggle({ isMenuOpen }) {
+    const location = useLocation();
+    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/Login', '/Email_Auth', '/inquiry/wirte'];
+
+    return (
+        <>
+            {!MenubarHiddenPaths.includes(location.pathname) && (
+                <div className='Menubar'>
+                    <Menubar isMenuOpen={isMenuOpen} />
+                </div>
+            )}
+        </>
+    );
+}
+
 function FooterToggle() {
-    const uselocation = useLocation();
+    const location = useLocation();
     const FooterPaths = ['/', '/inquiry', '/inquiry/success', '/Login', '/Email_Auth', '/inquiry/wirte'];
 
     return (
         <>
-            {FooterPaths.includes(uselocation.pathname) && (
+            {FooterPaths.includes(location.pathname) && (
                 <div className='Footer'>
                     <Footer />
                 </div>
