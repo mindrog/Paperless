@@ -84,7 +84,7 @@ const Menubar = ({ isMenuOpen }) => {
                 <ul className={styles.menuList}>
                     <li className={styles.dropdown}>
                         <button onClick={handleEmployeeMypage} className={styles.sublist}>
-                            🧑‍💼 마이페이지
+                            🧑 마이페이지
                         </button>
                     </li>
                     <li className={styles.dropdown}>

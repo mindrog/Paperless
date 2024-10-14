@@ -24,10 +24,11 @@
     font-weight: bolder;
     margin-bottom: 1vh;
 }
-.footer_compant_info{
 
-   
+.footer_compant_info{
+    
 }
+
 header{
     display: flex;
     position: fixed;
