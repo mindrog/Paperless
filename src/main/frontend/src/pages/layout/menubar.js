@@ -16,6 +16,18 @@ const Menubar = ({ isMenuOpen }) => {
                         : location.pathname.toLowerCase().startsWith('/company/user') 
                         ? '배수지' 
                         : '사용자'; 
+    
+    const handleEmployeeNotification = () => {
+        alert('알림목록창')
+    };
+
+    const handleEmployeeEmail = () => {
+        navigate('/Company/user/email')
+    };
+
+    const handleEmployeeChat = () => {
+        navigate('/Company/user/chat')
+    };
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -62,9 +74,9 @@ const Menubar = ({ isMenuOpen }) => {
                             </div>
                         </div>
                         <div className={styles.iconbox}>
-                            <i className="material-icons">notifications</i>
-                            <i className="material-icons">mail</i>
-                            <i className="material-icons">chat_bubble</i>
+                            <button onClick={handleEmployeeNotification}><i className="material-icons">notifications</i></button>
+                            <button onClick={handleEmployeeEmail}><i className="material-icons">mail</i></button>
+                            <button onClick={handleEmployeeChat}><i className="material-icons">chat_bubble</i></button>
                         </div>
                     </div>
                 </div>
@@ -72,7 +84,7 @@ const Menubar = ({ isMenuOpen }) => {
                 <ul className={styles.menuList}>
                     <li className={styles.dropdown}>
                         <button onClick={handleEmployeeMypage} className={styles.sublist}>
-                            🧑‍💼 마이페이지
+                            🧑 마이페이지
                         </button>
                     </li>
                     <li className={styles.dropdown}>
