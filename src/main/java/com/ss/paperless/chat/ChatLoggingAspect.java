@@ -15,11 +15,11 @@ public class ChatLoggingAspect {
     @Before("execution(* com.ss.paperless.chat..*(..))")
     public void ChatLogBefore(JoinPoint joinPoint) {
         // 실행되는 메서드 호출
-        log.info("ChatLog Before : " + joinPoint.getSignature().getName());
+        log.info("Chat_Log Before : " + joinPoint.getSignature().getName());
     }
 
     @After("execution(* com.ss.paperless.chat..*(..))")
     public void ChatLogAfter(JoinPoint joinPoint) {
-        log.info("ChatLog After : " + joinPoint.getSignature().getName());
+        log.info("Chat_Log After : " + joinPoint.getSignature().getName());
     }
 }
