@@ -151,40 +151,42 @@
 
 .userNumUpdatebtn {
     background-color: #2e3d86;
-    border:2px solid #2e3d86;
+    border:#2e3d86;
     margin-left: 10px;
     /* margin-top: 10px; */
 }
 
 .userNumUpdatebtn:hover {
-    border:2px solid #2e3d86;
-    background-color: white;
-    color: #2e3d86;
+    border: #2e3d86;
+    background-color: #2e3d86;
+    color: white;
+    font-weight: bold;
 }
 
 .userNumUpdatebtn:active {
-    background-color: #2e3d86 !important;
-    border:2px solid #2e3d86 !important;
-    color: white;
+    background-color: white;
+    border: #2e3d86 !important;
+    color: #2e3d86;
 }
 
 
 .userPwChangebtn {
-    background-color: #2e3d86 !important;
-    border:1px solid #2e3d86;
+    background-color: #2e3d86;
+    border:#2e3d86;
     margin-left: 10px;
 }
 
 .userPwChangebtn:hover {
-    border:2px solid #2e3d86;
-    background-color: white;
-    color: #2e3d86;
+    border:#2e3d86;
+    background-color: #2e3d86;
+    color: white;
+    font-weight: bold;
 }
 
 .userPwChangebtn:active {
-    background-color: #2e3d86 !important;
-    border:2px solid #2e3d86 !important;
-    color: white;
+    background-color: white;
+    border: #2e3d86 !important;
+    color: #2e3d86;
 }
 
 /* 연차 정보 */
@@ -210,6 +212,16 @@
     }
 }
 
+.tableHead {
+    border: none;
+    text-align: right;
+    font-size: 12px;
+}
+
+.tableHead td {
+    border-bottom: 1px solid rgb(212, 212, 212);
+}
+
 .titlebar {
     width: 115px;
     margin: 5px 0px 10px 10px;
@@ -225,22 +237,24 @@
 
 .userAnnualInfoTable {
     width: 100%;
-    margin-top: 30px;
+    margin-top: 10px;
     margin-left: auto;
     margin-right: auto;
-    border: 0.5px solid rgb(212, 212, 212);
+    /* border: 0.5px solid rgb(212, 212, 212);/// */
 }
 
 .infotitle {
     width: 200px;
     background-color: #2e3d86 !important;
     color: white !important;
-    border-right: 0.5px solid rgb(0, 0, 0);
+    border-top: 1px solid rgb(212, 212, 212);
+    border-right: 0.5px solid rgb(212, 212, 212);
 }
 
 .infoValue {
     width: 200px;
     background-color: #ffffff !important;
+    border-top: 1px solid rgb(212, 212, 212);
     border-right: 0.5px solid rgb(212, 212, 212);
 }
 
