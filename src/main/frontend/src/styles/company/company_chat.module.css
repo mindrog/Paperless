@@ -1,0 +1,72 @@
+h2 {
+    margin: 0px;
+}
+
+.chatContainer {
+    margin-left: 220px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.selectChat {
+    display: flex;
+    width: 1500px;
+    height: 30px;
+    margin: 10px auto;
+    position: relative;
+    text-align: left;
+}
+
+.selectChat input {
+    width: 300px;
+    font-size: 15px;
+    border-radius: 10px;
+}
+
+/* input 태그에 검색 아이콘 넣기 */
+.selectChat button {
+    position: absolute;
+    left: 270px;
+    background-color: inherit;
+    border: none;
+}
+
+.selectChat button :hover{
+    cursor: pointer;
+}
+
+/* input 태그(border: 2px)에 아이콘 padding으로 위치 설정 */
+.selectChat i {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.list {
+    width: 1500px;
+    height: 730px;
+    margin: 10px auto;
+    border: 2px solid lightgray;
+    border-radius: 5px;
+    display: flex;
+}
+
+.orgChart {
+    width: 450px;
+    height: 700px;
+    border-right: 2px solid lightgray;
+}
+
+.orgChart_title {
+    padding: 10px;
+    border-bottom: 2px solid lightgray;
+}
+
+.chatList {
+    width: 1050px;
+    height: 700px;
+}
+
+.chatList_title {
+    padding: 10px;
+    border-bottom: 2px solid lightgray;
+}
