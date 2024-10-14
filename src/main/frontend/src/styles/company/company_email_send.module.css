@@ -1,0 +1,140 @@
+.Container {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 10px;
+    color: #2e3d86;
+    margin-left: 200px;
+}
+
+.form-group {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.form-label {
+    flex: 0 0 100px;
+    text-align: left;
+    padding-right: 15px;
+    padding-top: 10px;
+    font-weight: bold;
+}
+
+.input-container {
+    flex: 1;
+    position: relative;
+}
+
+.input, .textarea {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 16px;
+    color: #333;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    outline: none;
+    background: transparent;
+    transition: border-color 0.3s;
+}
+
+.textarea {
+    min-height: 400px;
+    resize: vertical;
+    resize: none;
+    border-top: 1px solid #ccc;
+}
+
+.input:focus, .textarea:focus {
+    border-bottom-color: #2e3d86;
+}
+
+.underline {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: #2e3d86;
+    transition: 0.4s ease;
+}
+
+.input:focus ~ .underline, .textarea:focus ~ .underline {
+    width: 100%;
+    left: 0;
+}
+
+
+/* 파일 업로드 input */
+.fileInput {
+    padding: 5px 0;
+    font-size: 16px;
+    color: #333;
+    border: none;
+    outline: none;
+    background: transparent;
+    border-bottom: 1px solid #ccc;
+    transition: border-color 0.3s;
+}
+
+.fileInput:focus {
+    border-bottom-color: #2e3d86;
+}
+
+.icon{
+    background: none;
+    border: none;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.btn-upload {
+    width: 150px;
+    height: 30px;
+    background: #fff;
+    border: 1px solid rgb(77,77,77);
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+      background: rgb(77,77,77);
+      color: #fff;
+    }
+  }
+  
+  .file-input {
+    display: none;
+  }
+
+  .file-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+.dropzone {
+    margin-top: 10px;
+}
+
+.file-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.delete-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+    color: red;
+}
