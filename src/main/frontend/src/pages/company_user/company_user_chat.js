@@ -13,7 +13,7 @@ function Company_user_chat() {
                 <div className={styles.list}>
                     <div className={styles.orgChart}>
                         <div className={styles.orgChart_title}>
-                            <h2>조직도</h2>
+                            <h3>조직도</h3>
                         </div>
                         <div className={styles.orgChart_content}>
                             <OrgChart />
@@ -21,7 +21,7 @@ function Company_user_chat() {
                     </div>
                     <div className={styles.chatList}>
                         <div className={styles.chatList_title}>
-                            <h2>채팅 목록</h2>
+                            <h3>채팅 목록</h3>
                         </div>
                         <div className={styles.chatList_content}>
 

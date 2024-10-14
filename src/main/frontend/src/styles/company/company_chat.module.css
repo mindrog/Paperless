@@ -3,14 +3,12 @@ h2 {
 }
 
 .chatContainer {
-    margin-left: 220px;
-    padding-left: 20px;
-    padding-right: 20px;
+
 }
 
 .selectChat {
     display: flex;
-    width: 1500px;
+    width: 1200px;
     height: 30px;
     margin: 10px auto;
     position: relative;
@@ -42,7 +40,7 @@ h2 {
 }
 
 .list {
-    width: 1500px;
+    width: 1200px;
     height: 730px;
     margin: 10px auto;
     border: 2px solid lightgray;
@@ -51,7 +49,7 @@ h2 {
 }
 
 .orgChart {
-    width: 450px;
+    width: 360px;
     height: 700px;
     border-right: 2px solid lightgray;
 }
@@ -62,7 +60,7 @@ h2 {
 }
 
 .chatList {
-    width: 1050px;
+    width: 940px;
     height: 700px;
 }
 
