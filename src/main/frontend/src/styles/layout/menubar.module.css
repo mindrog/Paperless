@@ -47,14 +47,24 @@
 }
 
 .iconbox {
-  padding:5px;
   margin-top: 15px;
-  margin-left: 10px;
+  display: flex;
+  padding:5px;
+  justify-content: space-around;
+}
+
+.iconbox button {
+  background-color: #2e3d86;
+  color: white;
+  border: none;
 }
 
 .iconbox i {
-  margin-right: 20px;
   font-size: 30px;
+}
+
+.iconbox i:hover {
+  cursor: pointer;
 }
 
 /* 메뉴 선택 시 호버 효과  */
