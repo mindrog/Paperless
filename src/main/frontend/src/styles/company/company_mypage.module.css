@@ -1,6 +1,23 @@
 .mypageContainer {
-    margin-left: 220px;
+    margin-left: auto;
     padding: 20px;
+    border: 1px solid lightgray;
+    width: 95%;
+    /* display: flex; */
+    /*justify-content: center;  가로로 가운데 정렬 */
+    /* align-items: center; 세로로 가운데 정렬 */
+    /* flex-direction: column; */
+}
+
+@media (max-width: 992px) {
+    .mypageContainer {
+        margin-left: 20px;
+        margin-right: 10px;
+        /*width: 100%; /* 중간화면에서는 전체 너비 */
+        /*justify-content: center; /* 가로로 가운데 정렬 유지 */
+        /* align-items: center; 세로로 가운데 정렬 유지 */
+        /* padding: 10px; /* 중간 화면일 때의 여백 조정 */
+    }
 }
 
 .profiletitle {
@@ -10,12 +27,30 @@
 
 .mypageProfil {
     display: flex;
+    margin-left: auto; /* 자동으로 좌우 여백을 맞춤 */
+    margin-right: auto; /* 자동으로 좌우 여백을 맞춤 */
+    max-width: 800px; /* 너비를 고정하거나 원하는 비율로 설정 */
+    width: 100%; /* 중간 화면에서도 너비를 전체로 확장 */
+    padding: 20px; /* 여백 추가 */
+    margin-top: 20px;
+}
+
+/* 중간 화면일 때의 스타일 */
+@media (max-width: 992px) {
+    .mypageProfil {
+        margin-left: 100px; /* 중간 화면일 때 좌측 여백 조정 */
+        margin-right: 20px; /* 중간 화면일 때 우측 여백 조정 */
+        max-width: 100%; /* 중간 화면일 때 너비를 100%로 설정 */
+        padding: 10px; /* 중간 화면일 때 패딩 조정 */
+    }
 }
 
 .profiltitle {
     padding-left: 30px;
-    padding-top: 25px;
-    text-align: center; 
+    margin-top: 40px;
+    /* text-align: center;  */
+    text-align: left;
+    justify-content: center;
 }
 
 .profiltitle p {
@@ -39,4 +74,179 @@
 .titlename .userGrade {
     margin-left: 6px;
     font-size: 18px;
+}
+
+.col {
+    text-align: center;
+}
+
+.userInfo {
+    margin-top: 30px;
+    text-align: left;
+    margin-left: auto; /* 자동으로 좌우 여백을 맞춤 */
+    margin-right: auto; /* 자동으로 좌우 여백을 맞춤 */
+    max-width: 800px; /* 너비를 고정하거나 원하는 비율로 설정 */
+    width: 100%; /* 중간 화면에서도 너비를 전체로 확장 */
+    padding: 20px; /* 여백 추가 */
+}
+
+/* 중간 화면일 때의 스타일 */
+@media (max-width: 992px) {
+    .userInfo {
+        margin-left: 20px; /* 중간 화면일 때 좌측 여백 조정 */
+        margin-right: 20px; /* 중간 화면일 때 우측 여백 조정 */
+        max-width: 100%; /* 중간 화면일 때 너비를 100%로 설정 */
+        padding: 10px; /* 중간 화면일 때 패딩 조정 */
+    }
+}
+
+.userIdBox {
+    display: flex;
+}
+
+.userIdBox div{
+    margin-left: 10px;
+}
+
+.changePossible {
+    display: flex;
+    margin-top: 30px;
+}
+
+.userNumBox {
+    display: flex;
+    margin-right: 20px;
+    /* justify-items: center; */
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.userNumBox div{
+    margin-left: 10px;
+}
+
+.userPwBox {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    margin-left: 80px;
+}
+
+.userPwBox div{
+    margin-left: 10px;
+}
+
+.userIdtitle {
+    font-weight: bold;
+    margin-left: 30px;
+}
+
+.userNumtitle {
+    font-weight: bold;
+}
+
+.userPwtitle {
+    font-weight: bold;
+}
+
+.userNumUpdatebtn {
+    background-color: #2e3d86;
+    border:2px solid #2e3d86;
+    margin-left: 10px;
+    /* margin-top: 10px; */
+}
+
+.userNumUpdatebtn:hover {
+    border:2px solid #2e3d86;
+    background-color: white;
+    color: #2e3d86;
+}
+
+.userNumUpdatebtn:active {
+    background-color: #2e3d86 !important;
+    border:2px solid #2e3d86 !important;
+    color: white;
+}
+
+
+.userPwChangebtn {
+    background-color: #2e3d86 !important;
+    border:1px solid #2e3d86;
+    margin-left: 10px;
+}
+
+.userPwChangebtn:hover {
+    border:2px solid #2e3d86;
+    background-color: white;
+    color: #2e3d86;
+}
+
+.userPwChangebtn:active {
+    background-color: #2e3d86 !important;
+    border:2px solid #2e3d86 !important;
+    color: white;
+}
+
+/* 연차 정보 */
+.userAnnualInfobox {
+    margin-top: 40px;
+    margin-left: auto;
+    text-align: center;
+    width: 95%; /* 화면 크기에 맞게 너비 확장 */
+    padding: 20px; /* 내부 여백 */
+}
+
+.userAnnualInfo_title {
+    margin-left: 10px; 
+    text-align: left; 
+    margin-bottom: 10px; /* 제목 아래 여백 */
+    font-weight: bold;
+}
+
+@media (max-width: 992px) {
+    .userAnnualInfobox {
+        max-width: 100%; /* 중간화면에서는 전체 너비 */
+        margin-left: 20px;
+    }
+}
+
+.titlebar {
+    width: 115px;
+    margin: 5px 0px 10px 10px;
+    border: 1.8px solid #2e3d86;
+    opacity: 1;
+
+}
+
+.tablebox {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.userAnnualInfoTable {
+    width: 100%;
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 0.5px solid rgb(212, 212, 212);
+}
+
+.infotitle {
+    width: 200px;
+    background-color: #2e3d86 !important;
+    color: white !important;
+    border-right: 0.5px solid rgb(0, 0, 0);
+}
+
+.infoValue {
+    width: 200px;
+    background-color: #ffffff !important;
+    border-right: 0.5px solid rgb(212, 212, 212);
+}
+
+@media (max-width: 992px) {
+    .mypageContainer, .mypageProfil, .userAnnualInfobox {
+        max-width: 100%; /* 중간 화면에서 전체 너비로 확장 */
+        padding: 10px;
+    }
 }
