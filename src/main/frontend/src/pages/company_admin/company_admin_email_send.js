@@ -54,6 +54,11 @@ function Company_admin_email_send() {
         setIsOpen(!isOpen);
     };
 
+    const handleFileUploadClick = (e) => {
+        e.preventDefault();
+        fileInputRef.current.click();
+    };
+
 
 
 
@@ -101,59 +106,63 @@ function Company_admin_email_send() {
 
                         {/* 파일첨부 영역 */}
                         <div className={styles['form-group']}>
-                            <div className={styles['file-header']}>
-                                <label htmlFor="file" className={styles['form-label']}>첨부파일<button type="button" onClick={toggleFileArea} className={styles['icon']}>
-                                    <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} />
-                                </button></label>
-                                
-                            </div>
-                            <label htmlFor="file">
-                                <div className={styles['btn-upload']}>파일 업로드하기</div>
+                            <label htmlFor="file" className={styles['form-label']}>
+                                첨부파일
                             </label>
-                            <input
-                                type="file"
-                                id="file"
-                                className={styles['file-input']}
-                                onChange={handleFileChange}
-                                multiple
-                                style={{ display: 'none' }}
-                            />
-                            {isOpen && (
-                                <div
-                                    className={`${styles.dropzone} ${dragOver ? styles.active : ''}`}
-                                    onDragEnter={handleDragEnter}
-                                    onDragLeave={handleDragLeave}
-                                    onDragOver={handleDragOver}
-                                    onDrop={handleDrop}
-                                    style={{
-                                        height: files.length === 0 ? '60px' : 'auto',
-                                        border: dragOver ? '2px solid blue' : '2px dashed gray',
-                                        padding: '10px',
-                                        textAlign: 'center',
-                                        marginTop: '10px'
-                                    }}
-                                >
-                                    {files.length === 0 ? (
-                                        <p>파일을 이 곳으로 끌어오세요</p>
-                                    ) : (
-                                        <ul className={styles['file-list']}>
-                                            {files.map((file, index) => (
-                                                <li key={index} className={styles['file-item']}>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleDeleteFile(index)}
-                                                        className={styles['delete-button']}
-                                                    >
-                                                        <FontAwesomeIcon icon={faTimes} />
-                                                    </button>
-                                                    {file.name}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
+                            <div className={styles['input-container']}>
+                                <div className={styles['file-header']}>
+                                    <button type="button" onClick={toggleFileArea} className={styles['icon']}>
+                                        <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} />
+                                    </button>
+                                    <div
+                                        className={`${styles['btn-upload']} ${styles['file-util']}`}
+                                        onClick={handleFileUploadClick}
+                                    >
+                                        파일 업로드하기
+                                    </div>
                                 </div>
-                            )}
+
+                                {isOpen && (
+                                    <div
+                                        className={`${styles.dropzone} ${styles['file-util']} ${dragOver ? styles.active : ''
+                                            }`}
+                                        onDragEnter={handleDragEnter}
+                                        onDragLeave={handleDragLeave}
+                                        onDragOver={handleDragOver}
+                                        onDrop={handleDrop}
+                                    >
+                                        {files.length === 0 ? (
+                                            <p>파일을 이 곳으로 끌어오세요</p>
+                                        ) : (
+                                            <ul className={styles['file-list']}>
+                                                {files.map((file, index) => (
+                                                    <li key={index} className={styles['file-item']}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDeleteFile(index)}
+                                                            className={styles['delete-button']}
+                                                        >
+                                                            <FontAwesomeIcon icon={faTimes} />
+                                                        </button>
+                                                        {file.name}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                )}
+
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className={styles['file-input']}
+                                    onChange={handleFileChange}
+                                    multiple
+                                    style={{ display: 'none' }}
+                                />
+                            </div>
                         </div>
+
                         <div className={styles['form-group']}>
                             <label htmlFor="emailContent" className={styles['form-label']}>내용</label>
                             <div className={styles['input-container']}>
