@@ -4,10 +4,24 @@ h2 {
 }
 
 .chatContainer {
-
+    margin-left: auto;
+    padding: 20px;
+    border: 1px solid lightgray;
+    width: 95%;
 }
 
-/* 조직도 검색 */
+@media (max-width: 992px) {
+    .chatContainer {
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+    }
+}
+
+/* 조직도 검색 div */
 .selectOrgChart {
     display: flex;
     width: 1200px;
@@ -17,9 +31,18 @@ h2 {
     text-align: left;
 }
 
+@media (max-width: 992px) {
+    .selectOrgChart {
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+        padding: 10px;
+    }
+}
+
 /* 조직도 검색태그 */
 .selectOrgChart input {
-    width: 300px;
+    width: 25%;
     font-size: 15px;
     border-radius: 10px;
 }
@@ -27,8 +50,8 @@ h2 {
 /* 조직도 검색 태그 안에 돋보기 아이콘 넣기 */
 .selectOrgChart button {
     position: absolute;
-    left: 270px;
-    background-color: inherit;
+    left: 22%;
+    background-color: inherit; 
     border: none;
 }
 
@@ -44,19 +67,41 @@ h2 {
 
 /* 조직도 및 채팅 목록 전체 div 설정 */
 .list {
-    width: 1200px;
-    height: 730px;
+    width: 100%;
+    height: 750px;
     margin: 10px auto;
     border: 2px solid lightgray;
     border-radius: 5px;
     display: flex;
 }
 
-/* 조직도 전체 */
+@media (max-width: 992px) {
+    .list {
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+    }
+}
+
+/* 조직도 전체 div */
 .orgChart {
-    width: 360px;
-    height: 700px;
+    width: 30%;
+    height: 100%;
     border-right: 2px solid lightgray;
+}
+
+@media (max-width: 992px) {
+    .orgChart {
+        margin-left: auto;
+        margin-right: auto;
+        width: 30%;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+    }
 }
 
 /* 조직도 제목 */
@@ -65,10 +110,23 @@ h2 {
     border-bottom: 2px solid lightgray;
 }
 
-/* 채팅 목록 전체 */
+/* 채팅 목록 전체 div */
 .chatList {
-    width: 940px;
-    height: 700px;
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    height: 100%;
+}
+
+@media (max-width: 992px) {
+    .chatList {
+        margin-left: auto;
+        margin-right: auto;
+        width: 70%%;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+    }
 }
 
 /* 채팅 목록 제목 */
@@ -78,11 +136,15 @@ h2 {
 }
 
 .chatList_content {
-    overflow-y: scroll;
+    flex-grow: 1;
+    overflow-y: auto;
 }
 
 /* 각각의 채팅 */
 .eachChat {
-    height: 120px;
-    border-bottom: 2px solid lightgray;
+    height: 110px;
+    outline: 1px solid lightgray;
+    display: flex;
+    align-items: center;
+    padding: 10px;
 }
