@@ -1,5 +1,6 @@
 import React,{ useEffect, useState } from 'react';
-import logo from '../../img/logo-img.png';
+import main1 from '../../img/main_content1.png';
+import styles from '../../styles/layout/home.css';
 
 const getScrollPosition = () => {
     const scrollPosition = window.scrollY || window.pageYOffset;
@@ -18,19 +19,44 @@ const scrollToNext = () => {
 }
 
 function Home() {
-    const [isVisible, setIsVisible] = useState(false);
+    const [isVisible1, setIsVisible1] = useState(false);
+    const [isVisible2, setIsVisible2] = useState(false);
+    const [isVisible3, setIsVisible3] = useState(false);
+    const [isVisible4, setIsVisible4] = useState(false);
 
     // 스크롤 이벤트 핸들러
     const handleScroll = () => {
         const scrollPosition = window.scrollY;
 
         // 특정 스크롤 위치에 도달했을 때 이미지를 표시
-        if (scrollPosition > 900) { // 원하는 스크롤 위치 (예: 200px)
-            setIsVisible(true);
-            console.log("도달");
+        if (scrollPosition > 828) { // 원하는 스크롤 위치 (예: 200px)
+            setIsVisible1(true);
+            
             } else {
-            setIsVisible(false);
-            console.log("이탈");
+            setIsVisible1(false);
+            
+        }
+
+        if (scrollPosition > 1000) { // 원하는 스크롤 위치 (예: 200px)
+            setIsVisible2(true);
+            
+            } else {
+            setIsVisible2(false);
+            
+        }
+        if (scrollPosition > 2000) { // 원하는 스크롤 위치 (예: 200px)
+            setIsVisible3(true);
+            
+            } else {
+            setIsVisible3(false);
+            
+        }
+        if (scrollPosition > 2500) { // 원하는 스크롤 위치 (예: 200px)
+            setIsVisible4(true);
+            
+            } else {
+            setIsVisible4(false);
+            
         }
     };
 
@@ -68,11 +94,24 @@ function Home() {
                 </div>
             </div>
             <div className='main_cont_2'>
-                 <div className={`main_cont_2_type1 ${isVisible ? 'show' : ''}`}>
-                    <img src={logo} className='type1' alt='Description'></img>
+                 <div className={`main_cont_2_type1 ${isVisible1 ? 'show' : ''}`}>
+                    <div className='type1_img_cont'>
+                        <img src={main1} className='type1' alt='Description'></img>
+                    </div>
+                    <div className='type1_img_script'>
+                        <p className='type1_subtitle'>기능에 대한 제목입니다.</p>
+                        <p className='type1_content'> 기능기능기능기능</p>
+                    </div>
                 </div>
-                <div className='main_cont_2_type2'>
-
+                <div className={`main_cont_2_type2 ${isVisible2 ? 'show' : ''}`}>
+                <div className='type2_img_script'>
+                        <p className='type2_subtitle'>기능에 대한 제목입니다.</p>
+                        <p className='type2_content'> 기능기능기능기능</p>
+                    </div>
+                    <div className='type2_img_cont'>
+                        <img src={main1} className='type1' alt='Description'></img>
+                    </div>
+                    
                 </div>
                 <div className='main_cont_2_type3'>
 
