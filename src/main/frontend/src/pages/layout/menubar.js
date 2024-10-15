@@ -120,22 +120,22 @@ const Menubar = ({ isMenuOpen }) => {
                                             🗂️ 기안 문서함
                                         </button>
                                         {isDocDropdownOpen && (
-                                            <ul className={styles.innerSubDropdownMenu}>
-                                                <li><button className={styles.lastsubmenu} onClick={handleEmployeeDraftList}>📁 전체 문서함</button></li>
-                                                <li><button className={styles.lastsubmenu} onClick={handleEmployeeDraftList}>📁 임시 저장함</button></li>
-                                                <li><button className={styles.lastsubmenu} onClick={handleEmployeeDraftList}>📁 결재 문서함</button></li>
+                                            <ul className={styles.innerSubDropdownMenu_draftList}>
+                                                <li><button className={styles.lastsubmenu} onClick={handleEmployeeDraftList}><p>📁 전체 문서함</p></button></li>
+                                                <li><button className={styles.lastsubmenu} onClick={handleEmployeeDraftList}><p>📁 임시 저장함</p></button></li>
+                                                <li><button className={styles.lastsubmenu} onClick={handleEmployeeDraftList}><p>📁 결재 문서함</p></button></li>
                                             </ul>
                                         )}
                                     </li>
                                     <li>
-                                        <button onClick={toggleFormDropdown} className={styles.submenu}>
+                                        <button onClick={toggleFormDropdown} className={styles.submenu2}>
                                             📑 기안 양식
                                         </button>
                                         {isFormDropdownOpen && (
-                                            <ul className={styles.innerSubDropdownMenu}>
-                                                <li><button className={styles.lastsubmenu} onClick={handleEmployeeDraftWrite}>📄 업무 보고 기안</button></li>
-                                                <li><button className={styles.lastsubmenu} onClick={handleEmployeeDraftWrite}>📄 근태 신청 기안</button></li>
-                                                <li><button className={styles.lastsubmenu} onClick={handleEmployeeDraftWrite}>📄 구매 신청 기안</button></li>
+                                            <ul className={styles.innerSubDropdownMenu_draftWrite}>
+                                                <li><button className={styles.lastsubmenu} onClick={handleEmployeeDraftWrite}><p>📄 업무 보고 기안</p></button></li>
+                                                <li><button className={styles.lastsubmenu} onClick={handleEmployeeDraftWrite}><p>📄 근태 신청 기안</p></button></li>
+                                                <li><button className={styles.lastsubmenu} onClick={handleEmployeeDraftWrite}><p>📄 구매 신청 기안</p></button></li>
                                             </ul>
                                         )}
                                     </li>
