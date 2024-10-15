@@ -6,7 +6,7 @@ const HeaderOne = ({ logoSize, toggleMenu }) => (
     <header className='header-one'>
         <div className='logo_Img_start'>
             {/* 햄버거 아이콘이 중간 화면에서만 보이도록 className 적용 */}
-                <i className="material-symbols-outlined hamburger" onClick={toggleMenu}>menu</i>
+            <i className="material-symbols-outlined hamburger" onClick={toggleMenu}>menu</i>
             <img src={logo} className='Header-logo-start' alt='Logo One' style={{ transform: `scale(${logoSize})` }} />
         </div>
     </header>

@@ -68,7 +68,7 @@ const Menubar = ({ isMenuOpen }) => {
     }
 
     return (
-        <nav className={`${styles.menubar} ${isMenuOpen ? styles.showMenu : ''} ${isDropdownOpen ? styles.open : ''}`}>
+        <nav className={`${styles.menubar} ${isMenuOpen ? styles.showMenu : ''}`}>
             <div className={styles.menubar}>
                 <div className={styles.profil}>
                     <div className={styles.profilbox}>
