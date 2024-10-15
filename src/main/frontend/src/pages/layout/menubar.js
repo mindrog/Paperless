@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation, Form } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from '../../styles/layout/menubar.module.css'; // CSS 모듈 사용 시
 import { Button, Modal } from 'react-bootstrap';
 
@@ -68,7 +68,7 @@ const Menubar = ({ isMenuOpen }) => {
     }
 
     return (
-        <nav className={`${styles.menubar} ${isMenuOpen ? styles.showMenu : ''} ${isDropdownOpen ? styles.open : ''}`}>
+        <nav className={`${styles.menubar} ${isMenuOpen ? styles.showMenu : ''}`}>
             <div className={styles.menubar}>
                 <div className={styles.profil}>
                     <div className={styles.profilbox}>
