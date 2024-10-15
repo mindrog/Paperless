@@ -3,6 +3,7 @@
     padding: 20px;
     border: 1px solid lightgray;
     width: 95%;
+    font-family: 'ONE-Mobile-Regular';
     /* display: flex; */
     /*justify-content: center;  가로로 가운데 정렬 */
     /* align-items: center; 세로로 가운데 정렬 */
@@ -27,21 +28,21 @@
 
 .mypageProfil {
     display: flex;
-    margin-left: auto; /* 자동으로 좌우 여백을 맞춤 */
-    margin-right: auto; /* 자동으로 좌우 여백을 맞춤 */
-    max-width: 800px; /* 너비를 고정하거나 원하는 비율로 설정 */
-    width: 100%; /* 중간 화면에서도 너비를 전체로 확장 */
-    padding: 20px; /* 여백 추가 */
+    margin-left: auto; 
+    margin-right: auto; 
+    max-width: 900px;
+    width: 100%; 
+    padding: 20px; 
     margin-top: 20px;
 }
 
 /* 중간 화면일 때의 스타일 */
 @media (max-width: 992px) {
     .mypageProfil {
-        margin-left: 100px; /* 중간 화면일 때 좌측 여백 조정 */
-        margin-right: 20px; /* 중간 화면일 때 우측 여백 조정 */
-        max-width: 100%; /* 중간 화면일 때 너비를 100%로 설정 */
-        padding: 10px; /* 중간 화면일 때 패딩 조정 */
+        margin-left: 100px; 
+        margin-right: 20px;
+        max-width: 100%; 
+        padding: 10px;
     }
 }
 
@@ -83,20 +84,34 @@
 .userInfo {
     margin-top: 30px;
     text-align: left;
-    margin-left: auto; /* 자동으로 좌우 여백을 맞춤 */
-    margin-right: auto; /* 자동으로 좌우 여백을 맞춤 */
-    max-width: 800px; /* 너비를 고정하거나 원하는 비율로 설정 */
-    width: 100%; /* 중간 화면에서도 너비를 전체로 확장 */
-    padding: 20px; /* 여백 추가 */
+    margin-left: auto; 
+    margin-right: auto; 
+    max-width: 800px; 
+    width: 100%; 
+    padding: 20px;
 }
 
 /* 중간 화면일 때의 스타일 */
 @media (max-width: 992px) {
     .userInfo {
-        margin-left: 20px; /* 중간 화면일 때 좌측 여백 조정 */
-        margin-right: 20px; /* 중간 화면일 때 우측 여백 조정 */
-        max-width: 100%; /* 중간 화면일 때 너비를 100%로 설정 */
-        padding: 10px; /* 중간 화면일 때 패딩 조정 */
+        margin-left: 20px; 
+        margin-right: 20px; 
+        max-width: 100%; 
+        padding: 10px; 
+    }
+
+    .changePossible {
+        display: flex;
+        flex-wrap: nowrap; /* 한 줄로 유지 */
+        justify-content: space-between; /* 공간 균등 분배 */
+    }
+
+    .userNumBox, .userPwBox {
+        flex-grow: 1; /* 너비를 균등하게 분배 */
+    }
+
+    .userPwBox {
+        margin-left: 20px; /* 여백 조정 */
     }
 }
 
@@ -115,8 +130,7 @@
 
 .userNumBox {
     display: flex;
-    margin-right: 20px;
-    /* justify-items: center; */
+    margin-right: auto;
     align-items: center;
     margin-bottom: 5px;
 }
@@ -147,6 +161,10 @@
 
 .userPwtitle {
     font-weight: bold;
+}
+
+.userPw {
+    width: 5px;
 }
 
 .userNumUpdatebtn {
@@ -196,6 +214,7 @@
     text-align: center;
     width: 95%; /* 화면 크기에 맞게 너비 확장 */
     padding: 20px; /* 내부 여백 */
+    font-family: 'ONE-Mobile-Regular';
 }
 
 .userAnnualInfo_title {
@@ -263,4 +282,74 @@
         max-width: 100%; /* 중간 화면에서 전체 너비로 확장 */
         padding: 10px;
     }
+}
+
+/* 모달 */
+.userNumModal, .userPwModal {
+    font-family: 'ONE-Mobile-Regular';
+}
+
+.modalTitle {
+    font-size: 25px;
+    font-weight: bold;
+    color: #2e3d86;
+    margin-top: 5px;
+    align-items: center;
+    margin-left: 26px;
+}
+
+.userNum_form, .password_form{
+    width: 400px;
+    margin: auto;
+    justify-content: center;
+}
+
+.formPhoneNumber, .formPhoneNumberNew {
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+.formPw, .formPwNew {
+    margin-top: 5px;
+}
+
+.modal_input {
+    border-radius: 0;
+    border: none;
+    border-bottom: 1.5px solid black;
+    margin-bottom: 30px;
+}
+
+.modal_input_pw {
+    border-radius: 0;
+    border: none;
+    border-bottom: 1.5px solid black;
+    margin-bottom: 30px;
+    width: 370px;
+}
+
+.modal_input_pw[type="password"] {
+    color: black !important; 
+    font-family: 'NanumSquare';
+}
+
+.modal_input:active, .modal_input:focus, .modal_input_pw:active, .modal_input_pw:focus {
+    border-bottom:3px solid #2e3d86;
+    outline: none !important;
+    box-shadow: none;
+}
+
+.toggle_password {
+    color:#2e3d86 !important;
+    width: 50px;
+    margin-bottom: 20px;
+}
+
+.password_container{
+    display: inline-flex;
+}
+
+.modal_footer {
+    border-top: none;
+    justify-content: center !important;
 }
