@@ -167,10 +167,29 @@
     width: 5px;
 }
 
+.userNumUpdatebtnInput, .userPwChangebtnInput {
+    background-color: #2e3d86;
+    border:#2e3d86;
+    margin-left: 10px;
+}
+
+.userNumUpdatebtnInput:hover, .userPwChangebtnInput:hover{
+    background-color: #7289CF;
+    border:#7289CF;
+    color:#fefefe;
+}
+
+.userNumUpdatebtnInput:active, .userPwChangebtnInput:active {
+    background-color: #2e3d86 !important;
+    border:#2e3d86 !important;
+    color:#fefefe;
+}
+
 .userNumUpdatebtn {
     background-color: #2e3d86;
     border:#2e3d86;
     margin-left: 10px;
+    width: 100px;
     /* margin-top: 10px; */
 }
 
@@ -192,6 +211,7 @@
     background-color: #2e3d86;
     border:#2e3d86;
     margin-left: 10px;
+    width: 100px;
 }
 
 .userPwChangebtn:hover {

@@ -123,13 +123,13 @@ function Company_user_mypage() {
                                 <div className={styles.userNumBox}>
                                     <div className={styles.userNumtitle}>◼ 전화번호</div>
                                     <div className='userNum'>010-1234-9876</div>
-                                    <Button variant="primary" className={styles.userNumUpdatebtn} onClick={handleUsernumUpdate}>수정</Button>
+                                    <Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUsernumUpdate}>수정</Button>
                                 </div>
 
                                 <div className={styles.userPwBox}>
                                     <div className={styles.userPwtitle}>◼ 비밀번호</div>
                                     <div className={styles.userPw}></div>
-                                    <Button variant="primary" className={styles.userPwChangebtn} onClick={handleUserPwChangebtn}>변경</Button>
+                                    <Button variant="primary" className={styles.userPwChangebtnInput} onClick={handleUserPwChangebtn}>변경</Button>
                                 </div>
                             </div>
                         </div>
@@ -194,9 +194,6 @@ function Company_user_mypage() {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer className={styles.modal_footer}>
-                    <Button variant="secondary" onClick={handleCloseModal}>
-                        취소
-                    </Button>
                     <Button variant="primary" onClick={handleCloseModal} className={styles.userNumUpdatebtn}>
                         저장
                     </Button>
@@ -266,12 +263,12 @@ function Company_user_mypage() {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer className={styles.modal_footer}>
-                    <Button variant="secondary" onClick={handleUserPwCloseModal}>
-                        취소
-                    </Button>
                     <Button variant="primary" className={styles.userPwChangebtn}>
                         저장
                     </Button>
+                    {/* <Button variant="secondary" onClick={handleUserPwCloseModal}>
+                        취소
+                    </Button> */}
                 </Modal.Footer>
             </Modal>
 
