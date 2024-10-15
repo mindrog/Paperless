@@ -42,6 +42,38 @@ function Company_user_chat() {
         },
     ];
 
+    // 프로필 모달창
+    const [profileModal, setProfileModal] = useState(false);
+
+    // 모달창 상태값
+    const showProfileModal = () => {
+        setProfileModal(true);
+    };
+
+    const closeProfileModal = () => {
+        setProfileModal(false);
+    };
+
+    // 채팅 목록의 프로필 클릭할 때 메서드
+    const clickProfile = (index) => {
+        setProfileModal(true);
+    }
+
+    // 새 창이 열릴 때마다 위치 조정해주는 변수
+    let offsetDown = 0;
+    let offsetRight = 0;
+
+    // 채팅 새 창
+    const chatting = (url) => {
+        window.open(url, "_blank", `noopener, noreferrer, width=800, height=600, top=${100 + offsetDown}, left=${1000 + offsetRight}, scrollbars=yes, resizable=no`)
+        if (offsetRight >= 100) {
+            offsetRight = 0;
+            offsetDown = 20;
+        };
+        offsetDown += 20
+        offsetRight += 20
+    };
+
     return (
         <div className="container-xl">
             <div className={styles.chatContainer}>
@@ -66,8 +98,8 @@ function Company_user_chat() {
                         </div>
                         <div className={styles.chatList_content}>
                             {chatList.map((chat, index) => (
-                                <div className={styles.eachChat}>
-                                    <div className={styles.eachChat_profile}>
+                                <div className={styles.eachChat} onClick={() => chatting(`/chatting/${chat.name}`)} >
+                                    <div className={styles.eachChat_profile} onClick={() => clickProfile(`${index}`)}>
                                         <img src={chat.profile} alt="Profile" className={styles.image} />
                                     </div>
                                     <div className={styles.eachChat_info}>
