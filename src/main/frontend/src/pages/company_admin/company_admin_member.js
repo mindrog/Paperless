@@ -1,12 +1,35 @@
 import React from 'react';
-import { Table } from 'react-bootstrap';
+import { Table, Button, Form,  InputGroup, Row, Col} from 'react-bootstrap';
 import styles from '../../styles/company/admin/company_member.module.css';
 import Menubar from '../layout/menubar';
 
 function Company_admin_member() {
     return (
-        <div className="container-xl conbox1">
+        <div className="container-xl">
             <Menubar />
+
+            <div>직원 관리</div>
+            <div>
+                <Form inline>
+                    <Button variant="primary">Primary</Button>
+                    <Button variant="primary">Primary</Button>
+                </Form>
+                <Form inline>
+                    <Row>
+                        <Col xs="auto">
+                            <Form.Control
+                                type="text"
+                                placeholder="Search"
+                                className=" mr-sm-2"
+                            />
+                        </Col>
+                        <Col xs="auto">
+                            <Button type="submit">Submit</Button>
+                        </Col>
+                    </Row>
+                </Form>
+                
+            </div>
             <Table striped bordered hover>
                 <thead>
                     <tr>
