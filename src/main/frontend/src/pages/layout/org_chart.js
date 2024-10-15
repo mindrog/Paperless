@@ -46,7 +46,7 @@ const OrgChart = () => {
                         { name: '서비스 개발팀', key: 'serviceDevelopment', count: 8 },
                         { name: '플랫폼팀', key: 'platform', count: 10 },
                         {
-                            name: '콘텐츠 기획팀', key: 'contentPlanning', count: 7, subMenu: [
+                            name: '콘텐츠 기획팀', key: 'contentPlanning', count: 15, subMenu: [
                                 { name: '전지현', key: '전지현', type: 'user' },
                                 { name: '장원영', key: '장원영', type: 'user' },
                                 { name: '이도현', key: '이도현', type: 'user' },
@@ -54,6 +54,14 @@ const OrgChart = () => {
                                 { name: '김태리', key: '김태리', type: 'user' },
                                 { name: '박보검', key: '박보검', type: 'user' },
                                 { name: '차은우', key: '차은우', type: 'user' },
+                                { name: '김수현', key: '김수현', type: 'user' },
+                                { name: '마동석', key: '마동석', type: 'user' },
+                                { name: '변우석', key: '변우석', type: 'user' },
+                                { name: '김지원', key: '김지원', type: 'user' },
+                                { name: '박지환', key: '박지환', type: 'user' },
+                                { name: '박성훈', key: '박성훈', type: 'user' },
+                                { name: '이제훈', key: '이제훈', type: 'user' },
+                                { name: '손석구', key: '손석구', type: 'user' },
                             ]
                         }
                     ]
