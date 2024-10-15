@@ -20,7 +20,7 @@
   flex-direction: column;
   border-radius: 0 20px 20px 0;
   transition: transform 0.3s ease;
-  
+  z-index: 1;
   max-height: 380px; /* 기본 높이 설정 */
   /* overflow: hidden; 높이를 넘는 부분을 숨김 */
   transition: max-height 0.3s ease-in-out; /*높이가 부드럽게 조정되도록 전환 효과 추가 */
