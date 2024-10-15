@@ -1,32 +1,38 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Form } from 'react-router-dom';
 import styles from '../../styles/layout/menubar.module.css'; // CSS 모듈 사용 시
+import { Button, Modal } from 'react-bootstrap';
 
 const Menubar = ({ isMenuOpen }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDocDropdownOpen, setIsDocDropdownOpen] = useState(false); // 기안 문서함 상태
     const [isFormDropdownOpen, setIsFormDropdownOpen] = useState(false); // 기안 양식 상태
+    const [notificationModal, setNotificationModal] = useState(false); // 알림 모달
 
-    const location = useLocation(); 
+    const location = useLocation();
     const navigate = useNavigate();
 
     // 경로에 따라 프로필 이름 변경
-    const profileName = location.pathname.toLowerCase().startsWith('/company/admin') 
-                        ? '강동원' 
-                        : location.pathname.toLowerCase().startsWith('/company/user') 
-                        ? '배수지' 
-                        : '사용자'; 
-    
-    const handleEmployeeNotification = () => {
-        alert('알림목록창')
+    const profileName = location.pathname.toLowerCase().startsWith('/company/admin')
+        ? '강동원'
+        : location.pathname.toLowerCase().startsWith('/company/user')
+            ? '배수지'
+            : '사용자';
+
+    const showEmployeeNotificationModal = () => {
+        setNotificationModal(true);
+    };
+
+    const closeEmployeeNotificationModal = () => {
+        setNotificationModal(false);
     };
 
     const handleEmployeeEmail = () => {
-        navigate('/Company/user/email')
+        navigate('/Company/user/email');
     };
 
     const handleEmployeeChat = () => {
-        navigate('/Company/user/chat')
+        navigate('/Company/user/chat');
     };
 
     const toggleDropdown = () => {
@@ -50,8 +56,8 @@ const Menubar = ({ isMenuOpen }) => {
     };
 
     const handleEmployeeCalendar = () => {
-        navigate('/handleEmployeeCalendarClick');
-     }
+        navigate('/Company/user/calendar'); // 임시 calendar 페이지 url
+    }
 
     const handleEmployeeDraftList = () => {
         navigate('/Company/user/draft/list');
@@ -74,12 +80,26 @@ const Menubar = ({ isMenuOpen }) => {
                             </div>
                         </div>
                         <div className={styles.iconbox}>
-                            <button onClick={handleEmployeeNotification}><i className="material-icons">notifications</i></button>
+                            <button onClick={showEmployeeNotificationModal}><i className="material-icons">notifications</i></button>
                             <button onClick={handleEmployeeEmail}><i className="material-icons">mail</i></button>
                             <button onClick={handleEmployeeChat}><i className="material-icons">chat_bubble</i></button>
                         </div>
                     </div>
                 </div>
+
+                <Modal show={notificationModal} onHide={closeEmployeeNotificationModal} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>알림 목록</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <p>알림 리스트</p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={closeEmployeeNotificationModal} >
+                            닫기
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
 
                 <ul className={styles.menuList}>
                     <li className={styles.dropdown}>
