@@ -29,6 +29,7 @@ import './App.css';
 import './styles/style.css';
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import Chatting from './pages/company_user/company_user_chatting';
 
 function App() {
     const [hello, setHello] = useState('');
@@ -49,9 +50,7 @@ function App() {
     return (
         <Router>
             <div className='App'>
-                <div className='Header'>
-                    <Header />
-                </div>
+                <HeaderToggle />
                 <MenubarToggle isMenuOpen={isMenuOpen} />
                 <main className='app'>
                     <Routes>
@@ -77,11 +76,28 @@ function App() {
                         <Route path='/Company/user/draft/detail' element={<Company_user_draft_detail />} />
                         <Route path='/Company/user/draft/write' element={<Company_user_draft_write />} />
                         <Route path='/Company/user/chat' element={<Company_user_chat />} />
+                        <Route path='/chatting/:name' element={<Chatting />} />
                     </Routes>
                 </main>
                 <FooterToggle />
             </div>
         </Router>
+    );
+}
+
+// /chatting으로 시작하는 URL에서 Header 숨기기
+function HeaderToggle() {
+    const location = useLocation();
+    const HeaderHiddenPaths = ['/chatting'];
+
+    return (
+        <>
+            {!HeaderHiddenPaths.some(path => location.pathname.startsWith(path)) && (
+                <div className='Header'>
+                    <Header />
+                </div>
+            )}
+        </>
     );
 }
 
