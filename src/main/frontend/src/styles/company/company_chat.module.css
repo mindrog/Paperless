@@ -1,3 +1,4 @@
+/* 제목: 조직도, 채팅 목록 */
 h2 {
     margin: 0px;
 }
@@ -6,7 +7,8 @@ h2 {
 
 }
 
-.selectChat {
+/* 조직도 검색 */
+.selectOrgChart {
     display: flex;
     width: 1200px;
     height: 30px;
@@ -15,30 +17,32 @@ h2 {
     text-align: left;
 }
 
-.selectChat input {
+/* 조직도 검색태그 */
+.selectOrgChart input {
     width: 300px;
     font-size: 15px;
     border-radius: 10px;
 }
 
-/* input 태그에 검색 아이콘 넣기 */
-.selectChat button {
+/* 조직도 검색 태그 안에 돋보기 아이콘 넣기 */
+.selectOrgChart button {
     position: absolute;
     left: 270px;
     background-color: inherit;
     border: none;
 }
 
-.selectChat button :hover{
+.selectOrgChart button :hover{
     cursor: pointer;
 }
 
-/* input 태그(border: 2px)에 아이콘 padding으로 위치 설정 */
-.selectChat i {
+/* 조직도 검색 태그(border: 2px)에 아이콘 padding으로 위치 조정 */
+.selectOrgChart i {
     padding-top: 2px;
     padding-bottom: 2px;
 }
 
+/* 조직도 및 채팅 목록 전체 div 설정 */
 .list {
     width: 1200px;
     height: 730px;
@@ -48,23 +52,37 @@ h2 {
     display: flex;
 }
 
+/* 조직도 전체 */
 .orgChart {
     width: 360px;
     height: 700px;
     border-right: 2px solid lightgray;
 }
 
+/* 조직도 제목 */
 .orgChart_title {
     padding: 10px;
     border-bottom: 2px solid lightgray;
 }
 
+/* 채팅 목록 전체 */
 .chatList {
     width: 940px;
     height: 700px;
 }
 
+/* 채팅 목록 제목 */
 .chatList_title {
     padding: 10px;
+    border-bottom: 2px solid lightgray;
+}
+
+.chatList_content {
+    overflow-y: scroll;
+}
+
+/* 각각의 채팅 */
+.eachChat {
+    height: 120px;
     border-bottom: 2px solid lightgray;
 }
