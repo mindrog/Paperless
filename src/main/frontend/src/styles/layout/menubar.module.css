@@ -22,7 +22,7 @@
   transition: transform 0.3s ease;
   z-index: 1;
   max-height: 380px; /* 기본 높이 설정 */
-  /* overflow: hidden; 높이를 넘는 부분을 숨김 */
+  letter-spacing: 0.5px;
   transition: max-height 0.3s ease-in-out; /*높이가 부드럽게 조정되도록 전환 효과 추가 */
 }
 
@@ -105,6 +105,10 @@
   font-family: 'ONE-Mobile-Title';
 }
 
+.profiltitle p {
+  margin-bottom: 0.2rem;;
+}
+
 .titlename {
   display: flex;
   justify-content: center;
@@ -117,20 +121,27 @@
 }
 
 .titlename .userGrade {
-  margin-left: 6px;
+  margin-top: 8px;
+  margin-left: 8px;
   font-size: 18px;
 }
 
 .menuList {
+  margin-top: 10px;
   list-style: none;
-  /* display: flex; */
-  gap: 10px;
   text-align: left;
 }
 
 .menuList li {
   cursor: pointer;
-  margin: 5px;
+}
+
+.menuList li:hover {
+  background-color: #2e3d86;
+}
+
+.dropdown {
+  margin-top: 6px;
 }
 
 .dropdownToggle {
@@ -141,14 +152,14 @@
   padding-right: 60px;
   border: none;
   cursor: pointer;
-  font-size: 14px; 
+  font-size: 16px; 
+  font-weight: bold;
   /* background-color: #2e3d86; */
   color:rgb(255, 255, 255);
   outline: none; /* 포커스 시 outline 제거 */
 }
 
 .dropdownToggle:hover {
-  font-weight: bold;
   outline: none;
 }
 
@@ -166,6 +177,8 @@
   padding: 0;
   font-size: 8px;
   outline: none; /* 포커스 시 outline 제거 */
+
+  transition: max-height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .dropdownMenu.open {
@@ -179,7 +192,6 @@
 }
 
 .dropdownMenu li:hover {
-  font-weight: bold;
   outline: none; 
   box-shadow: none; 
 }
@@ -196,30 +208,46 @@
   border: none;   
   outline: none;  
   box-shadow: none; 
-  color:white;
+  color:#fefefe;
   justify-items: center;
-  font-size: 14px;
-  padding-left: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  padding-left: 0px;
   text-align: left;
   vertical-align: middle;
 }
 
 .submenu {
-  width: 150px;
-  background: none;
+  width: 100%;
+  /* background: none; */
   border: none;   
   outline: none;  
   box-shadow: none; 
-  color:white;
+  color: #fefefe;
   justify-items: center;
   vertical-align: middle;
-  font-size: 12px;
-  padding-right: 10px;
+  font-size: 14px;
+  padding-right: 20px;
   padding-top:0;
+  font-weight: bold;
 }
 
-.submenu:hover {
+.submenu2 {
+  width: 100%;
+  /* background: none; */
+  border: none;   
+  outline: none;  
+  box-shadow: none; 
+  color: #fefefe;
+  font-size: 14px;
+  padding-right: 35px;
+  padding-top:0;
   font-weight: bold;
+}
+
+.submenu:hover , .submenu2:hover{
+  background-color: #B0C4DE;
+  color: #333;
 }
 
 .subDropdownMenu {
@@ -230,17 +258,31 @@
   width: 150px;
   background: none;
   border: none; 
-  padding-top:8px;
-  padding-left: 35px;    
+  /* padding-top:8px;
+  padding-left: 35px;     */
+  margin: 0px 10px 0 35px;
   outline: none;  
   box-shadow: none; 
   color:white;
   justify-items: center;
-  font-size: 12px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: bold;
 }
 
-.innerSubDropdownMenu li {
+.lastsubmenu p {
   margin: 0;
+  margin-right: 10px;
+  width: 120px;
+  padding:3px;
+  /* background-color: #B0C4DE; */
+}
+
+.lastsubmenu p:hover {
+  background-color: #B0C4DE;
+  color:black;
+  width: 100%;
+  text-align: center;
 }
 
 @media screen and (max-width: 992px) {
