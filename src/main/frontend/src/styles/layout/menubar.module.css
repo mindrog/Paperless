@@ -14,7 +14,7 @@
   margin-top:100px;
   width: 200px; /* 메뉴바 너비 */
   height: 80%; /* 화면 전체 높이 */
-  background-color: #2e3d86; /*배경색 설정 */
+  background-color: #5A77B6            ; /*배경색 설정 */
   color: white;
   display: flex;
   flex-direction: column;
@@ -54,13 +54,26 @@
 }
 
 .iconbox button {
-  background-color: #2e3d86;
-  color: white;
-  border: none;
+  background-color: #7289CF;
+  color: #fefefe;
+  border: 1px solid #7289CF;
+  border-radius: 100%;
+  width: 25%;
+  height: 45px;
+}
+
+.iconbox button:hover {
+  background-color: #fefefe;
+  color: #7289CF ;
+  /* color: #2e3d86; */
+  border: 1px solid #fefefe;
 }
 
 .iconbox i {
   font-size: 30px;
+  margin-top: 5px;
+  margin-right: 3px;
+  text-align: center;
 }
 
 .iconbox i:hover {
@@ -77,21 +90,26 @@
 }
 
 .profilbox{
-  border-radius: 0 20px 20px 0;
-  border: 2px solid white;
-  border-radius: 10%;
+  border-top: 3px solid #2e3d86;
+  border-right: 3px solid #2e3d86;
+  background-color: #2e3d86;
+  color: #fefefe;
+  border-radius: 0 10% 10% 0;
   padding: 15px 5px 25px 5px;
 }
 
 .profiltitle {
   padding-left: 8px;
   text-align: center; 
+  margin-top: 6px;
+  font-family: 'ONE-Mobile-Title';
 }
 
 .titlename {
   display: flex;
   justify-content: center;
   align-items: center;
+  font-weight: bold;
 }
 
 .titlename .userName {
@@ -124,8 +142,8 @@
   border: none;
   cursor: pointer;
   font-size: 14px; 
-  background-color: #2e3d86;
-  color:white;
+  /* background-color: #2e3d86; */
+  color:rgb(255, 255, 255);
   outline: none; /* 포커스 시 outline 제거 */
 }
 

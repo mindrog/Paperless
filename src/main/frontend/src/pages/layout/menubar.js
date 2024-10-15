@@ -80,9 +80,9 @@ const Menubar = ({ isMenuOpen }) => {
                             </div>
                         </div>
                         <div className={styles.iconbox}>
-                            <button onClick={showEmployeeNotificationModal}><i className="material-icons">notifications</i></button>
-                            <button onClick={handleEmployeeEmail}><i className="material-icons">mail</i></button>
-                            <button onClick={handleEmployeeChat}><i className="material-icons">chat_bubble</i></button>
+                            <button onClick={showEmployeeNotificationModal}><i className="material-icons notifications">notifications</i></button>
+                            <button onClick={handleEmployeeEmail}><i className="material-icons mail">mail</i></button>
+                            <button onClick={handleEmployeeChat}><i className="material-icons chat_bubble">chat_bubble</i></button>
                         </div>
                     </div>
                 </div>
