@@ -248,3 +248,59 @@ h3 {
     border-radius: 100%;
     text-align: center;
 }
+
+/* 모달창 */
+.modal_content {
+    width: 700px;
+}
+
+.modal_title {
+    font-family: 'ONE-Mobile-Title';
+    color: #2e3d86;
+}
+
+.modal_body {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+}
+
+.modal_body_profile {
+    width: 200px;
+    aspect-ratio: 1/1;
+    background-color: lightgray;
+    border-radius: 100%;
+    display: flex;
+}
+
+.modal_body_profile image {
+    width: 200px;
+    aspect-ratio: 1/1;
+    background-color: lightgray;
+    text-align: center;
+}
+
+.modal_body_info {
+    display: flex;
+    align-items: center;
+}
+
+.modal_body_info td {
+    padding: 10px;
+}
+
+.modal_body_info h3 {
+    margin: 15px 0;
+    text-align: center;
+}
+
+.modal_footer {
+    display: flex;
+    justify-content: center !important;
+    gap: 30px;
+}
+
+.modal_footer button {
+    background-color: #2e3d86;
+    border: 1px solid #2e3d86;
+}
