@@ -5,37 +5,38 @@ import Footer from './pages/layout/footer';
 import Home from './pages/layout/home';
 import Inquiry from './pages/common/inquiry';
 import Login from './pages/layout/login';
-import Inquiry_Success from './pages/common/inquiry_success';
-import Inquiry_write from './pages/common/inquiry_write';
-import Email_Auth from './pages/layout/email_auth';
-import System_admin_inquiry from './pages/system_admin/system_admin_inquiry';
-import System_admin_member from './pages/system_admin/system_admin_member';
-import Company_admin_main from './pages/company_admin/company_admin_main';
-import Company_admin_memeber from './pages/company_admin/company_admin_member';
-import Company_admin_email from './pages/company_admin/company_admin_email';
-import Company_admin_email_send from './pages/company_admin/company_admin_email_send';
-import Company_admin_approval from './pages/company_admin/company_admin_approval';
-import Company_admin_approval_detail from './pages/company_admin/company_admin_approval_detail';
-import Company_user_main from './pages/company_user/company_user_main';
-import Company_user_mypage from './pages/company_user/company_user_mypage';
-import Company_user_email from './pages/company_user/company_user_email';
-import Company_user_email_send from './pages/company_user/company_user_email_send';
-import Company_user_email_detail from './pages/company_user/company_user_email_detail';
-import Company_user_draft_write_work from './pages/company_user/company_user_draft_write_work';
-import Company_user_draft_write_atte from './pages/company_user/company_user_draft_write_atten';
-import Company_user_draft_write_purc from './pages/company_user/company_user_draft_write_purc';
-import Company_user_draft_form from './pages/company_user/company_user_draft_form';
-import Company_user_draft_detail from './pages/company_user/company_user_draft_detail';
-import Company_user_dratf_doc_all from './pages/company_user/company_user_draft_doc_all';
-import Company_user_dratf_doc_draft from './pages/company_user/company_user_draft_doc_draft';
-import Company_user_dratf_doc_appr from './pages/company_user/company_user_draft_doc_appr';
-import Company_user_chat from './pages/company_user/company_user_chat';
+import InquirySuccess from './pages/common/InquirySuccess';
+import InquiryWrite from './pages/common/InquiryWrite';
+import EmailAuth from './pages/layout/email_auth';
+import SystemAdminInquiry from './pages/system_admin/SystemAdminInquiry';
+import SystemAdminMember from './pages/system_admin/SystemAdminMember';
+import CompanyAdminMain from './pages/company_admin/CompanyAdminMain';
+import CompanyAdminMember from './pages/company_admin/CompanyAdminMember';
+import CompanyAdminEmail from './pages/company_admin/CompanyAdminEmail';
+import CompanyAdminEmailSend from './pages/company_admin/CompanyAdminEmailSend';
+import CompanyAdminApproval from './pages/company_admin/CompanyAdminApproval';
+import CompanyAdminApprovalDetail from './pages/company_admin/CompanyAdminApprovalDetail';
+import CompanyUserMain from './pages/company_user/CompanyUserMain';
+import CompanyUserMypage from './pages/company_user/CompanyUserMypage';
+import CompanyUserEmail from './pages/company_user/CompanyUserEmail';
+import CompanyUserEmailSend from './pages/company_user/CompanyUserEmailSend';
+import CompanyUserEmailDetail from './pages/company_user/CompanyUserEmailDetail';
+import CompanyUserDraftWriteWork from './pages/company_user/CompanyUserDraftWriteWork';
+import CompanyUserDraftWriteAtten from './pages/company_user/CompanyUserDraftWriteAtten';
+import CompanyUserDraftWritePurc from './pages/company_user/CompanyUserDraftwritePurc';
+import CompanyUserDraftForm from './pages/company_user/CompanyUserDraftForm';
+import CompanyUserDraftDetail from './pages/company_user/CompanyUserDraftDetail';
+import CompanyUserDraftDocAll from './pages/company_user/CompanyUserDraftDocAll';
+import CompanyUserDraftDocDraft from './pages/company_user/CompanyUserDraftDocDraft';
+import CompanyUserDraftDocAppr from './pages/company_user/CompanyUserDraftDocAppr';
+import CompanyUserCalendar from './pages/company_user/CompanyUserCalendar';
+import CompanyUserChat from './pages/company_user/CompanyUserChat';
 import Menubar from './pages/layout/menubar';
 import './App.css';
 import './styles/style.css';
 
 import { BrowserRouter as Router, Route, Routes, useLocation, useMatch } from 'react-router-dom';
-import Chatting from './pages/company_user/company_user_chatting';
+import Chatting from './pages/company_user/CompanyUserChatting';
 
 function App() {
     const [hello, setHello] = useState('');
@@ -62,33 +63,49 @@ function App() {
                     <Routes>
                         <Route path='/' element={<Home />} />
                         <Route path='/inquiry' element={<Inquiry />} />
-                        <Route path='/inquiry/success' element={<Inquiry_Success />} />
+                        <Route path='/inquiry/success' element={<InquirySuccess />} />
                         <Route path='/login' element={<Login />} />
-                        <Route path='/email_Auth' element={<Email_Auth />} />
-                        <Route path='/inquiry/wirte' element={<Inquiry_write />} />
-                        <Route path='/system/admin/inquiry' element={<System_admin_inquiry />} />
-                        <Route path='/system/admin/member' element={<System_admin_member />} />
-                        <Route path='/company/admin/' element={<Company_admin_main />} />
-                        <Route path='/company/admin/member' element={<Company_admin_memeber />} />
-                        <Route path='/company/admin/email' element={<Company_admin_email />} />
-                        <Route path='/company/admin/email/send' element={<Company_admin_email_send />} />
-                        <Route path='/company/admin/approval' element={<Company_admin_approval />} />
-                        <Route path='/company/admin/approval/detail' element={<Company_admin_approval_detail />} />
-                        <Route path='/company/user/' element={<Company_user_main />} />
-                        <Route path='/company/user/mypage' element={<Company_user_mypage />} />
-                        <Route path='/company/user/email' element={<Company_user_email />} />
-                        <Route path='/company/user/email/send' element={<Company_user_email_send />} />
-                        <Route path='/company/user/email/detail' element={<Company_user_email_detail />} />
-                        <Route path='/company/user/draft/doc/all' element={<Company_user_dratf_doc_all />} />
-                        <Route path='/company/user/draft/doc/draft' element={<Company_user_dratf_doc_draft />} />
-                        <Route path='/company/user/draft/doc/approval' element={<Company_user_dratf_doc_appr />} />
-                        <Route path='/company/user/draft/detail' element={<Company_user_draft_detail />} />
-                        <Route path='/company/user/draft/form' element={<Company_user_draft_form />} />
-                        <Route path='/company/user/draft/write/work' element={<Company_user_draft_write_work />} />
-                        <Route path='/company/user/draft/write/attendance' element={<Company_user_draft_write_atte />} />
-                        <Route path='/company/user/draft/write/purchase' element={<Company_user_draft_write_purc />} />
-                        <Route path='/company/user/chat' element={<Company_user_chat />} />
+                        <Route path='/email_Auth' element={<EmailAuth />} />
+                        <Route path='/inquiry/write' element={<InquiryWrite />} />
+
+                        {/* 시스템 관리자 */}
+                        <Route path='/system/admin/inquiry' element={<SystemAdminInquiry />} />
+                        <Route path='/system/admin/member' element={<SystemAdminMember />} />
+
+                        {/* 기업 관리자 */}
+                        <Route path='/company/admin/' element={<CompanyAdminMain />} />
+                        <Route path='/company/admin/member' element={<CompanyAdminMember />} />
+                        <Route path='/company/admin/email' element={<CompanyAdminEmail />} />
+                        <Route path='/company/admin/email/send' element={<CompanyAdminEmailSend />} />
+                        <Route path='/company/admin/approval' element={<CompanyAdminApproval />} />
+                        <Route path='/company/admin/approval/detail' element={<CompanyAdminApprovalDetail />} />
+
+                        {/* 기업 사용자 */}
+                        <Route path='/company/user/' element={<CompanyUserMain />} />
+                        <Route path='/company/user/mypage' element={<CompanyUserMypage />} />
+
+                        {/* 이메일 */}
+                        <Route path='/company/user/email' element={<CompanyUserEmail />} />
+                        <Route path='/company/user/email/send' element={<CompanyUserEmailSend />} />
+                        <Route path='/company/user/email/detail' element={<CompanyUserEmailDetail />} />
+
+                        {/* 기안 관련 */}
+                        <Route path='/company/user/draft/doc/all' element={<CompanyUserDraftDocAll />} />
+                        <Route path='/company/user/draft/doc/draft' element={<CompanyUserDraftDocDraft />} />
+                        <Route path='/company/user/draft/doc/approval' element={<CompanyUserDraftDocAppr />} />
+                        <Route path='/company/user/draft/detail' element={<CompanyUserDraftDetail />} />
+                        <Route path='/company/user/draft/form' element={<CompanyUserDraftForm />} />
+                        <Route path='/company/user/draft/write/work' element={<CompanyUserDraftWriteWork />} />
+                        <Route path='/company/user/draft/write/attendance' element={<CompanyUserDraftWriteAtten />} />
+                        <Route path='/company/user/draft/write/purchase' element={<CompanyUserDraftWritePurc />} />
+
+                        {/* 캘린더 */}
+                        <Route path='/company/user/calender' element={<CompanyUserCalendar />} />
+
+                        {/* 채팅 */}
+                        <Route path='/company/user/chat' element={<CompanyUserChat />} />
                         <Route path='/chatting/:name' element={<Chatting />} />
+
                     </Routes>
                 </main>
                 <FooterToggle />
