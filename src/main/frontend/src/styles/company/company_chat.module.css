@@ -159,10 +159,6 @@
     height: 100%;
 }
 
-.chatList li {
-    list-style: none;
-}
-
 @media (max-width: 992px) {
     .chatList {
         margin-left: auto;
