@@ -3,14 +3,21 @@ import styles from '../../styles/company/company_email_send.module.css';
 import '../../styles/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'; // 필요한 아이콘 임포트
+import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { Modal, Button } from 'react-bootstrap';
 
 function Company_admin_email_send() {
     const [dragOver, setDragOver] = useState(false);
     const [files, setFiles] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
+    const [showModal, setShowModal] = useState(false);
     const fileInputRef = useRef(null);
 
+    // 이메일 입력 상태 추가
+    const [receiverEmail, setReceiverEmail] = useState('');
+    const [ccEmail, setCcEmail] = useState('');
+    const [title, setTitle] = useState('');
+    const [emailContent, setEmailContent] = useState('');
 
     // 드래그 앤 드롭 이벤트 핸들러
     const handleDragEnter = (e) => {
@@ -40,7 +47,6 @@ function Company_admin_email_send() {
     const handleFileChange = (e) => {
         const newFiles = Array.from(e.target.files);
 
-        // 파일이 선택된 경우에만 상태를 업데이트 (파일선택 버튼 누르고 아무것도 선택 안하고 종료시 전에 선택한 파일까지 삭제되는 현상 방지)
         if (newFiles.length > 0) {
             setFiles((prevFiles) => [...prevFiles, ...newFiles]);
         }
@@ -59,8 +65,14 @@ function Company_admin_email_send() {
         fileInputRef.current.click();
     };
 
+    // 미리보기 모달 핸들러
+    const handlePreview = () => {
+        setShowModal(true);
+    };
 
-
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
 
     return (
         <div className="container-xl conbox1">
@@ -75,6 +87,8 @@ function Company_admin_email_send() {
                                     id="receiverEmail"
                                     className={styles.input}
                                     placeholder="이메일 주소를 입력하세요"
+                                    value={receiverEmail}
+                                    onChange={(e) => setReceiverEmail(e.target.value)}
                                 />
                                 <span className={styles.underline}></span>
                             </div>
@@ -87,6 +101,8 @@ function Company_admin_email_send() {
                                     id="ccEmail"
                                     className={styles.input}
                                     placeholder="참조 이메일 주소를 입력하세요"
+                                    value={ccEmail}
+                                    onChange={(e) => setCcEmail(e.target.value)}
                                 />
                                 <span className={styles.underline}></span>
                             </div>
@@ -99,6 +115,8 @@ function Company_admin_email_send() {
                                     id="title"
                                     className={styles.input}
                                     placeholder="제목을 입력하세요"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
                                 />
                                 <span className={styles.underline}></span>
                             </div>
@@ -106,12 +124,10 @@ function Company_admin_email_send() {
 
                         {/* 파일첨부 영역 */}
                         <div className={styles['form-group']}>
-                            <label htmlFor="file" className={styles['form-label']}>
-                                첨부파일
-                            </label>
+                            <label htmlFor="file" className={styles['form-label']}>첨부파일</label>
                             <div className={styles['input-container']}>
                                 <div className={styles['file-header']}>
-                                    <button type="button" onClick={toggleFileArea} className={styles['icon']}>
+                                    <button type="button" onClick={toggleFileArea} className={styles['toggle-button']}>
                                         <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} />
                                     </button>
                                     <div
@@ -124,8 +140,7 @@ function Company_admin_email_send() {
 
                                 {isOpen && (
                                     <div
-                                        className={`${styles.dropzone} ${styles['file-util']} ${dragOver ? styles.active : ''
-                                            }`}
+                                        className={`${styles.dropzone} ${styles['file-util']} ${dragOver ? styles.active : ''}`}
                                         onDragEnter={handleDragEnter}
                                         onDragLeave={handleDragLeave}
                                         onDragOver={handleDragOver}
@@ -151,7 +166,6 @@ function Company_admin_email_send() {
                                         )}
                                     </div>
                                 )}
-
                                 <input
                                     type="file"
                                     ref={fileInputRef}
@@ -170,14 +184,55 @@ function Company_admin_email_send() {
                                     id="emailContent"
                                     className={styles.textarea}
                                     placeholder="이메일 내용을 입력하세요"
+                                    value={emailContent}
+                                    onChange={(e) => setEmailContent(e.target.value)}
                                 ></textarea>
                                 <span className={styles.underline}></span>
                             </div>
                         </div>
 
+                        {/* 버튼 영역 */}
+                        <div className={styles['form-actions']}>
+                            <button type="button" className={styles['btn-send']}>
+                                보내기
+                            </button>
+                            <button type="button" className={styles['btn-preview']} onClick={handlePreview}>
+                                미리보기
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
+
+            {/* 미리보기 모달 */}
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>이메일 미리보기</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p><strong>보낸 사람:</strong> me@paperless.co.kr</p>
+                    <p><strong>받는 사람:</strong> {receiverEmail}</p>
+                    <p><strong>참조:</strong> {ccEmail}</p>
+                    <p><strong>제목:</strong> {title}</p>
+                    <p><strong>내용:</strong></p>
+                    <div style={{ whiteSpace: 'pre-wrap' }}>{emailContent}</div>
+                    {files.length > 0 && (
+                        <>
+                            <p><strong>첨부파일:</strong></p>
+                            <ul>
+                                {files.map((file, index) => (
+                                    <li key={index}>{file.name}</li>
+                                ))}
+                            </ul>
+                        </>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        닫기
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }
