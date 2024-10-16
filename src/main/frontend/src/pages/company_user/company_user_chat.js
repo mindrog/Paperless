@@ -135,6 +135,8 @@ function Company_user_chat() {
                                 <input type='text' placeholder='성명, 직급, 부서명 검색'></input>
                                 <button><i className="material-icons">search</i></button>
                             </div>
+                            <hr>
+                            </hr>
                             <div className={styles.orgChartUI}>
                                 <OrgChart />
                             </div>
@@ -171,28 +173,28 @@ function Company_user_chat() {
                                 </div>
                             ))}
                             <Modal show={profileModal} onHide={closeProfileModal} dialogClassName={styles.modal_content} size='lg' centered>
-                                <Modal.Header closeButton onClick={(e) => e.stopPropagation()}>
+                                <Modal.Header className={styles.modal_header} closeButton onClick={(e) => e.stopPropagation()}>
                                     <Modal.Title className={styles.modal_title}>{profileInfo.name}님의 프로필</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
                                     <div className={styles.modal_body}>
                                         <div className={styles.modal_body_profile}>
-                                            <img src="https://via.placeholder.com/200" alt="Profile" className={styles.image} />
+                                            <img src="https://via.placeholder.com/180" alt="Profile" className={styles.image} />
                                         </div>
                                         <div className={styles.modal_body_info}>
                                             <table>
                                                 <tbody>
                                                     <tr>
-                                                        <td><h5>소속 부서</h5></td>
-                                                        <td><h4>{profileInfo.dept}</h4></td>
+                                                        <td><h5 className={styles.infoTitle}>소속 부서</h5></td>
+                                                        <td><p className={styles.infoValue}>{profileInfo.dept}</p></td>
                                                     </tr>
                                                     <tr>
-                                                        <td><h5>내선 번호</h5></td>
-                                                        <td><h4>{profileInfo.phone}</h4></td>
+                                                        <td><h5 className={styles.infoTitle}>내선 번호</h5></td>
+                                                        <td><p className={styles.infoValue}>{profileInfo.phone}</p></td>
                                                     </tr>
                                                     <tr>
-                                                        <td><h5>이 &nbsp;메 &nbsp;일</h5></td>
-                                                        <td><h4>{profileInfo.email}</h4></td>
+                                                        <td><h5 className={styles.infoTitle}>이 &nbsp;메 &nbsp;일</h5></td>
+                                                        <td><p className={styles.infoValue}>{profileInfo.email}</p></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -201,7 +203,7 @@ function Company_user_chat() {
                                 </Modal.Body>
                                 <Modal.Footer className={styles.modal_footer}>
                                     <Button variant="primary" onClick={(e) => { e.stopPropagation(); closeProfileModal() }} >
-                                        이메일 보내기
+                                        메일 전송
                                     </Button>
                                     <Button variant="primary" onClick={(e) => { e.stopPropagation(); chatting(profileInfo.name); closeProfileModal() }} >
                                         채팅하기
