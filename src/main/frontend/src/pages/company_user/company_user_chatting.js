@@ -10,6 +10,7 @@ function Chatting() {
     return (
         <div>
             <Helmet>
+                <link rel="icon" type="image/png" href="/img/final_favicon.png" sizes="16x16" />
                 <title>{name}님과의 채팅</title>
             </Helmet>
             <div className="container-xl">
