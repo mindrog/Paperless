@@ -76,9 +76,9 @@ const OrgChart = () => {
         const isUser = `${menu.type}` === 'user'? true : false;
         const icon = isDropdown[menu.key] ? `📂` : `📁`;
         return (
-            <li key={menu.key} style={{listStyle: isUser ? 'outside' : 'none'}}>
+            <li key={menu.key} style={{listStyle: 'none'}}>
                 <button onClick={() => toggleDropdown(menu.key)} style={{ fontWeight: isDropdown[menu.key] ? 'bold' : 'normal'}}>
-                    {isUser ? '' : icon }
+                    {isUser ? `🧑‍💼` : icon }
                     {menu.name}
                     {menu.count && ` (${menu.count}명)`}
                 </button>
