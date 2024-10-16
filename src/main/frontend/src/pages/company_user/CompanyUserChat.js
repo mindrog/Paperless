@@ -3,7 +3,7 @@ import styles from '../../styles/company/company_chat.module.css';
 import OrgChart from '../layout/org_chart';
 import { Button, Modal } from 'react-bootstrap';
 
-function Company_user_chat() {
+function CompanyUserChat() {
     // 채팅 목록 불러오기 (DB 연결 시)
     // const [chatList, setChatList] = useState([]);
 
@@ -218,4 +218,4 @@ function Company_user_chat() {
     );
 }
 
-export default Company_user_chat;
+export default CompanyUserChat;

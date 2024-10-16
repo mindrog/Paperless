@@ -12,17 +12,21 @@
   top: 0;
   left: 0;
   margin-top:100px;
-  width: 200px; /* 메뉴바 너비 */
-  height: 80%; /* 화면 전체 높이 */
-  background-color: #5A77B6            ; /*배경색 설정 */
-  color: white;
+  width: 200px; 
+  /* height: 80%;  */
+  background-color: #5A77B6; 
+  color: #fefefe;
   display: flex;
   flex-direction: column;
   border-radius: 0 20px 20px 0;
   transition: transform 0.3s ease;
   z-index: 1;
-  max-height: 380px; /* 기본 높이 설정 */
+  /* max-height: 360px; 기본 높이 설정 */
   letter-spacing: 0.5px;
+}
+
+.menubar.open {
+  max-height: 650px;
 }
 
 .subDropdownMenu.open {
@@ -38,6 +42,12 @@
   padding: 5px;
   text-align: center;
   cursor: pointer;
+}
+
+/* 선택된 메뉴 항목에 대한 active 클래스 */
+.menuList .active {
+  background-color: #2e3d86;
+  color: #fefefe;
 }
 
 .iconbox {
@@ -73,10 +83,6 @@
 .iconbox i:hover {
   cursor: pointer;
 }
-
-/* 메뉴 선택 시 호버 효과  */
-/* .menubar li:hover {
-} */
 
 /* 페이지 내용이 메뉴바 옆으로 위치하도록 설정 */
 .content {
@@ -126,7 +132,7 @@
   text-align: left;
 }
 
-.menuList li {
+/* .menuList li {
   cursor: pointer;
 }
 
@@ -134,8 +140,23 @@
   background-color: #2e3d86;
 }
 
+.menuList li.active {
+  background-color: #2e3d86;
+} */
+
 .dropdown {
   margin-top: 6px;
+  cursor: pointer;
+}
+
+.dropdown:hover {
+  margin-top: 6px;
+  background-color: #2e3d86;
+}
+
+.dropdown.active {
+  margin-top: 6px;
+  background-color: #2e3d86;
 }
 
 .dropdownToggle {
@@ -148,7 +169,7 @@
   cursor: pointer;
   font-size: 16px; 
   font-weight: bold;
-  /* background-color: #2e3d86; */
+  /* background-color: #5A77B6; */
   color:rgb(255, 255, 255);
   outline: none; /* 포커스 시 outline 제거 */
 }
@@ -196,7 +217,7 @@
   box-shadow: none; 
 }
 
-.sublist {
+.sublist, .sublist_mypage, .sublist_cal {
   width: 150px;
   background: none;
   border: none;   
@@ -209,11 +230,12 @@
   padding-left: 0px;
   text-align: left;
   vertical-align: middle;
+  transition: background-color 0.3s ease;
 }
 
 .submenu {
   width: 100%;
-  /* background: none; */
+  background: none;
   border: none;   
   outline: none;  
   box-shadow: none; 
@@ -224,11 +246,12 @@
   padding-right: 20px;
   padding-top:0;
   font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
 .submenu2 {
   width: 100%;
-  /* background: none; */
+  background: none;
   border: none;   
   outline: none;  
   box-shadow: none; 
@@ -237,15 +260,31 @@
   padding-right: 35px;
   padding-top:0;
   font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
-.submenu:hover , .submenu2:hover{
-  background-color: #B0C4DE;
+.sublist.active, .submenu.active, .submenu2.active, .lastsubmenu p.active {
+  background-color: #b0c4de;
+  color: #333;
+}
+
+.sublist:hover, .submenu:hover, .submenu2:hover, .lastsubmenu p:hover {
+  background-color: #b0c4de;
   color: #333;
 }
 
 .subDropdownMenu {
   margin-top: 10px;
+}
+
+.subDropdownMenu.active {
+  background-color: #2e3d86;
+}
+
+
+.dropdown:hover, .dropdown.active {
+  background-color: #2e3d86;
+  color: #fefefe;
 }
 
 .lastsubmenu {
@@ -262,6 +301,7 @@
   text-align: left;
   font-size: 13px;
   font-weight: bold;
+  text-align: left;
 }
 
 .lastsubmenu p {
@@ -269,15 +309,37 @@
   margin-right: 10px;
   width: 120px;
   padding:3px;
+  transition: background-color 0.3s ease;
   /* background-color: #B0C4DE; */
 }
 
-.lastsubmenu p:hover {
+.lastsubmenu:hover {
+  background-color: #B0C4DE;
+  color:black;
+  width: 80%;
+  text-align: center;
+}
+
+.lastsubmenu.active {
+  background-color: #B0C4DE;
+  color:black;
+  width: 80%;
+  text-align: center;
+}
+
+/* .lastsubmenu p:hover {
   background-color: #B0C4DE;
   color:black;
   width: 100%;
   text-align: center;
 }
+
+.lastsubmenu p:active {
+  background-color: #B0C4DE;
+  color:black;
+  width: 100%;
+  text-align: center;
+} */
 
 @media screen and (max-width: 992px) {
   .menubar {

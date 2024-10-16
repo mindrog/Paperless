@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Modal, Button } from 'react-bootstrap';
 
-function Company_admin_email_send() {
+function CompanyAdminEmailSend () {
     const [dragOver, setDragOver] = useState(false);
     const [files, setFiles] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
@@ -317,4 +317,4 @@ function Company_admin_email_send() {
     );
 }
 
-export default Company_admin_email_send;
+export default CompanyAdminEmailSend;
