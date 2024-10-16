@@ -28,7 +28,7 @@ import Menubar from './pages/layout/menubar';
 import './App.css';
 import './styles/style.css';
 
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation, useMatch } from 'react-router-dom';
 import Chatting from './pages/company_user/company_user_chatting';
 
 function App() {
@@ -103,11 +103,13 @@ function HeaderToggle() {
 
 function MenubarToggle({ isMenuOpen }) {
     const location = useLocation();
-    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/Login', '/Email_Auth', '/inquiry/wirte'];
+    const chattingPath = useMatch('/chatting/:name');
+    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/Login', '/Email_Auth', '/inquiry/wirte', '/chatting'];
+    const isMenubarHiddenPaths = MenubarHiddenPaths.includes(location.pathname) || chattingPath;
 
     return (
         <>
-            {!MenubarHiddenPaths.includes(location.pathname) && (
+            {!isMenubarHiddenPaths && (
                 <div className='Menubar'>
                     <Menubar isMenuOpen={isMenuOpen} />
                 </div>
