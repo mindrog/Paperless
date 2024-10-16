@@ -103,11 +103,11 @@ function HeaderToggle() {
 
 function MenubarToggle({ isMenuOpen }) {
     const location = useLocation();
-    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/Login', '/Email_Auth', '/inquiry/wirte', '/chatting'];
+    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/Login', '/Email_Auth', '/inquiry/wirte'];
 
     return (
         <>
-            {!MenubarHiddenPaths.some(path => location.pathname.startsWith(path)) && (
+            {!MenubarHiddenPaths.includes(location.pathname) && (
                 <div className='Menubar'>
                     <Menubar isMenuOpen={isMenuOpen} />
                 </div>
