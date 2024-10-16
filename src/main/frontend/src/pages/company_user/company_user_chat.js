@@ -59,19 +59,41 @@ function Company_user_chat() {
         setProfileModal(true);
     }
 
+    // 창이 열려있는지 확인하는 변수
+    const [openChats, setOpenChats] = useState([]);
+
     // 새 창이 열릴 때마다 위치 조정해주는 변수
-    let offsetDown = 0;
-    let offsetRight = 0;
+    const [offsetDown, setOffsetDown] = useState(0);
+    const [offsetRight, setOffsetRight] = useState(0);
 
     // 채팅 새 창
-    const chatting = (url) => {
-        window.open(url, "_blank", `noopener, noreferrer, width=800, height=600, top=${100 + offsetDown}, left=${1000 + offsetRight}, scrollbars=yes, resizable=no`)
-        if (offsetRight >= 100) {
-            offsetRight = 0;
-            offsetDown = 20;
-        };
-        offsetDown += 20
-        offsetRight += 20
+    const chatting = (name) => {
+        // 열려있는 창의 이름과 열려는 창의 이름이 같은지 확인하는 변수
+        const openChatName = openChats.find(chat => chat.name === name);
+
+        if (openChatName && openChatName.window && !openChatName.window.closed) {
+            // 열려있는 창 중에 같은 이름의 창이 있다면 해당 창 보여주기
+            openChatName.window.focus();
+        } else {
+            // 일정 위치로 가면 위치 재조정
+            if (offsetRight >= 100) {
+                setOffsetDown(20);
+                setOffsetRight(0);
+            };
+            
+            // 새 창 띄우며 관련 데이터 저장 (name이라는 식별 이름을 가진 새 창을 열어주며, 같은 이름의 창을 생성하려는 경우 이미 존재하는 창을 열어줌)
+            const newChat = window.open(`/chatting/${name}`, name, `width=800, height=600, top=${100 + offsetDown}, left=${1000 + offsetRight}, scrollbars=yes, resizable=no`)
+
+            // 새 창 데이터 추가
+            setOpenChats(preOpenChats => [
+                ...preOpenChats,
+                { name, window: newChat }
+            ]);
+
+            // 다음 창의 위치 조정
+            setOffsetDown(preOffsetDown => preOffsetDown + 20);
+            setOffsetRight(preOffsetRight => preOffsetRight + 20);
+        }
     };
 
     return (
@@ -98,8 +120,8 @@ function Company_user_chat() {
                         </div>
                         <div className={styles.chatList_content}>
                             {chatList.map((chat, index) => (
-                                <div className={styles.eachChat} onClick={() => chatting(`/chatting/${chat.name}`)} >
-                                    <div className={styles.eachChat_profile} onClick={() => clickProfile(`${index}`)}>
+                                <div key={index} className={styles.eachChat} onClick={() => chatting(chat.name)} >
+                                    <div className={styles.eachChat_profile} onClick={() => clickProfile(chat.name)}>
                                         <img src={chat.profile} alt="Profile" className={styles.image} />
                                     </div>
                                     <div className={styles.eachChat_info}>
