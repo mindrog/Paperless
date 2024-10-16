@@ -29,7 +29,7 @@ import CompanyUserDraftDetail from './pages/company_user/CompanyUserDraftDetail'
 import CompanyUserDraftDocAll from './pages/company_user/CompanyUserDraftDocAll';
 import CompanyUserDraftDocDraft from './pages/company_user/CompanyUserDraftDocDraft';
 import CompanyUserDraftDocAppr from './pages/company_user/CompanyUserDraftDocAppr';
-import CompanyUserCalendar from './pages/company_user/CompanyUserCalendar';
+import CompanyUserCalender from './pages/company_user/CompanyUserCalender';
 import CompanyUserChat from './pages/company_user/CompanyUserChat';
 import Menubar from './pages/layout/menubar';
 import './App.css';
@@ -100,7 +100,7 @@ function App() {
                         <Route path='/company/user/draft/write/purchase' element={<CompanyUserDraftWritePurc />} />
 
                         {/* 캘린더 */}
-                        <Route path='/company/user/calender' element={<CompanyUserCalendar />} />
+                        <Route path='/company/user/calender' element={<CompanyUserCalender />} />
 
                         {/* 채팅 */}
                         <Route path='/company/user/chat' element={<CompanyUserChat />} />
