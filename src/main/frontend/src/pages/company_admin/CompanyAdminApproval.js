@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Company_admin_approval() {
+function CompanyAdminApproval () {
     return (
         <div>
             <p>기업 관리자 결재할 문서 목록 페이지 입니다.</p>
@@ -8,4 +8,4 @@ function Company_admin_approval() {
     );
 }
 
-export default Company_admin_approval ;
+export default CompanyAdminApproval;

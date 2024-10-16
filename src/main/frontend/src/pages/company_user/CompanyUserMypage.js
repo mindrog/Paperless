@@ -4,7 +4,7 @@ import styles from '../../styles/company/company_mypage.module.css';
 import { Button, Form, Table, Modal } from 'react-bootstrap';
 import '../../styles/style.css';
 
-function Company_user_mypage() {
+function CompanyUserMypage() {
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -276,4 +276,4 @@ function Company_user_mypage() {
     );
 }
 
-export default Company_user_mypage;
+export default CompanyUserMypage;
