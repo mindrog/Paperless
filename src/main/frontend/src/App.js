@@ -20,9 +20,15 @@ import Company_user_main from './pages/company_user/company_user_main';
 import Company_user_mypage from './pages/company_user/company_user_mypage';
 import Company_user_email from './pages/company_user/company_user_email';
 import Company_user_email_send from './pages/company_user/company_user_email_send';
-import Company_user_draft_write from './pages/company_user/company_user_draft_write';
+import Company_user_email_detail from './pages/company_user/company_user_email_detail';
+import Company_user_draft_write_work from './pages/company_user/company_user_draft_write_work';
+import Company_user_draft_write_atte from './pages/company_user/company_user_draft_write_atten';
+import Company_user_draft_write_purc from './pages/company_user/company_user_draft_write_purc';
+import Company_user_draft_form from './pages/company_user/company_user_draft_form';
 import Company_user_draft_detail from './pages/company_user/company_user_draft_detail';
-import Company_user_dratf_list from './pages/company_user/company_user_draft_list';
+import Company_user_dratf_doc_all from './pages/company_user/company_user_draft_doc_all';
+import Company_user_dratf_doc_draft from './pages/company_user/company_user_draft_doc_draft';
+import Company_user_dratf_doc_appr from './pages/company_user/company_user_draft_doc_appr';
 import Company_user_chat from './pages/company_user/company_user_chat';
 import Menubar from './pages/layout/menubar';
 import './App.css';
@@ -57,25 +63,31 @@ function App() {
                         <Route path='/' element={<Home />} />
                         <Route path='/inquiry' element={<Inquiry />} />
                         <Route path='/inquiry/success' element={<Inquiry_Success />} />
-                        <Route path='/Login' element={<Login />} />
-                        <Route path='/Email_Auth' element={<Email_Auth />} />
+                        <Route path='/login' element={<Login />} />
+                        <Route path='/email_Auth' element={<Email_Auth />} />
                         <Route path='/inquiry/wirte' element={<Inquiry_write />} />
-                        <Route path='/System/admin/inquiry' element={<System_admin_inquiry />} />
-                        <Route path='/System/admin/member' element={<System_admin_member />} />
-                        <Route path='/Company/admin/' element={<Company_admin_main />} />
-                        <Route path='/Company/admin/member' element={<Company_admin_memeber />} />
-                        <Route path='/Company/admin/email' element={<Company_admin_email />} />
-                        <Route path='/Company/admin/email/send' element={<Company_admin_email_send />} />
-                        <Route path='/Company/admin/approval' element={<Company_admin_approval />} />
-                        <Route path='/Company/admin/approval/detail' element={<Company_admin_approval_detail />} />
-                        <Route path='/Company/user/' element={<Company_user_main />} />
-                        <Route path='/Company/user/mypage' element={<Company_user_mypage />} />
-                        <Route path='/Company/user/email' element={<Company_user_email />} />
-                        <Route path='/Company/user/email/send' element={<Company_user_email_send />} />
-                        <Route path='/Company/user/draft/list' element={<Company_user_dratf_list />} />
-                        <Route path='/Company/user/draft/detail' element={<Company_user_draft_detail />} />
-                        <Route path='/Company/user/draft/write' element={<Company_user_draft_write />} />
-                        <Route path='/Company/user/chat' element={<Company_user_chat />} />
+                        <Route path='/system/admin/inquiry' element={<System_admin_inquiry />} />
+                        <Route path='/system/admin/member' element={<System_admin_member />} />
+                        <Route path='/company/admin/' element={<Company_admin_main />} />
+                        <Route path='/company/admin/member' element={<Company_admin_memeber />} />
+                        <Route path='/company/admin/email' element={<Company_admin_email />} />
+                        <Route path='/company/admin/email/send' element={<Company_admin_email_send />} />
+                        <Route path='/company/admin/approval' element={<Company_admin_approval />} />
+                        <Route path='/company/admin/approval/detail' element={<Company_admin_approval_detail />} />
+                        <Route path='/company/user/' element={<Company_user_main />} />
+                        <Route path='/company/user/mypage' element={<Company_user_mypage />} />
+                        <Route path='/company/user/email' element={<Company_user_email />} />
+                        <Route path='/company/user/email/send' element={<Company_user_email_send />} />
+                        <Route path='/company/user/email/detail' element={<Company_user_email_detail />} />
+                        <Route path='/company/user/draft/doc/all' element={<Company_user_dratf_doc_all />} />
+                        <Route path='/company/user/draft/doc/draft' element={<Company_user_dratf_doc_draft />} />
+                        <Route path='/company/user/draft/doc/approval' element={<Company_user_dratf_doc_appr />} />
+                        <Route path='/company/user/draft/detail' element={<Company_user_draft_detail />} />
+                        <Route path='/company/user/draft/form' element={<Company_user_draft_form />} />
+                        <Route path='/company/user/draft/write/work' element={<Company_user_draft_write_work />} />
+                        <Route path='/company/user/draft/write/attendance' element={<Company_user_draft_write_atte />} />
+                        <Route path='/company/user/draft/write/purchase' element={<Company_user_draft_write_purc />} />
+                        <Route path='/company/user/chat' element={<Company_user_chat />} />
                         <Route path='/chatting/:name' element={<Chatting />} />
                     </Routes>
                 </main>
@@ -104,7 +116,7 @@ function HeaderToggle() {
 function MenubarToggle({ isMenuOpen }) {
     const location = useLocation();
     const chattingPath = useMatch('/chatting/:name');
-    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/Login', '/Email_Auth', '/inquiry/wirte', '/chatting'];
+    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte', '/chatting'];
     const isMenubarHiddenPaths = MenubarHiddenPaths.includes(location.pathname) || chattingPath;
 
     return (
@@ -120,7 +132,7 @@ function MenubarToggle({ isMenuOpen }) {
 
 function FooterToggle() {
     const location = useLocation();
-    const FooterPaths = ['/', '/inquiry', '/inquiry/success', '/Login', '/Email_Auth', '/inquiry/wirte'];
+    const FooterPaths = ['/', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte'];
 
     return (
         <>
