@@ -8,7 +8,7 @@ function CompanyUserChat() {
     // const [chatList, setChatList] = useState([]);
 
     // 직원 (더미 데이터)
-    const userList = [
+    const empList = [
         { name: '장원영', dept: '콘텐츠 기획팀', phone: '010-1234-1234', email: 'jang0101@naver.com' },
         { name: '박보영', dept: '콘텐츠 기획팀', phone: '010-2345-2345', email: 'boyoung0202@naver.com' },
         { name: '박보검', dept: '콘텐츠 기획팀', phone: '010-3456-3456', email: 'gumgum0303@gmail.com' },
@@ -16,6 +16,7 @@ function CompanyUserChat() {
         { name: '이도현', dept: '콘텐츠 기획팀', phone: '010-5678-5678', email: 'dodo0505@gmail.com' },
         { name: '김태리', dept: '콘텐츠 기획팀', phone: '010-6789-6789', email: 'kimlee0606@gmail.com' },
         { name: '강동원', dept: '콘텐츠 기획팀', phone: '010-7890-7890', email: 'dongwon0707@naver.com' },
+        { name: '광고인', dept: '홍보마케팅팀', phone: '010-1010-1010', email: 'advertisement@naver.com' },
     ];
 
     // 채팅 목록 (더미 데이터)
@@ -48,12 +49,13 @@ function CompanyUserChat() {
         },
         { profile: 'https://via.placeholder.com/75', name: '강동원', content: `대리님, 커피 어떤 거 드실래요?`, lastTime: '2024-10-09 09:00', unread: 0 },
         {
-            profile: 'https://via.placeholder.com/75', name: '+82 2-1234-1234', content: `[Web발신]
+            profile: 'https://via.placeholder.com/75', name: '광고인', content: `[Web발신]
             (광고) 공식몰
             단 하루 100원 판매!`, lastTime: '2024-10-08 12:00', unread: 10
         },
     ];
 
+    // [프로필 모달창]
     // 프로필 모달창 상태 변수
     const [profileModal, setProfileModal] = useState(false);
 
@@ -72,19 +74,14 @@ function CompanyUserChat() {
 
     // 채팅 목록의 프로필 클릭할 때 메서드
     const clickProfile = (name) => {
-        // 클릭한 프로필의 name과 userList에서 비교하여 데이터를 저장하는 변수
-        const user = userList.find(user => user.name === name);
+        // 클릭한 프로필의 name과 empList 비교하여 데이터를 저장하는 변수
+        const emp = empList.find(emp => emp.name === name);
 
-        if (user) {
-            // user가 있다면 profileInfo에 user의 데이터를 저장
-            setProfileInfo(user);
-        } else {
-            // user가 없다면 profileInfo의 name 속성에 가져온 name을 저장
-            setProfileInfo({ name: name });
-        }
+        setProfileInfo(emp);
         setProfileModal(true);
     }
 
+    // [chatting]
     // 창이 열려있는지 확인하는 변수
     const [openChats, setOpenChats] = useState([]);
 
@@ -94,13 +91,20 @@ function CompanyUserChat() {
 
     // 채팅 새 창
     const chatting = (name) => {
+        // 클릭한 프로필의 name과 empList 비교하여 데이터를 저장하는 변수
+        const emp = empList.find(emp => emp.name === name);
+
         // 열려있는 창의 이름과 열려는 창의 이름이 같은지 확인하는 변수
-        const openChatName = openChats.find(chat => chat.name === name);
+        const openChatName = openChats.find(chat => chat.name === emp.name);
 
         if (openChatName && openChatName.window && !openChatName.window.closed) {
             // 열려있는 창 중에 같은 이름의 창이 있다면 해당 창 보여주기
             openChatName.window.focus();
         } else {
+            // 로컬 스토리지에 key: chatting-emp-${emp.name}, value: JSON.stringify(emp) 로 저장
+            // JSON.stringify: 문자열로 저장
+            localStorage.setItem(`chatting-emp-${emp.name}`, JSON.stringify(emp));
+
             // 일정 위치로 가면 위치 재조정
             if (offsetRight >= 100) {
                 setOffsetDown(20);
