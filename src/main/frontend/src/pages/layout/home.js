@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Card from 'react-bootstrap/Card';
 import main1 from '../../img/main_content1.png';
 import logo1 from '../../img/logo1.png';
 import logo2 from '../../img/logo2.png';
@@ -50,21 +51,21 @@ function Home() {
 
         }
 
-        if (scrollPosition > 1000) { // 원하는 스크롤 위치 (예: 200px)
+        if (scrollPosition > 1350) { // 원하는 스크롤 위치 (예: 200px)
             setIsVisible2(true);
 
         } else {
             setIsVisible2(false);
 
         }
-        if (scrollPosition > 1300) { // 원하는 스크롤 위치 (예: 200px)
+        if (scrollPosition > 1600) { // 원하는 스크롤 위치 (예: 200px)
             setIsVisible3(true);
 
         } else {
             setIsVisible3(false);
 
         }
-        if (scrollPosition > 1600) { // 원하는 스크롤 위치 (예: 200px)
+        if (scrollPosition > 1850) { // 원하는 스크롤 위치 (예: 200px)
             setIsVisible4(true);
 
         } else {
@@ -105,6 +106,10 @@ function Home() {
                         <button type='button' className='top_btn' onClick={scrollToTop}>top</button>
                     </div>
                 </div>
+            </div>
+            <div className='main_cont_2_title'>
+                <p className='main_cont_3_title_type1_text'>협력사 소개</p>
+                <p className='main_cont_3_title_type2_text2'>이 외에도 많은 협력사들이 Paperless와 함께하고 있습니다.</p>
             </div>
             <div className='main_cont_2'>
                 <div className={`main_cont_2_type1 ${isVisible1 ? 'show' : ''}`}>
@@ -148,22 +153,38 @@ function Home() {
             </div>
             <div className='main_cont_3_title'>
                 <p className='main_cont_3_title_type1_text'>협력사 소개</p>
-                <p className='main_cont_3_title_type2_text'>이 외에도 많은 협력사들이 Paperless와 함께하고 있습니다.</p>
+                <p className='main_cont_3_title_type2_text2'>이 외에도 많은 협력사들이 Paperless와 함께하고 있습니다.</p>
             </div>
             <div className='main_cont_3'>
                 <div className="logo-slider">
                     <div className="logo-slider-track">
-                        {/* 로고를 두 번 출력 */}
+
                         {logos.concat(logos).map((logo, index) => (
                             <div className="logo" key={index}>
                                 <img src={logo} alt={`Logo ${index + 1}`} />
                             </div>
                         ))}
-                    </div>
+                    </div> 
                 </div>
             </div>
-            <div className='main_cont_4'>
 
+            <div className='main_cont_4'>
+                <div className='main_cont_3_title'>
+                    <p className='main_cont_3_title_type1_text'>협력사 소개</p>
+                    <p className='main_cont_3_title_type2_text2'>이 외에도 많은 협력사들이 Paperless와 함께하고 있습니다.</p>
+                </div>
+                <div>
+                    <Card style={{ width: '18rem' }}>
+                        <Card.Img variant="top" src="holder.js/100px180" />
+                        <Card.Body>
+                            <Card.Title>Card Title</Card.Title>
+                            <Card.Text>
+                            Paperless를 사용한 지 몇 달이 되었는데, 정말 효과적이었습니다. 팀원 간의 소통이 훨씬 원활해졌고, 일정 관리와 문서 공유가 간편해져 업무 효율성이 크게 향상되었습니다. 다양한 기능이 잘 통합되어 있어 사용하기도 쉽고, 프로젝트 진행 상황을 쉽게 파악할 수 있어 매우 만족합니다. 앞으로도 계속 사용할 예정입니다!
+                            </Card.Text>
+                            <button>Go somewhere</button>
+                        </Card.Body>
+                    </Card>
+                </div>
             </div>
             <button type='button' className='top_btn' onClick={scrollToTop}></button>
         </div>

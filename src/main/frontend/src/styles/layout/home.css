@@ -181,76 +181,28 @@
     color: #fefefe;
 }
 
-.main_cont_2_type1 {
+.main_cont_2_type1, 
+.main_cont_2_type2,
+.main_cont_2_type3,
+.main_cont_2_type4{
     margin-top: 5vh;
     width: 100vw;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: row;
-    position: absolute;
-    left: -100%;
-    /* 화면 밖에서 시작 */
-    transition: left 2s ease;
-    /* 부드러운 전환 */
-}
-
-.main_cont_2_type1.show {
-    left: 0;
-}
-
-.main_cont_2_type2 {
-    margin-top: 50vh;
-    width: 100vw;
-    display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    position: absolute;
-    right: -100%;
-    /* 화면 밖에서 시작 */
-    transition: right 2s ease;
-    /* 부드러운 전환 */
+    position: relative; /* 상대 위치 */
+    transform: translateY(10%); /* 아래에서 시작 */
+    opacity: 0; /* 초기 상태에서 투명 */
+    transition: transform 2s ease, opacity 2s ease; /* 부드러운 전환 */
 }
 
-.main_cont_2_type2.show {
-    right: 0;
-}
-
-.main_cont_2_type3 {
-    margin-top: 95vh;
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: row;
-    position: absolute;
-    left: -100%;
-    /* 화면 밖에서 시작 */
-    transition: left 2s ease;
-    /* 부드러운 전환 */
-}
-
-.main_cont_2_type3.show {
-    left: 0;
-}
-
-.main_cont_2_type4 {
-    margin-top: 140vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    right: -100%;
-    /* 화면 밖에서 시작 */
-    transition: right 2s ease;
-    /* 부드러운 전환 */
-}
-
+.main_cont_2_type1.show,
+.main_cont_2_type2.show,
+.main_cont_2_type3.show,
 .main_cont_2_type4.show {
-    right: 0;
+    transform: translateY(0); /* 원래 위치로 이동 */
+    opacity: 1; /* 불투명 */
 }
 
 .type4_img_script,
@@ -294,8 +246,11 @@
     /* 인라인 블록으로 설정 */
     animation: scroll 20s linear infinite;
     /* 애니메이션 설정 */
+    animation-play-state: running;
 }
-
+.logo-slider:hover .logo-slider-track {
+    animation-play-state: paused; /* hover 시 애니메이션 정지 */
+}
 .logo {
     display: inline-block;
     /* 인라인 블록으로 설정 */
@@ -311,10 +266,20 @@
     border-radius: 20px;
 }
 .main_cont_3_title{
+    margin-top: 20vh;
+    margin-bottom: 10vh;
+}
+.main_cont_2_title,.main_cont_4_title{
     margin-top: 10vh;
+    margin-bottom: 10vh;
 }
 .main_cont_3_title_type1_text{
-    
+    font-size: 3rem;
+    font-family: 'ONE-Mobile-Title';
+}
+.main_cont_3_title_type2_text2{
+    font-family: 'ONE-Mobile-Regular';
+    font-size: 1.2rem;
 }
 @keyframes scroll {
     0% {
