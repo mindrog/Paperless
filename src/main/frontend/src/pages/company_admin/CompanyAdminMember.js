@@ -3,7 +3,7 @@ import { Table, Button, Form,  InputGroup, Row, Col} from 'react-bootstrap';
 import styles from '../../styles/company/admin/company_member.module.css';
 import Menubar from '../layout/menubar';
 
-function Company_admin_member() {
+function CompanyAdminMember () {
     return (
         <div className="container-xl">
             <Menubar />
@@ -64,4 +64,4 @@ function Company_admin_member() {
     );
 }
 
-export default Company_admin_member;
+export default CompanyAdminMember;

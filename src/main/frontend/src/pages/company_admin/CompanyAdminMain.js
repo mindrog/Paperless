@@ -3,7 +3,8 @@ import styles from '../../styles/company/company_main.module.css';
 import '../../styles/style.css';
 import Menubar from '../layout/menubar';
 
-function Company_user_main () {
+
+function CompanyAdminMain () {
     return (
         <div className="container-xl conbox1">
             <Menubar />
@@ -95,4 +96,4 @@ function Company_user_main () {
     );
 }
 
-export default Company_user_main ;
+export default CompanyAdminMain;

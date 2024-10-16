@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Inquiry_Success () {
+function InquirySuccess () {
     return (
         <div>
             <p>문의 성공 페이지 입니다.</p>
@@ -8,4 +8,4 @@ function Inquiry_Success () {
     );
 }
 
-export default Inquiry_Success ;
+export default InquirySuccess ;

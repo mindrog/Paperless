@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Inquiry_write () {
+function InquiryWrite () {
     return (
         <div>
             <p>문의 페이지 입니다.</p>
@@ -8,4 +8,4 @@ function Inquiry_write () {
     );
 }
 
-export default Inquiry_write ;
+export default InquiryWrite ;
