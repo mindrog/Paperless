@@ -352,7 +352,7 @@
   text-align: center;
 } */
 
-@media screen and (max-width: 992px) {
+@media screen and (max-width: 1250px) {
   .menubar {
     display: none; /* 메뉴바 숨기기 */
   }
