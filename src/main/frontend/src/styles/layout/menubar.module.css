@@ -159,6 +159,10 @@
   background-color: #2e3d86;
 }
 
+.toggleDocDropdown {
+  background-color: none;
+}
+
 .dropdownToggle {
   display: block;
   width: 180px; /* 버튼이 부모 요소의 전체 너비를 차지하도록 */
@@ -169,8 +173,8 @@
   cursor: pointer;
   font-size: 16px; 
   font-weight: bold;
-  /* background-color: #5A77B6; */
   color:rgb(255, 255, 255);
+  background-color: none;
   outline: none; /* 포커스 시 outline 제거 */
 }
 
