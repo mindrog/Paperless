@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Card from 'react-bootstrap/Card';
+import { Carousel, Card, Button } from 'react-bootstrap';
 import main1 from '../../img/main_content1.png';
 import logo1 from '../../img/logo1.png';
 import logo2 from '../../img/logo2.png';
@@ -32,6 +32,105 @@ const scrollToNext = () => {
     window.scrollTo({ top: 868, behavior: 'smooth' });
 }
 const logos = [logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8, logo9, logo10, logo11, logo12];
+const cardData = [
+    {
+        title: 'Card Title 1',
+        text: 'This is the first card.',
+        buttonText: 'Go somewhere 1',
+        imgSrc: logo1, // 첫 번째 카드 이미지
+        bgc: 'lightsteelblue'
+    },
+    {
+        title: 'Card Title 2',
+        text: 'This is the second card.',
+        buttonText: 'Go somewhere 2',
+        imgSrc: logo2, // 첫 번째 카드 이미지
+        bgc: 'darksalmon'
+    },
+    {
+        title: 'Card Title 3',
+        text: 'This is the third card.',
+        buttonText: 'Go somewhere 3',
+        imgSrc: logo3,
+        bgc: 'lightpink'
+    },
+    {
+        title: 'Card Title 4',
+        text: 'This is the second card.',
+        buttonText: 'Go somewhere 2',
+        imgSrc: '../../img/logo1.png',
+        bgc: 'lightskyblue'  // 두 번째 카드 이미지
+    },
+    {
+        title: 'Card Title 5',
+        text: 'This is the third card.',
+        buttonText: 'Go somewhere 3',
+        imgSrc: '../../img/logo1.png',
+        bgc: 'lightgray' // 세 번째 카드 이미지
+    }
+    ,
+    {
+        title: 'Card Title 6',
+        text: 'This is the second card.',
+        buttonText: 'Go somewhere 2',
+        imgSrc: '../../img/logo1.png',
+        bgc: 'lightblue'  // 두 번째 카드 이미지
+    },
+    {
+        title: 'Card Title 7',
+        text: 'This is the third card.',
+        buttonText: 'Go somewhere 3',
+        imgSrc: '../../img/logo1.png',
+        bgc: 'lightgoldenrodyellow'  // 세 번째 카드 이미지
+    }
+];
+const faqs = [
+    {
+        question: '질문 1: 이 플랫폼은 어떤 기능을 제공하나요?',
+        answer: '답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다.답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다답변 1: 이 플랫폼은 문서 작성, 수정, 결재 등 다양한 기능을 제공합니다'
+    },
+    {
+        question: '질문 2: 가격은 어떻게 되나요?',
+        answer: '답변 2: 가격은 사용량에 따라 다르며, 자세한 사항은 문의해 주세요.'
+    },
+    {
+        question: '질문 3: 고객 지원은 어떻게 받나요?',
+        answer: '답변 3: 고객 지원은 이메일 및 전화로 가능합니다.'
+    }
+];
+const CardComponent = ({ title, text, buttonText, imgSrc, bgc }) => {
+    return (
+        <Card style={{ width: '23rem' }}>
+            <div className='CardImgArea' style={{ backgroundColor: bgc }}>
+                <Card.Img variant="top" src={imgSrc} />
+            </div>
+            <Card.Body>
+                <Card.Title>{title}</Card.Title>
+                <Card.Text>{text}</Card.Text>
+                <Button variant="primary">{buttonText}</Button>
+            </Card.Body>
+        </Card>
+    );
+};
+const FAQComponent = ({ question, answer }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleAnswer = () => {
+        setIsOpen(!isOpen);
+    };
+
+    return (
+        <div className='main_cont_4_type1'>
+        <div className='main_cont_4_type1_q' onClick={toggleAnswer}>
+          <p>{question}</p>
+        </div>
+        <div className={`main_cont_4_type1_a ${isOpen ? 'show' : ''}`}>
+          <p>{answer}</p>
+        </div>
+      </div>
+    );
+};
+
 function Home() {
     const [isVisible1, setIsVisible1] = useState(false);
     const [isVisible2, setIsVisible2] = useState(false);
@@ -164,7 +263,7 @@ function Home() {
                                 <img src={logo} alt={`Logo ${index + 1}`} />
                             </div>
                         ))}
-                    </div> 
+                    </div>
                 </div>
             </div>
 
@@ -173,17 +272,34 @@ function Home() {
                     <p className='main_cont_3_title_type1_text'>협력사 소개</p>
                     <p className='main_cont_3_title_type2_text2'>이 외에도 많은 협력사들이 Paperless와 함께하고 있습니다.</p>
                 </div>
-                <div>
-                    <Card style={{ width: '18rem' }}>
-                        <Card.Img variant="top" src="holder.js/100px180" />
-                        <Card.Body>
-                            <Card.Title>Card Title</Card.Title>
-                            <Card.Text>
-                            Paperless를 사용한 지 몇 달이 되었는데, 정말 효과적이었습니다. 팀원 간의 소통이 훨씬 원활해졌고, 일정 관리와 문서 공유가 간편해져 업무 효율성이 크게 향상되었습니다. 다양한 기능이 잘 통합되어 있어 사용하기도 쉽고, 프로젝트 진행 상황을 쉽게 파악할 수 있어 매우 만족합니다. 앞으로도 계속 사용할 예정입니다!
-                            </Card.Text>
-                            <button>Go somewhere</button>
-                        </Card.Body>
-                    </Card>
+                <div className="card-slider">
+                    <div className="d-flex  card-slider-track">
+                        {cardData.concat(cardData).map((data, index) => (
+                            <div key={index} className="m-2">
+                                <CardComponent
+                                    title={data.title}
+                                    text={data.text}
+                                    buttonText={data.buttonText}
+                                    imgSrc={data.imgSrc} // 이미지 소스 전달
+                                    bgc={data.bgc}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+            <div className='main_cont_4'>
+                <div className='main_cont_3_title'>
+                    <p className='main_cont_3_title_type1_text'>자주 묻는 질문</p>
+                </div>
+                <div className='faq'>
+                    {faqs.map((faq, index) => (
+                        <FAQComponent
+                            key={index}
+                            question={faq.question}
+                            answer={faq.answer}
+                        />
+                    ))}
                 </div>
             </div>
             <button type='button' className='top_btn' onClick={scrollToTop}></button>
