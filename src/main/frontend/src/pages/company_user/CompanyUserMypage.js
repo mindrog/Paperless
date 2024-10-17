@@ -109,32 +109,28 @@ function CompanyUserMypage() {
                         </div>
                     </div>
                 </div>
-                <div className="container text-center">
-                    <div className={styles.userInfo}>
-                        <div className={styles.row}>
-                            <div className={styles.col}>
-                                <div className={styles.userIdBox}>
-                                    <div className={styles.userIdtitle}>◼  사&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  번</div>
-                                    <div className='userId'>&nbsp;20201234</div>
+                <Table className={styles.tablebox_profil}>
+                    <tbody>
+                        <tr>
+                            <td className={styles.profilTd_id}>◼  사&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  번</td>
+                            <td className={styles.profilTd_value}>20201234</td>
+                            <td className={styles.profilTd_id}>◼ 전화번호</td>
+                            <td className={styles.profilTd_value}>010-1234-5678<Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUsernumUpdate}>수정</Button></td> 
+                        </tr>
+                        <tr>
+                            <td className={styles.profilTd_id}>◼ 비밀번호</td>
+                            <td className={styles.profilTd_value_pw}>
+                                <div>
+                                    <Form.Control type="password" className={styles.profilTd_input} value={'password'} readOnly/>
                                 </div>
-                            </div>
+                                <Button variant="primary" className={styles.userPwChangebtnInput} onClick={handleUserPwChangebtn}>변경</Button>
+                            </td>
+                            <td colSpan={2}>
 
-                            <div className={styles.changePossible}>
-                                <div className={styles.userNumBox}>
-                                    <div className={styles.userNumtitle}>◼ 전화번호</div>
-                                    <div className='userNum'>010-1234-9876</div>
-                                    <Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUsernumUpdate}>수정</Button>
-                                </div>
-
-                                <div className={styles.userPwBox}>
-                                    <div className={styles.userPwtitle}>◼ 비밀번호</div>
-                                    <div className={styles.userPw}></div>
-                                    <Button variant="primary" className={styles.userPwChangebtnInput} onClick={handleUserPwChangebtn}>변경</Button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </Table>
             </div>
             <div className={styles.userAnnualInfobox}>
                 <h3 className={styles.userAnnualInfo_title}>연차 정보</h3>
