@@ -1,4 +1,156 @@
+/* 채팅창 */
 .chatting_container {
     font-family: 'ONE-Mobile-Title';
     font-weight: bold;
+    position: relative;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+}
+
+/* header */
+.chatting_container header {
+    display: flex;
+    width: 100%;
+    height: 10%;
+    position: fixed;
+    top: 0;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    justify-content: center;
+}
+
+/* 이모지 토글 */
+.input_emojiPickerDiv {
+    z-index: 2;
+    margin-left: 2.5%;
+    position: absolute;
+    bottom: 65px !important;
+    display: flex;
+    justify-content: center;
+}
+
+.input_emojiPicker_css {
+    height: 300px !important;
+    width: 300px !important;
+}
+
+/* .epr_c90x4z {
+    height: auto !important;
+}
+
+.epr_-6npj90 {
+    --epr-preview-height: auto !important;
+} */
+
+/* footer */
+.chatting_container footer {
+    display: flex;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1%;
+    margin-bottom: 1%;
+}
+
+/* 입력 태그 및 버튼 전체 div */
+.input_message {
+    width: 95%;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+/* 입력창 설정 */
+.chatting_container footer input {
+    width: 100%;
+    height: 50px;
+    border: 2px solid lightgray;
+    border-radius: 5px;
+    padding: 5px 45px;
+}
+
+/* 이모지 버튼 div */
+.input_message_emoji {
+    height: 50px;
+    width: 40px;
+    position: absolute;
+    left: 3%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 파일 첨부, 전송 버튼 div */
+.input_message_button {
+    height: 50px;
+    width: 100px;
+    position: absolute;
+    right: 2%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 이모지 버튼 */
+.input_message_emojiButton {
+    padding: 0;
+    margin: 5px 0 5px 0;
+    height: 40px;
+    aspect-ratio: 1/1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #2e3d86;
+    background-color: transparent;
+    border: none;
+}
+
+/* 파일 첨부 버튼 */
+.input_message_attachButton {
+    padding: 0;
+    margin: 5px 0 5px 0;
+    height: 40px;
+    aspect-ratio: 1/1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #2e3d86;
+    background-color: transparent;
+    border: none;
+}
+
+/* 전송 버튼 */
+.input_message_sendButton {
+    padding: 0;
+    margin: 5px 0 5px 0;
+    height: 40px;
+    aspect-ratio: 1/1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #2e3d86;
+    background-color: transparent;
+    border: none;
+}
+
+.input_message_emojiButton:hover {
+    color: #5A77B6;
+    background-color: transparent;
+}
+
+.input_message_emojiButton:active {
+    background-color: lightgray !important;
+}
+
+.input_message_button button:hover {
+    color: #5A77B6;
+    background-color: transparent;
+}
+
+.input_message_button button:active {
+    background-color: lightgray !important;
 }
