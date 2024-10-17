@@ -38,6 +38,16 @@ const Menubar = ({ isMenuOpen }) => {
             ? '배수지'
             : '사용자';
 
+    // 경로에 따른 직급 설정
+    const getUserGrade = () => {
+        if (location.pathname.toLowerCase().startsWith('/company/admin')) {
+            return '부장'; // 회사 관리자
+        } else if (location.pathname.toLowerCase().startsWith('/company/user')) {
+            return '대리'; // 회사 사용자
+        }
+        return '사용자'; // 기본 값
+    };
+
     const showEmployeeNotificationModal = () => {
         setNotificationModal(true);
     };
@@ -67,7 +77,7 @@ const Menubar = ({ isMenuOpen }) => {
                             <p>기획전략팀</p>
                             <div className={styles.titlename}>
                                 <div className={styles.userName}>{profileName}</div>
-                                <div className={styles.userGrade}>대리</div>
+                                <div className={styles.userGrade}>{getUserGrade()}</div>
                             </div>
                         </div>
                         <div className={styles.iconbox}>
