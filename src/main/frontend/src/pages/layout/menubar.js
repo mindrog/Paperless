@@ -185,11 +185,9 @@ const Menubar = ({ isMenuOpen }) => {
 
                     {/* '/company/admin' 또는 '/company/admin'으로 시작하는 경로에서만 직원 관리 보이기 */}
                     {location.pathname.toLowerCase().startsWith('/company/admin') && (
-                        <li className={styles.dropdown}>
-                            <button 
-                                onClick={() => handleItemClick('/company/admin/member')} 
-                                className={`${styles.sublist} ${activeItem === '/company/admin/member' ? styles.active : ''}`}
-                            >
+                        <li className={`${styles.dropdown} ${activeItem === '/company/admin/member' ? styles.active : ''}`}
+                            onClick={() => handleItemClick('/company/admin/member')} >
+                            <button className={styles.sublist_member}>
                                 ⚙️ 직원 관리
                             </button>
                         </li>
