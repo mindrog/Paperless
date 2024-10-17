@@ -33,6 +33,7 @@ import CompanyUserStock from './pages/company_user/CompanyUserStock';
 import CompanyUserCalender from './pages/company_user/CompanyUserCalender';
 import CompanyUserChat from './pages/company_user/CompanyUserChat';
 import Menubar from './pages/layout/menubar';
+import GraphChart from './pages/layout/GraphChart';
 import './App.css';
 import './styles/style.css';
 
@@ -60,6 +61,7 @@ function App() {
             <div className='App'>
                 <HeaderToggle />
                 <MenubarToggle isMenuOpen={isMenuOpen} />
+                <GraphChartToggle />
                 <main className='app'>
                     <Routes>
                         <Route path='/' element={<Home />} />
@@ -160,6 +162,22 @@ function FooterToggle() {
             {FooterPaths.includes(location.pathname) && (
                 <div className='Footer'>
                     <Footer />
+                </div>
+            )}
+        </>
+    );
+}
+
+// 그래프차트 main에서만 보이기
+function GraphChartToggle() {
+    const location = useLocation();
+    const allowedPaths = ['/company/user/', '/company/admin/'];  // GraphChart를 보여줄 경로
+
+    return (
+        <>
+            {allowedPaths.includes(location.pathname) && (
+                <div className='GraphChartContainer'>
+                    <GraphChart />
                 </div>
             )}
         </>
