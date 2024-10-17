@@ -45,7 +45,7 @@
 }
 
 /* 선택된 메뉴 항목에 대한 active 클래스 */
-.menuList .active {
+.menuList.active {
   background-color: #2e3d86;
   color: #fefefe;
 }
@@ -132,7 +132,7 @@
   text-align: left;
 }
 
-/* .menuList li {
+.menuList li {
   cursor: pointer;
 }
 
@@ -142,16 +142,11 @@
 
 .menuList li.active {
   background-color: #2e3d86;
-} */
+}
 
 .dropdown {
   margin-top: 6px;
   cursor: pointer;
-}
-
-.dropdown:hover {
-  margin-top: 6px;
-  background-color: #2e3d86;
 }
 
 .dropdown.active {
@@ -161,6 +156,16 @@
 
 .toggleDocDropdown {
   background-color: none;
+}
+
+.dropdown:hover, 
+.dropdown:hover .dropdownToggle {
+  background-color: #2e3d86; /* hover 시 배경색을 #2e3d86으로 변경 */
+}
+
+/* dropdownToggle이 직접 hover 되었을 때에도 같은 효과 적용 */
+.dropdownToggle:hover {
+  background-color: #2e3d86; /* dropdownToggle이 hover 되었을 때도 동일한 색상 */
 }
 
 .dropdownToggle {
@@ -174,16 +179,18 @@
   font-size: 16px; 
   font-weight: bold;
   color:rgb(255, 255, 255);
-  background-color: none;
-  outline: none; /* 포커스 시 outline 제거 */
+  background-color: #5A77B6;
+  outline: none; /* 포커스 시 outline 제거 */ 
 }
 
 .dropdownToggle:hover {
   outline: none;
+  background-color: #2e3d86;
 }
 
-.dropdownToggle:focus {
+.dropdownToggle:focus, .dropdownToggle.active {
   outline: none; 
+  background-color: #2e3d86;
 }
 
 .dropdownMenu {
