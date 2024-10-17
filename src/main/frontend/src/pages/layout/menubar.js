@@ -100,8 +100,8 @@ const Menubar = ({ isMenuOpen }) => {
                     </li>
 
                     {/* 기안 관리 섹션 */}
-                    <li className={`${styles.dropdown} ${isDraftSectionActive ? styles.active : ''}`}>
-                        <button onClick={toggleDropdown} className={styles.dropdownToggle}>
+                    <li className={`${styles.dropdown} ${isDropdownOpen ? styles.active : ''}`}>
+                        <button onClick={toggleDropdown} className={`${styles.dropdownToggle} ${isDraftSectionActive ? styles.active : ''}`}>
                             📑 기안 관리
                         </button>
                         {/* 기안 관리 하위 메뉴 */}
