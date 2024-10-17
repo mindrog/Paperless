@@ -1,20 +1,20 @@
 import React from 'react';
-import styles from '../../styles/company/company_main.module.css'; 
+import styles from '../../styles/company/company_main.module.css';
 import '../../styles/style.css';
 import Menubar from '../layout/menubar';
 
 
-function CompanyAdminMain () {
+function CompanyAdminMain() {
     return (
-        <div className="container-xl conbox1">
+        <div className="container-xl">
             <Menubar />
             <div className={styles.back}>
-                <div className="container text-center">
+                <div className={styles.containerbox}>
                     <div className={styles.mainbox}>
                         <div className={styles.gridContainer}>
                             <div className={styles.gridItem}>
-                                <h3 className='coltitle'>메일함</h3>
-                                <hr style={{ border: '1px solid #2e3d86', width: '15%', marginBottom: '30px', marginTop: '0px' }} />
+                                <h3 className={styles.colTitle}>메일함</h3>
+                                <hr className={styles.titleBorderBar} />
                                 <table className={styles.table}>
                                     <thead>
                                         <tr>
@@ -47,15 +47,15 @@ function CompanyAdminMain () {
                                 </table>
                             </div>
                             <div className={styles.gridItem}>
-                                <h3 className='coltitle'>최신 결재 보고서</h3>
-                                <hr style={{ border: '1px solid #2e3d86', width: '15%', marginBottom: '30px', marginTop: '0px' }} />
-                                <table  className={styles.table}>
+                                <h3 className={styles.colTitle}>최신 결재 보고서</h3>
+                                <hr className={styles.titleBorderBar} />
+                                <table className={styles.table}>
                                     <thead>
                                         <tr>
-                                        <th scope="col">no</th>
-                                        <th scope="col">First</th>
-                                        <th scope="col">Last</th>
-                                        <th scope="col">Handle</th>
+                                            <th scope="col">no</th>
+                                            <th scope="col">First</th>
+                                            <th scope="col">Last</th>
+                                            <th scope="col">Handle</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -80,13 +80,17 @@ function CompanyAdminMain () {
                                     </tbody>
                                 </table>
                             </div>
-                            <div className={styles.gridItem}>
-                                <h3 className='coltitle'>통계자료</h3>
-                                <hr style={{ border: '1px solid #2e3d86', width: '15%', marginBottom: '30px', marginTop: '0px' }} />
+                            <div className={`${styles.gridItem} ${styles.gridItemRight}`}>
+                                <h3 className={styles.colTitle}>to do list</h3>
+                                <hr className={styles.titleBorderBar} />
                             </div>
                             <div className={styles.gridItem}>
-                                <h3 className='coltitle'>캘린더</h3>
-                                <hr style={{ border: '1px solid #2e3d86', width: '15%', marginBottom: '30px', marginTop: '0px' }} />
+                                <h3 className={styles.colTitle}>통계자료</h3>
+                                <hr className={styles.titleBorderBar} />
+                            </div>
+                            <div className={styles.gridItem}>
+                                <h3 className={styles.colTitle}>캘린더</h3>
+                                <hr className={styles.titleBorderBar} />
                             </div>
                         </div>
                     </div>
