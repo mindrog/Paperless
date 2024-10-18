@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet';
 import { useParams } from 'react-router-dom';
 import styles from '../../styles/company/company_chatting.module.css'
@@ -25,6 +25,7 @@ function Chatting() {
             } else {
                 console.warn(`No data found for key chatting-emp-${name}`);
             }
+            console.log("emp: ", emp);
         } catch (error) {
             console.error("Error fetching employee data from localStorage: ", error);
         }
@@ -34,18 +35,43 @@ function Chatting() {
     const [inputValue, setInputValue] = useState('');
 
     // 이모지 토글 상태
-    const [isEmoji, setIsEmoji] = useState(false);
+    const [isEmojiToggle, setIsEmojiToggle] = useState(false);
 
     // 이모지 토글 상태 변환 메서드
-    const emojiToggle = () => {
-        setIsEmoji(!isEmoji);
+    const emojiToggle = (e) => {
+        setIsEmojiToggle(!isEmojiToggle);
     };
 
     // 이모지 선택 시 메서드
     const emojiClick = (selectEmoji, e) => {
-        console.log('선택한 이모지: ' + selectEmoji.emoji);
         setInputValue(preInputValue => preInputValue + selectEmoji.emoji);
     };
+
+    // emojiRef 참조 변수
+    const emojiRef = useRef(null);
+
+    // emojiButtonRef 참조 변수
+    const emojiButtonRef = useRef(null);
+
+    // 특정 영역 외 클릭을 감지하여 searchRef 상태 업데이트
+    useEffect(() => {
+        // 특정 영역 외 클릭 시 이벤트
+        function handleFocusOutside(e) {
+            // emojiRef.current: emojiRef를 참조하고 있는 DOM 요소가 실제 마운트 되어있는지 검사
+            // e.target: 클릭한 요소
+            if (emojiRef.current && !emojiRef.current.contains(e.target) && !emojiButtonRef.current.contains(e.target)) {
+                setIsEmojiToggle(false);
+            }
+        }
+
+        // 특정 영역 외 이벤트 리스너 추가
+        document.addEventListener("mousedown", handleFocusOutside);
+
+        return () => {
+            // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+            document.removeEventListener("mousedown", handleFocusOutside);
+        };
+    }, [emojiRef]);
 
     return (
         <>
@@ -56,29 +82,41 @@ function Chatting() {
             <div className="container-xl" style={{ padding: '0' }}>
                 <div className={styles.chatting_container}>
                     <header>{emp ? (
-                        <div>
-                            <div>
-                                <p>
-                                    헤더
-                                </p>
+                        <div className={styles.header_profile}>
+                            <div className={styles.header_profile_img}>
+                                <img src={emp.profile} alt="Profile" className={styles.image} />
+                            </div>
+                            <div className={styles.header_profile_container}>
+                                <div className={styles.header_profile_info}>
+                                    <div className={styles.header_profile_dept}>
+                                        <p>{emp.dept}</p>
+                                    </div>
+                                    <div className={styles.header_profile_name}>
+                                        <p>{emp.name} {emp.posi}</p>
+                                    </div>
+                                </div>
+                                <div className={styles.select_chatting}>
+                                    <Button className={styles.select_chattingButton}><i class="material-icons">search</i></Button>
+                                </div>
                             </div>
                         </div>
                     ) : (
                         <h1>Loading chatting ...</h1>
                     )}
                     </header>
+                    <hr></hr>
                     <div>
 
                     </div>
-                    <div className={`${styles.input_emojiPickerDiv} ${styles.epr_c90x4z} ${styles['epr_-6npj90']}`} style={{display: isEmoji ? 'block' : 'none'}}>
+                    <div className={`${styles.input_emojiPickerDiv} ${styles.epr_c90x4z} ${styles['epr_-6npj90']}`} style={{ display: isEmojiToggle ? 'block' : 'none' }} ref={emojiRef}>
                         <EmojiPicker className={styles.input_emojiPicker_css} onEmojiClick={emojiClick} />
                     </div>
                     <footer>
                         <div className={styles.input_message}>
                             <div className={styles.input_message_emoji}>
-                                <Button className={styles.input_message_emojiButton} onClick={emojiToggle}><i class="material-icons">face</i></Button>
+                                <Button ref={emojiButtonRef} className={styles.input_message_emojiButton} onClick={emojiToggle}><i class="material-icons">face</i></Button>
                             </div>
-                            <input type='text' value={inputValue} onChange={(e) => {setInputValue(e.target.value)}} placeholder='메시지를 입력하세요'></input>
+                            <input type='text' value={inputValue} onChange={(e) => { setInputValue(e.target.value) }} placeholder='메시지를 입력하세요'></input>
                             <div className={styles.input_message_button}>
                                 <Button className={styles.input_message_attachButton}><i class="material-icons">attach_file</i></Button>
                                 <Button className={styles.input_message_sendButton}><i class="material-icons">send</i></Button>
