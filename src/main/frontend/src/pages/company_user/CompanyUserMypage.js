@@ -121,7 +121,7 @@ function CompanyUserMypage() {
                             <td className={styles.profilTd_id}>◼ 비밀번호</td>
                             <td className={styles.profilTd_value_pw}>
                                 <div>
-                                    <Form.Control type="password" className={styles.profilTd_input} value={'password'} readOnly/>
+                                    <Form.Control type="password" className={styles.profilTd_input} value={''} readOnly/>
                                 </div>
                                 <Button variant="primary" className={styles.userPwChangebtnInput} onClick={handleUserPwChangebtn}>변경</Button>
                             </td>
