@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Carousel, Card, Button } from 'react-bootstrap';
 import main1 from '../../img/main_content1.png';
+import main2 from '../../img/main_main.png';
+import main3 from '../../img/main_main2.png';
+import main4 from '../../img/main_main3.png';
 import logo1 from '../../img/logo1.png';
 import logo2 from '../../img/logo2.png';
 import logo3 from '../../img/logo3.png';
@@ -13,6 +16,7 @@ import logo9 from '../../img/logo9.png';
 import logo10 from '../../img/logo10.png';
 import logo11 from '../../img/logo11.png';
 import logo12 from '../../img/logo12.png';
+import girl1 from '../../img/main_girl1.png';
 
 import '../../styles/layout/home.css';
 
@@ -44,7 +48,7 @@ const cardData = [
         title: '이영희, 대기업 관리자',
         text: '“실시간 협업 기능이 정말 유용해요. 팀원들과 함께 작업하며 피드백을 주고받는 과정이 훨씬 수월해졌습니다. 프로젝트 진행이 더 빠르고 효율적이에요.”',
 
-        imgSrc: logo2, // 첫 번째 카드 이미지
+        imgSrc: girl1, // 첫 번째 카드 이미지
         bgc: 'darksalmon'
     },
     {
@@ -215,7 +219,7 @@ function Home() {
             <div className='main_cont_2'>
                 <div className={`main_cont_2_type1 ${isVisible1 ? 'show' : ''}`}>
                     <div className='type1_img_cont'>
-                        <img src={main1} className='type1' alt='Description'></img>
+                        <img src={main2} className='type1' alt='Description'></img>
                     </div>
                     <div className='type1_img_script'>
                         <p className='main_script_title'>직원 관리, 물자 관리, 문서 관리를 한번에 </p>
@@ -231,26 +235,26 @@ function Home() {
                         </p>
                     </div>
                     <div className='type2_img_cont'>
-                        <img src={main1} className='type1' alt='Description'></img>
+                        <img src={main3} className='type1' alt='Description'></img>
                     </div>
 
                 </div>
                 <div className={`main_cont_2_type3 ${isVisible3 ? 'show' : ''}`}>
                     <div className='type3_img_cont'>
-                        <img src={main1} className='type1' alt='Description'></img>
+                        <img src={main4} className='type1' alt='Description'></img>
                     </div>
                     <div className='type3_img_script'>
                         <p className='main_script_title'>채팅과 이메일을 통한 소통을 원활하게 </p>
-                        <p className='main_script_contents'> 효율적인 커뮤니케이션은 성공적인 팀워크의 핵심입니다. 우리 그룹웨어는 채팅과 이메일 기능을 통합하여 팀원 간의 소통을 더욱 원활하게 만들어줍니다.</p>
+                        <p className='main_script_contents'> 효율적인 커뮤니케이션은 성공적인 팀워크의 핵심입니다. <br />우리 그룹웨어는 채팅과 이메일 기능을 통합하여 팀원 간의 소통을 더욱 원활하게 만들어줍니다.</p>
                     </div>
                 </div>
                 <div className={`main_cont_2_type4 ${isVisible4 ? 'show' : ''}`}>
                     <div className='type4_img_script'>
-                        <p className='main_script_title'>peperless가 제공하는 다양한 보고서 템플릿!</p>
+                        <p className='main_script_title'>peperless가 제공하는<br/> 다양한 보고서 템플릿!</p>
                         <p className='main_script_contents'> 효율적인 업무 처리를 위해 Paperless는 다양한 보고서 템플릿을 제공합니다. 각 템플릿은 사용자의 필요에 맞춰 설계되어, 빠르고 간편하게 전문적인 보고서를 작성할 수 있도록 돕습니다.</p>
                     </div>
                     <div className='type4_img_cont'>
-                        <img src={main1} className='type1' alt='Description'></img>
+                        <img src={main2} className='type1' alt='Description'></img>
                     </div>
 
                 </div>
