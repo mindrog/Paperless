@@ -38,41 +38,41 @@ const mailboxData = [
 
 const reportData = [
     {
-      id: 1,
-      title: "프로젝트 계획서",
-      writer: "박보영",
-      created_at: "2024-10-18",
-      approval_status: "승인 대기",
+        id: 1,
+        title: "프로젝트 계획서",
+        writer: "박보영",
+        created_at: "2024-10-18",
+        approval_status: "승인 대기",
     },
     {
-      id: 2,
-      title: "예산 보고서",
-      writer: "장원영",
-      created_at: "2024-10-17",
-      approval_status: "승인 완료",
+        id: 2,
+        title: "예산 보고서",
+        writer: "장원영",
+        created_at: "2024-10-17",
+        approval_status: "승인 완료",
     },
     {
-      id: 3,
-      title: "업무 진행 상황 보고",
-      writer: "배수지",
-      created_at: "2024-10-14",
-      approval_status: "반려",
+        id: 3,
+        title: "업무 진행 상황 보고",
+        writer: "배수지",
+        created_at: "2024-10-14",
+        approval_status: "반려",
     },
     {
-      id: 4,
-      title: "연구 개발 계획서",
-      writer: "차은우",
-      created_at: "2024-10-14",
-      approval_status: "승인 완료",
+        id: 4,
+        title: "연구 개발 계획서",
+        writer: "차은우",
+        created_at: "2024-10-14",
+        approval_status: "승인 완료",
     },
     {
-      id: 5,
-      title: "회계 감사 보고서",
-      writer: "박보검",
-      created_at: "2024-10-11",
-      approval_status: "승인 완료",
+        id: 5,
+        title: "회계 감사 보고서",
+        writer: "박보검",
+        created_at: "2024-10-11",
+        approval_status: "승인 완료",
     },
-  ];
+];
 
 
 function CompanyAdminMain() {
@@ -83,7 +83,7 @@ function CompanyAdminMain() {
                 <div className={styles.containerbox}>
                     <div className={styles.mainbox}>
                         <div className={styles.gridContainer}>
-                        <div className={`${styles.gridItem} ${styles.gridItemMailbox}`}>
+                            <div className={`${styles.gridItem} ${styles.gridItemMailbox}`}>
                                 <h3 className={styles.colTitle}>메일함</h3>
                                 {/* <hr className={styles.titleBorderBar} /> */}
                                 <table className={styles.table}>
@@ -134,8 +134,32 @@ function CompanyAdminMain() {
                                 </table>
                             </div>
                             <div className={`${styles.gridItem} ${styles.gridItemTodoList}`}>
+                                <div className={styles.todolist_header}>
+                                    <div className={styles.todolist_Insert}>
+                                        <span class="material-symbols-outlined">
+                                            add
+                                        </span>
+                                    </div>
+                                    <div className={styles.todolist_Delete}>
+                                        <span class="material-symbols-outlined">
+                                            remove
+                                        </span>
+                                    </div>
+                                </div>
                                 <h3 className={styles.colTitle}>to do list</h3>
                                 <hr className={styles.titleBorderBar} />
+                                <table className={styles.tableTodoList}>
+                                    <tbody className={styles.tablebody}>
+                                        <tr>
+                                            <td><input type="checkbox" /></td>
+                                            <td>프로젝트 발표 준비</td>
+                                        </tr>
+                                    </tbody>
+                                    <tr>
+                                        <td><input type="checkbox" /></td>
+                                        <td>메일 보내기</td>
+                                    </tr>
+                                </table>
                             </div>
                             <div className={`${styles.gridItem} ${styles.gridItemStatistics}`}>
                                 <h3 className={styles.colTitle}>통계자료</h3>

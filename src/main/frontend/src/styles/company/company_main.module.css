@@ -34,8 +34,12 @@
 
 .gridItemTodoList {
   grid-area: todoList;
-  width: 250px;
+  width: 300px;
   height: auto;
+}
+
+.todolist_header {
+  display: inline-flex;
 }
 
 .gridItemStatistics {
@@ -79,6 +83,10 @@
     justify-items: center;
     color: #000000;
     margin: auto;
+}
+
+.tableTodoList {
+
 }
 
 .tablehead {
