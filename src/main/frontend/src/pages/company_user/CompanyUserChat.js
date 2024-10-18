@@ -9,14 +9,14 @@ function CompanyUserChat() {
 
     // 직원 (더미 데이터)
     const empList = [
-        { name: '장원영', dept: '콘텐츠 기획팀', phone: '010-1234-1234', email: 'jang0101@naver.com' },
-        { name: '박보영', dept: '콘텐츠 기획팀', phone: '010-2345-2345', email: 'boyoung0202@naver.com' },
-        { name: '박보검', dept: '콘텐츠 기획팀', phone: '010-3456-3456', email: 'gumgum0303@gmail.com' },
-        { name: '전지현', dept: '콘텐츠 기획팀', phone: '010-4567-4567', email: 'jjh0404@naver.com' },
-        { name: '이도현', dept: '콘텐츠 기획팀', phone: '010-5678-5678', email: 'dodo0505@gmail.com' },
-        { name: '김태리', dept: '콘텐츠 기획팀', phone: '010-6789-6789', email: 'kimlee0606@gmail.com' },
-        { name: '강동원', dept: '콘텐츠 기획팀', phone: '010-7890-7890', email: 'dongwon0707@naver.com' },
-        { name: '광고인', dept: '홍보마케팅팀', phone: '010-1010-1010', email: 'advertisement@naver.com' },
+        { name: '장원영', dept: '콘텐츠 기획팀', posi: '대리', phone: '010-1234-1234', email: 'jang0101@naver.com', profile: 'https://via.placeholder.com/60' },
+        { name: '박보영', dept: '콘텐츠 기획팀', posi: '사원', phone: '010-2345-2345', email: 'boyoung0202@naver.com', profile: 'https://via.placeholder.com/60' },
+        { name: '박보검', dept: '콘텐츠 기획팀', posi: '사원', phone: '010-3456-3456', email: 'gumgum0303@gmail.com', profile: 'https://via.placeholder.com/60' },
+        { name: '전지현', dept: '콘텐츠 기획팀', posi: '과장', phone: '010-4567-4567', email: 'jjh0404@naver.com', profile: 'https://via.placeholder.com/60' },
+        { name: '이도현', dept: '콘텐츠 기획팀', posi: '과장', phone: '010-5678-5678', email: 'dodo0505@gmail.com', profile: 'https://via.placeholder.com/60' },
+        { name: '김태리', dept: '콘텐츠 기획팀', posi: '팀장', phone: '010-6789-6789', email: 'kimlee0606@gmail.com', profile: 'https://via.placeholder.com/60' },
+        { name: '강동원', dept: '콘텐츠 기획팀', posi: '차장', phone: '010-7890-7890', email: 'dongwon0707@naver.com', profile: 'https://via.placeholder.com/60' },
+        { name: '광고인', dept: '홍보마케팅팀', posi: '팀장', phone: '010-1010-1010', email: 'advertisement@naver.com', profile: 'https://via.placeholder.com/60' },
     ];
 
     // 채팅 목록 (더미 데이터)
@@ -188,7 +188,7 @@ function CompanyUserChat() {
                             ))}
                             <Modal show={profileModal} onHide={closeProfileModal} dialogClassName={styles.modal_content} size='lg' centered>
                                 <Modal.Header className={styles.modal_header} closeButton onClick={(e) => e.stopPropagation()}>
-                                    <Modal.Title className={styles.modal_title}>{profileInfo.name}님의 프로필</Modal.Title>
+                                    <Modal.Title className={styles.modal_title}>{profileInfo.name} 님의 프로필</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
                                     <div className={styles.modal_body}>
