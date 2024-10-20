@@ -21,9 +21,10 @@
     justify-content: center;
     align-items: center;
     z-index: 2;
+    padding-bottom: 1%;
 }
 
-/*  */
+/* header profile 정보 div */
 .header_profile {
     /* 가로, 세로 비 */
     aspect-ratio: 1;
@@ -37,7 +38,7 @@
 }
 
 .header_profile p {
-    margin-bottom: 5px;
+    margin: 0 0;
 }
 
 /* 프로필 이미지 원형 설정 */
@@ -45,9 +46,12 @@
     border-radius: 100%;
 }
 
+/* 프로필 정보 및 검색 아이콘 */
 .header_profile_container {
+    width: 100%;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 /* 프로필 정보 */
@@ -57,12 +61,86 @@
     text-align: left;
 }
 
-.header_profile_dept {
+/* 부서 div */
+.header_profile_dept p {
     font-size: 15px;
 }
 
+/* 이름 div */
 .header_profile_name {
     font-size: 25px;
+}
+
+/* 헤더 검색 버튼 div */
+.select_chatting {
+    height: 50px;
+    display: flex;
+    align-items: center;
+}
+
+/* 헤더 검색 input */
+.select_input {
+    border-radius: 5px;
+    border: 2px solid lightgray;
+    height: 45px;
+}
+
+/* 검색 태그 show */
+.select_input_show {
+    opacity: 0;
+    width: 0;
+    transition: opacity 0.3s ease, width 0.3s ease;
+    transform-origin: left
+}
+
+/* 검색 태그 hide */
+.select_input_hide {
+    opacity: 1;
+    width: 200px;
+    transition: opacity 0.3s ease, width 0.3s ease;
+    transform-origin: left;
+}
+
+/* 헤더 검색 버튼 */
+.select_chattingButton {
+    padding: 0;
+    margin: 5px 0 5px 0;
+    height: 50px;
+    aspect-ratio: 1/1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #2e3d86;
+    background-color: transparent;
+    border: none;
+}
+
+.select_chattingButton i {
+    font-size: 40px;
+}
+
+.select_chattingButton:hover {
+    color: #5A77B6;
+    background-color: transparent;
+}
+
+.select_chattingButton:active {
+    background-color: lightgray !important;
+}
+
+/* 메인 컨테이너 */
+/* 헤더와 푸터만큼 패딩을 주면 스크롤이 전체로 잡힘 */
+.main_container {
+    position: absolute;
+    top: calc(60px + 2%);
+    bottom: calc(50px + 2%);
+    background-color: lightblue;
+    overflow-y: auto;
+    padding: 0 15px;
+    box-sizing: border-box;
+    width: 100%;
+    border-top: 2px solid lightgray;
+    border-bottom: 2px solid lightgray;
 }
 
 /* 이모지 토글 */
