@@ -62,11 +62,6 @@ function CompanyUserChat() {
     // 프로필 데이터에 대한 변수
     const [profileInfo, setProfileInfo] = useState('');
 
-    // 모달창 상태 메서드 (Open)
-    const showProfileModal = () => {
-        setProfileModal(true);
-    };
-
     // 모달창 상태 메서드 (Close)
     const closeProfileModal = () => {
         setProfileModal(false);
