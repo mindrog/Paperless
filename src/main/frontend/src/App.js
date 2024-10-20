@@ -34,6 +34,7 @@ import CompanyUserCalender from './pages/company_user/CompanyUserCalender';
 import CompanyUserChat from './pages/company_user/CompanyUserChat';
 import Menubar from './pages/layout/menubar';
 import GraphChart from './pages/layout/GraphChart';
+// import PageNav from './pages/layout/PageNav';
 import './App.css';
 import './styles/style.css';
 
@@ -62,6 +63,7 @@ function App() {
                 <HeaderToggle />
                 <MenubarToggle isMenuOpen={isMenuOpen} />
                 <GraphChartToggle />
+                {/* <PaginationToggle /> */}
                 <main className='app'>
                     <Routes>
                         <Route path='/' element={<Home />} />
@@ -176,13 +178,29 @@ function GraphChartToggle() {
     return (
         <>
             {allowedPaths.includes(location.pathname) && (
-                <div className='GraphChartContainer'>
+                <div className='GraphChart'>
                     <GraphChart />
                 </div>
             )}
         </>
     );
 }
+
+// 페이징네이션
+// function PaginationToggle() {
+//     const location = useLocation();
+//     const allowedPaths = ['/company/user/stock', '/company/admin/member'];
+
+//     return (
+//         <>
+//             {allowedPaths.includes(location.pathname) && (
+//                 <div className='PageNav'>
+//                     <PageNav />
+//                 </div>
+//             )}
+//         </>
+//     );
+// }
 
 
 export default App;

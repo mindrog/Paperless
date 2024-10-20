@@ -112,7 +112,7 @@ function CompanyUserMypage() {
                 <Table className={styles.tablebox_profil}>
                     <tbody>
                         <tr>
-                            <td className={styles.profilTd_id}>◼  사&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  번</td>
+                            <td className={styles.profilTd_id}>◼  사&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  번</td>
                             <td className={styles.profilTd_value}>20201234</td>
                             <td className={styles.profilTd_id}>◼ 전화번호</td>
                             <td className={styles.profilTd_value}>010-1234-5678<Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUsernumUpdate}>수정</Button></td> 
@@ -120,9 +120,6 @@ function CompanyUserMypage() {
                         <tr>
                             <td className={styles.profilTd_id}>◼ 비밀번호</td>
                             <td className={styles.profilTd_value_pw}>
-                                <div>
-                                    <Form.Control type="password" className={styles.profilTd_input} value={''} readOnly/>
-                                </div>
                                 <Button variant="primary" className={styles.userPwChangebtnInput} onClick={handleUserPwChangebtn}>변경</Button>
                             </td>
                             <td colSpan={2}>
