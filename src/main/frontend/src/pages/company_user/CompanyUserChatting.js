@@ -31,6 +31,15 @@ function Chatting() {
         }
     }, [name]);
 
+    // 검색 태그 상태
+    const [showSelectInput, setShowSelectInput] = useState(true);
+
+    // 검색 버튼 클릭 시
+    const selectToggle = () => {
+        console.log('showSelectInput: ', showSelectInput);
+        setShowSelectInput(!showSelectInput);
+    };
+
     // 채팅 메시지 작성 내용
     const [inputValue, setInputValue] = useState('');
 
@@ -96,7 +105,8 @@ function Chatting() {
                                     </div>
                                 </div>
                                 <div className={styles.select_chatting}>
-                                    <Button className={styles.select_chattingButton}><i class="material-icons">search</i></Button>
+                                    <input type='text' className={`${styles.select_input} ${showSelectInput? styles.select_input_show:styles.select_input_hide}`} placeholder='내용을 입력해주세요.'></input>
+                                    <Button className={styles.select_chattingButton} onClick={selectToggle}><i class="material-icons">search</i></Button>
                                 </div>
                             </div>
                         </div>
@@ -104,9 +114,8 @@ function Chatting() {
                         <h1>Loading chatting ...</h1>
                     )}
                     </header>
-                    <hr></hr>
-                    <div>
-
+                    <div className={styles.main_container}>
+                        
                     </div>
                     <div className={`${styles.input_emojiPickerDiv} ${styles.epr_c90x4z} ${styles['epr_-6npj90']}`} style={{ display: isEmojiToggle ? 'block' : 'none' }} ref={emojiRef}>
                         <EmojiPicker className={styles.input_emojiPicker_css} onEmojiClick={emojiClick} />
