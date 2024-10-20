@@ -1,0 +1,164 @@
+.titleBox {
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+}
+
+.pageTitle {
+    font-size: 48px;
+}
+
+.memberCount {
+    font-size: 20px;
+    text-align: center;
+    width: 100px;
+    margin: 15px 0 10px 25px;
+    padding: 5px;
+    border-radius: 10px;
+    background-color: lightgrey;
+}
+
+/* table */
+.memberTable {
+    margin-top: 50px;
+}
+
+.inputCheckBox {
+    margin-bottom: 22px;
+}
+
+.optionBox {
+    width: 250px;
+}
+
+.insertBtn, .deleteBtn {
+    float: left;
+    width: 100px;
+    height: 36px;
+    margin-bottom: 10px;
+}
+
+.deleteBtn {
+    margin-left:25px;
+}
+
+.sreachFormBox {
+    display: flex;
+    justify-content: end;
+    margin-bottom: 10px;
+}
+
+.updateBtnCol {
+    width: 100px;
+}
+
+.userEmail {
+    width: 300px;
+}
+
+/* 버튼 css */
+.insertBtn, .deleteBtn {
+    background-color: #2e3d86;
+    border:#2e3d86;
+    height: 37px;
+}
+
+.sreachBtn {
+    background-color: #2e3d86;
+    border:#2e3d86;
+    width: 58px;
+    height: 38px;
+}
+
+.insertBtn:hover, .deleteBtn:hover {
+    background-color: #7289CF;
+    border:#7289CF;
+    color:#fefefe;
+    height: 37px;
+}
+
+.sreachBtn:hover, .updateBtn:hover {
+    background-color: #7289CF;
+    border:#7289CF;
+    color:#fefefe;
+    width: 58px;
+    height: 38px;
+}
+
+.updateBtn {
+    background-color: #2e3d86;
+    border:#2e3d86;
+    margin-left: 10px;
+    width: 58px;
+    height: 38px;
+}
+
+/* 모달 */
+.modal {
+    font-family: 'ONE-Mobile-Regular';
+}
+
+.modalTitle {
+    color: #2e3d86;
+    font-weight: bold;
+    margin-left: 15px;
+}
+
+.formContext {
+    margin: 10px;
+}
+
+.formLabel {
+    font-weight: bold;
+    margin-left: 5px;
+    margin-bottom: 10px;
+}
+
+.saveBtn {
+    width: 100px;
+    background-color: #2e3d86;
+    border:#2e3d86;
+}
+
+.saveBtn:hover {
+    background-color: #7289CF;
+    border:#7289CF;
+    color:#fefefe;
+}
+
+.saveBtn.active, .saveBtn:focus {
+    background-color: #2e3d86 !important;
+    border:#2e3d86 !important;
+}
+
+.FormSubmitBtn {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.formValue {
+    border-radius: 0 !important;
+    border: none !important;
+    border-bottom: 1.5px solid black !important;
+    margin-bottom: 30px !important;
+    width: 100% !important; 
+}
+
+.formValue:focus {
+    border-bottom: 3px solid #2e3d86 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.formValue:active {
+    border-bottom: 3px solid #2e3d86 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}

@@ -1,0 +1,47 @@
+.container {
+    width: 80%;
+    margin: 0 auto;
+  }
+  
+  .draftTable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .draftTable th, .draftTable td {
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
+  
+  .inputField, .selectField, .textareaField {
+    width: 100%;
+    padding: 6px;
+    margin: 4px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .textareaField {
+    height: 100px;
+  }
+  
+  .approvalRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .addButton, .removeButton, .submitButton {
+    padding: 8px 12px;
+    margin-top: 10px;
+    cursor: pointer;
+    background-color: #2e3d86;
+    color: white;
+    border: none;
+    border-radius: 4px;
+  }
+  
+  .addButton:hover, .removeButton:hover, .submitButton:hover {
+    background-color: #7289cf;
+  }
+  
