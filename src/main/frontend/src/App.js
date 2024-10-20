@@ -29,9 +29,12 @@ import CompanyUserDraftDetail from './pages/company_user/CompanyUserDraftDetail'
 import CompanyUserDraftDocAll from './pages/company_user/CompanyUserDraftDocAll';
 import CompanyUserDraftDocDraft from './pages/company_user/CompanyUserDraftDocDraft';
 import CompanyUserDraftDocAppr from './pages/company_user/CompanyUserDraftDocAppr';
+import CompanyUserStock from './pages/company_user/CompanyUserStock';
 import CompanyUserCalender from './pages/company_user/CompanyUserCalender';
 import CompanyUserChat from './pages/company_user/CompanyUserChat';
 import Menubar from './pages/layout/menubar';
+import GraphChart from './pages/layout/GraphChart';
+// import PageNav from './pages/layout/PageNav';
 import './App.css';
 import './styles/style.css';
 
@@ -59,6 +62,8 @@ function App() {
             <div className='App'>
                 <HeaderToggle />
                 <MenubarToggle isMenuOpen={isMenuOpen} />
+                <GraphChartToggle />
+                {/* <PaginationToggle /> */}
                 <main className='app'>
                     <Routes>
                         <Route path='/' element={<Home />} />
@@ -98,6 +103,9 @@ function App() {
                         <Route path='/company/user/draft/write/work' element={<CompanyUserDraftWriteWork />} />
                         <Route path='/company/user/draft/write/attendance' element={<CompanyUserDraftWriteAtten />} />
                         <Route path='/company/user/draft/write/purchase' element={<CompanyUserDraftWritePurc />} />
+
+                        {/* 재고관리 */}
+                        <Route path='/company/user/stock' element={<CompanyUserStock />} />
 
                         {/* 캘린더 */}
                         <Route path='/company/user/calender' element={<CompanyUserCalender />} />
@@ -161,6 +169,38 @@ function FooterToggle() {
         </>
     );
 }
+
+// 그래프차트 main에서만 보이기
+function GraphChartToggle() {
+    const location = useLocation();
+    const allowedPaths = ['/company/user/', '/company/admin/'];  // GraphChart를 보여줄 경로
+
+    return (
+        <>
+            {allowedPaths.includes(location.pathname) && (
+                <div className='GraphChart'>
+                    <GraphChart />
+                </div>
+            )}
+        </>
+    );
+}
+
+// 페이징네이션
+// function PaginationToggle() {
+//     const location = useLocation();
+//     const allowedPaths = ['/company/user/stock', '/company/admin/member'];
+
+//     return (
+//         <>
+//             {allowedPaths.includes(location.pathname) && (
+//                 <div className='PageNav'>
+//                     <PageNav />
+//                 </div>
+//             )}
+//         </>
+//     );
+// }
 
 
 export default App;

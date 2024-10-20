@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from '../../styles/layout/layout.css';
+import '../../styles/layout/layout.css';
 import logo from '../../img/logo-img.png';
 
 const HeaderOne = ({ logoSize, toggleMenu }) => (
