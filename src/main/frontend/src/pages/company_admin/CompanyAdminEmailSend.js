@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Modal, Button } from 'react-bootstrap';
+import { useLocation } from 'react-router-dom';
 
 function CompanyAdminEmailSend () {
     const [dragOver, setDragOver] = useState(false);
@@ -13,15 +14,21 @@ function CompanyAdminEmailSend () {
     const [showModal, setShowModal] = useState(false);
     const fileInputRef = useRef(null);
 
+    const location = useLocation();
+    // 먼저 location에서 데이터를 가져옵니다.
+    const initialReceiverEmail = location.state?.receiverEmail || '';
+
     // 이메일 입력 상태 추가
-    const [receiverEmail, setReceiverEmail] = useState('');
+    const [receiverEmail, setReceiverEmail] = useState(initialReceiverEmail);
     const [ccEmail, setCcEmail] = useState('');
     const [title, setTitle] = useState('');
     const [emailContent, setEmailContent] = useState('');
 
+    
+
     // 파일 업로드 제한 설정
     const MAX_FILES = 10;
-    const MAX_TOTAL_SIZE = 25 * 1024 * 1024; // 25MB in bytes
+    const MAX_TOTAL_SIZE = 25 * 1024 * 1024; // 25MB 
 
     // 드래그 앤 드롭 이벤트 핸들러
     const handleDragEnter = (e) => {
@@ -123,7 +130,7 @@ function CompanyAdminEmailSend () {
         // if (bytes < 1024) {
         //     return `${bytes} bytes`;
         // } else 
-        if(bytes==0){
+        if(bytes===0){
             return `0 KB`;
         }else if (bytes < 1024 * 1024) {
             return `${(bytes / 1024).toFixed(1)} KB`;
@@ -134,7 +141,7 @@ function CompanyAdminEmailSend () {
 
     return (
         <div className="container-xl conbox1">
-            <div className="gridContainer">
+            <div className="emilFormContainer">
                 <div className={styles.Container}>
                     <form>
                         <div className={styles['form-group']}>
