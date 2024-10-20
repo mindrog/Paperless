@@ -1,12 +1,12 @@
 .mypageContainer {
-    margin-left: auto;
-    padding: 20px;
+    margin: auto;
+    padding: 50px;
     border: 1px solid lightgray;
     width: 95%;
     font-family: 'ONE-Mobile-Regular';
     /* display: flex; */
-    /*justify-content: center;  가로로 가운데 정렬 */
-    /* align-items: center; 세로로 가운데 정렬 */
+    justify-content: center;  /*가로로 가운데 정렬 */
+    align-items: center; /*세로로 가운데 정렬 */
     /* flex-direction: column; */
 }
 
@@ -14,11 +14,12 @@
     .mypageContainer {
         margin-left: 20px;
         margin-right: 10px;
-        /*width: 100%; /* 중간화면에서는 전체 너비 */
-        /*justify-content: center; /* 가로로 가운데 정렬 유지 */
-        /* align-items: center; 세로로 가운데 정렬 유지 */
-        /* padding: 10px; /* 중간 화면일 때의 여백 조정 */
     }
+}
+
+.tablebox {
+    width: auto;
+    height: 280px;
 }
 
 .profiletitle {
@@ -27,13 +28,12 @@
 }
 
 .mypageProfil {
-    display: flex;
     margin-left: auto; 
     margin-right: auto; 
     max-width: 900px;
-    width: 100%; 
-    padding: 20px; 
+    padding: 0px; 
     margin-top: 20px;
+    text-align: center;
 }
 
 /* 중간 화면일 때의 스타일 */
@@ -46,16 +46,39 @@
     }
 }
 
+.profilTd_id{
+    width:auto;
+    text-align: center;
+}
+
+.profilTd_value{
+    width:auto;
+    text-align: left;  
+    align-items: center;
+}
+
+.profilTd_value_pw {
+    width:auto;
+    display: flex;
+    padding: 0;
+    align-items: center;
+}
+
+.profilTd_input{
+    font-family: 'NanumSquare';
+    width: 120px;
+}
+
+
 .profiltitle {
-    padding-left: 30px;
     margin-top: 40px;
-    /* text-align: center;  */
     text-align: left;
     justify-content: center;
 }
 
 .profiltitle p {
-    text-align: left;
+    text-align: center;
+    margin-bottom: 0.5rem;
 }
 
 .image {
@@ -64,8 +87,11 @@
    
 .titlename {
     display: flex;
-    justify-content: left;
+    justify-content: center;
     align-items: center;
+    /* margin: auto; */
+    margin-right: auto;
+    margin-left: auto;
 }
   
 .titlename .userName {
@@ -77,8 +103,22 @@
     font-size: 18px;
 }
 
-.col {
-    text-align: center;
+.tablebox_profil {
+    margin-top: 3rem;
+    margin-left: auto;
+    margin-right: auto;
+    width: 850px;
+    border-collapse: collapse;
+}
+
+.tablebox_profil td {
+    vertical-align: middle; /* 세로 가운데 정렬 */
+    padding: 10px; /* 셀 내부 여백 */
+    height: 50px; /* 모든 셀의 높이를 동일하게 설정 */
+}
+
+.tablebox_profil tr td {
+    border : none;
 }
 
 .userInfo {
@@ -115,62 +155,17 @@
     }
 }
 
-.userIdBox {
-    display: flex;
-}
-
-.userIdBox div{
-    margin-left: 10px;
-}
-
-.changePossible {
-    display: flex;
-    margin-top: 30px;
-}
-
-.userNumBox {
-    display: flex;
-    margin-right: auto;
-    align-items: center;
-    margin-bottom: 5px;
-}
-
-.userNumBox div{
-    margin-left: 10px;
-}
-
-.userPwBox {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-    margin-left: 80px;
-}
-
-.userPwBox div{
-    margin-left: 10px;
-}
-
-.userIdtitle {
-    font-weight: bold;
-    margin-left: 30px;
-}
-
-.userNumtitle {
-    font-weight: bold;
-}
-
-.userPwtitle {
-    font-weight: bold;
-}
-
-.userPw {
-    width: 5px;
-}
-
-.userNumUpdatebtnInput, .userPwChangebtnInput {
+.userNumUpdatebtnInput {
     background-color: #2e3d86;
     border:#2e3d86;
     margin-left: 10px;
+}
+
+.userPwChangebtnInput {
+    background-color: #2e3d86;
+    border:#2e3d86;
+    margin-left: 0px;
+    width: 100px;
 }
 
 .userNumUpdatebtnInput:hover, .userPwChangebtnInput:hover{

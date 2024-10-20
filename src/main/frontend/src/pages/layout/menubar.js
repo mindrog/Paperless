@@ -38,6 +38,24 @@ const Menubar = ({ isMenuOpen }) => {
             ? '배수지'
             : '사용자';
 
+    // 경로에 따른 직급 설정
+    const getUserGrade = () => {
+        if (location.pathname.toLowerCase().startsWith('/company/admin')) {
+            return '부장'; // 회사 관리자
+        } else if (location.pathname.toLowerCase().startsWith('/company/user')) {
+            return '대리'; // 회사 사용자
+        }
+        return '사용자'; // 기본 값
+    };
+
+    const handlerCompanyMain = () => {
+        if(getUserGrade() === '부장') {
+            navigate('/company/admin');
+        } else {
+            navigate('/company/user');
+        }
+    }
+
     const showEmployeeNotificationModal = () => {
         setNotificationModal(true);
     };
@@ -63,11 +81,11 @@ const Menubar = ({ isMenuOpen }) => {
             <div className={styles.menubar}>
                 <div className={styles.profil}>
                     <div className={styles.profilbox}>
-                        <div className={styles.profiltitle}>
+                        <div className={styles.profiltitle} onClick={handlerCompanyMain}>
                             <p>기획전략팀</p>
                             <div className={styles.titlename}>
                                 <div className={styles.userName}>{profileName}</div>
-                                <div className={styles.userGrade}>대리</div>
+                                <div className={styles.userGrade}>{getUserGrade()}</div>
                             </div>
                         </div>
                         <div className={styles.iconbox}>
@@ -100,8 +118,8 @@ const Menubar = ({ isMenuOpen }) => {
                     </li>
 
                     {/* 기안 관리 섹션 */}
-                    <li className={`${styles.dropdown} ${isDraftSectionActive ? styles.active : ''}`}>
-                        <button onClick={toggleDropdown} className={styles.dropdownToggle}>
+                    <li className={`${styles.dropdown} ${isDropdownOpen ? styles.active : ''}`}>
+                        <button onClick={toggleDropdown} className={`${styles.dropdownToggle} ${isDraftSectionActive ? styles.active : ''}`}>
                             📑 기안 관리
                         </button>
                         {/* 기안 관리 하위 메뉴 */}
@@ -185,11 +203,9 @@ const Menubar = ({ isMenuOpen }) => {
 
                     {/* '/company/admin' 또는 '/company/admin'으로 시작하는 경로에서만 직원 관리 보이기 */}
                     {location.pathname.toLowerCase().startsWith('/company/admin') && (
-                        <li className={styles.dropdown}>
-                            <button 
-                                onClick={() => handleItemClick('/company/admin/member')} 
-                                className={`${styles.sublist} ${activeItem === '/company/admin/member' ? styles.active : ''}`}
-                            >
+                        <li className={`${styles.dropdown} ${activeItem === '/company/admin/member' ? styles.active : ''}`}
+                            onClick={() => handleItemClick('/company/admin/member')} >
+                            <button className={styles.sublist_member}>
                                 ⚙️ 직원 관리
                             </button>
                         </li>
