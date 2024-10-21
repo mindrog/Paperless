@@ -29,6 +29,10 @@
     margin-top: 50px;
 }
 
+.tableBody th, .tableBody td{
+    vertical-align: middle;
+}
+
 .inputCheckBox {
     margin-bottom: 22px;
 }
@@ -64,14 +68,14 @@
 
 /* 버튼 css */
 .insertBtn, .deleteBtn {
-    background-color: #2e3d86;
-    border:#2e3d86;
+    background-color: #2e3d86 !important;
+    border:#2e3d86 !important;
     height: 37px;
 }
 
 .sreachBtn {
-    background-color: #2e3d86;
-    border:#2e3d86;
+    background-color: #2e3d86 !important;
+    border:#2e3d86 !important;
     width: 58px;
     height: 38px;
 }
@@ -92,8 +96,8 @@
 }
 
 .updateBtn {
-    background-color: #2e3d86;
-    border:#2e3d86;
+    background-color: #2e3d86 !important;
+    border:#2e3d86 !important;
     margin-left: 10px;
     width: 58px;
     height: 38px;
@@ -122,8 +126,8 @@
 
 .saveBtn {
     width: 100px;
-    background-color: #2e3d86;
-    border:#2e3d86;
+    background-color: #2e3d86 !important;
+    border:#2e3d86 !important;
 }
 
 .saveBtn:hover {

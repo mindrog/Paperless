@@ -139,7 +139,7 @@ function CompanyAdminMember() {
                         <th className={styles.updateBtnCol}></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className={styles.tableBody}>
                     {employeeData.map((employee) => (
                         <tr key={employee.id}>
                             <th><input

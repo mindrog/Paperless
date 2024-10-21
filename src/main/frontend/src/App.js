@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Modal from 'react-modal';
 import axios from 'axios';
 import Header from './pages/layout/header';
 import Footer from './pages/layout/footer';
@@ -8,6 +9,7 @@ import Login from './pages/layout/login';
 import InquirySuccess from './pages/common/InquirySuccess';
 import InquiryWrite from './pages/common/InquiryWrite';
 import EmailAuth from './pages/layout/email_auth';
+import SearchPW from './pages/layout/searchPW';
 import SystemAdminInquiry from './pages/system_admin/SystemAdminInquiry';
 import SystemAdminMember from './pages/system_admin/SystemAdminMember';
 import CompanyAdminMain from './pages/company_admin/CompanyAdminMain';
@@ -23,7 +25,7 @@ import CompanyUserEmailSend from './pages/company_user/CompanyUserEmailSend';
 import CompanyUserEmailDetail from './pages/company_user/CompanyUserEmailDetail';
 import CompanyUserDraftWriteWork from './pages/company_user/CompanyUserDraftWriteWork';
 import CompanyUserDraftWriteAtten from './pages/company_user/CompanyUserDraftWriteAtten';
-import CompanyUserDraftWritePurc from './pages/company_user/CompanyUserDraftwritePurc';
+import CompanyUserDraftWritePurc from './pages/company_user/CompanyUserDraftWritePurc';
 import CompanyUserDraftForm from './pages/company_user/CompanyUserDraftForm';
 import CompanyUserDraftDetail from './pages/company_user/CompanyUserDraftDetail';
 import CompanyUserDraftDocAll from './pages/company_user/CompanyUserDraftDocAll';
@@ -34,17 +36,19 @@ import CompanyUserCalender from './pages/company_user/CompanyUserCalender';
 import CompanyUserChat from './pages/company_user/CompanyUserChat';
 import Menubar from './pages/layout/menubar';
 import GraphChart from './pages/layout/GraphChart';
+import ApprovalLine from './pages/layout/ApprovalLine';
 // import PageNav from './pages/layout/PageNav';
 import './App.css';
 import './styles/style.css';
 
-import { BrowserRouter as Router, Route, Routes, useLocation, useMatch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation, useMatch } from 'react-router-dom';``
 import Chatting from './pages/company_user/CompanyUserChatting';
 
 function App() {
     const [hello, setHello] = useState('');
 
     useEffect(() => {
+          Modal.setAppElement('#root');
         axios.get('/api/hello')
             .then(response => setHello(response.data))
             .catch(error => console.log(error));
@@ -63,6 +67,7 @@ function App() {
                 <HeaderToggle />
                 <MenubarToggle isMenuOpen={isMenuOpen} />
                 <GraphChartToggle />
+                <ApprovalLineToggle />
                 {/* <PaginationToggle /> */}
                 <main className='app'>
                     <Routes>
@@ -72,7 +77,7 @@ function App() {
                         <Route path='/login' element={<Login />} />
                         <Route path='/email_Auth' element={<EmailAuth />} />
                         <Route path='/inquiry/write' element={<InquiryWrite />} />
-
+                        <Route path='/email_Auth/searchPW' element={<SearchPW />} />
                         {/* 시스템 관리자 */}
                         <Route path='/system/admin/inquiry' element={<SystemAdminInquiry />} />
                         <Route path='/system/admin/member' element={<SystemAdminMember />} />
@@ -125,7 +130,7 @@ function App() {
 // /chatting으로 시작하는 URL에서 Header 숨기기
 function HeaderToggle() {
     const location = useLocation();
-    const HeaderHiddenPaths = ['/chatting','/login'];
+    const HeaderHiddenPaths = ['/chatting','/login','/email_Auth','/email_Auth/searchPW'];
 
     return (
         <>
@@ -141,7 +146,7 @@ function HeaderToggle() {
 function MenubarToggle({ isMenuOpen }) {
     const location = useLocation();
     const chattingPath = useMatch('/chatting/:name');
-    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte', '/chatting'];
+    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte', '/chatting','/email_Auth/searchPW'];
     const isMenubarHiddenPaths = MenubarHiddenPaths.includes(location.pathname) || chattingPath;
 
     return (
@@ -180,6 +185,22 @@ function GraphChartToggle() {
             {allowedPaths.includes(location.pathname) && (
                 <div className='GraphChart'>
                     <GraphChart />
+                </div>
+            )}
+        </>
+    );
+}
+
+// 결재선
+function ApprovalLineToggle() {
+    const location = useLocation();
+    const allowedPaths = ['/company/user/draft/write/work', '/company/user/draft/write/attendance', '/company/user/draft/write/purchase'];  
+
+    return (
+        <>
+            {allowedPaths.includes(location.pathname) && (
+                <div className='ApprovalLine'>
+                    <ApprovalLine />
                 </div>
             )}
         </>
