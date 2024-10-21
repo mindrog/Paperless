@@ -20,17 +20,40 @@
     margin-bottom: 2vh;
 }
 .input_id,
-.input_pw {
+.input_pw,
+.input_number {
     width: 40vh;
     height: 5vh;
-    margin: 1vh 0;
+    margin-bottom: 1vh;
     border: 1px solid #b9b8b8; /* 기본 테두리 색상 */
     border-radius: 10px;
     padding: 0 10px; /* 입력 여백 추가 */
     outline: none; /* 기본 아웃라인 제거 */
     transition: border-color 0.3s, border-width 0.3s; /* 부드러운 전환 효과 */
 }
-
+.input_email_cont{
+    
+}
+.input_email{
+    width: 28vh;
+    height: 5vh;
+    margin-bottom: 1vh;
+    border: 1px solid #b9b8b8; /* 기본 테두리 색상 */
+    border-radius: 10px;
+    padding: 0 10px; /* 입력 여백 추가 */
+    margin-right: 2vh;
+    outline: none; /* 기본 아웃라인 제거 */
+    transition: border-color 0.3s, border-width 0.3s;
+}
+.input_email_btn{
+    width: 10vh;
+    height: 5vh;
+    
+    background-color: #2e3d86;
+    color: #fefefe;
+    border: none;
+    border-radius: 10px;
+}
 .input_id:focus,
 .input_pw:focus {
     border: 3px solid #90bceb; /* 포커스 시 테두리 색상 변경 */
@@ -52,6 +75,16 @@
     
     justify-content: center;
     flex-direction: row;
+}
+.subtitle{
+    width: 40%;
+    display: flex;
+    align-items: baseline;
+}
+.subtitle p{
+    margin: 0;
+    font-size: 0.8rem;
+    color: #707070;
 }
 .searchPW_link{
     margin-left: 0.5vw;
