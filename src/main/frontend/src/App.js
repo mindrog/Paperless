@@ -125,7 +125,7 @@ function App() {
 // /chatting으로 시작하는 URL에서 Header 숨기기
 function HeaderToggle() {
     const location = useLocation();
-    const HeaderHiddenPaths = ['/chatting'];
+    const HeaderHiddenPaths = ['/chatting','/login'];
 
     return (
         <>
@@ -157,7 +157,7 @@ function MenubarToggle({ isMenuOpen }) {
 
 function FooterToggle() {
     const location = useLocation();
-    const FooterPaths = ['/', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte'];
+    const FooterPaths = ['/', '/inquiry', '/inquiry/success', '/email_Auth', '/inquiry/wirte'];
 
     return (
         <>
