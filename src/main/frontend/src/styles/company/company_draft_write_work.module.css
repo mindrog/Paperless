@@ -2,6 +2,13 @@ body {
   font-family: 'ONE-Mobile-Regular';
 }
 
+/* 반응형 사이즈 */
+@media screen and (min-width: 1400px) {
+  .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+      max-width: none !important;
+  }
+}
+
 .pageTitle {
   text-align: left;
   margin-bottom: 15px;
@@ -36,7 +43,7 @@ body {
 
 .docKey {
   font-weight: bold;
-  width: 120px;
+  width: 100px;
 }
 
 .docValue {
@@ -69,6 +76,7 @@ body {
 /* btn */
 .btnBox {
   margin-top: 20px;
+  margin-bottom: 40px;
 }
 
 .cancelBtn, .saveAsBtn, .saveBtn {

@@ -25,7 +25,7 @@ import CompanyUserEmailSend from './pages/company_user/CompanyUserEmailSend';
 import CompanyUserEmailDetail from './pages/company_user/CompanyUserEmailDetail';
 import CompanyUserDraftWriteWork from './pages/company_user/CompanyUserDraftWriteWork';
 import CompanyUserDraftWriteAtten from './pages/company_user/CompanyUserDraftWriteAtten';
-import CompanyUserDraftWritePurc from './pages/company_user/CompanyUserDraftwritePurc';
+import CompanyUserDraftWritePurc from './pages/company_user/CompanyUserDraftWritePurc';
 import CompanyUserDraftForm from './pages/company_user/CompanyUserDraftForm';
 import CompanyUserDraftDetail from './pages/company_user/CompanyUserDraftDetail';
 import CompanyUserDraftDocAll from './pages/company_user/CompanyUserDraftDocAll';
@@ -41,7 +41,7 @@ import ApprovalLine from './pages/layout/ApprovalLine';
 import './App.css';
 import './styles/style.css';
 
-import { BrowserRouter as Router, Route, Routes, useLocation, useMatch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation, useMatch } from 'react-router-dom';``
 import Chatting from './pages/company_user/CompanyUserChatting';
 
 function App() {
@@ -67,6 +67,7 @@ function App() {
                 <HeaderToggle />
                 <MenubarToggle isMenuOpen={isMenuOpen} />
                 <GraphChartToggle />
+                <ApprovalLineToggle />
                 {/* <PaginationToggle /> */}
                 <main className='app'>
                     <Routes>
@@ -193,13 +194,13 @@ function GraphChartToggle() {
 // 결재선
 function ApprovalLineToggle() {
     const location = useLocation();
-    const allowedPaths = ['company/user/draft/write/work', 'company/user/draft/write/attendance', '/company/user/draft/write/purchase'];  
+    const allowedPaths = ['/company/user/draft/write/work', '/company/user/draft/write/attendance', '/company/user/draft/write/purchase'];  
 
     return (
         <>
             {allowedPaths.includes(location.pathname) && (
-                <div className='GraphChart'>
-                    <GraphChart />
+                <div className='ApprovalLine'>
+                    <ApprovalLine />
                 </div>
             )}
         </>
