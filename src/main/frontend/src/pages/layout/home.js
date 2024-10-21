@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Carousel, Card, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import main1 from '../../img/main_content1.png';
 import main2 from '../../img/main_main.png';
 import main3 from '../../img/main_main2.png';
@@ -202,8 +203,12 @@ function Home() {
                         <p className='main_cont_1_title_type3_text2'>소통, 협업 등을 하나의 공간에서 활용하여 생산성을 높여보세요.</p>
                     </div>
                     <div className='main_cont_1_btn_container'>
-                        <button type='button' className='main_btn1'>도입 문의하기</button>
-                        <button type='button' className='main_btn2'>로그인</button>
+                        <Link to="/inquiry" className='main_btn1'>
+                            도입 문의하기
+                        </Link>
+                        <Link to="/login" className='main_btn2'>
+                            로그인
+                        </Link>
                     </div>
                     <div></div>
                     <div className='top_btn_box'>
@@ -250,7 +255,7 @@ function Home() {
                 </div>
                 <div className={`main_cont_2_type4 ${isVisible4 ? 'show' : ''}`}>
                     <div className='type4_img_script'>
-                        <p className='main_script_title'>peperless가 제공하는<br/> 다양한 보고서 템플릿!</p>
+                        <p className='main_script_title'>peperless가 제공하는<br /> 다양한 보고서 템플릿!</p>
                         <p className='main_script_contents'> 효율적인 업무 처리를 위해 Paperless는 다양한 보고서 템플릿을 제공합니다. 각 템플릿은 사용자의 필요에 맞춰 설계되어, 빠르고 간편하게 전문적인 보고서를 작성할 수 있도록 돕습니다.</p>
                     </div>
                     <div className='type4_img_cont'>
