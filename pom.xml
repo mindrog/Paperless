@@ -28,7 +28,7 @@
 		<url />
 	</scm>
 	<properties>
-	<org.aspectj-version>1.9.9.1</org.aspectj-version>
+		<org.aspectj-version>1.9.9.1</org.aspectj-version>
 		<java.version>11</java.version>
 	</properties>
 	<dependencies>
@@ -79,6 +79,18 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-dynamodb</artifactId>
+			<version>1.12.300</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-apigatewaymanagementapi</artifactId>
+			<version>1.12.300</version>
 		</dependency>
 	</dependencies>
 
