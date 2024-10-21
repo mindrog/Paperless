@@ -11,21 +11,23 @@ function searchPW() {
        
             <div className='loginForm_container'>
 
-                <form className='loginForm'>
+            <form className='searchPWForm'>
                     <img src={logo} className='loginForm_logo'></img>
-                    <input type='text' className='input_id'>
-
-                    </input>
-                    <input type='password' className='input_pw'>
-
-                    </input>
-                    <button type='submit' className='login_btn'>
-                        로그인
-                    </button>
-                    <div className='searchPW_container'>
-                        <p className='searchPW'> 비밀번호를 잊으셨나요? </p>
-                        <a className='searchPW_link'>비밀번호 찾기</a>
+                    <div className='subtitle'>
+                    <p className='input_id_sub'>비밀번호</p>
                     </div>
+                    <input type='password' className='input_password' />
+                    
+                    <div className='subtitle'>
+                    <p className='input_id_sub'>비밀번호 확인</p>
+                    </div>
+                    <input type='text' className='input_passwordchk'>
+
+                    </input>
+                    <button type='button' className='auth_btn'>
+                        확인
+                    </button>
+                    
                 </form>
 
             </div>

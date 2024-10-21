@@ -5,7 +5,7 @@
     align-items: center;          /* 수직 중앙 정렬 */
     height: 100vh;                /* 화면 전체 높이 사용 */
 }
-.loginForm{
+.loginForm,.emailForm,.searchPWForm{
     width: 50vw;
     height: 50vh;
     
@@ -21,7 +21,7 @@
 }
 .input_id,
 .input_pw,
-.input_number {
+.input_number,.input_password,.input_passwordchk {
     width: 40vh;
     height: 5vh;
     margin-bottom: 1vh;
@@ -35,18 +35,18 @@
     
 }
 .input_email{
-    width: 28vh;
+    width: 31vh;
     height: 5vh;
     margin-bottom: 1vh;
     border: 1px solid #b9b8b8; /* 기본 테두리 색상 */
     border-radius: 10px;
     padding: 0 10px; /* 입력 여백 추가 */
-    margin-right: 2vh;
+    margin-right: 1vh;
     outline: none; /* 기본 아웃라인 제거 */
     transition: border-color 0.3s, border-width 0.3s;
 }
 .input_email_btn{
-    width: 10vh;
+    width: 8vh;
     height: 5vh;
     
     background-color: #2e3d86;
@@ -62,6 +62,15 @@
     width: 40%;
     height: 5vh;
     margin-top: 5vh;
+    background-color: #2e3d86;
+    color: #fefefe;
+    border: none;
+    border-radius: 10px;
+}
+.auth_btn{
+    width: 40%;
+    height: 5vh;
+    margin-top: 2vh;
     background-color: #2e3d86;
     color: #fefefe;
     border: none;
