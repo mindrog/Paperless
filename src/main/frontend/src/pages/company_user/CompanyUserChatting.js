@@ -6,8 +6,43 @@ import { Button } from 'react-bootstrap';
 import EmojiPicker from 'emoji-picker-react';
 import { format, isSameDay } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import useWebSocket from 'react-use-websocket';
+
+const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
 function Chatting() {
+    const [socketUrl] = useState(WEBSOCKET_URL);
+
+    // 보낸 메시지 관리
+    // sendMessage: WebSocket 서버로 메시지를 보내는 함수
+    //  클라이언트가 서버에 데이터를 전송할 때 사용
+    // lastMessage: 서버에서 마지막으로 수신한 메시지
+    //  서버에서 메시지가 올 때마다 업데이트
+    // readyState: WebSocket의 연결 상태를 나타내는 함수
+    //  총 4가지로 0: 연결 시도 중, 1: 연결, 2: 연결 종료 시도 중, 3: 연결 종료
+    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
+
+    // 메시지를 저장하고 출력하는 변수
+    const [message, setMessage] = useState('');
+
+    // WebSocket 연결 상태
+    const connectionStatus = {
+        0 : '연결 시도 중..',
+        1 : '연결됨',
+        2 : '연결 종료 시도 중..',
+        3 : '연결 종료'
+    }[readyState];
+
+    // readyState가 변경될 때마다 함수를 실행
+    useEffect(() => {
+        console.log('WEBSOCKET_URL:', WEBSOCKET_URL);
+
+        // 연결 되었을 때
+        if (readyState === 1) {
+            console.log('연결 성공!');
+        }
+    }, [readyState]);
+
     // URL에서 가져온 name 저장하는 변수
     const { name } = useParams();
 
@@ -100,6 +135,23 @@ function Chatting() {
         },
     ];
 
+    // mainContainerRef 저장
+    const mainContainerRef = useRef(null);
+
+    // 가장 마지막에 읽은 메시지부터 보여주기
+    const scrollToBottom = () => {
+        const mainContainer = mainContainerRef.current;
+        if (mainContainer) {
+            mainContainer.scrollTop = mainContainer.scrollHeight;
+        }
+    };
+
+    // 컴포넌트가 마운트 또는 새 메시지가 추가될 때 스크롤 맨 아래로 이동
+    // 메시지 목록이 업데이트 될 때마다 실행
+    useEffect(() => {
+        scrollToBottom();
+    }, [messageList]);
+
     return (
         <>
             <Helmet>
@@ -121,8 +173,13 @@ function Chatting() {
                                     <div className={styles.header_profile_name}>
                                         <p>{emp.name} {emp.posi}</p>
                                     </div>
+
                                 </div>
                                 <div className={styles.select_chatting}>
+                                    <div>
+                                        <p>연결 확인: {connectionStatus}</p>
+                                        <p>수신 확인: {lastMessage ? lastMessage.data : '메시지x '}</p>
+                                    </div>
                                     <input type='text' className={`${styles.select_input} ${showSelectInput ? styles.select_input_show : styles.select_input_hide}`} placeholder='내용을 입력해주세요.'></input>
                                     <Button className={styles.select_chattingButton} onClick={selectToggle}><i class="material-icons">search</i></Button>
                                 </div>
@@ -132,7 +189,7 @@ function Chatting() {
                         <h1>채팅 불러오는 중 ...</h1>
                     )}
                     </header>
-                    <div className={styles.main_container}>
+                    <div className={styles.main_container} ref={mainContainerRef}>
                         {messageList.some(message => emp?.name === message.sender || emp?.name === message.recipient) ?
                             messageList.map((message, index) => {
                                 // 날짜가 다른지 확인
