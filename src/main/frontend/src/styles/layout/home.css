@@ -121,33 +121,48 @@
     margin-top: 1vh;
     width: 40%;
     height: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
 }
 
 .main_btn1 {
     font-size: 1em;
     width: 10vw;
     height: 5vh;
-    margin: 3vh 1vw 3vh 1vw;
+    margin: 3vh 1vw;
     border-radius: 8px;
     background-color: #020202;
-
+    font-family: 'ONE-Mobile-Regular';
     color: #fefefe;
     font-weight: 800;
-    border: none;
-    font-family: 'ONE-Mobile-Regular';
+    border: 1px solid black;
+    text-align: center; /* 텍스트 중앙 정렬 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+     /* 블록처럼 보이도록 */
+    text-decoration: none; /* 링크의 기본 밑줄 제거 */
 }
 
 .main_btn2 {
     font-size: 1em;
     width: 10vw;
     height: 5vh;
-    margin: 3vh 1vw 3vh 1vw;
+    margin: 3vh 1vw;
     border-radius: 8px;
     background-color: #fefefe;
     font-family: 'ONE-Mobile-Regular';
     color: #020202;
     font-weight: 800;
     border: 1px solid black;
+    text-align: center; /* 텍스트 중앙 정렬 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+     /* 블록처럼 보이도록 */
+    text-decoration: none;
 }
 
 .main_btn1:hover,
