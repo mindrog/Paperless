@@ -34,6 +34,7 @@ import CompanyUserCalender from './pages/company_user/CompanyUserCalender';
 import CompanyUserChat from './pages/company_user/CompanyUserChat';
 import Menubar from './pages/layout/menubar';
 import GraphChart from './pages/layout/GraphChart';
+import ApprovalLine from './pages/layout/ApprovalLine';
 // import PageNav from './pages/layout/PageNav';
 import './App.css';
 import './styles/style.css';
@@ -174,6 +175,22 @@ function FooterToggle() {
 function GraphChartToggle() {
     const location = useLocation();
     const allowedPaths = ['/company/user/', '/company/admin/'];  // GraphChart를 보여줄 경로
+
+    return (
+        <>
+            {allowedPaths.includes(location.pathname) && (
+                <div className='GraphChart'>
+                    <GraphChart />
+                </div>
+            )}
+        </>
+    );
+}
+
+// 결재선
+function ApprovalLineToggle() {
+    const location = useLocation();
+    const allowedPaths = ['company/user/draft/write/work', 'company/user/draft/write/attendance', '/company/user/draft/write/purchase'];  
 
     return (
         <>
