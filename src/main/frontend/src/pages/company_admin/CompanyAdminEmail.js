@@ -15,7 +15,7 @@ function CompanyAdminEmail() {
                 recipient: `recipient${i}@paperless.pl`,
                 subject: `테스트 이메일 ${i}`,
                 content: `이것은 이메일 내용 ${i}입니다.`,
-                receivedAt: `2023-10-${String(i).padStart(2, '0')} 10:00`,
+                receivedAt: `2024-10-${String(i).padStart(2, '0')} 10:00`,
                 hasAttachment: i % 2 === 0, // 짝수 번호 이메일은 첨부파일이 있다고 가정
                 isRead: false,
             });
@@ -422,7 +422,7 @@ function CompanyAdminEmail() {
                                 onChange={handleSelectAllChange}
                             />
                         </th>
-                        <th style={{ width: '10%' }}>읽음</th>
+                        <th style={{ width: '10%' }}></th>
                         <th style={{ width: '20%' }}>보낸 사람</th>
                         <th style={{ width: '30%' }}>제목</th>
                         <th style={{ width: '30%' }}>받은 시간</th>
