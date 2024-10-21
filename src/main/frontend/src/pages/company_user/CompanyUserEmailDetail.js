@@ -315,10 +315,11 @@ function CompanyUserEmailDetail() {
                 testFile
               </span>
             </p>
+            <hr />
           </div>
         )}
 
-        <hr />
+        
         <div className={styles['email-content']}>{email.content}</div>
       </div>
 

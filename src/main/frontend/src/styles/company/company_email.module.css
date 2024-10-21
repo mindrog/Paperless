@@ -7,7 +7,7 @@
     margin-left: 220px;
     height: 85vh;
     width: 80vw;
-    position: relative; 
+    position: relative;
 }
 
 /* 툴바 스타일 */
@@ -21,7 +21,7 @@
 .left-buttons .btn {
     padding: 5px 10px;
     margin-right: 5px;
-    background-color: #6c757d; 
+    background-color: #6c757d;
     color: white;
     border: none;
     border-radius: 4px;
@@ -34,7 +34,7 @@
 }
 
 .left-buttons .btn:not(:disabled) {
-    background-color: #2e3d86; 
+    background-color: #2e3d86;
 }
 
 /* 검색 바 스타일 */
@@ -69,8 +69,8 @@
 /* 상세 검색 스타일 */
 .detail-search {
     position: absolute;
-    top: 60px; 
-    right: 20px; 
+    top: 60px;
+    right: 20px;
     width: 500px;
     padding: 20px;
     background-color: #fff;
@@ -122,7 +122,7 @@
 /* 메일 작성 버튼 스타일 */
 .compose-button {
     position: absolute;
- 
+
     right: 20px;
     padding: 10px 20px;
     background-color: #2e3d86;
@@ -130,7 +130,7 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    
+
 }
 
 .compose-button:hover {
