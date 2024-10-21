@@ -48,6 +48,14 @@ const Menubar = ({ isMenuOpen }) => {
         return '사용자'; // 기본 값
     };
 
+    const handlerCompanyMain = () => {
+        if(getUserGrade() === '부장') {
+            navigate('/company/admin');
+        } else {
+            navigate('/company/user');
+        }
+    }
+
     const showEmployeeNotificationModal = () => {
         setNotificationModal(true);
     };
@@ -73,7 +81,7 @@ const Menubar = ({ isMenuOpen }) => {
             <div className={styles.menubar}>
                 <div className={styles.profil}>
                     <div className={styles.profilbox}>
-                        <div className={styles.profiltitle}>
+                        <div className={styles.profiltitle} onClick={handlerCompanyMain}>
                             <p>기획전략팀</p>
                             <div className={styles.titlename}>
                                 <div className={styles.userName}>{profileName}</div>

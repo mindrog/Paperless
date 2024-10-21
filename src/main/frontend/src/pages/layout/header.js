@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import styles from '../../styles/layout/layout.css';
+import {Link} from 'react-router-dom';
+import '../../styles/layout/layout.css';
 import logo from '../../img/logo-img.png';
 
 const HeaderOne = ({ logoSize, toggleMenu }) => (
@@ -7,7 +8,14 @@ const HeaderOne = ({ logoSize, toggleMenu }) => (
         <div className='logo_Img_start'>
             {/* 햄버거 아이콘이 중간 화면에서만 보이도록 className 적용 */}
             <i className="material-symbols-outlined hamburger" onClick={toggleMenu}>menu</i>
-            <img src={logo} className='Header-logo-start' alt='Logo One' style={{ transform: `scale(${logoSize})` }} />
+            <Link to="/" className="link-logo">
+    <img 
+        src={logo} 
+        className='Header-logo-start' 
+        alt='Logo One' 
+        style={{ transform: `scale(${logoSize})` }} 
+    />
+</Link>
         </div>
     </header>
 );
@@ -15,15 +23,21 @@ const HeaderOne = ({ logoSize, toggleMenu }) => (
 const HeaderTwo = ({ toggleMenu }) => (
     <header className='header-two'>
         <div className='logo_Img'>
+        <Link to='/'>
             <img src={logo} className='Header-logo' alt='Logo Two' />
+            </Link> 
         </div>
         <div className='menu_Container'>
 
         </div>
         <div className='btn_Container'>
+            <Link to='/inquiryWrite'>
             <button type='button' className='header_btn'>문의하기</button>
+            </Link><Link to='/inquiry'>
             <button type='button' className='header_btn'>신청하기</button>
+            </Link><Link to='/login'>
             <button type='button' className='header_btn'>로그인</button>
+            </Link>
         </div>
     </header>
 );
