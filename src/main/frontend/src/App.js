@@ -9,7 +9,7 @@ import Login from './pages/layout/login';
 import InquirySuccess from './pages/common/InquirySuccess';
 import InquiryWrite from './pages/common/InquiryWrite';
 import EmailAuth from './pages/layout/email_auth';
-import searchPW from './pages/layout/searchPW';
+import SearchPW from './pages/layout/searchPW';
 import SystemAdminInquiry from './pages/system_admin/SystemAdminInquiry';
 import SystemAdminMember from './pages/system_admin/SystemAdminMember';
 import CompanyAdminMain from './pages/company_admin/CompanyAdminMain';
@@ -75,7 +75,7 @@ function App() {
                         <Route path='/login' element={<Login />} />
                         <Route path='/email_Auth' element={<EmailAuth />} />
                         <Route path='/inquiry/write' element={<InquiryWrite />} />
-                        <Route path='/email_Auth/searchPW' element={<searchPW />} />
+                        <Route path='/email_Auth/searchPW' element={<SearchPW />} />
                         {/* 시스템 관리자 */}
                         <Route path='/system/admin/inquiry' element={<SystemAdminInquiry />} />
                         <Route path='/system/admin/member' element={<SystemAdminMember />} />
@@ -144,7 +144,7 @@ function HeaderToggle() {
 function MenubarToggle({ isMenuOpen }) {
     const location = useLocation();
     const chattingPath = useMatch('/chatting/:name');
-    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte', '/chatting'];
+    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte', '/chatting','/email_Auth/searchPW'];
     const isMenubarHiddenPaths = MenubarHiddenPaths.includes(location.pathname) || chattingPath;
 
     return (
