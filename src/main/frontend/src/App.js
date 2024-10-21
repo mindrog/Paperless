@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Modal from 'react-modal';
 import axios from 'axios';
 import Header from './pages/layout/header';
 import Footer from './pages/layout/footer';
@@ -8,6 +9,7 @@ import Login from './pages/layout/login';
 import InquirySuccess from './pages/common/InquirySuccess';
 import InquiryWrite from './pages/common/InquiryWrite';
 import EmailAuth from './pages/layout/email_auth';
+import SearchPW from './pages/layout/searchPW';
 import SystemAdminInquiry from './pages/system_admin/SystemAdminInquiry';
 import SystemAdminMember from './pages/system_admin/SystemAdminMember';
 import CompanyAdminMain from './pages/company_admin/CompanyAdminMain';
@@ -34,6 +36,7 @@ import CompanyUserCalender from './pages/company_user/CompanyUserCalender';
 import CompanyUserChat from './pages/company_user/CompanyUserChat';
 import Menubar from './pages/layout/menubar';
 import GraphChart from './pages/layout/GraphChart';
+import ApprovalLine from './pages/layout/ApprovalLine';
 // import PageNav from './pages/layout/PageNav';
 import './App.css';
 import './styles/style.css';
@@ -45,6 +48,7 @@ function App() {
     const [hello, setHello] = useState('');
 
     useEffect(() => {
+          Modal.setAppElement('#root');
         axios.get('/api/hello')
             .then(response => setHello(response.data))
             .catch(error => console.log(error));
@@ -72,7 +76,7 @@ function App() {
                         <Route path='/login' element={<Login />} />
                         <Route path='/email_Auth' element={<EmailAuth />} />
                         <Route path='/inquiry/write' element={<InquiryWrite />} />
-
+                        <Route path='/email_Auth/searchPW' element={<SearchPW />} />
                         {/* 시스템 관리자 */}
                         <Route path='/system/admin/inquiry' element={<SystemAdminInquiry />} />
                         <Route path='/system/admin/member' element={<SystemAdminMember />} />
@@ -125,7 +129,7 @@ function App() {
 // /chatting으로 시작하는 URL에서 Header 숨기기
 function HeaderToggle() {
     const location = useLocation();
-    const HeaderHiddenPaths = ['/chatting'];
+    const HeaderHiddenPaths = ['/chatting','/login','/email_Auth','/email_Auth/searchPW'];
 
     return (
         <>
@@ -141,7 +145,7 @@ function HeaderToggle() {
 function MenubarToggle({ isMenuOpen }) {
     const location = useLocation();
     const chattingPath = useMatch('/chatting/:name');
-    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte', '/chatting'];
+    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte', '/chatting','/email_Auth/searchPW'];
     const isMenubarHiddenPaths = MenubarHiddenPaths.includes(location.pathname) || chattingPath;
 
     return (
@@ -157,7 +161,7 @@ function MenubarToggle({ isMenuOpen }) {
 
 function FooterToggle() {
     const location = useLocation();
-    const FooterPaths = ['/', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte'];
+    const FooterPaths = ['/', '/inquiry', '/inquiry/success', '/email_Auth', '/inquiry/wirte'];
 
     return (
         <>
@@ -174,6 +178,22 @@ function FooterToggle() {
 function GraphChartToggle() {
     const location = useLocation();
     const allowedPaths = ['/company/user/', '/company/admin/'];  // GraphChart를 보여줄 경로
+
+    return (
+        <>
+            {allowedPaths.includes(location.pathname) && (
+                <div className='GraphChart'>
+                    <GraphChart />
+                </div>
+            )}
+        </>
+    );
+}
+
+// 결재선
+function ApprovalLineToggle() {
+    const location = useLocation();
+    const allowedPaths = ['company/user/draft/write/work', 'company/user/draft/write/attendance', '/company/user/draft/write/purchase'];  
 
     return (
         <>

@@ -66,7 +66,7 @@ header{
     align-items: center;
 }
 .Header-logo-start{
-    width: 15%;
+    width: 40%;
     height: auto;
 }
 .header-one, .header-two {
@@ -111,4 +111,9 @@ header{
     .hamburger {
         display: none; /* 큰 화면에서는 다시 숨기기 */
     }
+}
+.link-logo {
+    display: inline-block; /* 블록처럼 보이도록 설정 */
+    width: 40%;
+    height: auto;
 }
