@@ -1,0 +1,211 @@
+.Container {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 20px;
+    color: #2e3d86;
+    margin-left: 220px;
+    height: 85vh;
+    width: 80vw;
+    position: relative;
+}
+
+/* 툴바 스타일 */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.left-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.left-buttons .btn {
+    padding: 5px 10px;
+    margin-right: 5px;
+    background-color: #2e3d86;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+
+/* 검색 바 스타일 */
+.search-bar {
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    width: 200px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.search-button,
+.detail-button {
+    margin-left: 5px;
+    padding: 5px 10px;
+    background-color: #2e3d86;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-button:hover,
+.detail-button:hover,
+.left-buttons .btn:hover  {
+    background-color: #1d2a6d;
+}
+
+
+/* 상세 검색 스타일 */
+.detail-search {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    width: 500px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #e6e6ea;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(107, 119, 172, 0.2);
+    z-index: 50;
+}
+
+.detail-field {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+
+.detail-field label {
+    width: 80px;
+    margin-right: 10px;
+}
+
+.detail-field input[type="text"],
+.detail-field input[type="date"],
+.detail-field select {
+    flex-grow: 1;
+    padding: 5px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.detail-field input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.detail-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.detail-actions .search-button {
+    width: 100px;
+}
+
+.detail-search input[type="date"] {
+    width: calc(50% - 5px);
+}
+
+/* 이메일 헤더 스타일 */
+.email-header {
+    display: flex;
+    align-items: center;
+}
+
+.email-header .btn {
+    padding: 5px 10px;
+    background-color: #2e3d86;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.email-header .btn:hover {
+    background-color: #1d2a6d;
+}
+
+.email-header h2 {
+    margin-left: 10px;
+    margin-top: 0;
+}
+
+/* 이메일 상세 내용 스타일 */
+.email-detail {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #e6e6ea;
+    border-radius: 10px;
+    margin-top: 10px;
+    height: 495px;
+}
+
+.email-detail h2 {
+    margin-top: 0;
+}
+
+.email-detail p {
+    margin: 5px 0;
+}
+
+/* 받은 시간 스타일 */
+.received-time {
+    font-size: 0.9em;
+    color: #666;
+}
+
+/* 첨부파일 란 */
+.attachment-section {
+    margin-top: 10px;
+}
+.attachment-link {
+    color: #2e3d86;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.attachment-link:hover {
+    color: #1d2a6d;
+}
+
+/* 이메일 내용 스타일 */
+.email-content {
+    margin-top: 20px;
+    white-space: pre-wrap;
+}
+
+/* 메일 작성 버튼 스타일 */
+.compose-button {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #2e3d86;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.compose-button:hover {
+    background-color: #1d2a6d;
+}
+
+/* 텍스트 왼쪽 정렬 */
+.email-detail,
+.email-detail h2,
+.email-detail p,
+.email-content {
+    text-align: left;
+}

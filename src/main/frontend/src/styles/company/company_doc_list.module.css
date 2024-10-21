@@ -1,0 +1,10 @@
+.Container {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 20px;
+    color: #2e3d86;
+    margin-left: 220px;
+    height: 85vh;
+    width: 80vw;
+    position: relative;
+}

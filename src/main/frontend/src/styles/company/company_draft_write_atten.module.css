@@ -1,0 +1,22 @@
+.AttenContent {
+    text-align: left;
+}
+
+/* .inputForm {
+    width: 350px;
+} */
+
+.inputFormDate {
+    width: 575px;
+}
+
+.docKeyDate {
+    display: flex;
+    justify-content: left;
+}
+
+.inputFormDate:active, .inputFormDate:focus {
+    outline: none !important;
+    box-shadow: none;
+    border: 1.3px solid #2e3d86;
+}
