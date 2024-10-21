@@ -1,0 +1,158 @@
+-- 1021Table
+
+-- Scheduler 테이블 삭제
+DROP TABLE IF EXISTS `Scheduler`;
+
+-- Recipient 테이블 삭제
+DROP TABLE IF EXISTS `Recipient`;
+
+-- Reference 테이블 삭제
+DROP TABLE IF EXISTS `Reference`;
+
+-- Approver 테이블 삭제
+DROP TABLE IF EXISTS `Approver`;
+
+-- Attachment 테이블 삭제
+DROP TABLE IF EXISTS `Attachment`;
+
+-- Report 테이블 삭제
+DROP TABLE IF EXISTS `Report`;
+
+-- Employee 테이블 삭제
+DROP TABLE IF EXISTS `Employee`;
+
+-- Position 테이블 삭제
+DROP TABLE IF EXISTS `Position`;
+
+-- Department 테이블 삭제
+DROP TABLE IF EXISTS `Department`;
+
+-- Company 테이블 삭제
+DROP TABLE IF EXISTS `Company`;
+
+-- Company 테이블 생성
+CREATE TABLE `Company` (
+	`comp_no` BIGINT NOT NULL AUTO_INCREMENT,
+	`comp_name` varchar(300) NOT NULL,
+	`comp_industry` varchar(100) NOT NULL,
+	`comp_requester` varchar(100) NOT NULL COMMENT '담당자',
+	`comp_email` varchar(300) NOT NULL COMMENT '담당자 이메일',
+	`comp_phone` varchar(100) NOT NULL COMMENT '담당자 번호',
+	`comp_headcount` INT NOT NULL DEFAULT 0 COMMENT '예상 인원 수',
+	PRIMARY KEY (`comp_no`)
+);
+
+-- Department 테이블 생성
+CREATE TABLE `Department` (
+	`dept_no` BIGINT NOT NULL AUTO_INCREMENT,
+	`dept_name` varchar(100) NOT NULL,
+	PRIMARY KEY (`dept_no`)
+);
+
+-- Position 테이블 생성
+CREATE TABLE `Position` (
+	`posi_no` BIGINT NOT NULL AUTO_INCREMENT,
+	`posi_name` varchar(100) NOT NULL,
+	PRIMARY KEY (`posi_no`)
+);
+
+-- Employee 테이블 생성
+CREATE TABLE `Employee` (
+	`emp_no` BIGINT NOT NULL AUTO_INCREMENT,
+	`emp_code` varchar(100) NOT NULL,
+	`emp_id` varchar(100) NOT NULL,
+	`emp_pw` varchar(100) NOT NULL,
+	`emp_email` varchar(300) NOT NULL,
+	`emp_phone` varchar(100) NOT NULL,
+	`emp_sign` varchar(100) NULL,
+	`emp_profile` varchar(300) NULL,
+	`emp_comp_no` BIGINT NOT NULL COMMENT 'comp_no',
+	`emp_dept_no` BIGINT NOT NULL COMMENT 'dept_no',
+	`emp_posi_no` BIGINT NOT NULL COMMENT 'posi_no',
+	`emp_enroll_date` TIMESTAMP NOT NULL DEFAULT NOW(),
+	`emp_join_date` TIMESTAMP NOT NULL,
+	`emp_lastmsg` varchar(100) NULL,
+	`emp_lastemailmsg` varchar(100) NULL,
+	`emp_role` varchar(100) NOT NULL DEFAULT 'user' COMMENT 'sys_admin, comp_admin, user',
+	PRIMARY KEY (`emp_no`),
+	FOREIGN KEY (`emp_comp_no`) REFERENCES `Company` (`comp_no`),
+	FOREIGN KEY (`emp_dept_no`) REFERENCES `Department` (`dept_no`),
+	FOREIGN KEY (`emp_posi_no`) REFERENCES `Position` (`posi_no`)
+);
+
+-- Report 테이블 생성
+CREATE TABLE `Report` (
+	`repo_no` BIGINT NOT NULL AUTO_INCREMENT,
+	`repo_emp_no` BIGINT NOT NULL COMMENT 'emp_no',
+	`repo_title` varchar(300) NOT NULL,
+	`repo_content` varchar(500) NOT NULL,
+	`repo_type` varchar(100) NOT NULL,
+	`repo_status` varchar(100) NOT NULL COMMENT '임시저장, 저장, 상신, 상신취소',
+	`dept_code` varchar(100) NULL,
+	`draft_date` TIMESTAMP NULL DEFAULT NOW(),
+	`submission_date` TIMESTAMP NULL,
+	`cancel_date` TIMESTAMP NULL,
+	`repo_start_time` TIMESTAMP NULL,
+	`repo_end_time` TIMESTAMP NULL,
+	PRIMARY KEY (`repo_no`),
+	FOREIGN KEY (`repo_emp_no`) REFERENCES `Employee` (`emp_no`)
+);
+
+-- Attachment 테이블 생성
+CREATE TABLE `Attachment` (
+	`atta_no` BIGINT NOT NULL AUTO_INCREMENT,
+	`atta_repo_no` BIGINT NULL COMMENT 'repo_no',
+	`atta_email_no` BIGINT NULL COMMENT 'email_no',
+	`atta_content` varchar(500) NOT NULL,
+	PRIMARY KEY (`atta_no`),
+	FOREIGN KEY (`atta_repo_no`) REFERENCES `Report` (`repo_no`)
+);
+
+-- Approver 테이블 생성
+CREATE TABLE `Approver` (
+	`appr_no` BIGINT NOT NULL AUTO_INCREMENT,
+	`appr_repo_no` BIGINT NOT NULL COMMENT 'repo_no',
+	`appr_emp_no` BIGINT NOT NULL COMMENT 'emp_no',
+	`appr_status` varchar(100) NOT NULL DEFAULT 'wait' COMMENT 'wait(결재 전), approval(결재 후)',
+	`appr_date` TIMESTAMP NULL,
+	PRIMARY KEY (`appr_no`),
+	FOREIGN KEY (`appr_repo_no`) REFERENCES `Report` (`repo_no`),
+	FOREIGN KEY (`appr_emp_no`) REFERENCES `Employee` (`emp_no`)
+);
+
+-- Reference 테이블 생성
+CREATE TABLE `Reference` (
+	`refe_no` BIGINT NOT NULL AUTO_INCREMENT,
+	`refe_repo_no` BIGINT NOT NULL COMMENT 'repo_no',
+	`refe_emp_no` BIGINT NOT NULL COMMENT 'emp_no',
+	`refe_dept_no` BIGINT NOT NULL COMMENT 'dept_no',
+	`refe_date` TIMESTAMP NULL,
+	PRIMARY KEY (`refe_no`),
+	FOREIGN KEY (`refe_repo_no`) REFERENCES `Report` (`repo_no`),
+	FOREIGN KEY (`refe_emp_no`) REFERENCES `Employee` (`emp_no`)
+);
+
+-- Recipient 테이블 생성
+CREATE TABLE `Recipient` (
+	`reci_no` BIGINT NOT NULL AUTO_INCREMENT,
+	`reci_repo_no` BIGINT NOT NULL COMMENT 'repo_no',
+	`reci_emp_no` BIGINT NOT NULL COMMENT 'emp_no',
+	`reci_dept_no` BIGINT NOT NULL COMMENT 'dept_no',
+	`reci_date` TIMESTAMP NULL,
+	PRIMARY KEY (`reci_no`),
+	FOREIGN KEY (`reci_repo_no`) REFERENCES `Report` (`repo_no`),
+	FOREIGN KEY (`reci_emp_no`) REFERENCES `Employee` (`emp_no`)
+);
+
+-- Scheduler 테이블 생성
+CREATE TABLE `Scheduler` (
+	`sche_no` BIGINT NOT NULL AUTO_INCREMENT,
+	`sche_emp_no` BIGINT NOT NULL COMMENT 'emp_no',
+	`sche_title` varchar(300) NOT NULL,
+	`sche_color` varchar(100) NULL,
+	`sche_start_time` TIMESTAMP NOT NULL,
+	`sche_end_time` TIMESTAMP NOT NULL,
+	PRIMARY KEY (`sche_no`),
+	FOREIGN KEY (`sche_emp_no`) REFERENCES `Employee` (`emp_no`)
+);
+

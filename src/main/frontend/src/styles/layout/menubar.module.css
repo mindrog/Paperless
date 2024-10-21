@@ -103,6 +103,7 @@
   text-align: center; 
   margin-top: 6px;
   font-family: 'ONE-Mobile-Title';
+  cursor: pointer;
 }
 
 .profiltitle p {

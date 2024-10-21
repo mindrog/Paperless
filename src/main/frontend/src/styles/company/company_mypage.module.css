@@ -14,10 +14,6 @@
     .mypageContainer {
         margin-left: 20px;
         margin-right: 10px;
-        /*width: 100%; /* 중간화면에서는 전체 너비 */
-        /*justify-content: center; /* 가로로 가운데 정렬 유지 */
-        /* align-items: center; 세로로 가운데 정렬 유지 */
-        /* padding: 10px; /* 중간 화면일 때의 여백 조정 */
     }
 }
 
@@ -32,7 +28,6 @@
 }
 
 .mypageProfil {
-    /* display: flex; */
     margin-left: auto; 
     margin-right: auto; 
     max-width: 900px;
@@ -65,6 +60,7 @@
 .profilTd_value_pw {
     width:auto;
     display: flex;
+    padding: 0;
     align-items: center;
 }
 
@@ -159,10 +155,17 @@
     }
 }
 
-.userNumUpdatebtnInput, .userPwChangebtnInput {
+.userNumUpdatebtnInput {
     background-color: #2e3d86;
     border:#2e3d86;
     margin-left: 10px;
+}
+
+.userPwChangebtnInput {
+    background-color: #2e3d86;
+    border:#2e3d86;
+    margin-left: 0px;
+    width: 100px;
 }
 
 .userNumUpdatebtnInput:hover, .userPwChangebtnInput:hover{

@@ -1,0 +1,144 @@
+body {
+  font-family: 'ONE-Mobile-Regular';
+}
+
+.pageTitle {
+  text-align: left;
+  margin-bottom: 15px;
+  color: gray;
+}
+
+.docHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.docTitleHeader tr, .docHeader tr, .docContent tr{
+  vertical-align: middle;
+}
+
+.docInfo {
+  width: 300px;
+}
+
+.apprLineBox {
+  width: 300px;
+}
+
+.docTitle {
+  width: 300px;
+  font-size: 20px;
+}
+
+.apprLineTbody {
+  width: 60%;
+}
+
+.docKey {
+  font-weight: bold;
+  width: 120px;
+}
+
+.docValue {
+  font-weight: 100;
+}
+
+.docValue_date {
+  font-weight: 100;
+  font-size: 13px;
+}
+
+.inputForm:active, .inputForm:focus {
+  outline: none !important;
+  box-shadow: none;
+  border: 1.3px solid #2e3d86;
+}
+
+.errorMessage {
+  color: rgb(230, 66, 66);
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.customAlert {
+  background-color: #a3b8e4; 
+  border-color: #a3b8e4;
+  color: #fefefe;
+}
+
+/* btn */
+.btnBox {
+  margin-top: 20px;
+}
+
+.cancelBtn, .saveAsBtn, .saveBtn {
+  margin: 10px;
+  width: 100px;
+  padding: 8px;
+  background-color: #2e3d86;
+  border-color: #2e3d86;
+}
+
+.cancelBtn:hover, .saveAsBtn:hover, .saveBtn:hover {
+  border-color: #7289CF;
+  background-color: #7289CF;
+  /* color:#1b1b1b; */
+  font-weight: bold;
+}
+
+.cancelBtn:focus, .saveAsBtn:focus, .saveBtn:focus {
+  border-color: #2e3d86 !important;
+  background-color: #2e3d86 !important;
+  font-weight: bold;
+}
+
+/* .cancelBtn.active, .saveAsBtn.active, .saveBtn.active {
+  border-color: #2e3d86 !important;
+  background-color: #2e3d86 !important;
+  font-weight: bold;
+} */
+
+/* modal */
+.modalSaveBtn {
+  background-color: #2e3d86;
+  border-color: #2e3d86;
+  width: 60px;
+}
+
+.modalSaveBtn:hover {
+  border-color: #7289CF;
+  background-color: #7289CF;
+  /* color:#1b1b1b; */
+  font-weight: bold;
+}
+
+.modalSaveBtn:focus {
+  border-color: #2e3d86 !important;
+  background-color: #2e3d86 !important;
+  font-weight: bold;
+}
+
+.apprModalHeader, .apprModalTitle {
+  color: #2e3d86;
+  font-weight: bold;
+}
+
+.apprModalFooter {
+  border-top: none;
+  justify-content: center;
+}
+
+/* 취소 확인 모달 */
+.cancelModal{
+  text-align: center;
+}
+
+.cancelModalBody {
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+.cancelModalFooter {
+  border-top:none;
+  justify-content: center;
+}
