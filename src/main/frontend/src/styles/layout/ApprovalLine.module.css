@@ -1,31 +1,55 @@
 .apprModalHeader {
-    background-color: #FFEAB8; /* 헤더 배경색 */
-    text-align: center;
-  }
-  
-  .apprModalTitle {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .apprTabs {
-    margin-bottom: 20px;
-  }
-  
-  .orgChartContainer {
-    padding: 15px;
-    background-color: #F9F9F9;
-    border: 1px solid #ddd;
-  }
-  
-  .modalSaveBtn {
-    background-color: #007bff; /* 확인 버튼 색상 */
-    border: none;
-  }
-  
-  .modalCancelBtn {
-    background-color: #fefefe; /* 취소 버튼 색상 */
-    color: #333;
-    border: 1px solid #ddd;
-  }
-  
+  background-color: #2e3d86;
+  color:#fefefe;
+  /* 헤더 배경색 */
+  text-align: center;
+}
+
+.apprModalTitle {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.apprTabs {
+  margin-bottom: 20px;
+}
+
+.apprTab {
+  display: flex;
+}
+
+.orgChartContainer {
+  width: 465px;
+  padding: 15px;
+  background-color: #F9F9F9;
+  border: 1px solid #ddd;
+  display: flex;
+}
+
+.modalSaveBtn {
+  background-color: #2e3d86;
+  border: none;
+}
+
+.modalSaveBtn:hover {
+  background-color: #7289CF;
+}
+
+.modalSaveBtn:focus, .modalSaveBtn.active {
+  background-color: #2e3d86 !important;
+}
+
+.apprModalBody {
+  display: flex;
+}
+
+.selectedPeopleTable {
+  margin-left: 30px;
+}
+
+.orgChartList {
+  width: 500px;
+  border: 1px solid #2e3d86;
+  background-color: #fefefe;
+  padding: 15px 15px 10px 0;
+}
