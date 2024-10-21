@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Table, Button, Form, Modal, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import styles from '../../styles/company/company_draft_write_work.module.css';
-import dayjs from 'dayjs';
-import OrgChart from '../layout/org_chart';
+import ApprovalLine from '../layout/ApprovalLine';
 
 const CompanyUserDraftWriteWork = () => {
   const [reportTitle, setReportTitle] = useState('');
@@ -19,6 +18,7 @@ const CompanyUserDraftWriteWork = () => {
   const [saveDate, setSaveDate] = useState(''); // 임시 저장 날짜
   const [showAlert, setShowAlert] = useState(false); // 임시 저장 알림 상태
   const [formErrors, setFormErrors] = useState({});
+  const [files, setFiles] = useState([]); // 첨부된 파일들을 저장할 상태
 
   const navigate = useNavigate();
 
@@ -89,8 +89,25 @@ const CompanyUserDraftWriteWork = () => {
     console.log('결재 상신 버튼 클릭됨');
   };
 
+  // 파일 드래그
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const droppedFiles = Array.from(e.dataTransfer.files); // 드래그한 파일들 받아오기
+    setFiles((prevFiles) => [...prevFiles, ...droppedFiles]); // 파일 목록에 추가
+  };
+
+  // 드래그 앤 드롭 관련 함수들
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  // 첨부된 파일 목록 삭제하는 함수
+  const handleRemoveFile = (index) => {
+    setFiles(files.filter((_, i) => i !== index));
+  };
+
   return (
-    <div className="container-xl">
+    <div className="container">
       <h2 className={styles.pageTitle}>업무 보고 기안</h2>
 
       <Form>
@@ -146,23 +163,23 @@ const CompanyUserDraftWriteWork = () => {
             </tbody>
           </Table>
           <Table bordered size="sm" className={styles.apprLineBox}>
-            <tbody className={styles.apprLineTbody}>
-              <tr className={styles.apprLinedocTr}>
-                <td className={styles.docKey}>상신</td>
-                <td className={styles.docKey}>결재</td>
-              </tr>
-              <tr>
-                <td className={styles.docKey}>배수지</td>
-                <td>
-                  <Button className={styles.cancelBtn} onClick={handleApprLineModal}>결재선 지정</Button>
-                </td>
-              </tr>
-              <tr>
-                <td className={styles.docValue_date}>2024/10/21</td>
-                <td>-</td>
-              </tr>
-            </tbody>
-          </Table>
+          <tbody className={styles.apprLineTbody}>
+            <tr className={styles.apprLinedocTr}>
+              <td className={styles.docKey}>상신</td>
+              <td className={styles.docKey}>결재</td>
+            </tr>
+            <tr>
+              <td className={styles.docKey}>배수지</td>
+              <td>
+                <Button className={styles.cancelBtn} onClick={handleApprLineModal}>결재선 지정</Button>
+              </td>
+            </tr>
+            <tr>
+              <td className={styles.docValue_date}>2024/10/21</td>
+              <td>-</td>
+            </tr>
+          </tbody>
+        </Table>
         </div>
 
         <Table bordered className={styles.docContent}>
@@ -203,8 +220,22 @@ const CompanyUserDraftWriteWork = () => {
               <td colSpan={4} className={styles.docKey}>첨부자료</td>
             </tr>
             <tr>
-              <td colSpan={4}>
-                <Button>첨부 추가</Button>
+              <td className={styles.docKey}>첨부자료</td>
+              <td 
+                colSpan={5} 
+                className={styles.dropZone}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+              >
+                파일을 여기에 드롭하거나 클릭하여 추가하세요
+                <ul>
+                  {files.map((file, index) => (
+                    <li key={index}>
+                      {file.name}
+                      <Button variant="danger" size="sm" onClick={() => handleRemoveFile(index)}>삭제</Button>
+                    </li>
+                  ))}
+                </ul>
               </td>
             </tr>
           </tbody>
@@ -230,26 +261,7 @@ const CompanyUserDraftWriteWork = () => {
       </div>
 
       {/* 결재선 지정 모달 */}
-      <Modal show={showModal} onHide={handleModalClose} centered>
-        <Modal.Header className={styles.apprModalHeader}>
-          <Modal.Title className={styles.apprModalTitle}>결재선 지정</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className={styles.apprLine}>
-            <OrgChart />
-          </div>
-          
-        </Modal.Body>
-        <Modal.Footer className={styles.apprModalFooter}>
-          <Button variant="primary" onClick={handleModalClose} className={styles.modalSaveBtn}>
-            확인
-          </Button>
-          <Button variant="secondary" onClick={handleModalClose} className={styles.modalcancelBtn}>
-            닫기
-          </Button>
-
-        </Modal.Footer>
-      </Modal>
+      <ApprovalLine showModal={showModal} handleModalClose={handleModalClose} />
 
       {/* 취소 버튼 모달 */}
       <Modal show={showCancelModal} onHide={handleCloseCancelModal} centered className={styles.cancelModal}>

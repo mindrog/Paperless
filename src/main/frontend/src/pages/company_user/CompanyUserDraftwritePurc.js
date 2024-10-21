@@ -1,307 +1,351 @@
-// 구매 기안 작성
 import React, { useState } from 'react';
+import { Table, Button, Form, Modal, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import styles from '../../styles/company/company_draft_write_work.module.css';
+import ApprovalLine from '../layout/ApprovalLine';
 
-const CompanyUserDraftwritePurc = () => {
-  const [draftDept, setDraftDept] = useState('');
-  const [supplier, setSupplier] = useState('');
-  const [draftDate, setDraftDate] = useState('');
-  const [projectNo, setProjectNo] = useState('');
-  const [tel, setTel] = useState('');
-  const [fax, setFax] = useState('');
-  const [deliveryPlace, setDeliveryPlace] = useState('');
-  const [usePurpose, setUsePurpose] = useState('');
-  const [desiredDeliveryDate, setDesiredDeliveryDate] = useState('');
-  const [items, setItems] = useState([{ id: 1, productCode: '', productName: '', specification: '', quantity: '', price: '', amount: '' }]);
-  const [reason, setReason] = useState('');
-  const [specialNote, setSpecialNote] = useState('');
-  const [attachedDocs, setAttachedDocs] = useState('견적서');
-  const [additionalInfo, setAdditionalInfo] = useState('');
+const CompanyUserDraftWriteWork = () => {
+  const [reportTitle, setReportTitle] = useState('');
+  const [reporter, setReporter] = useState('');
+  const [reportDate, setReportDate] = useState('');
+  const [department, setDepartment] = useState('');
+  const [reportContent, setReportContent] = useState('');
+  const [productName, setProductName] = useState('');
+  const [specification, setSpecification] = useState('');
+  const [quantity, setQuantity] = useState(0);
+  const [unitPrice, setUnitPrice] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [note, setNote] = useState('');
+  const [files, setFiles] = useState([]); // 첨부된 파일들을 저장할 상태
+  const [showModal, setShowModal] = useState(false); // 결재선 모달 상태
+  const [showCancelModal, setShowCancelModal] = useState(false); // 취소 버튼 모달 상태
+  const [showSaveModal, setShowSaveModal] = useState(false); // 임시 저장 확인 모달 상태
+  const [isSaved, setIsSaved] = useState(false); // 임시 저장 여부
+  const [saveDate, setSaveDate] = useState(''); // 임시 저장 날짜
+  const [showAlert, setShowAlert] = useState(false); // 임시 저장 알림 상태
+  const [formErrors, setFormErrors] = useState({});
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  // 수량과 단가를 변경하면 금액을 자동 계산
+  React.useEffect(() => {
+    setTotalPrice(quantity * unitPrice);
+  }, [quantity, unitPrice]);
+
+  // 드래그 앤 드롭 관련 함수들
+  const handleDragOver = (e) => {
     e.preventDefault();
-    const formData = {
-      draftDept,
-      supplier,
-      draftDate,
-      projectNo,
-      tel,
-      fax,
-      deliveryPlace,
-      usePurpose,
-      desiredDeliveryDate,
-      items,
-      reason,
-      specialNote,
-      attachedDocs,
-      additionalInfo
-    };
-    console.log('Form Data: ', formData);
   };
 
-  const handleAddItem = () => {
-    const newItem = { id: items.length + 1, productCode: '', productName: '', specification: '', quantity: '', price: '', amount: '' };
-    setItems([...items, newItem]);
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const droppedFiles = Array.from(e.dataTransfer.files); // 드래그한 파일들 받아오기
+    setFiles((prevFiles) => [...prevFiles, ...droppedFiles]); // 파일 목록에 추가
   };
 
-  const handleRemoveItem = (index) => {
-    const updatedItems = items.filter((_, idx) => idx !== index);
-    setItems(updatedItems);
+  // 첨부된 파일 목록 삭제하는 함수
+  const handleRemoveFile = (index) => {
+    setFiles(files.filter((_, i) => i !== index));
+  };
+
+  // 모달을 열고 닫는 함수
+  const handleShowCancelModal = () => setShowCancelModal(true);
+  const handleCloseCancelModal = () => setShowCancelModal(false);
+
+  const handleShowSaveModal = () => setShowSaveModal(true); // 임시 저장 모달 표시
+  const handleCloseSaveModal = () => setShowSaveModal(false); // 임시 저장 모달 닫기
+
+  // 결재선 모달 열기
+  const handleApprLineModal = () => {
+    setShowModal(true);
+  };
+
+  // 결재선 모달 닫기
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  // 취소 버튼 클릭 시 모달 띄우기
+  const handleCancelClick = () => {
+    setShowCancelModal(true);
+  };
+
+  // 취소 확인 모달에서 "임시 저장"을 선택했을 때 동작
+  const handleSaveAsDraftAndRedirect = () => {
+    setIsSaved(true);
+    setSaveDate(new Date().toLocaleDateString('ko-KR')); // 현재 날짜 저장
+    setShowCancelModal(false);
+    handleShowSaveModal(); // "임시 저장되었습니다" 모달을 띄움
+  };
+
+  // 임시 저장 모달에서 "확인"을 누르면 리다이렉트
+  const handleRedirectAfterSave = () => {
+    handleCloseSaveModal();
+    navigate('/company/user/draft/doc/draft');
+  };
+
+  // 임시 저장 버튼 클릭 시 처리
+  const handleSaveAsDraftClick = () => {
+    setIsSaved(true);
+    setSaveDate(new Date().toLocaleDateString('ko-KR')); // 현재 날짜 저장
+    setShowAlert(true);
+
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 5000); // 5초 후 알림 창 자동 닫기
+  };
+
+  // 결재 상신 버튼 클릭 시 처리
+  const handleSubmitClick = () => {
+    const errors = {};
+    if (!reportTitle) errors.reportTitle = true;
+    if (!reportContent) errors.reportContent = true;
+    if (!productName) errors.productName = true; // 품명 유효성 검사
+    if (!quantity || quantity <= 0) errors.quantity = true; // 수량 유효성 검사
+    if (!unitPrice || unitPrice <= 0) errors.unitPrice = true; // 단가 유효성 검사
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    console.log('결재 상신 버튼 클릭됨');
   };
 
   return (
-    <div className={styles.container}>
-      <h1>구매 품의서</h1>
-      <form onSubmit={handleSubmit}>
-        <table className={styles.draftTable}>
+    <div className="container">
+      <h2 className={styles.pageTitle}>구매 신청 기안</h2>
+      <Form>
+        {/* 기안 제목 */}
+        <Table bordered className={styles.docTitleHeader}>
+          <thead>
+            <tr className={styles.docTitleBox}>
+              <th className={styles.docTitle}>기안 제목</th>
+              <th colSpan={3}>
+                <Form.Control
+                  type="text"
+                  value={reportTitle}
+                  onChange={(e) => setReportTitle(e.target.value)}
+                  className={`${styles.inputForm} ${formErrors.reportTitle ? styles.errorInput : ''}`}
+                  placeholder="기안 제목을 입력하세요"
+                />
+                {formErrors.reportTitle && <span className={styles.errorMessage}>기안 제목을 입력해주세요</span>}
+              </th>
+            </tr>
+          </thead>
+        </Table>
+
+        {/* 문서 정보 */}
+        <div className={styles.docHeader}>
+          <Table bordered size="sm" className={styles.docInfo}>
+            <tbody>
+              <tr>
+                <th className={styles.docKey}>문서번호</th>
+                <td className={styles.docValue}>-</td>
+              </tr>
+              <tr>
+                <td className={styles.docKey}>본&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;부</td>
+                <td className={styles.docValue}>{department || 'Mark'}</td>
+              </tr>
+              <tr>
+                <td className={styles.docKey}>부&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;서</td>
+                <td className={styles.docValue}>{reporter || 'Jacob'}</td>
+              </tr>
+              <tr>
+                <td className={styles.docKey}>기안일</td>
+                <td className={styles.docValue}>{reportDate || '2024-10-16(수)'}</td>
+              </tr>
+              <tr>
+                <td className={styles.docKey}>기안자</td>
+                <td className={styles.docValue}>배수지</td>
+              </tr>
+              <tr>
+                <td className={styles.docKey}>구매일자</td>
+                <td className={styles.docValue}>2024-10-19(금)</td>
+              </tr>
+              <tr>
+                <td className={styles.docKey}>결재 상태</td>
+                <td className={styles.docValue}>신청</td>
+              </tr>
+            </tbody>
+          </Table>
+
+          {/* 결재선 */}
+          <Table bordered size="sm" className={styles.apprLineBox}>
+          <tbody className={styles.apprLineTbody}>
+            <tr className={styles.apprLinedocTr}>
+              <td className={styles.docKey}>상신</td>
+              <td className={styles.docKey}>결재</td>
+            </tr>
+            <tr>
+              <td className={styles.docKey}>배수지</td>
+              <td>
+                <Button className={styles.cancelBtn} onClick={handleApprLineModal}>결재선 지정</Button>
+              </td>
+            </tr>
+            <tr>
+              <td className={styles.docValue_date}>2024/10/21</td>
+              <td>-</td>
+            </tr>
+          </tbody>
+        </Table>
+        </div>
+
+        {/* 구매 내용 입력 */}
+        <Table bordered className={styles.docContent}>
           <tbody>
             <tr>
-              <td>기안부서</td>
+              <td>품&nbsp;&nbsp;&nbsp;명</td>
+              <td>규&nbsp;&nbsp;&nbsp;격</td>
+              <td>수&nbsp;&nbsp;&nbsp;량</td>
+              <td>단&nbsp;&nbsp;&nbsp;가</td>
+              <td>금&nbsp;&nbsp;&nbsp;액</td>
+              <td>비&nbsp;&nbsp;&nbsp;고</td>
+            </tr>
+            <tr>
               <td>
-                <input
+                <Form.Control
                   type="text"
-                  value={draftDept}
-                  onChange={(e) => setDraftDept(e.target.value)}
-                  required
-                  className={styles.inputField}
+                  value={productName}
+                  onChange={(e) => setProductName(e.target.value)}
+                  className={styles.inputForm}
                 />
               </td>
-              <td>납품자</td>
-              <td colSpan="2">
-                <input
-                  type="text"
-                  value={supplier}
-                  onChange={(e) => setSupplier(e.target.value)}
-                  required
-                  className={styles.inputField}
-                />
-              </td>
-              <td>작성 일자</td>
-              <td colSpan="2">
-                <input
-                  type="date"
-                  value={draftDate}
-                  onChange={(e) => setDraftDate(e.target.value)}
-                  required
-                  className={styles.inputField}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>프로젝트 번호</td>
               <td>
-                <input
+                <Form.Control
                   type="text"
-                  value={projectNo}
-                  onChange={(e) => setProjectNo(e.target.value)}
-                  className={styles.inputField}
+                  value={specification}
+                  onChange={(e) => setSpecification(e.target.value)}
+                  className={styles.inputForm}
                 />
               </td>
-              <td>TEL</td>
-              <td colSpan="2">
-                <input
-                  type="text"
-                  value={tel}
-                  onChange={(e) => setTel(e.target.value)}
-                  className={styles.inputField}
-                />
-              </td>
-              <td>인도 장소</td>
-              <td colSpan="2">
-                <input
-                  type="text"
-                  value={deliveryPlace}
-                  onChange={(e) => setDeliveryPlace(e.target.value)}
-                  className={styles.inputField}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>사용 목적</td>
               <td>
-                <input
+                <Form.Control
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  className={styles.inputForm}
+                />
+              </td>
+              <td>
+                <Form.Control
+                  type="number"
+                  value={unitPrice}
+                  onChange={(e) => setUnitPrice(e.target.value)}
+                  className={styles.inputForm}
+                />
+              </td>
+              <td>
+                <Form.Control
+                  type="number"
+                  value={totalPrice}
+                  readOnly
+                  className={styles.inputForm}
+                />
+              </td>
+              <td>
+                <Form.Control
                   type="text"
-                  value={usePurpose}
-                  onChange={(e) => setUsePurpose(e.target.value)}
-                  className={styles.inputField}
-                />
-              </td>
-              <td>FAX</td>
-              <td colSpan="2">
-                <input
-                  type="text"
-                  value={fax}
-                  onChange={(e) => setFax(e.target.value)}
-                  className={styles.inputField}
-                />
-              </td>
-              <td>희망 납기 일자</td>
-              <td colSpan="2">
-                <input
-                  type="date"
-                  value={desiredDeliveryDate}
-                  onChange={(e) => setDesiredDeliveryDate(e.target.value)}
-                  className={styles.inputField}
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  className={styles.inputForm}
                 />
               </td>
             </tr>
             <tr>
-              <td>품번</td>
-              <td>품명</td>
-              <td>규격</td>
-              <td>수량</td>
-              <td>단가</td>
-              <td>금액</td>
-              <td>비고</td>
-            </tr>
-            {items.map((item, index) => (
-              <tr key={index}>
-                <td>{item.id}</td>
-                <td>
-                  <input
-                    type="text"
-                    value={item.productCode}
-                    onChange={(e) => {
-                      const updatedItems = [...items];
-                      updatedItems[index].productCode = e.target.value;
-                      setItems(updatedItems);
-                    }}
-                    className={styles.inputField}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    value={item.productName}
-                    onChange={(e) => {
-                      const updatedItems = [...items];
-                      updatedItems[index].productName = e.target.value;
-                      setItems(updatedItems);
-                    }}
-                    className={styles.inputField}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    value={item.specification}
-                    onChange={(e) => {
-                      const updatedItems = [...items];
-                      updatedItems[index].specification = e.target.value;
-                      setItems(updatedItems);
-                    }}
-                    className={styles.inputField}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) => {
-                      const updatedItems = [...items];
-                      updatedItems[index].quantity = e.target.value;
-                      setItems(updatedItems);
-                    }}
-                    className={styles.inputField}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    value={item.price}
-                    onChange={(e) => {
-                      const updatedItems = [...items];
-                      updatedItems[index].price = e.target.value;
-                      setItems(updatedItems);
-                    }}
-                    className={styles.inputField}
-                  />
-                </td>
-                <td>
-                  <button type="button" onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
-                    삭제
-                  </button>
-                </td>
-              </tr>
-            ))}
-            <tr>
-              <td colSpan="7">
-                <button type="button" onClick={handleAddItem} className={styles.addButton}>
-                  품목 추가
-                </button>
-              </td>
+              <td className={styles.docKey}>합&nbsp;&nbsp;&nbsp;계</td>
+              <td>{totalPrice}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
             </tr>
             <tr>
-              <td colSpan="7">구매사유 (구체적으로 작성)</td>
-            </tr>
-            <tr>
-              <td colSpan="7">
-                <textarea
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  className={styles.textareaField}
+              <td className={styles.docKey}>기&nbsp;&nbsp;&nbsp;타</td>
+              <td colSpan={5}>
+                <Form.Control
+                  as="textarea"
+                  rows={2}
+                  value={reportContent}
+                  onChange={(e) => setReportContent(e.target.value)}
+                  className={`${styles.inputForm} ${formErrors.reportContent ? styles.errorInput : ''}`}
+                  placeholder="기타 내용을 입력하세요"
                 />
               </td>
             </tr>
             <tr>
-              <td colSpan="7">특기사항</td>
-            </tr>
-            <tr>
-              <td colSpan="7">
-                <textarea
-                  value={specialNote}
-                  onChange={(e) => setSpecialNote(e.target.value)}
-                  className={styles.textareaField}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>근거서류</td>
-              <td colSpan="7">
-                <input
-                  type="radio"
-                  value="견적서"
-                  checked={attachedDocs === '견적서'}
-                  onChange={(e) => setAttachedDocs(e.target.value)}
-                />
-                견적서
-                <input
-                  type="radio"
-                  value="계약서"
-                  checked={attachedDocs === '계약서'}
-                  onChange={(e) => setAttachedDocs(e.target.value)}
-                />
-                계약서
-                <input
-                  type="radio"
-                  value="카다로그"
-                  checked={attachedDocs === '카다로그'}
-                  onChange={(e) => setAttachedDocs(e.target.value)}
-                />
-                카다로그
-                <input
-                  type="radio"
-                  value="기타"
-                  checked={attachedDocs === '기타'}
-                  onChange={(e) => setAttachedDocs(e.target.value)}
-                />
-                기타
-                <input
-                  type="text"
-                  value={additionalInfo}
-                  onChange={(e) => setAdditionalInfo(e.target.value)}
-                  className={styles.inputField}
-                />
+              <td className={styles.docKey}>첨부자료</td>
+              <td 
+                colSpan={5} 
+                className={styles.dropZone}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+              >
+                파일을 여기에 드롭하거나 클릭하여 추가하세요
+                <ul>
+                  {files.map((file, index) => (
+                    <li key={index}>
+                      {file.name}
+                      <Button variant="danger" size="sm" onClick={() => handleRemoveFile(index)}>삭제</Button>
+                    </li>
+                  ))}
+                </ul>
               </td>
             </tr>
           </tbody>
-        </table>
-        <button type="submit" className={styles.submitButton}>
-          제출
-        </button>
-      </form>
+        </Table>
+      </Form>
+
+      {/* 임시 저장 */}
+      {showAlert && (
+        <Alert variant="success" onClose={() => setShowAlert(false)} dismissible className={styles.customAlert}>
+          임시 저장되었습니다. 현재 날짜: {saveDate}
+        </Alert>
+      )}
+
+      {/* 버튼 */}
+      <div className={styles.btnBox}>
+        <Button className={styles.cancelBtn} onClick={handleCancelClick}>
+          취소
+        </Button>
+        <Button className={styles.saveAsBtn} onClick={handleSaveAsDraftClick}>
+          임시 저장
+        </Button>
+        <Button className={styles.saveBtn} onClick={handleSubmitClick}>
+          결재 상신
+        </Button>
+      </div>
+
+      {/* 결재선 지정 모달 */}
+      <ApprovalLine showModal={showModal} handleModalClose={handleModalClose} />
+
+      {/* 취소 버튼 모달 */}
+      <Modal show={showCancelModal} onHide={handleCloseCancelModal} centered className={styles.cancelModal}>
+        <Modal.Body className={styles.cancelModalBody}>작성된 내용을 임시 저장하시겠습니까?</Modal.Body>
+        <Modal.Footer className={styles.cancelModalFooter}>
+          <Button variant="primary" onClick={handleSaveAsDraftAndRedirect} className={styles.modalSaveBtn}>
+            예
+          </Button>
+          <Button variant="secondary" onClick={handleCloseCancelModal} className={styles.modalcancelBtn}>
+            아니오
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* 임시 저장 후 모달 */}
+      <Modal show={showSaveModal} onHide={handleRedirectAfterSave} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>임시 저장</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>임시 저장되었습니다.</Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleRedirectAfterSave} className={styles.modalSaveBtn}>
+            확인
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
 
-export default CompanyUserDraftwritePurc
+export default CompanyUserDraftWriteWork;
