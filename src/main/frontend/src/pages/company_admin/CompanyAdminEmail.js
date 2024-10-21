@@ -3,7 +3,6 @@ import styles from '../../styles/company/company_email.module.css';
 import '../../styles/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
-import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 function CompanyAdminEmail() {
     // 이메일 생성 함수
@@ -131,14 +130,14 @@ function CompanyAdminEmail() {
         setSelectedEmails([]);
     };
 
-    // 이메일 클릭 시 읽음 상태로 변경
-    const handleEmailClick = (id) => {
+    // 이메일 클릭 시 읽음 상태로 변경하고 상세 페이지로 이동
+    const handleEmailClick = (email) => {
         setEmails(
-            emails.map((email) =>
-                email.id === id ? { ...email, isRead: true } : email
+            emails.map((e) =>
+                e.id === email.id ? { ...e, isRead: true } : e
             )
         );
-        // 상세 보기 기능은 추후에 추가할 수 있습니다.
+        navigate('/Company/user/email/detail', { state: { email } });
     };
 
     // 개별 이메일 선택/해제
@@ -331,67 +330,72 @@ function CompanyAdminEmail() {
                 >
                     <div className={styles['detail-field']}>
                         <label>보낸 사람</label>
+
                         <input
                             type="text"
                             name="sender"
                             value={detailSearch.sender}
                             onChange={handleDetailInputChange}
                         />
+
                     </div>
                     <div className={styles['detail-field']}>
                         <label>받는 사람</label>
+
                         <input
                             type="text"
                             name="recipient"
                             value={detailSearch.recipient}
                             onChange={handleDetailInputChange}
                         />
+
                     </div>
                     <div className={styles['detail-field']}>
                         <label>내용</label>
+
                         <input
                             type="text"
                             name="content"
                             value={detailSearch.content}
                             onChange={handleDetailInputChange}
                         />
+
                     </div>
                     <div className={styles['detail-field']}>
                         <label>기간</label>
-                        <div className={styles['period-inputs']}>
-                            <select
-                                name="periodOption"
-                                value={detailSearch.periodOption}
-                                onChange={handlePeriodOptionChange}
-                            >
-                                <option value="전체 기간">전체 기간</option>
-                                <option value="1주일">1주일</option>
-                                <option value="1개월">1개월</option>
-                                <option value="3개월">3개월</option>
-                                <option value="6개월">6개월</option>
-                                <option value="1년">1년</option>
-                                <option value="직접입력">직접입력</option>
-                            </select>
-                            <div className={styles['date-inputs']}>
-                                <input
-                                    type="date"
-                                    name="startDate"
-                                    value={detailSearch.startDate}
-                                    onChange={handleDateInputChange}
-                                />
-                                <span>~</span>
-                                <input
-                                    type="date"
-                                    name="endDate"
-                                    value={detailSearch.endDate}
-                                    onChange={handleDateInputChange}
-                                />
-                            </div>
-                        </div>
-                    </div>
 
-                    <div style={{ width: '150px' }}>
-                        <label>
+                        <select
+                            name="periodOption"
+                            value={detailSearch.periodOption}
+                            onChange={handlePeriodOptionChange}
+                        >
+                            <option value="전체 기간">전체 기간</option>
+                            <option value="1주일">1주일</option>
+                            <option value="1개월">1개월</option>
+                            <option value="3개월">3개월</option>
+                            <option value="6개월">6개월</option>
+                            <option value="1년">1년</option>
+                            <option value="직접입력">직접입력</option>
+                        </select>
+                        <input
+                            style={{ width: '110px', margin: '0' }}
+                            type="date"
+                            name="startDate"
+                            value={detailSearch.startDate}
+                            onChange={handleDateInputChange}
+                        />
+                        ~
+                        <input
+                            style={{ width: '110px' }}
+                            type="date"
+                            name="endDate"
+                            value={detailSearch.endDate}
+                            onChange={handleDateInputChange}
+                        />
+
+                    </div>
+                    <div className={styles['detail-field']}>
+                        <label style={{ width: '120px' }}>
                             <input
                                 type="checkbox"
                                 name="hasAttachment"
@@ -438,12 +442,12 @@ function CompanyAdminEmail() {
                                     onChange={() => handleCheckboxChange(email.id)}
                                 />
                             </td>
-                            <td onClick={() => handleEmailClick(email.id)}>
+                            <td onClick={() => handleEmailClick(email)}>
                                 {email.isRead ? '읽음' : '안읽음'}
                             </td>
-                            <td onClick={() => handleEmailClick(email.id)}>{email.sender}</td>
-                            <td onClick={() => handleEmailClick(email.id)}>{email.subject}</td>
-                            <td onClick={() => handleEmailClick(email.id)}>{email.receivedAt}</td>
+                            <td onClick={() => handleEmailClick(email)}>{email.sender}</td>
+                            <td onClick={() => handleEmailClick(email)}>{email.subject}</td>
+                            <td onClick={() => handleEmailClick(email)}>{email.receivedAt}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -475,12 +479,13 @@ function CompanyAdminEmail() {
                 >
                     다음
                 </button>
+                {/* 메일 작성 버튼 */}
+                <button className={styles['compose-button']} onClick={handleCompose}>
+                    메일 작성
+                </button>
             </div>
 
 
-            <button className={styles['compose-button']} onClick={handleCompose}>
-                메일 작성
-            </button>
         </div>
     );
 }
