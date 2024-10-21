@@ -82,6 +82,12 @@ function Chatting() {
         };
     }, [emojiRef]);
 
+    // 보낸 사람의 메시지
+    
+
+    // 받은 사람의 메시지
+
+    
     return (
         <>
             <Helmet>
