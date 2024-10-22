@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Table, Button, Form, Modal, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import styles from '../../styles/company/company_draft_write_work.module.css';
+import style_purc from '../../styles/company/company_draft_write_purc.module.css';
 import ApprovalLine from '../layout/ApprovalLine';
 
 const CompanyUserDraftWriteWork = () => {
@@ -10,13 +11,11 @@ const CompanyUserDraftWriteWork = () => {
   const [reportDate, setReportDate] = useState('');
   const [department, setDepartment] = useState('');
   const [reportContent, setReportContent] = useState('');
-  const [productName, setProductName] = useState('');
-  const [specification, setSpecification] = useState('');
-  const [quantity, setQuantity] = useState(0);
-  const [unitPrice, setUnitPrice] = useState(0);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [note, setNote] = useState('');
+
+  // 각 제품의 정보를 관리하는 상태
+  const [productRows, setProductRows] = useState([createEmptyRow()]); // 제품 행 리스트 관리
   const [files, setFiles] = useState([]); // 첨부된 파일들을 저장할 상태
+
   const [showModal, setShowModal] = useState(false); // 결재선 모달 상태
   const [showCancelModal, setShowCancelModal] = useState(false); // 취소 버튼 모달 상태
   const [showSaveModal, setShowSaveModal] = useState(false); // 임시 저장 확인 모달 상태
@@ -27,12 +26,43 @@ const CompanyUserDraftWriteWork = () => {
 
   const navigate = useNavigate();
 
-  // 수량과 단가를 변경하면 금액을 자동 계산
-  React.useEffect(() => {
-    setTotalPrice(quantity * unitPrice);
-  }, [quantity, unitPrice]);
+  // 빈 행 생성 함수
+  function createEmptyRow() {
+    return {
+      productName: '',
+      specification: '',
+      quantity: 0,
+      unitPrice: 0,
+      totalPrice: 0,
+      note: ''
+    };
+  }
 
-  // 드래그 앤 드롭 관련 함수들
+  // 제품 리스트의 각 행의 값이 변경될 때 호출되는 함수
+  const handleRowChange = (index, field, value) => {
+    const updatedRows = [...productRows];
+    updatedRows[index][field] = value;
+
+    // 수량과 단가 변경 시 금액 계산
+    if (field === 'quantity' || field === 'unitPrice') {
+      updatedRows[index].totalPrice = updatedRows[index].quantity * updatedRows[index].unitPrice;
+    }
+
+    setProductRows(updatedRows);
+  };
+
+  // 행 추가 함수
+  const handleAddRow = () => {
+    setProductRows([...productRows, createEmptyRow()]);
+  };
+
+  // 행 삭제 함수
+  const handleRemoveRow = (index) => {
+    const updatedRows = productRows.filter((_, i) => i !== index);
+    setProductRows(updatedRows);
+  };
+
+  // 파일 드래그 앤 드롭 관련 함수들
   const handleDragOver = (e) => {
     e.preventDefault();
   };
@@ -100,9 +130,9 @@ const CompanyUserDraftWriteWork = () => {
     const errors = {};
     if (!reportTitle) errors.reportTitle = true;
     if (!reportContent) errors.reportContent = true;
-    if (!productName) errors.productName = true; // 품명 유효성 검사
-    if (!quantity || quantity <= 0) errors.quantity = true; // 수량 유효성 검사
-    if (!unitPrice || unitPrice <= 0) errors.unitPrice = true; // 단가 유효성 검사
+    if (productRows.some(row => !row.productName || row.quantity <= 0 || row.unitPrice <= 0)) {
+      errors.productRows = true;
+    }
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -169,97 +199,105 @@ const CompanyUserDraftWriteWork = () => {
               </tr>
             </tbody>
           </Table>
-
-          {/* 결재선 */}
           <Table bordered size="sm" className={styles.apprLineBox}>
-          <tbody className={styles.apprLineTbody}>
-            <tr className={styles.apprLinedocTr}>
-              <td className={styles.docKey}>상신</td>
-              <td className={styles.docKey}>결재</td>
-            </tr>
-            <tr>
-              <td className={styles.docKey}>배수지</td>
-              <td>
-                <Button className={styles.cancelBtn} onClick={handleApprLineModal}>결재선 지정</Button>
-              </td>
-            </tr>
-            <tr>
-              <td className={styles.docValue_date}>2024/10/21</td>
-              <td>-</td>
-            </tr>
-          </tbody>
-        </Table>
+            <tbody className={styles.apprLineTbody}>
+              <tr className={styles.apprLinedocTr}>
+                <td className={styles.docKey}>상신</td>
+                <td className={styles.docKey}>결재</td>
+              </tr>
+              <tr>
+                <td className={styles.docKey}>배수지</td>
+                <td>
+                  <Button className={styles.cancelBtn} onClick={handleApprLineModal}>결재선 지정</Button>
+                </td>
+              </tr>
+              <tr>
+                <td className={styles.docValue_date}>2024/10/21</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </Table>
+        </div>
+
+        {/* 행 추가/삭제 버튼 */}
+        <div className={style_purc.tableRowInsert}>
+          <Button className={style_purc.rowInsert} onClick={handleAddRow}>+</Button>
         </div>
 
         {/* 구매 내용 입력 */}
+        <Table bordered className={style_purc.docContent}>
+          <thead>
+            <tr>
+              <th className={style_purc.productName}>품&nbsp;&nbsp;&nbsp;명</th>
+              <th className={style_purc.productSize}>규&nbsp;&nbsp;&nbsp;격</th>
+              <th className={style_purc.productCount}>수&nbsp;&nbsp;&nbsp;량</th>
+              <th className={style_purc.productPrice}>단&nbsp;&nbsp;&nbsp;가</th>
+              <th className={style_purc.productPrices}>금&nbsp;&nbsp;&nbsp;액</th>
+              <th className={style_purc.productEtc}>비&nbsp;&nbsp;&nbsp;고</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {productRows.map((row, index) => (
+              <tr key={index}>
+                <td>
+                  <Form.Control
+                    type="text"
+                    value={row.productName}
+                    onChange={(e) => handleRowChange(index, 'productName', e.target.value)}
+                    className={styles.inputForm}
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    type="text"
+                    value={row.specification}
+                    onChange={(e) => handleRowChange(index, 'specification', e.target.value)}
+                    className={styles.inputForm}
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    type="number"
+                    value={row.quantity}
+                    onChange={(e) => handleRowChange(index, 'quantity', e.target.value)}
+                    className={styles.inputForm}
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    type="number"
+                    value={row.unitPrice}
+                    onChange={(e) => handleRowChange(index, 'unitPrice', e.target.value)}
+                    className={styles.inputForm}
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    type="number"
+                    value={row.totalPrice}
+                    readOnly
+                    className={styles.inputForm}
+                  />
+                </td>
+                <td>
+                  <Form.Control
+                    type="text"
+                    value={row.note}
+                    onChange={(e) => handleRowChange(index, 'note', e.target.value)}
+                    className={styles.inputForm}
+                  />
+                </td>
+                <td>
+                  <Button variant="danger" onClick={() => handleRemoveRow(index)}>-</Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+
         <Table bordered className={styles.docContent}>
           <tbody>
-            <tr>
-              <td>품&nbsp;&nbsp;&nbsp;명</td>
-              <td>규&nbsp;&nbsp;&nbsp;격</td>
-              <td>수&nbsp;&nbsp;&nbsp;량</td>
-              <td>단&nbsp;&nbsp;&nbsp;가</td>
-              <td>금&nbsp;&nbsp;&nbsp;액</td>
-              <td>비&nbsp;&nbsp;&nbsp;고</td>
-            </tr>
-            <tr>
-              <td>
-                <Form.Control
-                  type="text"
-                  value={productName}
-                  onChange={(e) => setProductName(e.target.value)}
-                  className={styles.inputForm}
-                />
-              </td>
-              <td>
-                <Form.Control
-                  type="text"
-                  value={specification}
-                  onChange={(e) => setSpecification(e.target.value)}
-                  className={styles.inputForm}
-                />
-              </td>
-              <td>
-                <Form.Control
-                  type="number"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  className={styles.inputForm}
-                />
-              </td>
-              <td>
-                <Form.Control
-                  type="number"
-                  value={unitPrice}
-                  onChange={(e) => setUnitPrice(e.target.value)}
-                  className={styles.inputForm}
-                />
-              </td>
-              <td>
-                <Form.Control
-                  type="number"
-                  value={totalPrice}
-                  readOnly
-                  className={styles.inputForm}
-                />
-              </td>
-              <td>
-                <Form.Control
-                  type="text"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  className={styles.inputForm}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className={styles.docKey}>합&nbsp;&nbsp;&nbsp;계</td>
-              <td>{totalPrice}</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
             <tr>
               <td className={styles.docKey}>기&nbsp;&nbsp;&nbsp;타</td>
               <td colSpan={5}>
@@ -273,10 +311,11 @@ const CompanyUserDraftWriteWork = () => {
                 />
               </td>
             </tr>
+
             <tr>
               <td className={styles.docKey}>첨부자료</td>
-              <td 
-                colSpan={5} 
+              <td
+                colSpan={5}
                 className={styles.dropZone}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}

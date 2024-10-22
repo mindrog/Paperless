@@ -1,0 +1,14 @@
+/* ComposeButton.module.css */
+.composeButton {
+    padding: 10px 20px;
+    background-color: #2e3d86;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    
+  }
+  
+  .composeButton:hover {
+    background-color: #1d2a6d;
+  }
+  

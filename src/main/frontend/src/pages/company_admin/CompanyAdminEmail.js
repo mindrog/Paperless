@@ -2,9 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import styles from '../../styles/company/company_email.module.css';
 import '../../styles/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import Pagination from '../component/Pagination';
+import ComposeButton from '../component/ComposeButton';
 
 function CompanyAdminEmail() {
+    
     // 이메일 생성 함수
     const generateEmails = () => {
         const emailList = [];
@@ -35,6 +38,12 @@ function CompanyAdminEmail() {
     // 검색 상태 및 핸들러 추가
     const [searchTerm, setSearchTerm] = useState('');
     const [showDetailSearch, setShowDetailSearch] = useState(false);
+
+    const location = useLocation();
+
+    useEffect(() => {
+        console.log('Current pathname:', location.pathname);
+      }, [location.pathname]);
 
     // 상세 검색 상태
     const [detailSearch, setDetailSearch] = useState({
@@ -170,7 +179,7 @@ function CompanyAdminEmail() {
     const handleReply = () => {
         if (selectedEmails.length === 1) {
             const email = emails.find((email) => email.id === selectedEmails[0]);
-            navigate('/Company/admin/email/send', { state: { receiverEmail: email.sender } });
+            navigate('/Company/user/email/send', { state: { receiverEmail: email.sender } });
         }
     };
 
@@ -178,14 +187,15 @@ function CompanyAdminEmail() {
     const handleForward = () => {
         if (selectedEmails.length === 1) {
             const email = emails.find((email) => email.id === selectedEmails[0]);
-            navigate('/Company/admin/email/send', { state: { emailToForward: email } });
+            navigate('/Company/user/email/send', { state: { emailToForward: email } });
         }
     };
 
     // 메일 작성 버튼 클릭
     const handleCompose = () => {
-        navigate('/Company/admin/email/send');
+        navigate('/Company/user/email/send');
     };
+
 
     // 상세 검색 토글
     const toggleDetailSearch = () => {
@@ -452,39 +462,16 @@ function CompanyAdminEmail() {
                     ))}
                 </tbody>
             </table>
-
-            {/* 페이지네이션 */}
-            <div className={styles['pagination']}>
-                <button
-                    className={styles['page-button']}
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                >
-                    이전
-                </button>
-                {pageNumbers.map((number) => (
-                    <button
-                        key={number}
-                        className={`${styles['page-button']} ${currentPage === number ? styles['active'] : ''
-                            }`}
-                        onClick={() => handlePageChange(number)}
-                    >
-                        {number}
-                    </button>
-                ))}
-                <button
-                    className={styles['page-button']}
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                >
-                    다음
-                </button>
-                {/* 메일 작성 버튼 */}
-                <button className={styles['compose-button']} onClick={handleCompose}>
-                    메일 작성
-                </button>
+            <div className={styles.footer}>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(pageNumber) => setCurrentPage(pageNumber)}
+                    className={styles.pagination}
+                    
+                />
+                <ComposeButton onClick={handleCompose} className={styles.composeButton}/>
             </div>
-
 
         </div>
     );
