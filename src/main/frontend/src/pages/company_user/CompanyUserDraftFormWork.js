@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import styles from '../../styles/company/company_draft_write_work.module.css';
+import { Button } from 'react-bootstrap';
 
-const CompanyUserDraftForm = () => {
+const CompanyUserDraftFormWork = () => {
   const [reportTitle, setReportTitle] = useState('');
   const [reporter, setReporter] = useState('');
   const [reportDate, setReportDate] = useState('');
@@ -37,7 +38,15 @@ const CompanyUserDraftForm = () => {
 
   return (
     <div className={styles.container}>
-      <h1>업무 보고 기안</h1>
+      <div className={styles.apprSumbitBtnBox}>
+        <h2 className={styles.pageTitle}>업무 보고 기안 미리보기</h2>
+        <div>
+          <Button>취소</Button>
+        </div>
+        <div>
+          <Button>pdf 변환</Button>
+        </div>
+      </div>
       <table className={styles.mainTable} style={{ width: '800px', marginTop: '1px', borderCollapse: 'collapse' }}>
         <colgroup>
           <col width="310" />
@@ -118,6 +127,7 @@ const CompanyUserDraftForm = () => {
         </tbody>
       </table>
     </div>
-  )}
+  )
+}
 
-export default CompanyUserDraftForm
+export default CompanyUserDraftFormWork
