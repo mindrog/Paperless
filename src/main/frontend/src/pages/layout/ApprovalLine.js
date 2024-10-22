@@ -20,7 +20,11 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
   const handleDrop = (e) => {
     e.preventDefault();
     const person = JSON.parse(e.dataTransfer.getData('person')); // 드래그된 데이터 받아오기
-    setSelectedPeople((prevPeople) => [...prevPeople, person]); // 선택된 사람 목록에 추가
+
+    // 이미 선택된 사람이 있으면 추가하지 않음
+    if (!selectedPeople.some(p => p.username === person.username)) {
+      setSelectedPeople((prevPeople) => [...prevPeople, person]); // 선택된 사람 목록에 추가
+    }
   };
 
   // 드래그 오버(Drag Over) 이벤트를 처리하여 드롭을 허용
@@ -28,8 +32,13 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
     e.preventDefault();
   };
 
+  // 선택된 사람을 테이블에서 삭제하는 함수
+  const handleRemovePerson = (index) => {
+    setSelectedPeople(selectedPeople.filter((_, i) => i !== index));
+  };
+
   return (
-    <Modal show={showModal} onHide={handleModalClose} centered>
+    <Modal className={styles.apprModal} show={showModal} onHide={handleModalClose} centered>
       <Modal.Header className={styles.apprModalHeader}>
         <Modal.Title className={styles.apprModalTitle}>결재선 / 참조자 / 수신자 등록</Modal.Title>
       </Modal.Header>
@@ -39,7 +48,7 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
             {/* 결재자 탭 */}
             <Tab eventKey="approver" title="결재자" className={styles.apprTab}>
               <div className={styles.orgChartContainer}>
-                <div className={styles.orfChartList}>
+                <div className={styles.orgChartList}>
                   <OrgChart onDragStart={handleDragStart} />
                 </div>
                 
@@ -54,15 +63,27 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Username</th>
+                        <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>1</td>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                      </tr>
+                      {selectedPeople.map((person, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>{person.firstName}</td>
+                          <td>{person.lastName}</td>
+                          <td>{person.username}</td>
+                          <td>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => handleRemovePerson(index)}
+                            >
+                              삭제
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </Table>
                 </div>
