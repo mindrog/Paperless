@@ -26,9 +26,15 @@ const Menubar = ({ isMenuOpen }) => {
 
     // 기안 관리 하위 메뉴 클릭
     const handleDraftSectionClick = (itemName) => {
-        setActiveItem(itemName); // 하위 메뉴를 클릭한 경우 해당 경로로 이동
-        setIsDraftSectionActive(true); // 기안 관리 섹션을 활성화
-        navigate(itemName); // 해당 경로로 이동
+        const isAdminPath = location.pathname.toLowerCase().startsWith('/company/admin');
+
+        if (isAdminPath && itemName === '/company/user/draft/doc/approval') {
+            setActiveItem('/company/admin/approval'); // 관리자는 '/company/admin/approval' 경로로 설정
+            navigate('/company/admin/approval');
+        } else {
+            setActiveItem(itemName); // 일반 사용자는 기존 경로로 설정
+            navigate(itemName);
+        }
     };
 
     // 경로에 따라 프로필 이름 변경
@@ -49,7 +55,7 @@ const Menubar = ({ isMenuOpen }) => {
     };
 
     const handlerCompanyMain = () => {
-        if(getUserGrade() === '부장') {
+        if (getUserGrade() === '부장') {
             navigate('/company/admin');
         } else {
             navigate('/company/user');
@@ -133,26 +139,25 @@ const Menubar = ({ isMenuOpen }) => {
                                         {isDocDropdownOpen && (
                                             <ul className={styles.innerSubDropdownMenu_draftList}>
                                                 <li>
-                                                    <button 
-                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/all' ? styles.active : ''}`} 
+                                                    <button
+                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/all' ? styles.active : ''}`}
                                                         onClick={() => handleDraftSectionClick('/company/user/draft/doc/all')}
                                                     >
                                                         📁 전체 문서함
                                                     </button>
                                                 </li>
                                                 <li>
-                                                    <button 
-                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/draft' ? styles.active : ''}`} 
+                                                    <button
+                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/draft' ? styles.active : ''}`}
                                                         onClick={() => handleDraftSectionClick('/company/user/draft/doc/draft')}
                                                     >
                                                         📁 임시 저장함
                                                     </button>
                                                 </li>
                                                 <li>
-                                                    <button 
-                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/approval' ? styles.active : ''}`} 
-                                                        onClick={() => handleDraftSectionClick('/company/user/draft/doc/approval')}
-                                                    >
+                                                    <button
+                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/approval' ? styles.active : ''}`}
+                                                        onClick={() => handleDraftSectionClick('/company/user/draft/doc/approval')}>
                                                         📁 결재 문서함
                                                     </button>
                                                 </li>
@@ -160,28 +165,28 @@ const Menubar = ({ isMenuOpen }) => {
                                         )}
                                     </li>
                                     <li>
-                                        <button onClick={toggleDocDropdown}  className={styles.submenu2}>
+                                        <button onClick={toggleDocDropdown} className={styles.submenu2}>
                                             📑 기안 양식
                                         </button>
                                         {isDocDropdownOpen && (
                                             <ul className={styles.innerSubDropdownMenu_draftWrite}>
                                                 <li>
-                                                    <button 
-                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/write/work' ? styles.active : ''}`} 
+                                                    <button
+                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/write/work' ? styles.active : ''}`}
                                                         onClick={() => handleDraftSectionClick('/company/user/draft/write/work')}>
                                                         📄 업무 보고 기안
                                                     </button>
                                                 </li>
                                                 <li>
-                                                    <button 
-                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/write/attendance' ? styles.active : ''}`} 
+                                                    <button
+                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/write/attendance' ? styles.active : ''}`}
                                                         onClick={() => handleDraftSectionClick('/company/user/draft/write/attendance')}>
                                                         📄 근태 신청 기안
                                                     </button>
                                                 </li>
                                                 <li>
-                                                    <button 
-                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/write/purchase' ? styles.active : ''}`} 
+                                                    <button
+                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/write/purchase' ? styles.active : ''}`}
                                                         onClick={() => handleDraftSectionClick('/company/user/draft/write/purchase')}>
                                                         📄 구매 신청 기안
                                                     </button>
@@ -201,7 +206,17 @@ const Menubar = ({ isMenuOpen }) => {
                         </button>
                     </li>
 
-                    {/* '/company/admin' 또는 '/company/admin'으로 시작하는 경로에서만 직원 관리 보이기 */}
+
+                    {location.pathname.toLowerCase().startsWith('/company/user') && (
+                        <li className={`${styles.dropdown} ${activeItem === '/company/user/stock' ? styles.active : ''}`}
+                            onClick={() => handleItemClick('/company/user/stock')} >
+                            <button className={styles.sublist_member}>
+                                📦 재고 관리
+                            </button>
+                        </li>
+                    )}
+
+                    {/* '/company/admin'으로 시작하는 경로에서만 직원 관리 보이기 */}
                     {location.pathname.toLowerCase().startsWith('/company/admin') && (
                         <li className={`${styles.dropdown} ${activeItem === '/company/admin/member' ? styles.active : ''}`}
                             onClick={() => handleItemClick('/company/admin/member')} >

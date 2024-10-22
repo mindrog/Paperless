@@ -26,8 +26,12 @@ import CompanyUserEmailDetail from './pages/company_user/CompanyUserEmailDetail'
 import CompanyUserDraftWriteWork from './pages/company_user/CompanyUserDraftWriteWork';
 import CompanyUserDraftWriteAtten from './pages/company_user/CompanyUserDraftWriteAtten';
 import CompanyUserDraftWritePurc from './pages/company_user/CompanyUserDraftWritePurc';
-import CompanyUserDraftForm from './pages/company_user/CompanyUserDraftForm';
-import CompanyUserDraftDetail from './pages/company_user/CompanyUserDraftDetail';
+import CompanyUserDraftFormWork from './pages/company_user/CompanyUserDraftFormWork';
+import CompanyUserDraftFormPurc from './pages/company_user/CompanyUserDraftFormPurc';
+import CompanyUserDraftFormAtten from './pages/company_user/CompanyUserDraftFormAtten';
+import CompanyUserDraftDetailWork from './pages/company_user/CompanyUserDraftDetailAtten';
+import CompanyUserDraftDetailPurc from './pages/company_user/CompanyUserDraftDetailPurc';
+import CompanyUserDraftDetailAtten from './pages/company_user/CompanyUserDraftDetailWork';
 import CompanyUserDraftDocAll from './pages/company_user/CompanyUserDraftDocAll';
 import CompanyUserDraftDocDraft from './pages/company_user/CompanyUserDraftDocDraft';
 import CompanyUserDraftDocAppr from './pages/company_user/CompanyUserDraftDocAppr';
@@ -64,7 +68,7 @@ function App() {
     return (
         <Router>
             <div className='App'>
-                <HeaderToggle />
+                <HeaderToggle />``
                 <MenubarToggle isMenuOpen={isMenuOpen} />
                 <GraphChartToggle />
                 <ApprovalLineToggle />
@@ -78,7 +82,7 @@ function App() {
                         <Route path='/email_Auth' element={<EmailAuth />} />
                         <Route path='/inquiry/write' element={<InquiryWrite />} />
                         <Route path='/email_Auth/searchPW' element={<SearchPW />} />
-                        {/* 시스템 관리자 */}
+                        {/* 시스템 관리자 */}``
                         <Route path='/system/admin/inquiry' element={<SystemAdminInquiry />} />
                         <Route path='/system/admin/member' element={<SystemAdminMember />} />
 
@@ -103,8 +107,12 @@ function App() {
                         <Route path='/company/user/draft/doc/all' element={<CompanyUserDraftDocAll />} />
                         <Route path='/company/user/draft/doc/draft' element={<CompanyUserDraftDocDraft />} />
                         <Route path='/company/user/draft/doc/approval' element={<CompanyUserDraftDocAppr />} />
-                        <Route path='/company/user/draft/detail' element={<CompanyUserDraftDetail />} />
-                        <Route path='/company/user/draft/form' element={<CompanyUserDraftForm />} />
+                        <Route path='/company/user/draft/detail/work' element={<CompanyUserDraftDetailWork />} />
+                        <Route path='/company/user/draft/detail/purchase' element={<CompanyUserDraftDetailPurc />} />
+                        <Route path='/company/user/draft/detail/attendance' element={<CompanyUserDraftDetailAtten />} />
+                        <Route path='/company/user/draft/form/work' element={<CompanyUserDraftFormWork />} />
+                        <Route path='/company/user/draft/form/purchase' element={<CompanyUserDraftFormPurc />} />
+                        <Route path='/company/user/draft/form/attendance' element={<CompanyUserDraftFormAtten />} />
                         <Route path='/company/user/draft/write/work' element={<CompanyUserDraftWriteWork />} />
                         <Route path='/company/user/draft/write/attendance' element={<CompanyUserDraftWriteAtten />} />
                         <Route path='/company/user/draft/write/purchase' element={<CompanyUserDraftWritePurc />} />
