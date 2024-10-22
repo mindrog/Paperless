@@ -1,7 +1,31 @@
+/* 모달 전체 크기 설정 */
+.apprModal .modal-dialog {
+  width: 800px !important; /* 원하는 전체 너비 */
+  max-width: none !important;
+  min-height: 100% !important;
+}
+
+/* 모달 내부의 content 크기 설정 */
+.apprModal .modal-content {
+  width: 800px !important;
+  max-width: none !important;
+  min-height: 100% !important;
+}
+
+.modal-content {
+  width: 800px !important;
+  min-height: 100% !important;
+}
+
+.apprModalHeader, .apprModalBody, .apprModalFooter {
+  width: 800px !important; /* 헤더, 바디, 푸터의 너비를 동일하게 100%로 설정 */
+  min-height: 100% !important;
+}
+
+/* 스타일 유지 */
 .apprModalHeader {
   background-color: #2e3d86;
-  color:#fefefe;
-  /* 헤더 배경색 */
+  color: #fefefe;
   text-align: center;
 }
 
@@ -41,6 +65,11 @@
 
 .apprModalBody {
   display: flex;
+  height: 500px;
+}
+
+.orgChatList {
+  height: 500px;
 }
 
 .selectedPeopleTable {
