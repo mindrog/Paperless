@@ -41,7 +41,7 @@ import ApprovalLine from './pages/layout/ApprovalLine';
 import './App.css';
 import './styles/style.css';
 
-import { BrowserRouter as Router, Route, Routes, useLocation, useMatch } from 'react-router-dom';``
+import { BrowserRouter as Router, Route, Routes, useLocation, useMatch } from 'react-router-dom';
 import Chatting from './pages/company_user/CompanyUserChatting';
 
 function App() {
