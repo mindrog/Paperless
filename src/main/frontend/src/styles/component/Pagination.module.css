@@ -4,6 +4,7 @@
     justify-content: center;
     align-items: center;
     margin-top: 10px;
+    position: relative;
   }
   
   .page-button {
@@ -31,3 +32,20 @@
     border-color: #2e3d86;
   }
   
+  /* 메일 작성 버튼 스타일 */
+.composeButton {
+  position: absolute;
+
+  right: 0;
+  padding: 10px 20px;
+  background-color: #2e3d86;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+}
+
+.composeButton:hover {
+  background-color: #1d2a6d;
+}
