@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import api from '../layout/api';
 import styles from '../../styles/company/company_chat.module.css';
 import OrgChart from '../layout/org_chart';
 import { Button, Modal } from 'react-bootstrap';
 
 function CompanyUserChat() {
-    // 채팅 목록 불러오기 (DB 연결 시)
-    // const [chatList, setChatList] = useState([]);
-
     // 직원 (더미 데이터)
     const empList = [
         { name: '장원영', dept: '콘텐츠 기획팀', posi: '대리', phone: '010-1234-1234', email: 'jang0101@naver.com', profile: 'https://via.placeholder.com/60' },
@@ -20,7 +18,7 @@ function CompanyUserChat() {
     ];
 
     // 채팅 목록 (더미 데이터)
-    const chatList = [
+    const chatList1 = [
         {
             profile: 'https://via.placeholder.com/75', name: '장원영', content: `수지야
             오늘 점심 뭐 먹지?`, lastTime: '2024-10-15 11:30', unread: 2
@@ -55,6 +53,9 @@ function CompanyUserChat() {
         },
     ];
 
+    // 채팅방 목록 상태 변수 (초기에는 빈 배열)
+    const [chatList, setChatList] = useState([]);
+
     // [프로필 모달창]
     // 프로필 모달창 상태 변수
     const [profileModal, setProfileModal] = useState(false);
@@ -71,7 +72,6 @@ function CompanyUserChat() {
     const clickProfile = (name) => {
         // 클릭한 프로필의 name과 empList 비교하여 데이터를 저장하는 변수
         const emp = empList.find(emp => emp.name === name);
-
         setProfileInfo(emp);
         setProfileModal(true);
     }
@@ -130,6 +130,28 @@ function CompanyUserChat() {
             console.error("Error chat: ", error);
         }
     };
+
+    // 페이지가 로드될 때 모든 채팅방 목록을 불러오는 메서드
+    useEffect(() => {
+        const fetchChatRooms = async () => {
+            try {
+                const response = await api.getChatRooms(); // 모든 채팅방 정보를 가져옴
+            
+                // 서버 응답이 배열인지 확인하고, 배열이 아니면 응답의 특정 키에서 배열을 추출
+                if (Array.isArray(response.data)) {
+                    setChatList(response.data); // 채팅방 목록을 배열로 설정
+                } else if (response.data && Array.isArray(response.data.data)) {
+                    // response.data.data가 배열인 경우
+                    setChatList(response.data.data); 
+                } else {
+                    console.error("채팅방 목록 데이터가 배열 형태가 아닙니다:", response);
+                }
+            } catch (error) {
+                console.error('채팅방 목록을 불러오는 중 오류 발생:', error);
+            }
+        };
+        fetchChatRooms();
+    }, []);
 
     return (
         <div className="container-xl">
