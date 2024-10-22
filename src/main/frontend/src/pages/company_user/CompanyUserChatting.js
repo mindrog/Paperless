@@ -74,7 +74,6 @@ function Chatting() {
 
     // 검색 버튼 클릭 시
     const selectToggle = () => {
-        console.log('showSelectInput: ', showSelectInput);
         setShowSelectInput(!showSelectInput);
     };
 
