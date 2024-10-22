@@ -72,12 +72,21 @@ const OrgChart = () => {
         },
     ]
 
+    const handleDragStart = (e, person) => {
+        e.dataTransfer.setData('person', JSON.stringify(person)); // 드래그한 데이터를 저장
+        console.log('Dragging:', person);
+    };
+
     const renderMenu = (menu) => {
         const isUser = `${menu.type}` === 'user'? true : false;
         const icon = isDropdown[menu.key] ? `📂` : `📁`;
         return (
             <li key={menu.key} style={{listStyle: 'none'}}>
-                <button onClick={() => toggleDropdown(menu.key)} style={{ fontWeight: isDropdown[menu.key] ? 'bold' : 'normal'}}>
+                <button onClick={() => toggleDropdown(menu.key)} 
+                    style={{ fontWeight: isDropdown[menu.key] ? 'bold' : 'normal'}}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, menu)} // 모든 항목에 드래그 이벤트 처리
+                >
                     {isUser ? `🧑‍💼` : icon }
                     {menu.name}
                     {menu.count && ` (${menu.count}명)`}
