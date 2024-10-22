@@ -7,5 +7,8 @@
 	<select id="EmployeeLogin" parameterType="com.ss.paperless.employee.EmployeeDTO" resultType="com.ss.paperless.employee.EmployeeDTO">
 		select * from employee where emp_id = #{emp_id} and emp_pw = #{emp_pw}
 	</select>
+	<select id ="EmployeeById" parameterType="com.ss.paperless.employee.LoginDTO" resultType="com.ss.paperless.employee.EmployeeDTO">
+		select * from employee where emp_id = #{username}
+	</select>
 	
 </mapper>
