@@ -45,15 +45,14 @@ import { BrowserRouter as Router, Route, Routes, useLocation, useMatch } from 'r
 import Chatting from './pages/company_user/CompanyUserChatting';
 
 function App() {
-    const [hello, setHello] = useState('');
+    
 
     useEffect(() => {
           Modal.setAppElement('#root');
-        axios.get('/api/hello')
-            .then(response => setHello(response.data))
-            .catch(error => console.log(error));
+        
+       
     }, []);
-
+    
     // 메뉴바
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 

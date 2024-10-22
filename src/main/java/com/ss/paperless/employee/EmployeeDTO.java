@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+
 public class EmployeeDTO {
 	private int emp_no; //식별번호 
 	private String emp_code; //원코드
