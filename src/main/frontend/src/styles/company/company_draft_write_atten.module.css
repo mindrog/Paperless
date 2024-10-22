@@ -1,13 +1,21 @@
 .AttenContent {
     text-align: left;
+    vertical-align: middle;
 }
 
-/* .inputForm {
-    width: 350px;
-} */
+.AttenContent ol {
+    margin-top: 13px;
+    margin-left: 80px;
+}
+
+.inputForm:active, .inputForm:focus {
+    outline: none !important;
+    box-shadow: none;
+    border: 1.3px solid #2e3d86;
+}
 
 .inputFormDate {
-    width: 575px;
+    width: 250px;
 }
 
 .docKeyDate {
@@ -19,4 +27,13 @@
     outline: none !important;
     box-shadow: none;
     border: 1.3px solid #2e3d86;
+}
+
+/* 에러 css */
+.errorMessage {
+    color: red !important;
+    font-weight: bold;
+    border: none !important;
+    padding: 2px !important;
+    margin: 0 0 6px 0 !important;
 }
