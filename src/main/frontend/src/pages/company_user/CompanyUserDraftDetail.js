@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import CompanyUserDraftWriteWork from '../company_user/CompanyUserDraftWriteWork';
 import CompanyUserDraftWriteAtten from '../company_user/CompanyUserDraftWriteAtten';
-import CompanyUserDraftWritePurc from '../company_user/CompanyUserDraftWritePurc';
+import CompanyUserDraftWritePurc from './CompanyUserDraftWritePurc';
 
 function CompanyUserDraftDetail() {
   const location = useLocation(); // 현재 경로를 가져옴

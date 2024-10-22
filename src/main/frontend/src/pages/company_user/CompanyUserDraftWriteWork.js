@@ -186,9 +186,9 @@ const CompanyUserDraftWriteWork = () => {
           <tbody>
             <tr>
               <td className={styles.docKey}>수 &nbsp;&nbsp;&nbsp; 신</td>
-              <td>Mark</td>
+              <td></td>
               <td className={styles.docKey}>참 &nbsp;&nbsp;&nbsp; 조</td>
-              <td>Mark</td>
+              <td></td>
             </tr>
             <tr>
               <td className={styles.docKey}>제 &nbsp;&nbsp;&nbsp; 목</td>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../../styles/company/company_draft_write_work.module.css';
 import style_atten from '../../styles/company/company_draft_write_atten.module.css';
 import { Table, Button, Form, Modal, Alert } from 'react-bootstrap';
@@ -11,12 +11,22 @@ const CompanyUserDraftWriteAtten = () => {
   const [reportDate, setReportDate] = useState('');
   const [department, setDepartment] = useState('');
   const [reportContent, setReportContent] = useState('');
+
+  // 오류
+  const [errorMessage, setErrorMessage] = useState(''); // 오류 메시지 상태 추가
+
+
+  // 연차
   const [vacationType, setVacationType] = useState('연차'); // 휴가 종류 기본값
   const [startDate, setStartDate] = useState(''); // 시작 날짜
   const [endDate, setEndDate] = useState(''); // 종료 날짜
   const [annualLeaveDays, setAnnualLeaveDays] = useState(0); // 연차 일수 자동 계산
+
+  // 결재선 
   const [showModal, setShowModal] = useState(false); // 결재선 모달 상태
   const [showCancelModal, setShowCancelModal] = useState(false); // 취소 버튼 모달 상태
+
+  // 임시저장
   const [showSaveModal, setShowSaveModal] = useState(false); // 임시 저장 확인 모달 상태
   const [isSaved, setIsSaved] = useState(false); // 임시 저장 여부
   const [saveDate, setSaveDate] = useState(''); // 임시 저장 날짜
@@ -89,12 +99,35 @@ const CompanyUserDraftWriteAtten = () => {
   };
 
   // 휴가 일수 계산 함수
-  const calculateLeaveDays = (start, end) => {
+  const calculateLeaveDays = (start, end, vacationType) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
-    const timeDiff = Math.abs(endDate - startDate);
-    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) + 1; // 휴가 일수 계산
-    return daysDiff;
+
+    let currentDate = new Date(startDate);
+    let totalDays = 0;
+
+    // 반차일 경우 0.5로 계산
+    if(vacationType === '오전반차' || vacationType === '오후반차') {
+      return 0.5;
+    }
+
+    // 시작일과 종료일이 동일한 경우는 1일로 처리
+    if (startDate.getTime() === endDate.getTime()) {
+      return (startDate.getDay() !== startDate.getDay() !== 6) ? 1 : 0;
+    }
+
+    while (currentDate <= endDate) {
+      const dayOfWeek = currentDate.getDay(); // 일요일=0, 토요일=6
+
+      // 주말빼고 연차 계산
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        totalDays++;
+      }
+
+      // 날짜를 하루씩 증가
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return totalDays;
   };
 
   // 날짜 변경 시 휴가 일수 업데이트
@@ -103,16 +136,31 @@ const CompanyUserDraftWriteAtten = () => {
 
     if (dateType === 'start') {
       setStartDate(value);
+      if (endDate && new Date(value) > new Date(endDate)) {
+        setErrorMessage('다시 선택해주세요.');
+        setEndDate('');
+      } else {
+        setErrorMessage('');
+      }
     } else if (dateType === 'end') {
-      setEndDate(value);
-    }
-
-    // 시작일과 종료일이 모두 있을 때만 휴가 일수 계산
-    if (startDate && endDate) {
-      const calculatedDays = calculateLeaveDays(startDate, endDate);
-      setAnnualLeaveDays(calculatedDays);
+      // 유효성 검사
+      if (new Date(value) < new Date(startDate)) {
+        setErrorMessage('종료일은 시작일 이후여야 합니다.');
+      } else {
+        setEndDate(value);
+        setErrorMessage('');
+      }
     }
   };
+
+  // 시작일과 종료일이 모두 있을 때만 휴가 일수 계산
+  useEffect(() => {
+    if (startDate && endDate) {
+      const calculatedDays = calculateLeaveDays(startDate, endDate, vacationType);
+      setAnnualLeaveDays(calculatedDays);
+    }
+  }, [startDate, endDate, vacationType]);
+
 
   return (
     <div className="container-xl">
@@ -191,7 +239,7 @@ const CompanyUserDraftWriteAtten = () => {
             {/* 휴가 종류 드롭다운 */}
             <tr>
               <td className={styles.docKey}>휴가종류</td>
-              <td>
+              <td colSpan={3}>
                 <Form.Select
                   value={vacationType}
                   onChange={(e) => setVacationType(e.target.value)}
@@ -218,7 +266,7 @@ const CompanyUserDraftWriteAtten = () => {
                   onChange={(e) => handleDateChange(e, 'start')}
                   className={style_atten.inputFormDate}
                 />
-                &nbsp; ~ &nbsp;
+                &nbsp;~&nbsp;
                 <Form.Control
                   type="date"
                   value={endDate}
@@ -226,10 +274,9 @@ const CompanyUserDraftWriteAtten = () => {
                   className={style_atten.inputFormDate}
                 />
               </td>
-            </tr>
+              {errorMessage && <Alert variant="danger" className={style_atten.errorMessage}>{errorMessage}</Alert>}
 
-            {/* 연차 일수: 자동 계산 */}
-            <tr>
+              {/* 연차 일수: 자동 계산 */}
               <td className={styles.docKey}>연차 일수</td>
               <td>
                 <Form.Control
@@ -237,7 +284,6 @@ const CompanyUserDraftWriteAtten = () => {
                   value={annualLeaveDays}
                   readOnly
                   className={styles.inputForm}
-                  placeholder="연차 일수 자동 계산"
                 />
               </td>
             </tr>
@@ -245,7 +291,7 @@ const CompanyUserDraftWriteAtten = () => {
             {/* 휴가 사유 */}
             <tr>
               <td className={styles.docKey}>휴가 사유</td>
-              <td>
+              <td colSpan={3}>
                 <Form.Control
                   as="textarea"
                   rows={5}
@@ -261,13 +307,13 @@ const CompanyUserDraftWriteAtten = () => {
               <td colSpan={4} className={style_atten.AttenContent}>
                 <ol>
                   <li>
-                    연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 잔여 연차에 한하여 사용함을 원칙으로 한다.
+                    연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 잔여 연차에 한하여 사용함을 원칙으로 지정함.
                   </li>
                   <li>
-                    경조사 휴가는 행사일을 증명할 수 있는 가족 관계 증명서 또는 등본, 청첩장 등 제출
+                    경조사 휴가는 행사일을 증명할 수 있는 가족 관계 증명서 또는 등본, 청첩장 등 제출 필요함.
                   </li>
                   <li>
-                    공가(예비군/민방위)는 사전에 통지서를, 사후에 참석증을 반드시 제출
+                    공가(예비군/민방위)는 사전에 통지서를, 사후에 참석증을 반드시 제출 필요함.
                   </li>
                 </ol>
               </td>
