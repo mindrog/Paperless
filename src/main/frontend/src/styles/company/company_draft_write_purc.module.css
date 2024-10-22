@@ -2,3 +2,56 @@
 .totalPrice {
     text-align: right;
 }
+
+.docContent tr,
+.docProductContent tr {
+    vertical-align: middle;
+}
+
+.tableRowInsert {
+    text-align: right;
+    margin-bottom: 10px;
+}
+
+.rowInsert {
+    border-color: #2e3d86;
+    background-color: #2e3d86 !important;
+    font-weight: bold;
+}
+
+.rowInsert:hover {
+    border-color: #7289CF;
+    background-color: #7289CF;
+    font-weight: bold;
+}
+
+.rowInsert:focus {
+    border-color: #2e3d86 !important;
+    background-color: #2e3d86 !important;
+    font-weight: bold;
+}
+
+/* 구매 정보 목록 테이블 */
+.productName {
+    width: 30%;
+}
+
+.productSize {
+    width: 20%;
+}
+
+.productCount {
+    width: 10%;
+}
+
+.productPrice {
+    width: 15%;
+}
+
+.productPrices {
+    width: 15%;
+}
+
+.productEtc {
+    width: 20%;
+}
