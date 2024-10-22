@@ -3,6 +3,7 @@ import styles from '../../styles/company/company_email_detail.module.css';
 import '../../styles/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useLocation, useNavigate } from 'react-router-dom';
+import ComposeButton from '../component/ComposeButton';
 
 function CompanyUserEmailDetail() {
   const location = useLocation();
@@ -184,7 +185,7 @@ function CompanyUserEmailDetail() {
             전달
           </button>
         </div>
-        <div className={styles['search-bar']}>
+        {/* <div className={styles['search-bar']}>
           <input
             type="text"
             placeholder="검색"
@@ -201,11 +202,11 @@ function CompanyUserEmailDetail() {
           >
             상세
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* 상세 검색 영역 */}
-      {showDetailSearch && (
+      {/* {showDetailSearch && (
         <div className={styles['detail-search']} ref={detailSearchRef}>
           <div className={styles['detail-field']}>
             <label>보낸 사람</label>
@@ -285,7 +286,7 @@ function CompanyUserEmailDetail() {
             </button>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* 이메일 상세 내용 */}
       <div className={styles['email-detail']}>
@@ -319,14 +320,14 @@ function CompanyUserEmailDetail() {
           </div>
         )}
 
-        
+
         <div className={styles['email-content']}>{email.content}</div>
       </div>
 
       {/* 메일 작성 버튼 */}
-      <button className={styles['compose-button']} onClick={handleCompose}>
-        메일 작성
-      </button>
+      <div className={styles.footer}>
+        <ComposeButton onClick={handleCompose} className={styles.composeButton} />
+      </div>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 import React from 'react';
 import styles from '../../styles/component/Pagination.module.css';
 
-function Pagination({ currentPage, totalPages, onPageChange }) {
+function Pagination({ currentPage, totalPages, onPageChange, showComposeButton, handleCompose,className }) {
   const pageNumbers = [];
 
   for (let i = 1; i <= totalPages; i++) {
@@ -10,7 +10,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
   }
 
   return (
-    <div className={styles.pagination}>
+    <div className={`${styles.pagenaition} ${className}`}>
       <button
         className={styles['page-button']}
         onClick={() => onPageChange(currentPage - 1)}
@@ -34,6 +34,13 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
       >
         다음
       </button>
+
+      {/* showComposeButton이 true일 때만 "메일 작성" 버튼 표시 */}
+      {showComposeButton && (
+        <button className={styles['compose-button']} onClick={handleCompose}>
+          메일 작성
+        </button>
+      )}
     </div>
   );
 }
