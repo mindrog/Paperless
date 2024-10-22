@@ -15,7 +15,7 @@ const HeaderOne = ({ logoSize, toggleMenu }) => (
         alt='Logo One' 
         style={{ transform: `scale(${logoSize})` }} 
     />
-</Link>
+    </Link>
         </div>
     </header>
 );
