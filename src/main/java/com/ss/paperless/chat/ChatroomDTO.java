@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class ChatroomDTO {
-	private int room_no;
-	private String room_recipient;// 수신자 (fk)
-	private LocalDateTime room_date;// 생성일
+	private int room_no;				// 식별 번호
+	private String room_participants;	// 참가자 (fk)
+	private LocalDateTime room_date;	// 생성일
 }
