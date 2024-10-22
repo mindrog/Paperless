@@ -7,11 +7,62 @@ import EmojiPicker from 'emoji-picker-react';
 import { format, isSameDay } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import useWebSocket from 'react-use-websocket';
+import { v4 as uuidv4 } from 'uuid';
+import api from '../layout/api';
 
+// .env 파일
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
 function Chatting() {
+    // 더미 데이터
+    // 알고리즘: 연결한 소켓 기준 채팅방에서 불러온 메시지들을 시간 순으로 정리해서 불러온 후 보낸 사람과 받는 사람의 기준으로 로그인 된 아이디와 비교하여 구분 (백엔드 연결 전 : 하드코딩)
+    // 메시지 sender: 보낸 사람, recipient: 받는 사람, content: 메시지 내용, count: 읽지 않은 사람(수신 수), state: 메시지 읽음 상태, sendTime: 메시지를 전송한 시간 
+    const messageList1 = [
+        { sender: '배수지', recipient: '장원영', content: `오늘 뭐 마실래??`, count: 1, state: '읽음', sendTime: '2024-10-10 10:30', },
+        { sender: '장원영', recipient: '배수지', content: `나는 아아~`, count: 1, state: '읽음', sendTime: '2024-10-10 10:40', },
+        { sender: '배수지', recipient: '장원영', content: `알겠어!!`, count: 1, state: '읽음', sendTime: '2024-10-10 10:45', },
+        { sender: '배수지', recipient: '장원영', content: `이따봐~`, count: 1, state: '읽음', sendTime: '2024-10-10 10:45', },
+        { sender: '장원영', recipient: '배수지', content: `오키~`, count: 1, state: '읽음', sendTime: '2024-10-10 11:00', },
+        { sender: '장원영', recipient: '배수지', content: `커피 잘 마실게~ 고마워!!`, count: 1, state: '읽음', sendTime: '2024-10-10 11:24', },
+        {
+            sender: '장원영', recipient: '배수지', content: `수지야
+            오늘 점심 뭐 먹지?`, count: 1, state: '안읽음', sendTime: '2024-10-15 11:30',
+        },
+    ];
+
+     // 메시지 목록 상태 변수
+     const [messageList, setMessageList] = useState([]);
+
+    // WEBSOCKET_URL 저장 변수
     const [socketUrl] = useState(WEBSOCKET_URL);
+
+    // 메시지를 저장하고 출력하는 변수
+    const [message, setMessage] = useState('');
+
+    // 고유한 사용자 아이디를 생성
+    const [userId, setUserId] = useState(uuidv4());
+
+    // URL에서 가져온 name 저장하는 변수 (더미 이용한 변수)
+    const { name } = useParams();
+
+    // 로컬 스토리지에 저장된 emp 데이터 저장하는 변수 (더미 이용한 변수)
+    // 대화 상대 (로그인한 사람과 채팅할 대상)
+    const [emp, setEmp] = useState();
+
+    // 돋보기 토글 상태
+    const [showSelectInput, setShowSelectInput] = useState(true);
+
+    // 이모지 토글 상태
+    const [isEmojiToggle, setIsEmojiToggle] = useState(false);
+
+    // emojiRef 참조 변수
+    const emojiRef = useRef(null);
+
+    // emojiButtonRef 참조 변수
+    const emojiButtonRef = useRef(null);
+
+    // mainContainerRef 참조 변수
+    const mainContainerRef = useRef(null);
 
     // 보낸 메시지 관리
     // sendMessage: WebSocket 서버로 메시지를 보내는 함수
@@ -22,16 +73,64 @@ function Chatting() {
     //  총 4가지로 0: 연결 시도 중, 1: 연결, 2: 연결 종료 시도 중, 3: 연결 종료
     const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
 
-    // 메시지를 저장하고 출력하는 변수
-    const [message, setMessage] = useState('');
-
     // WebSocket 연결 상태
     const connectionStatus = {
-        0 : '연결 시도 중..',
-        1 : '연결됨',
-        2 : '연결 종료 시도 중..',
-        3 : '연결 종료'
+        0: '연결 시도 중..',
+        1: '연결됨',
+        2: '연결 종료 시도 중..',
+        3: '연결 종료'
     }[readyState];
+
+    // 돋보기 토글 상태 변환 메서드
+    const selectToggle = () => {
+        setShowSelectInput(!showSelectInput);
+    };
+
+    // 이모지 토글 상태 변환 메서드
+    const emojiToggle = (e) => {
+        setIsEmojiToggle(!isEmojiToggle);
+    };
+
+    // 이모지 선택 시 메서드
+    const emojiClick = (selectEmoji, e) => {
+        setMessage(preMessage => preMessage + selectEmoji.emoji);
+    };
+
+    // 메시지 전송 버튼 메서드
+    const handlerSendMessage = async () => {
+        if (message) {
+            try {
+                // REST API를 통해 메시지 전송
+                await api.sendMessage({
+                    chat_room_no: emp.chat_room_no,
+                    chat_sender: userId,
+                    chat_recipient: emp.participants,
+                    chat_content: message,
+                    chat_type: 'text',
+                });
+
+                // WebSocket을 통해 메시지를 보내기도 함
+                sendMessage(JSON.stringify({ action: 'sendMessage', message, userId }));
+                setMessage(''); // 메시지 입력란 초기화
+            } catch (error) {
+                console.error('메시지 전송 중 오류 발생:', error);
+            }
+        }
+    };
+
+    // 가장 마지막에 읽은 메시지부터 보여주기
+    const scrollToBottom = () => {
+        const mainContainer = mainContainerRef.current;
+        if (mainContainer) {
+            mainContainer.scrollTop = mainContainer.scrollHeight;
+        }
+    };
+
+    // 컴포넌트가 마운트 또는 새 메시지가 추가될 때 스크롤 맨 아래로 이동
+    // 메시지 목록이 업데이트 될 때마다 실행
+    useEffect(() => {
+        scrollToBottom();
+    }, [messageList]);
 
     // readyState가 변경될 때마다 함수를 실행
     useEffect(() => {
@@ -43,13 +142,7 @@ function Chatting() {
         }
     }, [readyState]);
 
-    // URL에서 가져온 name 저장하는 변수
-    const { name } = useParams();
-
-    // 로컬 스토리지에 저장된 emp 데이터 저장하는 변수
-    // 대화 상대 (로그인한 사람과 채팅할 대상)
-    const [emp, setEmp] = useState();
-
+    // chat.js에서 emp.name 가져오기
     useEffect(() => {
         try {
 
@@ -68,36 +161,6 @@ function Chatting() {
             console.error("Error fetching employee data from localStorage: ", error);
         }
     }, [name]);
-
-    // 검색 태그 상태
-    const [showSelectInput, setShowSelectInput] = useState(true);
-
-    // 검색 버튼 클릭 시
-    const selectToggle = () => {
-        setShowSelectInput(!showSelectInput);
-    };
-
-    // 채팅 메시지 작성 내용
-    const [inputValue, setInputValue] = useState('');
-
-    // 이모지 토글 상태
-    const [isEmojiToggle, setIsEmojiToggle] = useState(false);
-
-    // 이모지 토글 상태 변환 메서드
-    const emojiToggle = (e) => {
-        setIsEmojiToggle(!isEmojiToggle);
-    };
-
-    // 이모지 선택 시 메서드
-    const emojiClick = (selectEmoji, e) => {
-        setInputValue(preInputValue => preInputValue + selectEmoji.emoji);
-    };
-
-    // emojiRef 참조 변수
-    const emojiRef = useRef(null);
-
-    // emojiButtonRef 참조 변수
-    const emojiButtonRef = useRef(null);
 
     // 특정 영역 외 클릭을 감지하여 searchRef 상태 업데이트
     useEffect(() => {
@@ -119,37 +182,22 @@ function Chatting() {
         };
     }, [emojiRef]);
 
-    // 알고리즘: 연결한 소켓 기준 채팅방에서 불러온 메시지들을 시간 순으로 정리해서 불러온 후 보낸 사람과 받는 사람의 기준으로 로그인 된 아이디와 비교하여 구분 (백엔드 연결 전 : 하드코딩)
-    // 메시지 sender: 보낸 사람, recipient: 받는 사람, content: 메시지 내용, count: 읽지 않은 사람(수신 수), state: 메시지 읽음 상태, sendTime: 메시지를 전송한 시간 
-    const messageList = [
-        { sender: '배수지', recipient: '장원영', content: `오늘 뭐 마실래??`, count: 1, state: '읽음', sendTime: '2024-10-10 10:30', },
-        { sender: '장원영', recipient: '배수지', content: `나는 아아~`, count: 1, state: '읽음', sendTime: '2024-10-10 10:40', },
-        { sender: '배수지', recipient: '장원영', content: `알겠어!!`, count: 1, state: '읽음', sendTime: '2024-10-10 10:45', },
-        { sender: '배수지', recipient: '장원영', content: `이따봐~`, count: 1, state: '읽음', sendTime: '2024-10-10 10:45', },
-        { sender: '장원영', recipient: '배수지', content: `오키~`, count: 1, state: '읽음', sendTime: '2024-10-10 11:00', },
-        { sender: '장원영', recipient: '배수지', content: `커피 잘 마실게~ 고마워!!`, count: 1, state: '읽음', sendTime: '2024-10-10 11:24', },
-        {
-            sender: '장원영', recipient: '배수지', content: `수지야
-            오늘 점심 뭐 먹지?`, count: 1, state: '안읽음', sendTime: '2024-10-15 11:30',
-        },
-    ];
-
-    // mainContainerRef 저장
-    const mainContainerRef = useRef(null);
-
-    // 가장 마지막에 읽은 메시지부터 보여주기
-    const scrollToBottom = () => {
-        const mainContainer = mainContainerRef.current;
-        if (mainContainer) {
-            mainContainer.scrollTop = mainContainer.scrollHeight;
-        }
-    };
-
-    // 컴포넌트가 마운트 또는 새 메시지가 추가될 때 스크롤 맨 아래로 이동
-    // 메시지 목록이 업데이트 될 때마다 실행
+    // 특정 채팅방의 모든 메시지 불러오기 (REST API 사용)
     useEffect(() => {
-        scrollToBottom();
-    }, [messageList]);
+        const fetchMessages = async () => {
+            try {
+                // 특정 채팅방의 메시지 조회
+                const chatMessages = await api.getChatMessages(emp.chat_room_no);
+                setMessageList(chatMessages);
+            } catch (error) {
+                console.error('메시지 불러오기 중 오류 발생:', error);
+            }
+        };
+
+        if (emp) {
+            fetchMessages(); // 직원 정보가 존재할 때 메시지 불러오기
+        }
+    }, [emp]);
 
     return (
         <>
@@ -178,6 +226,7 @@ function Chatting() {
                                     <div>
                                         <p>연결 확인: {connectionStatus}</p>
                                         <p>수신 확인: {lastMessage ? lastMessage.data : '메시지x '}</p>
+                                        <p>사용자 ID: {userId}</p>
                                     </div>
                                     <input type='text' className={`${styles.select_input} ${showSelectInput ? styles.select_input_show : styles.select_input_hide}`} placeholder='내용을 입력해주세요.'></input>
                                     <Button className={styles.select_chattingButton} onClick={selectToggle}><i class="material-icons">search</i></Button>
@@ -250,10 +299,10 @@ function Chatting() {
                             <div className={styles.input_message_emoji}>
                                 <Button ref={emojiButtonRef} className={styles.input_message_emojiButton} onClick={emojiToggle}><i class="material-icons">face</i></Button>
                             </div>
-                            <input type='text' value={inputValue} onChange={(e) => { setInputValue(e.target.value) }} placeholder='메시지를 입력하세요'></input>
+                            <input type='text' value={message} onChange={(e) => { setMessage(e.target.value) }} placeholder='메시지를 입력하세요'></input>
                             <div className={styles.input_message_button}>
                                 <Button className={styles.input_message_attachButton}><i class="material-icons">attach_file</i></Button>
-                                <Button className={styles.input_message_sendButton}><i class="material-icons">send</i></Button>
+                                <Button className={styles.input_message_sendButton} onClick={handlerSendMessage} disabled={readyState !== 1}><i class="material-icons">send</i></Button>
                             </div>
                         </div>
                     </footer>
