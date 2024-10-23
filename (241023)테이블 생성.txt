@@ -1,6 +1,5 @@
--- 1021Table
-
--- ▼ database 없는 경우 ▼
+-- 1023Table
+-- DROP database paperless;
 -- create database paperless;
 -- use paperless;
 
@@ -28,14 +27,13 @@ DROP TABLE IF EXISTS `Employee`;
 -- Position 테이블 삭제
 DROP TABLE IF EXISTS `Position`;
 
--- Team 테이블 삭제
-DROP TABLE IF EXISTS `Team`;
-
 -- Department 테이블 삭제
 DROP TABLE IF EXISTS `Department`;
 
 -- Company 테이블 삭제
 DROP TABLE IF EXISTS `Company`;
+
+
 
 -- Company 테이블 생성
 CREATE TABLE `Company` (
@@ -51,18 +49,10 @@ CREATE TABLE `Company` (
 
 -- Department 테이블 생성
 CREATE TABLE `Department` (
-	`dept_no` BIGINT NOT NULL AUTO_INCREMENT,
+	`dept_no` BIGINT NOT NULL,
 	`dept_name` varchar(100) NOT NULL,
+	`dept_team_name` VARCHAR(100) NOT NULL,
 	PRIMARY KEY (`dept_no`)
-);
-
--- Team 테이블 생성
-CREATE TABLE `Team` (
-    `team_no` BIGINT NOT NULL AUTO_INCREMENT,
-    `team_name` VARCHAR(100) NOT NULL,
-    `team_dept_no` BIGINT NOT NULL,
-    PRIMARY KEY (`team_no`),
-    FOREIGN KEY (`team_dept_no`) REFERENCES `Department`(`dept_no`)
 );
 
 -- Position 테이블 생성
@@ -136,6 +126,10 @@ CREATE TABLE `Approver` (
 	FOREIGN KEY (`appr_emp_no`) REFERENCES `Employee` (`emp_no`)
 );
 
+ALTER TABLE `Approver` ADD `appr_order` INT NOT NULL COMMENT '결재 순서';
+ALTER TABLE `Approver` ADD `appr_due_date` TIMESTAMP NOT NULL COMMENT '결재 기한';
+
+
 -- Reference 테이블 생성
 CREATE TABLE `Reference` (
 	`refe_no` BIGINT NOT NULL AUTO_INCREMENT,
@@ -171,4 +165,3 @@ CREATE TABLE `Scheduler` (
 	PRIMARY KEY (`sche_no`),
 	FOREIGN KEY (`sche_emp_no`) REFERENCES `Employee` (`emp_no`)
 );
-
