@@ -4,7 +4,7 @@ import styles from '../../styles/company/company_chat.module.css';
 import OrgChart from '../layout/org_chart';
 import { Button, Modal } from 'react-bootstrap';
 
-function CompanyUserChat() {
+function CompanyUserChatRoom() {
     // 직원 (더미 데이터)
     const empList = [
         { name: '장원영', dept: '콘텐츠 기획팀', posi: '대리', phone: '010-1234-1234', email: 'jang0101@naver.com', profile: 'https://via.placeholder.com/60' },
@@ -249,4 +249,4 @@ function CompanyUserChat() {
     );
 }
 
-export default CompanyUserChat;
+export default CompanyUserChatRoom;
