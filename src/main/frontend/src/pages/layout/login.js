@@ -21,8 +21,8 @@ function Login() {
     const postLogin = async (empId, empPw) => {
         try {
             const response = await axios.post('http://localhost:8080/login', {
-                username: empId,
-                password: empPw,
+                empCode: empId,
+                empPw: empPw,
             }, {
                 headers: {
                     'Content-Type': 'application/json',
