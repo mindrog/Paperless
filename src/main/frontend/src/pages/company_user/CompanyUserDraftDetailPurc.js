@@ -10,16 +10,16 @@ function CompanyUserDraftDetailPurc() {
   const [department, setDepartment] = useState('');
   const [reportContent, setReportContent] = useState('');
   const [approvals, setApprovals] = useState([{ name: '', position: '' }]);
-  const [files, setFiles] = useState([]); // For file handling
 
-  // Fixing missing variables
+  // 결재 상태
+  const [appr_status, setApprStatus] = useState("pending"); 
+
   const [rows, setRows] = useState([
     { productName: '', specification: '', quantity: 0, unitPrice: 0, totalPrice: 0, note: '' }
   ]);
-  const [formErrors, setFormErrors] = useState({}); // Fix for form validation errors
-  const readOnly = false; // Set as needed, can be conditionally set
+  const [formErrors, setFormErrors] = useState({}); 
+  const readOnly = false; 
 
-  // Function to handle row change
   const handleRowChange = (index, field, value) => {
     const updatedRows = [...rows];
     updatedRows[index][field] = value;
@@ -32,30 +32,18 @@ function CompanyUserDraftDetailPurc() {
     setRows(updatedRows);
   };
 
-  const handleDrop = (event) => {
-    event.preventDefault();
-    // handle file drop logic here
-  };
 
-  const handleDragOver = (event) => {
-    event.preventDefault();
-  };
-
-  const handleRemoveFile = (index) => {
-    const updatedFiles = files.filter((_, i) => i !== index);
-    setFiles(updatedFiles);
-  };
 
   return (
     <div>
       <div className="container">
-        <div className={styles.apprSumbitBtnBox}>
-          <h2 className={styles.pageTitle}>구매 신청 기안 상세</h2>
+      <div className={styles.apprSumbitBtnBox}>
+          <h2 className={styles.pageTitle}>구매 기안 상세</h2>
           <div>
-            <Button>상신 취소</Button>
+            <Button className={styles.SumbitCancelBtn} disabled={appr_status !== "pending"}>상신 취소</Button>
           </div>
           <div>
-            <Button>회신</Button>
+            <Button className={styles.WithdrawBtn} disabled={appr_status === "pending"}>회신</Button>
           </div>
         </div>
         <Form>
