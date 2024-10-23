@@ -1,60 +1,83 @@
 import React, { useEffect, useState } from 'react';
 import api from '../layout/api';
-import styles from '../../styles/company/company_chat.module.css';
+import styles from '../../styles/company/company_chatroom.module.css';
 import OrgChart from '../layout/org_chart';
 import { Button, Modal } from 'react-bootstrap';
 
 function CompanyUserChatRoom() {
-    // 직원 (더미 데이터)
+    // ** 더미 데이터를 이용하여 로그인 객체 하드코딩 ** //
+    const empNo = 1; // 현재 로그인한 사용자
+
+    const [user, setUser] = useState(null); // 상태 변수로 사용자 정보를 초기화
+
+    // 직원 정보 저장 로직
+    useEffect(() => {
+        // empList에서 empNo와 일치하는 직원 찾기
+        const foundUser = empList.find(emp => emp.emp_no === empNo);
+
+        if (foundUser) {
+            setUser(foundUser);
+        }
+    }, [empNo]); // empNo가 변경될 때마다 실행
+
+    // ** 더미 데이터 ** //
+    // 직원
     const empList = [
-        { name: '장원영', dept: '콘텐츠 기획팀', posi: '대리', phone: '010-1234-1234', email: 'jang0101@naver.com', profile: 'https://via.placeholder.com/60' },
-        { name: '박보영', dept: '콘텐츠 기획팀', posi: '사원', phone: '010-2345-2345', email: 'boyoung0202@naver.com', profile: 'https://via.placeholder.com/60' },
-        { name: '박보검', dept: '콘텐츠 기획팀', posi: '사원', phone: '010-3456-3456', email: 'gumgum0303@gmail.com', profile: 'https://via.placeholder.com/60' },
-        { name: '전지현', dept: '콘텐츠 기획팀', posi: '과장', phone: '010-4567-4567', email: 'jjh0404@naver.com', profile: 'https://via.placeholder.com/60' },
-        { name: '이도현', dept: '콘텐츠 기획팀', posi: '과장', phone: '010-5678-5678', email: 'dodo0505@gmail.com', profile: 'https://via.placeholder.com/60' },
-        { name: '김태리', dept: '콘텐츠 기획팀', posi: '팀장', phone: '010-6789-6789', email: 'kimlee0606@gmail.com', profile: 'https://via.placeholder.com/60' },
-        { name: '강동원', dept: '콘텐츠 기획팀', posi: '차장', phone: '010-7890-7890', email: 'dongwon0707@naver.com', profile: 'https://via.placeholder.com/60' },
-        { name: '광고인', dept: '홍보마케팅팀', posi: '팀장', phone: '010-1010-1010', email: 'advertisement@naver.com', profile: 'https://via.placeholder.com/60' },
+        { emp_no: 1, emp_name: '배수지', emp_email: 'suji0123@naver.com', emp_phone: '010-9876-5432', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_team_name: '', emp_posi_no: 6},
+        { emp_no: 2, emp_name: '장원영', emp_email: 'jang0101@naver.com', emp_phone: '010-1234-1234', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 7},
+        { emp_no: 3, emp_name: '박보영', emp_email: 'boyoung0202@naver.com', emp_phone: '010-2345-2345', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 7},
+        { emp_no: 4, emp_name: '박보검', emp_email: 'gumgum0303@gmail.com', emp_phone: '010-3456-3456', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 5},
+        { emp_no: 5, emp_name: '전지현', emp_email: 'jjh0404@naver.com', emp_phone: '010-4567-4567', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 1, emp_posi_no: 4},
+        { emp_no: 6, emp_name: '이도현', emp_email: 'dodo0505@gmail.com', emp_phone: '010-5678-5678', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 4},
+        { emp_no: 7, emp_name: '김태리', emp_email: 'kimlee0606@gmail.com', emp_phone: '010-6789-6789', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 5},
+        { emp_no: 8, emp_name: '강동원', emp_email: 'dongwon0707@naver.com', emp_phone: '010-7890-7890', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 3},
     ];
 
-    // 채팅 목록 (더미 데이터)
-    const chatList1 = [
-        {
-            profile: 'https://via.placeholder.com/75', name: '장원영', content: `수지야
-            오늘 점심 뭐 먹지?`, lastTime: '2024-10-15 11:30', unread: 2
-        },
-        {
-            profile: 'https://via.placeholder.com/75', name: '박보영', content: `대리님, 프레젠테이션 자료 이메일로 전송했습니다.
-            확인 부탁드립니다.`, lastTime: '2024-10-15 09:15', unread: 1
-        },
-        {
-            profile: 'https://via.placeholder.com/75', name: '박보검', content: `대리님, 요청하신 파일 보내드렸습니다.
-            확인하시고, 각 부서에 전달 바랍니다.
-            회의할 때 10부만 복사해주세요.`, lastTime: '2024-10-14 16:00', unread: 0
-        },
-        {
-            profile: 'https://via.placeholder.com/75', name: '전지현', content: `안녕하세요, 대리님. 
-            전지현입니다.
-            전화 부탁드립니다.`, lastTime: '2024-10-14 14:32', unread: 0
-        },
-        {
-            profile: 'https://via.placeholder.com/75', name: '이도현', content: `대리님, 지난 달 매출 정리하신 파일 보고서 찾았습니다!
-            감사합니다~`, lastTime: '2024-10-11 11:30', unread: 0
-        },
-        {
-            profile: 'https://via.placeholder.com/75', name: '김태리', content: `대리님, 안녕하세요. 
-            오늘 회의 참석 가능하실까요?`, lastTime: '2024-10-10 10:30', unread: 0
-        },
-        { profile: 'https://via.placeholder.com/75', name: '강동원', content: `대리님, 커피 어떤 거 드실래요?`, lastTime: '2024-10-09 09:00', unread: 0 },
-        {
-            profile: 'https://via.placeholder.com/75', name: '광고인', content: `[Web발신]
-            (광고) 공식몰
-            단 하루 100원 판매!`, lastTime: '2024-10-08 12:00', unread: 10
-        },
+    // 회사
+    const compList = [
+	{ comp_no: 0, comp_name: 'IT 대표 업체' },
+	{ comp_no: 1, comp_name: 'Paperless' },
     ];
+
+    // 부서
+    const deptList = [
+        { dept_no: 0, dept_name: 'it 개발부', dept_team_name: '콘텐츠 기획팀' },
+        { dept_no: 1, dept_name: 'it 개발부', dept_team_name: 'SW 개발팀'},
+    ];
+    
+    // 직급
+    const posiList = [
+        { posi_no: 0, posi_name: '대표' },
+        { posi_no: 1, posi_name: '사장' },
+        { posi_no: 2, posi_name: '부장' },
+        { posi_no: 3, posi_name: '차장' },
+        { posi_no: 4, posi_name: '과장' },
+        { posi_no: 5, posi_name: '팀장' },
+        { posi_no: 6, posi_name: '대리' },
+        { posi_no: 7, posi_name: '사원' },
+    ];
+
+    // 직원 목록을 각 회사 정보와 함께 저장할 배열
+    const processedEmpList = empList.map(emp => {
+        const company = compList.find(comp => comp.comp_no === emp.emp_comp_no); // emp_comp_no와 일치하는 회사 정보 찾기
+        const department = deptList.find(dept => dept.dept_no === emp.emp_dept_no); // 해당 부서 정보 찾기
+        const team = deptList.find(dept => dept.dept_team_name === emp.emp_team_name);
+        const position = posiList.find(posi => posi.posi_no === emp.emp_posi_no); // 해당 직급 정보 찾기
+  
+        return {
+        ...emp,
+        company_name: company ? company.comp_name : 'Unknown', // 회사 이름 동적 참조
+        department_name: department ? department.dept_name : 'Unknown', // 부서 이름 동적 참조
+        team_name: team ? team.dept_team_name : 'Unknown', // 팀 이름 동적 참조
+        position_name: position ? position.posi_name : 'Unknown' // 직급 이름 동적 참조
+        };
+    });
 
     // 채팅방 목록 상태 변수 (초기에는 빈 배열)
-    const [chatList, setChatList] = useState([]);
+    const [chatRoomList, setChatRoomList] = useState([]);
+
+    // 가장 최근 메시지 저장하는 객체
+    const [recentMessages, setRecentMessages] = useState({});
 
     // [프로필 모달창]
     // 프로필 모달창 상태 변수
@@ -135,24 +158,67 @@ function CompanyUserChatRoom() {
     useEffect(() => {
         const fetchChatRooms = async () => {
             try {
-                const empNo = 1; // 현재 로그인한 사용자
-                const response = await api.getChatRooms(empNo); // 모든 채팅방 정보를 가져옴
-            
+                // 1. 사용자 emp_no로 모든 채팅방 목록 가져오기
+                const chatRoomResponse = await api.getChatRoomsByParticipant(user.emp_no);
+                // 서버에서 받아온 채팅방 데이터
+                const chatRooms = chatRoomResponse.data;
+
                 // 서버 응답이 배열인지 확인하고, 배열이 아니면 응답의 특정 키에서 배열을 추출
-                if (Array.isArray(response.data)) {
-                    setChatList(response.data); // 채팅방 목록을 배열로 설정
-                } else if (response.data && Array.isArray(response.data.data)) {
+                if (Array.isArray(chatRooms)) {
+                    // 각 채팅방의 room_participants를 처리하여 참가자 이름 문자열 생성
+                    const processedChatRooms = chatRooms.map(room => {
+                            // 로그인 사용자 제외한 다른 참가자 저장
+                            const otherParticipants = room.room_participants.filter(participant => participant.N !== String(user.emp_no)).map(participant => {
+                                const emp = empList.find(e => e.emp_no === Number(participant.N));
+                                return emp ? emp.emp_name : 'Unknown';
+                        });
+
+                        // 참가자 이름을 문자열로 변환
+                        const participantNames = otherParticipants.join(', ');
+
+                        // 각 room에 participantNames 추가
+                        return {
+                            ...room,
+                            participantNames
+                        };
+                    });
+
+                    setChatRoomList(chatRooms); // 채팅방 목록을 배열로 설정
+                    console.log("chatRoomList:", chatRoomList);
+
+                    // 2. chatRooms로 각 채팅방의 room_no로 가장 최근 메시지 불러오기
+                    const allRecentMessages = await Promise.all(
+                        chatRooms.map(async (room) => {
+                            const chatResponse = await api.getMostRecentMessageByRoomNo(room.room_no);
+                            // 가장 최근 메시지 저장, 없으면 빈 객체로 저장
+                            const recentMessage = chatResponse.data || {};
+
+                            return {
+                                room_no: room.room_no,
+                                chat_content_recent: recentMessage.content || '',
+                                chat_date_recent: recentMessage.chat_date || ''
+                            };
+                        })
+                    );
+
+                    // 가장 최근 메시지를 room_no를 키로 하는 객체로 변환하여 상태 업데이트
+                    const messagesObj = allRecentMessages.reduce((acc, roomData) => {
+                        acc[roomData.room_no] = roomData.recentMessage;
+                        return acc;
+                    }, {});
+                    setRecentMessages(messagesObj);
+                } else if (chatRooms && Array.isArray(chatRooms.data)) {
                     // response.data.data가 배열인 경우
-                    setChatList(response.data.data); 
+                    setChatRoomList(chatRooms.data); 
                 } else {
-                    console.error("채팅방 목록 데이터가 배열 형태가 아닙니다:", response);
+                    console.error("채팅방 목록 데이터가 배열 형태가 아닙니다:", chatRoomResponse);
                 }
             } catch (error) {
                 console.error('채팅방 목록을 불러오는 중 오류 발생:', error);
             }
         };
         fetchChatRooms();
-    }, []);
+    }, [user.emp_no]);
 
     return (
         <div className="container-xl">
@@ -174,15 +240,17 @@ function CompanyUserChatRoom() {
                             </div>
                         </div>
                     </div>
-                    <div className={styles.chatList}>
-                        <div className={styles.chatList_title}>
+                    <div className={styles.chatRoomList}>
+                        <div className={styles.chatRoomList_title}>
                             <h3>채팅 목록</h3>
                         </div>
-                        <div className={styles.chatList_content}>
-                            {chatList.map((chat, index) => (
-                                <div key={index} className={styles.eachChat} onClick={() => chatting(chat.name)} >
-                                    <div className={styles.eachChat_profile} onClick={(e) => { e.stopPropagation(); clickProfile(chat.name); }}>
-                                        <img src={chat.profile} alt="Profile" className={styles.image} />
+                        <div className={styles.chatRoomList_content}>
+                            {chatRoomList.map((room) => (
+                                
+
+                                <div key={room.room_no} className={styles.eachChat} onClick={() => chatting(user.emp_name)} >
+                                    <div className={styles.eachChat_profile} onClick={(e) => { e.stopPropagation(); clickProfile(user.emp_name); }}>
+                                        <img src="https://via.placeholder.com/60" alt="Profile" className={styles.image} />
                                     </div>
                                     <div className={styles.eachChat_info}>
                                         <div className={styles.eachChat_row}>
@@ -190,14 +258,14 @@ function CompanyUserChatRoom() {
                                                 {chat.name}
                                             </div>
                                             <div className={styles.eachChat_lastTime}>
-                                                {chat.lastTime}
+                                                {recentMessages[room.room_no]?.chat_date_recent}
                                             </div>
                                         </div>
                                         <div className={styles.eachChat_row}>
                                             <div className={styles.eachChat_content}>
-                                                {chat.content}
+                                                {recentMessages[room.room_no]?.chat_content_recent}
                                             </div>
-                                            <div className={styles.eachChat_unread} style={{ display: chat.unread === 0 ? 'none' : 'block' }}>
+                                            <div className={styles.eachChat_unread} style={{ display: chat.unread === 0 || !chat.unread ? 'none' : 'block' }}>
                                                 {chat.unread}
                                             </div>
                                         </div>
@@ -251,3 +319,38 @@ function CompanyUserChatRoom() {
 }
 
 export default CompanyUserChatRoom;
+
+    // // 채팅 목록 (더미 데이터)
+    // const chatList1 = [
+    //     {
+    //         profile: 'https://via.placeholder.com/75', name: '장원영', content: `수지야
+    //         오늘 점심 뭐 먹지?`, lastTime: '2024-10-15 11:30', unread: 2
+    //     }, => chat에서 불러올 내용은 content, lastTime, unread
+    //     {
+    //         profile: 'https://via.placeholder.com/75', name: '박보영', content: `대리님, 프레젠테이션 자료 이메일로 전송했습니다.
+    //         확인 부탁드립니다.`, lastTime: '2024-10-15 09:15', unread: 1
+    //     },
+    //     {
+    //         profile: 'https://via.placeholder.com/75', name: '박보검', content: `대리님, 요청하신 파일 보내드렸습니다.
+    //         확인하시고, 각 부서에 전달 바랍니다.
+    //         회의할 때 10부만 복사해주세요.`, lastTime: '2024-10-14 16:00', unread: 0
+    //     },
+    //     {
+    //         profile: 'https://via.placeholder.com/75', name: '전지현', content: `안녕하세요, 전지현입니다.
+    //         오늘 회의 내용 두 분이서 정리하시고 보고 부탁드립니다.`, lastTime: '2024-10-14 14:32', unread: 0
+    //     },
+    //     {
+    //         profile: 'https://via.placeholder.com/75', name: '이도현', content: `대리님, 지난 달 매출 정리하신 파일 보고서 찾았습니다!
+    //         감사합니다~`, lastTime: '2024-10-11 11:30', unread: 0
+    //     },
+    //     {
+    //         profile: 'https://via.placeholder.com/75', name: '김태리', content: `대리님, 안녕하세요. 
+    //         오늘 회의 참석 가능하실까요?`, lastTime: '2024-10-10 10:30', unread: 0
+    //     },
+    //     { profile: 'https://via.placeholder.com/75', name: '강동원', content: `대리님, 커피 어떤 거 드실래요?`, lastTime: '2024-10-09 09:00', unread: 0 },
+    //     {
+    //         profile: 'https://via.placeholder.com/75', name: '광고인', content: `[Web발신]
+    //         (광고) 공식몰
+    //         단 하루 100원 판매!`, lastTime: '2024-10-08 12:00', unread: 10
+    //     },
+    // ];

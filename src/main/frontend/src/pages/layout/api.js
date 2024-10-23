@@ -18,11 +18,11 @@ const api = axios.create({
 // ***** 채팅방 (Chatroom) ***** //
 
 // 1. 채팅방 목록 조회 (GET 요청)
-api.getChatRooms = (empNo) => {
+api.getChatRoomsByParticipant = (emp_no) => {
   // 서버로부터 모든 채팅방 목록을 가져옴
   return api.get('/chatroom', {
     params: {
-      emp_no: empNo,
+      emp_no: emp_no,
     },
   });
 };
@@ -50,10 +50,14 @@ api.deleteChatRoom = (room_no) => {
 // ***** 채팅 메시지 (Chat) ***** //
 
 // 5. 특정 채팅방의 채팅 메시지 조회 (GET 요청)
-api.getChatMessages = (chat_room_no) => {
+api.getChatMessages = (emp_no) => {
   // 특정 채팅방에 속한 모든 채팅 메시지를 가져옴
   // chat_room_no는 조회할 채팅방의 번호
-  return api.get(`/chat/${chat_room_no}`);
+  return api.get('/chat', {
+    params: {
+      emp_no: emp_no,
+    },
+  });
 };
 
 // 6. 채팅 메시지 전송 (POST 요청)
