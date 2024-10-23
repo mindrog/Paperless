@@ -20,7 +20,7 @@ function Login() {
 
     const postLogin = async (empId, empPw) => {
         try {
-            const response = await axios.post('http://localhost:8080/api/login', {
+            const response = await axios.post('http://localhost:8080/login', {
                 username: empId,
                 password: empPw,
             }, {

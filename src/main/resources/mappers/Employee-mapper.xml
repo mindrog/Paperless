@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!--  풀 패키지명을 namespace작성한다
-그래야지만 mapper 인터페이스에서 함수 호출시
-매핑해서 sql을 실행할 수 있다. -->
+<!-- 풀 패키지명을 namespace작성한다 그래야지만 mapper 인터페이스에서 함수 호출시 매핑해서 sql을 실행할 수 있다. -->
 <mapper namespace="com.ss.paperless.employee.EmployeeMapper">
-	<select id="EmployeeLogin" parameterType="com.ss.paperless.employee.EmployeeDTO" resultType="com.ss.paperless.employee.EmployeeDTO">
-		select * from employee where emp_id = #{emp_id} and emp_pw = #{emp_pw}
+	<select id="EmployeeLogin"
+		parameterType="com.ss.paperless.employee.EmployeeDTO"
+		resultType="com.ss.paperless.employee.EmployeeDTO">
+		select * from employee where emp_id = #{emp_id} and emp_pw
+		= #{emp_pw}
 	</select>
-	<select id ="EmployeeById" parameterType="com.ss.paperless.employee.LoginDTO" resultType="com.ss.paperless.employee.EmployeeDTO">
-		select * from employee where emp_id = #{username}
+	<select id="EmployeeById"
+    parameterType="com.ss.paperless.employee.LoginDTO"
+    resultType="com.ss.paperless.employee.EmployeeDTO">
+    SELECT e.*, r.role_name
+    FROM employee e
+    LEFT JOIN employee_roles r ON e.emp_code = r.emp_code
+    WHERE e.emp_code = #{username}
 	</select>
-	
+	<select id="existsByUsername" parameterType="String"
+		resultType="int">
+		SELECT EXISTS (
+		SELECT 1
+		FROM `User`
+		WHERE `username` = '입력할_사용자이름'
+		) AS user_exists;
+	</select>
 </mapper>
