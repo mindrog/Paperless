@@ -35,7 +35,6 @@ import CompanyUserDraftDocDraft from './pages/company_user/CompanyUserDraftDocDr
 import CompanyUserDraftDocAppr from './pages/company_user/CompanyUserDraftDocAppr';
 import CompanyUserStock from './pages/company_user/CompanyUserStock';
 import CompanyUserCalender from './pages/company_user/CompanyUserCalender';
-import CompanyUserChat from './pages/company_user/CompanyUserChat';
 import Menubar from './pages/layout/menubar';
 import GraphChart from './pages/layout/GraphChart';
 import ApprovalLine from './pages/layout/ApprovalLine';
@@ -45,6 +44,7 @@ import './styles/style.css';
 
 import { BrowserRouter as Router, Route, Routes, useLocation, useMatch } from 'react-router-dom';
 import Chatting from './pages/company_user/CompanyUserChatting';
+import CompanyUserChatRoom from './pages/company_user/CompanyUserChatRoom';
 
 function App() {
     
@@ -120,7 +120,7 @@ function App() {
                         <Route path='/company/user/calender' element={<CompanyUserCalender />} />
 
                         {/* 채팅 */}
-                        <Route path='/company/user/chat' element={<CompanyUserChat />} />
+                        <Route path='/company/user/chatroom' element={<CompanyUserChatRoom />} />
                         <Route path='/chatting/:name' element={<Chatting />} />
 
                     </Routes>

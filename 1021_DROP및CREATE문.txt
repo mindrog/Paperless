@@ -1,5 +1,9 @@
 -- 1021Table
 
+-- ▼ database 없는 경우 ▼
+-- create database paperless;
+-- use paperless;
+
 -- Scheduler 테이블 삭제
 DROP TABLE IF EXISTS `Scheduler`;
 
@@ -23,6 +27,9 @@ DROP TABLE IF EXISTS `Employee`;
 
 -- Position 테이블 삭제
 DROP TABLE IF EXISTS `Position`;
+
+-- Team 테이블 삭제
+DROP TABLE IF EXISTS `Team`;
 
 -- Department 테이블 삭제
 DROP TABLE IF EXISTS `Department`;
@@ -49,6 +56,15 @@ CREATE TABLE `Department` (
 	PRIMARY KEY (`dept_no`)
 );
 
+-- Team 테이블 생성
+CREATE TABLE `Team` (
+    `team_no` BIGINT NOT NULL AUTO_INCREMENT,
+    `team_name` VARCHAR(100) NOT NULL,
+    `team_dept_no` BIGINT NOT NULL,
+    PRIMARY KEY (`team_no`),
+    FOREIGN KEY (`team_dept_no`) REFERENCES `Department`(`dept_no`)
+);
+
 -- Position 테이블 생성
 CREATE TABLE `Position` (
 	`posi_no` BIGINT NOT NULL AUTO_INCREMENT,
@@ -60,8 +76,8 @@ CREATE TABLE `Position` (
 CREATE TABLE `Employee` (
 	`emp_no` BIGINT NOT NULL AUTO_INCREMENT,
 	`emp_code` varchar(100) NOT NULL,
-	`emp_id` varchar(100) NOT NULL,
 	`emp_pw` varchar(100) NOT NULL,
+	`emp_name` varchar(100) NOT NULL,
 	`emp_email` varchar(300) NOT NULL,
 	`emp_phone` varchar(100) NOT NULL,
 	`emp_sign` varchar(100) NULL,
