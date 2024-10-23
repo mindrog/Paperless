@@ -65,7 +65,7 @@ function App() {
     return (
         <Router>
             <div className='App'>
-                <HeaderToggle />``
+                <HeaderToggle />
                 <MenubarToggle isMenuOpen={isMenuOpen} />
                 <GraphChartToggle />
                 <ApprovalLineToggle />
