@@ -1,167 +1,315 @@
--- 1023Table
+-- # 1023Table #
 -- DROP database paperless;
 -- create database paperless;
 -- use paperless;
 
--- Scheduler 테이블 삭제
+-- 1. Scheduler 테이블 삭제
 DROP TABLE IF EXISTS `Scheduler`;
 
--- Recipient 테이블 삭제
+-- 2. Recipient 테이블 삭제
 DROP TABLE IF EXISTS `Recipient`;
 
--- Reference 테이블 삭제
+-- 3. Reference 테이블 삭제
 DROP TABLE IF EXISTS `Reference`;
 
--- Approver 테이블 삭제
+-- 4. Approver 테이블 삭제
 DROP TABLE IF EXISTS `Approver`;
 
--- Attachment 테이블 삭제
+-- 5. Attachment 테이블 삭제
 DROP TABLE IF EXISTS `Attachment`;
 
--- Report 테이블 삭제
-DROP TABLE IF EXISTS `Report`;
+-- 6. Report 테이블 삭제
+DROP TABLE IF EXISTS `PurchaseReport`;
 
--- Employee 테이블 삭제
+-- 7. Report 테이블 삭제
+DROP TABLE IF EXISTS `AttendanceReport`;
+
+-- 8. Report 테이블 삭제
+DROP TABLE IF EXISTS `WorkReport`;
+
+-- 9. Inquiry 테이블 삭제
+DROP TABLE IF EXISTS `Inquiry`;
+
+-- 10. Stock 테이블 삭제
+DROP TABLE IF EXISTS `Stock`;
+
+-- 11. Chat 테이블 삭제
+DROP TABLE IF EXISTS `Chat`;
+
+-- 12. Chatroom 테이블 삭제
+DROP TABLE IF EXISTS `Chatroom`;
+
+-- 13. Emailmessage 테이블 삭제
+DROP TABLE IF EXISTS `Emailmessage`;
+
+-- 14. Employee 테이블 삭제
 DROP TABLE IF EXISTS `Employee`;
 
--- Position 테이블 삭제
+-- 15. Position 테이블 삭제
 DROP TABLE IF EXISTS `Position`;
 
--- Department 테이블 삭제
+-- 16. Department 테이블 삭제
 DROP TABLE IF EXISTS `Department`;
 
--- Company 테이블 삭제
+-- 17. Company 테이블 삭제
 DROP TABLE IF EXISTS `Company`;
 
 
 
--- Company 테이블 생성
+
+-- 1. Company 테이블 생성 (기업 정보)
 CREATE TABLE `Company` (
-	`comp_no` BIGINT NOT NULL AUTO_INCREMENT,
-	`comp_name` varchar(300) NOT NULL,
-	`comp_industry` varchar(100) NOT NULL,
-	`comp_requester` varchar(100) NOT NULL COMMENT '담당자',
-	`comp_email` varchar(300) NOT NULL COMMENT '담당자 이메일',
-	`comp_phone` varchar(100) NOT NULL COMMENT '담당자 번호',
-	`comp_headcount` INT NOT NULL DEFAULT 0 COMMENT '예상 인원 수',
+	`comp_no`	BIGINT	NOT NULL,
+	`comp_name`	varchar(300)	NOT NULL,
+	`comp_industry`	varchar(100)	NOT NULL,
+	`comp_requester`	varchar(100)	NOT NULL	COMMENT '담당자',
+	`comp_email`	varchar(300)	NOT NULL	COMMENT '담당자 이메일',
+	`comp_phone`	varchar(100)	NOT NULL	COMMENT '담당자 번호',
+	`comp_headcount`	INT	NOT NULL	DEFAULT 0	COMMENT '예상 인원 수',
 	PRIMARY KEY (`comp_no`)
 );
 
--- Department 테이블 생성
+-- 2. Department 테이블 생성 (부서 정보)
 CREATE TABLE `Department` (
-	`dept_no` BIGINT NOT NULL,
-	`dept_name` varchar(100) NOT NULL,
-	`dept_team_name` VARCHAR(100) NOT NULL,
+	`dept_no`	BIGINT	NOT NULL	COMMENT '100: 인사부, 200: 재무부',
+	`dept_name`	varchar(100)	NOT NULL,
+	`dept_team_name`	varchar(100)	NOT NULL,
 	PRIMARY KEY (`dept_no`)
 );
 
--- Position 테이블 생성
+-- 3. Position 테이블 생성 (직급 정보)
 CREATE TABLE `Position` (
-	`posi_no` BIGINT NOT NULL AUTO_INCREMENT,
-	`posi_name` varchar(100) NOT NULL,
+	`posi_no`	BIGINT	NOT NULL,
+	`posi_name`	varchar(100)	NOT NULL,
 	PRIMARY KEY (`posi_no`)
 );
 
--- Employee 테이블 생성
+-- 4. Employee 테이블 생성 (직원 정보)
 CREATE TABLE `Employee` (
-	`emp_no` BIGINT NOT NULL AUTO_INCREMENT,
-	`emp_code` varchar(100) NOT NULL,
-	`emp_pw` varchar(100) NOT NULL,
-	`emp_name` varchar(100) NOT NULL,
-	`emp_email` varchar(300) NOT NULL,
-	`emp_phone` varchar(100) NOT NULL,
-	`emp_sign` varchar(100) NULL,
-	`emp_profile` varchar(300) NULL,
-	`emp_comp_no` BIGINT NOT NULL COMMENT 'comp_no',
-	`emp_dept_no` BIGINT NOT NULL COMMENT 'dept_no',
-	`emp_posi_no` BIGINT NOT NULL COMMENT 'posi_no',
-	`emp_enroll_date` TIMESTAMP NOT NULL DEFAULT NOW(),
-	`emp_join_date` TIMESTAMP NOT NULL,
-	`emp_lastmsg` varchar(100) NULL,
-	`emp_lastemailmsg` varchar(100) NULL,
-	`emp_role` varchar(100) NOT NULL DEFAULT 'user' COMMENT 'sys_admin, comp_admin, user',
+	`emp_no`	BIGINT	NOT NULL,
+	`emp_code`	varchar(100)	NOT NULL,
+	`emp_pw`	varchar(100)	NOT NULL,
+	`emp_name`	varchar(100)	NOT NULL,
+	`emp_email`	varchar(300)	NOT NULL,
+	`emp_phone`	varchar(100)	NOT NULL,
+	`emp_sign`	varchar(100)	NULL,
+	`emp_profile`	varchar(300)	NULL,
+	`emp_comp_no`	BIGINT	NOT NULL	COMMENT 'comp_no',
+	`emp_dept_no`	BIGINT	NOT NULL	COMMENT 'dept_no',
+	`emp_posi_no`	BIGINT	NOT NULL	COMMENT 'posi_no',
+	`emp_enroll_date`	TIMESTAMP	NOT NULL	DEFAULT NOW(),
+	`emp_join_date`	TIMESTAMP	NOT NULL,
+	`emp_lastmsg`	varchar(100)	NULL,
+	`emp_lastemailmsg`	varchar(100)	NULL,
+	`emp_role`	varchar(100)	NOT NULL	DEFAULT 'user'	COMMENT 'sys_admin, comp_admin, user',
 	PRIMARY KEY (`emp_no`),
 	FOREIGN KEY (`emp_comp_no`) REFERENCES `Company` (`comp_no`),
 	FOREIGN KEY (`emp_dept_no`) REFERENCES `Department` (`dept_no`),
 	FOREIGN KEY (`emp_posi_no`) REFERENCES `Position` (`posi_no`)
 );
 
--- Report 테이블 생성
-CREATE TABLE `Report` (
-	`repo_no` BIGINT NOT NULL AUTO_INCREMENT,
-	`repo_emp_no` BIGINT NOT NULL COMMENT 'emp_no',
-	`repo_title` varchar(300) NOT NULL,
-	`repo_content` varchar(500) NOT NULL,
-	`repo_type` varchar(100) NOT NULL,
-	`repo_status` varchar(100) NOT NULL COMMENT '임시저장, 저장, 상신, 상신취소',
-	`dept_code` varchar(100) NULL,
-	`draft_date` TIMESTAMP NULL DEFAULT NOW(),
-	`submission_date` TIMESTAMP NULL,
-	`cancel_date` TIMESTAMP NULL,
-	`repo_start_time` TIMESTAMP NULL,
-	`repo_end_time` TIMESTAMP NULL,
-	PRIMARY KEY (`repo_no`),
-	FOREIGN KEY (`repo_emp_no`) REFERENCES `Employee` (`emp_no`)
+-- 5. Report 테이블 생성 (보고서)
+-- CREATE TABLE `Report` (
+-- 	`repo_no`	BIGINT	NOT NULL,
+-- 	`repo_emp_no`	BIGINT	NOT NULL	COMMENT 'emp_no',
+-- 	`repo_title`	varchar(300)	NOT NULL,
+-- 	`repo_content`	varchar(500)	NOT NULL,
+-- 	`repo_type`	varchar(100)	NOT NULL,
+-- 	`repo_status`	varchar(100)	NOT NULL	COMMENT '임시저장, 저장, 상신, 상신취소',
+-- 	`dept_code`	varchar(100)	NULL,
+-- 	`draft_date`	TIMESTAMP	NULL	DEFAULT NOW(),
+-- 	`submission_date`	TIMESTAMP	NULL,
+-- 	`cancel_comment`	varchar(500)	NULL,
+-- 	`cancel_date`	TIMESTAMP	NULL,
+-- 	`repo_start_time`	TIMESTAMP	NULL,
+-- 	`repo_end_time`	TIMESTAMP	NULL,
+-- 	`repo_comp_date`	TIMESTAMP	NULL,
+-- 	PRIMARY KEY (`repo_no`),
+-- 	FOREIGN KEY (`repo_emp_no`) REFERENCES `Employee` (`emp_no`)
+-- );
+
+-- 5. WorkReport 테이블 생성 (업무 보고서)
+CREATE TABLE `WorkReport` (
+    `repo_no` BIGINT NOT NULL AUTO_INCREMENT,      -- 보고서 번호 
+    `repo_title` VARCHAR(255) NOT NULL,            -- 보고서 제목
+    `repo_content` TEXT NOT NULL,                  -- 보고서 내용
+    `repo_status`	varchar(100)	NOT NULL,
+    -- `repo_attach_files` TEXT NULL,                 -- 첨부파일 경로
+    `repo_created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 생성일자
+	`dept_code`	varchar(100)	NULL,
+	`repo_emp_no`	BIGINT	NOT NULL,
+	`draft_date`	TIMESTAMP	NULL	DEFAULT NOW(),
+	`submission_date`	TIMESTAMP	NULL,
+	`cancel_comment`	varchar(500)	NULL,
+	`cancel_date`	TIMESTAMP	NULL,
+	`repo_start_time`	TIMESTAMP	NULL,
+	`repo_end_time`	TIMESTAMP	NULL,
+	`repo_comp_date`	TIMESTAMP	NULL,
+    PRIMARY KEY (`repo_no`),
+FOREIGN KEY (`repo_emp_no`) REFERENCES `Employee` (`emp_no`)
 );
 
--- Attachment 테이블 생성
-CREATE TABLE `Attachment` (
-	`atta_no` BIGINT NOT NULL AUTO_INCREMENT,
-	`atta_repo_no` BIGINT NULL COMMENT 'repo_no',
-	`atta_email_no` BIGINT NULL COMMENT 'email_no',
-	`atta_content` varchar(500) NOT NULL,
-	PRIMARY KEY (`atta_no`),
-	FOREIGN KEY (`atta_repo_no`) REFERENCES `Report` (`repo_no`)
+-- 6. AttendanceReport 테이블 생성 (근태 보고서)
+CREATE TABLE `AttendanceReport` (
+    `repo_no` VARCHAR(100) NOT NULL AUTO_INCREMENT,             -- 문서 번호
+    `report_title` VARCHAR(255) NOT NULL,            -- 기안 제목
+    `dept_code` BIGINT NOT NULL,                 -- 부서 번호 (외래키)
+    `repo_writer` BIGINT NOT NULL,                   -- 기안자 직원 번호 (외래키)
+    `repo_date` DATE NOT NULL,                     -- 기안일
+    `repo_status` VARCHAR(50) NOT NULL,          -- 결재 상태
+    `vacation_type` VARCHAR(50) NOT NULL,            -- 휴가 종류
+    `start_date` DATE NOT NULL,                      -- 휴가 시작일
+    `end_date` DATE NOT NULL,                        -- 휴가 종료일
+    `annual_leave_days` INT NOT NULL,                -- 연차 일수
+    `report_content` TEXT NOT NULL,                  -- 휴가 사유
+    `submission_date` DATE NOT NULL,                 -- 상신일
+    `repo_comp_date`	TIMESTAMP,                    -- 결재 완료일
+    PRIMARY KEY (`report_id`),
+    FOREIGN KEY (`dept_code`) REFERENCES `Department` (`dept_code`),  -- 부서 외래키
+    FOREIGN KEY (`reporter_no`) REFERENCES `Employee` (`emp_no`),       -- 기안자 외래키
 );
 
--- Approver 테이블 생성
+-- 7. PurchaseReport 테이블 생성 (구매 보고서)
+CREATE TABLE `PurchaseReport` (
+    `repo_no` BIGINT NOT NULL AUTO_INCREMENT,      -- 구매 기안 문서 번호
+    `repo_title` VARCHAR(255) NOT NULL,            -- 기안 제목
+    `repo_writer` BIGINT NOT NULL,                    -- 기안자 직원 번호 (외래키)
+    `dept_code` BIGINT NOT NULL,                  -- 부서 번호 (외래키)
+    `repo_date` DATE NOT NULL,                     -- 기안일
+    `repo_status` VARCHAR(50) NOT NULL DEFAULT 'pending', -- 결재 상태 (예: pending, approved)
+    `submission_date` DATE NOT NULL,                 -- 상신일
+    `repo_comp_date`	TIMESTAMP,                    -- 결재 완료일
+    -- 제품 정보
+    `product_name` VARCHAR(255) NOT NULL,             -- 품명
+    `specification` VARCHAR(255),                     -- 규격
+    `quantity` INT NOT NULL,                          -- 수량
+    `unit_price` DECIMAL(10, 2) NOT NULL,             -- 단가
+    `total_price` DECIMAL(10, 2) NOT NULL,            -- 총 금액 (수량 * 단가)
+    `note` TEXT,                                      -- 비고
+    PRIMARY KEY (`request_id`),
+    FOREIGN KEY (`reporter_no`) REFERENCES `Employee` (`emp_no`),  -- 기안자 외래키
+    FOREIGN KEY (`dept_code`) REFERENCES `Department` (`dept_code`) -- 부서 외래키
+);
+
+
+-- 8. Approver 테이블 생성 (결재자)
 CREATE TABLE `Approver` (
-	`appr_no` BIGINT NOT NULL AUTO_INCREMENT,
-	`appr_repo_no` BIGINT NOT NULL COMMENT 'repo_no',
-	`appr_emp_no` BIGINT NOT NULL COMMENT 'emp_no',
-	`appr_status` varchar(100) NOT NULL DEFAULT 'wait' COMMENT 'wait(결재 전), approval(결재 후)',
-	`appr_date` TIMESTAMP NULL,
+	`appr_no`	BIGINT	NOT NULL,
+	`appr_repo_no`	BIGINT	NOT NULL,
+	`appr_emp_no`	BIGINT	NOT NULL,
+	`appr_status`	varchar(100)	NOT NULL	DEFAULT 'pending',
+	`appr_date`	TIMESTAMP	NULL,
+	`appr_order`	int	NOT NULL	DEFAULT 1,
 	PRIMARY KEY (`appr_no`),
 	FOREIGN KEY (`appr_repo_no`) REFERENCES `Report` (`repo_no`),
 	FOREIGN KEY (`appr_emp_no`) REFERENCES `Employee` (`emp_no`)
 );
 
-ALTER TABLE `Approver` ADD `appr_order` INT NOT NULL COMMENT '결재 순서';
-ALTER TABLE `Approver` ADD `appr_due_date` TIMESTAMP NOT NULL COMMENT '결재 기한';
-
-
--- Reference 테이블 생성
-CREATE TABLE `Reference` (
-	`refe_no` BIGINT NOT NULL AUTO_INCREMENT,
-	`refe_repo_no` BIGINT NOT NULL COMMENT 'repo_no',
-	`refe_emp_no` BIGINT NOT NULL COMMENT 'emp_no',
-	`refe_dept_no` BIGINT NOT NULL COMMENT 'dept_no',
-	`refe_date` TIMESTAMP NULL,
-	PRIMARY KEY (`refe_no`),
-	FOREIGN KEY (`refe_repo_no`) REFERENCES `Report` (`repo_no`),
-	FOREIGN KEY (`refe_emp_no`) REFERENCES `Employee` (`emp_no`)
-);
-
--- Recipient 테이블 생성
+-- 9. Recipient 테이블 생성 (수신자)
 CREATE TABLE `Recipient` (
-	`reci_no` BIGINT NOT NULL AUTO_INCREMENT,
-	`reci_repo_no` BIGINT NOT NULL COMMENT 'repo_no',
-	`reci_emp_no` BIGINT NOT NULL COMMENT 'emp_no',
-	`reci_dept_no` BIGINT NOT NULL COMMENT 'dept_no',
-	`reci_date` TIMESTAMP NULL,
+	`reci_no`	BIGINT	NOT NULL,
+	`reci_repo_no`	BIGINT	NOT NULL,
+	`reci_emp_no`	BIGINT	NOT NULL,
+	`reci_dept_no`	BIGINT	NOT NULL,
+	`reci_date`	TIMESTAMP	NULL,
 	PRIMARY KEY (`reci_no`),
 	FOREIGN KEY (`reci_repo_no`) REFERENCES `Report` (`repo_no`),
-	FOREIGN KEY (`reci_emp_no`) REFERENCES `Employee` (`emp_no`)
+	FOREIGN KEY (`reci_emp_no`) REFERENCES `Employee` (`emp_no`),
+	FOREIGN KEY (`reci_dept_no`) REFERENCES `Department` (`dept_no`)
 );
 
--- Scheduler 테이블 생성
+-- 10. Reference 테이블 생성 (참조자)
+CREATE TABLE `Reference` (
+	`refe_no`	BIGINT	NOT NULL,
+	`refe_repo_no`	BIGINT	NOT NULL,
+	`refe_emp_no`	BIGINT	NOT NULL,
+	`refe_dept_no`	BIGINT	NOT NULL,
+	`refe_date`	TIMESTAMP	NULL,
+	PRIMARY KEY (`refe_no`),
+	FOREIGN KEY (`refe_repo_no`) REFERENCES `Report` (`repo_no`),
+	FOREIGN KEY (`refe_emp_no`) REFERENCES `Employee` (`emp_no`),
+	FOREIGN KEY (`refe_dept_no`) REFERENCES `Department` (`dept_no`)
+);
+
+-- 11. Attachment 테이블 생성 (첨부)
+CREATE TABLE `Attachment` (
+	`atta_no`	BIGINT	NOT NULL,
+	`atta_repo_no`	BIGINT	NULL,
+	`atta_email_no`	BIGINT	NULL,
+	`atta_content`	varchar(500)	NOT NULL,
+	PRIMARY KEY (`atta_no`),
+	FOREIGN KEY (`atta_repo_no`) REFERENCES `Report` (`repo_no`)
+);
+
+-- 12. Inquiry 테이블 생성 (문의)
+CREATE TABLE `Inquiry` (
+	`inqu_no`	BIGINT	NOT NULL,
+	`inqu_writer`	varchar(100)	NOT NULL,
+	`inqu_content`	varchar(500)	NOT NULL,
+	`inqu_email`	varchar(100)	NOT NULL,
+	`inqu_phone`	varchar(100)	NOT NULL,
+	`inqu_enroll_date`	TIMESTAMP	NOT NULL	DEFAULT NOW(),
+	PRIMARY KEY (`inqu_no`)
+);
+
+-- 13. Scheduler 테이블 생성 (일정)
 CREATE TABLE `Scheduler` (
-	`sche_no` BIGINT NOT NULL AUTO_INCREMENT,
-	`sche_emp_no` BIGINT NOT NULL COMMENT 'emp_no',
-	`sche_title` varchar(300) NOT NULL,
-	`sche_color` varchar(100) NULL,
-	`sche_start_time` TIMESTAMP NOT NULL,
-	`sche_end_time` TIMESTAMP NOT NULL,
+	`sche_no`	BIGINT	NOT NULL,
+	`sche_emp_no`	BIGINT	NOT NULL,
+	`sche_title`	varchar(300)	NOT NULL,
+	`sche_color`	varchar(100)	NULL,
+	`sche_start_time`	TIMESTAMP	NOT NULL,
+	`sche_end_time`	TIMESTAMP	NOT NULL,
 	PRIMARY KEY (`sche_no`),
 	FOREIGN KEY (`sche_emp_no`) REFERENCES `Employee` (`emp_no`)
 );
+
+-- 14. Stock 테이블 생성 (재고)
+CREATE TABLE `Stock` (
+	`stock_no`	BIGINT	NOT NULL,
+	`stock_comp_no`	BIGINT	NOT NULL,
+	`stock_name`	varchar(300)	NOT NULL,
+	`stock_category`	varchar(100)	NOT NULL,
+	`stock_amount`	INT	NOT NULL	DEFAULT 0,
+	PRIMARY KEY (`stock_no`),
+	FOREIGN KEY (`stock_comp_no`) REFERENCES `Company` (`comp_no`)
+);
+
+-- 15. Chatroom 테이블 생성 (채팅방)
+CREATE TABLE `Chatroom` (
+	`room_no`	BIGINT	NOT NULL,
+	`room_participants`	BIGINT	NOT NULL,
+	`room_date`	TIMESTAMP	NOT NULL	DEFAULT NOW(),
+	PRIMARY KEY (`room_no`),
+	FOREIGN KEY (`room_participants`) REFERENCES `Employee` (`emp_no`)
+);
+
+-- 16. Chat 테이블 생성 (채팅메시지)
+CREATE TABLE `Chat` (
+	`chat_no`	BIGINT	NOT NULL,
+	`chat_room_no`	BIGINT	NOT NULL,
+	`chat_sender`	BIGINT	NOT NULL,
+	`chat_recipient`	BIGINT	NULL,
+	`chat_content`	varchar(500)	NOT NULL,
+	`chat_type`	varchar(100)	NOT NULL	DEFAULT 'text',
+	`chat_count`	int	NOT NULL	DEFAULT 1,
+	`chat_send_date`	TIMESTAMP	NOT NULL	DEFAULT NOW(),
+	PRIMARY KEY (`chat_no`),
+	FOREIGN KEY (`chat_room_no`) REFERENCES `Chatroom` (`room_no`),
+	FOREIGN KEY (`chat_sender`) REFERENCES `Employee` (`emp_no`),
+	FOREIGN KEY (`chat_recipient`) REFERENCES `Employee` (`emp_no`)
+);
+
+-- 17. Emailmessage 테이블 생성 (이메일메시지)
+CREATE TABLE `Emailmessage` (
+	`email_no`	BIGINT	NOT NULL,
+	`email_writer`	BIGINT	NOT NULL,
+	`email_content`	varchar(500)	NOT NULL,
+	`email_recipient`	BIGINT	NOT NULL,
+	`email_status`	varchar(100)	NOT NULL	DEFAULT 'unread',
+	`email_send_date`	TIMESTAMP	NOT NULL	DEFAULT NOW(),
+	PRIMARY KEY (`email_no`),
+	FOREIGN KEY (`email_writer`) REFERENCES `Employee` (`emp_no`),
+	FOREIGN KEY (`email_recipient`) REFERENCES `Employee` (`emp_no`)
+);
+
