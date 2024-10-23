@@ -150,3 +150,25 @@ body {
   border-top:none;
   justify-content: center;
 }
+
+/* detail page btn */
+.SumbitCancelBtn, .WithdrawBtn {
+  background-color: #2e3d86;
+  border-color: #2e3d86;
+  color: white;
+  margin: 10px;
+  width: 100px;
+  padding: 8px;
+}
+
+.SumbitCancelBtn:focus, .WithdrawBtn:focus {
+  border-color: #2e3d86 !important;
+  background-color: #2e3d86 !important;
+  font-weight: bold;
+}
+
+.SumbitCancelBtn:hover, .WithdrawBtn:hover  {
+  border-color: #7289CF;
+  background-color: #7289CF;
+  font-weight: bold;
+}

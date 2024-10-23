@@ -13,29 +13,6 @@ const CompanyUserDraftFormWork = () => {
   const [nextPlan, setNextPlan] = useState('');
   const [approvals, setApprovals] = useState([{ name: '', position: '' }]);
 
-  const handleAddApproval = () => {
-    setApprovals([...approvals, { name: '', position: '' }]);
-  };
-
-  const handleRemoveApproval = (index) => {
-    const updatedApprovals = approvals.filter((_, idx) => idx !== index);
-    setApprovals(updatedApprovals);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const formData = {
-      reportTitle,
-      reporter,
-      reportDate,
-      department,
-      reportContent,
-      nextPlan,
-      approvals
-    };
-    console.log('Form Data: ', formData);
-  };
-
   return (
     <div className={styles.container}>
       <div className={styles.apprSumbitBtnBox}>
