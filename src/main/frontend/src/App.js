@@ -14,8 +14,6 @@ import SystemAdminInquiry from './pages/system_admin/SystemAdminInquiry';
 import SystemAdminMember from './pages/system_admin/SystemAdminMember';
 import CompanyAdminMain from './pages/company_admin/CompanyAdminMain';
 import CompanyAdminMember from './pages/company_admin/CompanyAdminMember';
-import CompanyAdminEmail from './pages/company_admin/CompanyAdminEmail';
-import CompanyAdminEmailSend from './pages/company_admin/CompanyAdminEmailSend';
 import CompanyAdminApproval from './pages/company_admin/CompanyAdminApproval';
 import CompanyAdminApprovalDetail from './pages/company_admin/CompanyAdminApprovalDetail';
 import CompanyUserMain from './pages/company_user/CompanyUserMain';
@@ -88,8 +86,7 @@ function App() {
                         {/* 기업 관리자 */}
                         <Route path='/company/admin/' element={<CompanyAdminMain />} />
                         <Route path='/company/admin/member' element={<CompanyAdminMember />} />
-                        <Route path='/company/admin/email' element={<CompanyAdminEmail />} />
-                        <Route path='/company/admin/email/send' element={<CompanyAdminEmailSend />} />
+                        
                         <Route path='/company/admin/approval' element={<CompanyAdminApproval />} />
                         <Route path='/company/admin/approval/detail' element={<CompanyAdminApprovalDetail />} />
 

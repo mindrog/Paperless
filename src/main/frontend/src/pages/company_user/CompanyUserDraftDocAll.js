@@ -9,6 +9,15 @@ import { useNavigate } from 'react-router-dom';
 
 function CompanyUserDraftDocAll() {
     const navigate = useNavigate();
+    const completedColumns = [
+      { key: 'no', label: 'No', width: '5%' },
+      { key: 'docNumber', label: '문서 번호', width: '10%' },
+      { key: 'docType', label: '문서 양식', width: '10%' },
+      { key: 'title', label: '문서 제목', width: '30%' },
+      { key: 'drafter', label: '기안자', width: '15%' },
+      { key: 'draftDate', label: '기안일', width: '15%' },
+      { key: 'status', label: '결재 상태', width: '10%' },
+    ];
   
     // 임의의 문서 데이터 생성
     const generateDocs = () => {
@@ -20,14 +29,14 @@ function CompanyUserDraftDocAll() {
           docType: `양식 ${i % 5 + 1}`,
           title: `문서 제목 ${i}`,
           drafter: `사용자 ${i}`,
-          draftDate: `2023-10-${String(i).padStart(2, '0')}`,
+          draftDate: `2024-10-${String(i).padStart(2, '0')}`,
           status: i % 3 === 0 ? '승인' : i % 3 === 1 ? '진행 중' : '반려',
         });
       }
       return docList;
     };
   
-    const [docs, setDocs] = useState(generateDocs());
+    const [docs, setDocs] = useState(() => generateDocs());
   
     // 페이지네이션 상태
     const [currentPage, setCurrentPage] = useState(1);
@@ -83,7 +92,7 @@ function CompanyUserDraftDocAll() {
   
     // 행 클릭 시 처리 함수
     const handleRowClick = (doc) => {
-      // 예: 상세 페이지로 이동
+      
       alert(`${doc.id} 번호 이동`);
     };
   
@@ -99,13 +108,14 @@ function CompanyUserDraftDocAll() {
         />
   
         {/* 문서 리스트 컴포넌트 사용 */}
-        <DocumentList docs={currentDocs} onRowClick={handleRowClick} />
+        <DocumentList docs={currentDocs} onRowClick={handleRowClick} columns={completedColumns} />
   
         {/* 페이지네이션 컴포넌트 사용 */}
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
+          className={styles.pagenaition}
         />
       </div>
     );
