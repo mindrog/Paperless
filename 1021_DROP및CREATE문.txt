@@ -1,5 +1,9 @@
 -- 1021Table
 
+-- ▼ database 없는 경우 ▼
+-- create database paperless;
+-- use paperless;
+
 -- Scheduler 테이블 삭제
 DROP TABLE IF EXISTS `Scheduler`;
 
