@@ -10,26 +10,21 @@ function CompanyUserDraftDetailAtten() {
   const [reportDate, setReportDate] = useState('');
   const [department, setDepartment] = useState('');
   const [reportContent, setReportContent] = useState('');
-  const [approvals, setApprovals] = useState([{ name: '', position: '' }]);
-  const [showModal, setShowModal] = useState(false); // 결재선 모달 상태
-  const [showCancelModal, setShowCancelModal] = useState(false); // 취소 버튼 모달 상태
-  const [showSaveModal, setShowSaveModal] = useState(false); // 임시 저장 확인 모달 상태
-  const [isSaved, setIsSaved] = useState(false); // 임시 저장 여부
-  const [saveDate, setSaveDate] = useState(''); // 임시 저장 날짜
-  const [showAlert, setShowAlert] = useState(false); // 임시 저장 알림 상태
   const [formErrors, setFormErrors] = useState({});
-  const [files, setFiles] = useState([]); // 첨부된 파일들을 저장할 상태
 
+  // 결재 상태
+  const [appr_status, setApprStatus] = useState("wait"); 
+  
   return (
     <div>
       <div className="container">
         <div className={styles.apprSumbitBtnBox}>
           <h2 className={styles.pageTitle}>업무 보고 기안 상세</h2>
           <div>
-            <Button>상신 취소</Button>
+            <Button className={styles.SumbitCancelBtn} disabled={appr_status !== "wait"}>상신 취소</Button>
           </div>
           <div>
-            <Button>회신</Button>
+            <Button className={styles.WithdrawBtn} disabled={appr_status === "wait"}>회신</Button>
           </div>
         </div>
         <Form>
