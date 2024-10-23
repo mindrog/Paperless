@@ -2,6 +2,8 @@ package com.ss.paperless;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,7 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JWTUtil {
 	private Key key;
+	private long expirationTime = 86400000;
 
     public JWTUtil(@Value("${spring.jwt.secret}")String secret) {
 
@@ -50,6 +53,35 @@ public class JWTUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String generateToken(String empCode, String role) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role); // 역할을 클레임에 추가
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(empCode) 
+                .setIssuedAt(new Date(System.currentTimeMillis())) 
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime)) 
+                .signWith(key, SignatureAlgorithm.HS256) 
+                .compact(); 
+    }
+    public Claims extractClaims(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+    public String extractEmpCode(String token) {
+        return extractClaims(token).getSubject();
+    }
+
+    public boolean isTokenExpired(String token) {
+        return extractClaims(token).getExpiration().before(new Date());
+    }
+
+    public boolean validateToken(String token, String empCode) {
+        String extractedEmpCode = extractEmpCode(token);
+        return (extractedEmpCode.equals(empCode) && !isTokenExpired(token));
     }
 
 }

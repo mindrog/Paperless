@@ -1,10 +1,6 @@
 package com.ss.paperless;
 
-import java.util.Collections;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.http.auth.AUTH;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,12 +9,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
+
 
 import com.ss.paperless.employee.LoginFilter;
 
@@ -27,16 +21,16 @@ import com.ss.paperless.employee.LoginFilter;
 public class SecurityConfig {
 
 		private final AuthenticationConfiguration authenticationConfiguration;
-		//JWTUtil 주입
+		
 		private final JWTUtil jwtUtil;
 
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
 
         this.authenticationConfiguration = authenticationConfiguration;
-				this.jwtUtil = jwtUtil;
+		this.jwtUtil = jwtUtil;
     }
 
-		@Bean
+	@Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
 
         return configuration.getAuthenticationManager();
@@ -50,22 +44,25 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    	System.out.println("Configuring security filter chain...");
         http
             .csrf(auth -> auth.disable())
             .formLogin(auth -> auth.disable())
             .httpBasic(auth -> auth.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(new AntPathRequestMatcher("/login"), 
-                                 new AntPathRequestMatcher("/"), 
-                                 new AntPathRequestMatcher("/join")).permitAll()
+                        new AntPathRequestMatcher("/"), 
+                        new AntPathRequestMatcher("/join"),
+                        new AntPathRequestMatcher("/api/login")).permitAll()
                 .anyRequest().authenticated());
 
-        http
-            .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), 
-                         UsernamePasswordAuthenticationFilter.class)
+        // AuthenticationManager를 생성하고 LoginFilter에 주입합니다.
+        http.addFilterBefore(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), 
+                UsernamePasswordAuthenticationFilter.class)
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
+    
 }

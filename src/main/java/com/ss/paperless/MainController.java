@@ -20,23 +20,20 @@ import com.ss.paperless.employee.LoginDTO;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-
+@RequestMapping("/api")
 public class MainController {
 	@Autowired
 	EmployeeService service;
 	@Value("${kakao-API-key}")
 	private String kakao;
+	@Autowired
+    private AuthenticationService authService;
 
-	
-	public ResponseEntity<?> login(@RequestBody LoginDTO loginRequest) {
-        String username = loginRequest.getUsername();
-        String empPw = loginRequest.getPassword();
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String rawPassword = "1234";
-        String encodedPassword = passwordEncoder.encode(rawPassword);
-        System.out.println("Encoded password: " + encodedPassword);
-        System.out.println("controller");
-        // 로그인 처리 로직
-        return ResponseEntity.ok("로그인 성공!");
+    @PostMapping("/login")
+    public String login(@RequestBody LoginDTO request) {
+    	
+        return authService.authenticate(request.getEmpCode(), request.getEmpPw());
     }
+	
+	
 }

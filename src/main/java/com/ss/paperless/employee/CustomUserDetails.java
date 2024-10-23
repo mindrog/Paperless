@@ -27,7 +27,7 @@ public class CustomUserDetails implements UserDetails{
 	            @Override
 	            public String getAuthority() {
 
-	                return employeeEntity.getRole();
+	                return employeeEntity.getEmpRole();
 	            }
 	        });
 
@@ -37,13 +37,13 @@ public class CustomUserDetails implements UserDetails{
 	    @Override
 	    public String getPassword() {
 
-	        return employeeEntity.getPassword();
+	        return employeeEntity.getEmpPw();
 	    }
 
 	    @Override
 	    public String getUsername() {
 
-	        return employeeEntity.getUsername();
+	        return employeeEntity.getEmpCode();
 	    }
 
 	    @Override
