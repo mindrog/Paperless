@@ -152,7 +152,7 @@
 }
 
 /* 채팅 목록 전체 div */
-.chatList {
+.chatRoomList {
     display: flex;
     flex-direction: column;
     width: 70%;
@@ -160,7 +160,7 @@
 }
 
 @media (max-width: 992px) {
-    .chatList {
+    .chatRoomList {
         margin-left: auto;
         margin-right: auto;
         width: 70%;
@@ -168,7 +168,7 @@
 }
 
 /* 채팅 목록 제목 */
-.chatList_title {
+.chatRoomList_title {
     border-top-right-radius: 5px;
     height: 10%;
     padding: 3%;
@@ -181,7 +181,7 @@
     justify-content: center;
 }
 
-.chatList_content {
+.chatRoomList_content {
     flex-grow: 1;
     overflow-y: auto;
 }
