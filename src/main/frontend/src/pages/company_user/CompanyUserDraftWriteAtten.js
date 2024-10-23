@@ -15,7 +15,6 @@ const CompanyUserDraftWriteAtten = () => {
   // 오류
   const [errorMessage, setErrorMessage] = useState(''); // 오류 메시지 상태 추가
 
-
   // 연차
   const [vacationType, setVacationType] = useState('연차'); // 휴가 종류 기본값
   const [startDate, setStartDate] = useState(''); // 시작 날짜
@@ -25,6 +24,7 @@ const CompanyUserDraftWriteAtten = () => {
   // 결재선 
   const [showModal, setShowModal] = useState(false); // 결재선 모달 상태
   const [showCancelModal, setShowCancelModal] = useState(false); // 취소 버튼 모달 상태
+  const [approvalLineData, setApprovalLineData] = useState({ approvers: [], references: [], receivers: [] }); // 결재선 데이터
 
   // 임시저장
   const [showSaveModal, setShowSaveModal] = useState(false); // 임시 저장 확인 모달 상태
@@ -94,7 +94,7 @@ const CompanyUserDraftWriteAtten = () => {
       setFormErrors(errors);
       return;
     }
-
+    navigate('/company/user/draft/form/attendance');
     console.log('결재 상신 버튼 클릭됨');
   };
 
@@ -214,6 +214,16 @@ const CompanyUserDraftWriteAtten = () => {
               </tr>
             </tbody>
           </Table>
+          {/* <Table bordered size="sm" className={styles.apprLineBox}>
+            <tbody className={styles.apprLineTbody}>
+              {approvalLineData.map((person, index) => (
+                <tr key={index}>
+                  <td>{person.department}</td>
+                  <td>{person.username}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table> */}
           <Table bordered size="sm" className={styles.apprLineBox}>
             <tbody className={styles.apprLineTbody}>
               <tr className={styles.apprLinedocTr}>

@@ -18,6 +18,7 @@
     "dayjs": "^1.11.13",
     "emoji-picker-react": "^4.12.0",
     "http-proxy-middelware": "^0.0.1-security",
+    "openssl": "^2.0.0",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.5",
     "react-chartjs-2": "^5.2.0",
@@ -28,6 +29,7 @@
     "react-router-dom": "^6.27.0",
     "react-scripts": "5.0.1",
     "react-use-websocket": "^4.9.0",
+    "uuid": "^10.0.0",
     "web-vitals": "^2.1.4"
   },
   "proxy": "http://localhost:8080",

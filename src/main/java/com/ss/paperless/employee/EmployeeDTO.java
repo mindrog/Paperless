@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+
 public class EmployeeDTO {
 	private int emp_no; //식별번호 
 	private String emp_code; //원코드
@@ -20,6 +21,7 @@ public class EmployeeDTO {
 	private int emp_comp_no; //회사번호 (fk) 
 	private int emp_dept_no; //부서번호 (fk) 
 	private int emp_posi_no; //직급번호 (fk) 
+	private String emp_role; //20241023 추가
 	private LocalDateTime emp_enroll_date; //등록일
 	private LocalDateTime emp_join_date; //입사일
 	private String emp_lastmsg; //마지막 수신 메세지

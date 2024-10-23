@@ -3,6 +3,8 @@ package com.ss.paperless.employee;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public class EmployeeMapper {
+public interface EmployeeMapper {
+	public EmployeeDTO EmployeeLogin(EmployeeDTO employee);
 
+	public EmployeeDTO EmployeeById(String username);
 }
