@@ -187,18 +187,18 @@
 
 .footer {
     display: flex;
-    justify-content: center; /* 기본적으로 가운데 정렬 */
+    justify-content: center; 
     align-items: center;
     margin-top: 6px;
     position: relative;
 }
 .composeButton {
-    position: relative; /* 문서 흐름에 따름 */
-    margin-left: auto; /* 오른쪽으로 밀어냄 */
+    position: relative; 
+    margin-left: auto; 
    
   }
 
-/* 텍스트 왼쪽 정렬 */
+
 .email-detail,
 .email-detail h2,
 .email-detail p,
