@@ -135,7 +135,8 @@ function CompanyUserChatRoom() {
     useEffect(() => {
         const fetchChatRooms = async () => {
             try {
-                const response = await api.getChatRooms(); // 모든 채팅방 정보를 가져옴
+                const empNo = 1; // 현재 로그인한 사용자
+                const response = await api.getChatRooms(empNo); // 모든 채팅방 정보를 가져옴
             
                 // 서버 응답이 배열인지 확인하고, 배열이 아니면 응답의 특정 키에서 배열을 추출
                 if (Array.isArray(response.data)) {
