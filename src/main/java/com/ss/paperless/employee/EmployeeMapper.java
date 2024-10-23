@@ -7,4 +7,6 @@ public interface EmployeeMapper {
 	public EmployeeDTO EmployeeLogin(EmployeeDTO employee);
 
 	public EmployeeDTO EmployeeById(String username);
+
+	public int existsByUsername(String username);
 }
