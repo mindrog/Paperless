@@ -97,7 +97,7 @@ const Menubar = ({ isMenuOpen }) => {
                         <div className={styles.iconbox}>
                             <button onClick={showEmployeeNotificationModal}><i className="material-icons notifications">notifications</i></button>
                             <button onClick={() => handleItemClick('/company/user/email')}><i className="material-icons mail">mail</i></button>
-                            <button onClick={() => handleItemClick('/company/user/chat')}><i className="material-icons chat_bubble">chat_bubble</i></button>
+                            <button onClick={() => handleItemClick('/company/user/chatroom')}><i className="material-icons chat_bubble">chat_bubble</i></button>
                         </div>
                     </div>
                 </div>
