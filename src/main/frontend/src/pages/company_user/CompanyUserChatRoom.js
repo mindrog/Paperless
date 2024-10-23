@@ -4,7 +4,7 @@ import styles from '../../styles/company/company_chat.module.css';
 import OrgChart from '../layout/org_chart';
 import { Button, Modal } from 'react-bootstrap';
 
-function CompanyUserChat() {
+function CompanyUserChatRoom() {
     // 직원 (더미 데이터)
     const empList = [
         { name: '장원영', dept: '콘텐츠 기획팀', posi: '대리', phone: '010-1234-1234', email: 'jang0101@naver.com', profile: 'https://via.placeholder.com/60' },
@@ -135,7 +135,8 @@ function CompanyUserChat() {
     useEffect(() => {
         const fetchChatRooms = async () => {
             try {
-                const response = await api.getChatRooms(); // 모든 채팅방 정보를 가져옴
+                const empNo = 1; // 현재 로그인한 사용자
+                const response = await api.getChatRooms(empNo); // 모든 채팅방 정보를 가져옴
             
                 // 서버 응답이 배열인지 확인하고, 배열이 아니면 응답의 특정 키에서 배열을 추출
                 if (Array.isArray(response.data)) {
@@ -249,4 +250,4 @@ function CompanyUserChat() {
     );
 }
 
-export default CompanyUserChat;
+export default CompanyUserChatRoom;

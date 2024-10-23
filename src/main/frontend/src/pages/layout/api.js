@@ -18,9 +18,13 @@ const api = axios.create({
 // ***** 채팅방 (Chatroom) ***** //
 
 // 1. 채팅방 목록 조회 (GET 요청)
-api.getChatRooms = () => {
+api.getChatRooms = (empNo) => {
   // 서버로부터 모든 채팅방 목록을 가져옴
-  return api.get('/chatroom');
+  return api.get('/chatroom', {
+    params: {
+      emp_no: empNo,
+    },
+  });
 };
 
 // 2. 채팅방 생성 (POST 요청)
