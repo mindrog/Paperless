@@ -140,6 +140,7 @@ const CompanyUserDraftWriteWork = () => {
     }
 
     console.log('결재 상신 버튼 클릭됨');
+    navigate('/company/user/draft/form/purchase');
   };
 
   return (
