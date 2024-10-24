@@ -21,8 +21,8 @@
 
 .chatContainer {
     margin-left: auto;
-    padding: 15px;
-    width: 95%;
+    margin-right: auto;
+    width: 100%;
 }
 
 @media (max-width: 992px) {
