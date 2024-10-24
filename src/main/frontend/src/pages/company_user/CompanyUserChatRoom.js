@@ -130,6 +130,8 @@ function CompanyUserChatRoom() {
             const chatMessagesResponse = await api.getMessagesByRoomNo(room_no);
             const chatMessages = chatMessagesResponse.data;
 
+            console.log("chatting의 chatRoomList:", chatRoomList);
+
             // 해당 room_no의 채팅방 정보 찾기
             const room = chatRoomList.find(room => room.room_no === room_no);
 
@@ -140,44 +142,44 @@ function CompanyUserChatRoom() {
                      // 열려있는 창 중에 같은 room_no의 창이 있다면 해당 창 보여주기
                     openChatRoom.window.focus();
                 } else {
-                // 참가자 정보와 메시지 저장
-                // JSON.stringify: 문자열로 저장
-                localStorage.setItem(`chatting-room-${room_no}`, JSON.stringify({
-                    room_no,
-                    participants: room.participantNames,
-                    messages: chatMessages
-                }));
+                    // 참가자 정보와 메시지 저장
+                    // JSON.stringify: 문자열로 저장
+                    localStorage.setItem(`chatting-room-${room_no}`, JSON.stringify({
+                        room_no,
+                        participants: room.participantNames,
+                        messages: chatMessages
+                    }));
 
-                // 위치 조정
-                if (offsetRight >= 100) {
-                    setOffsetDown(20);
-                    setOffsetRight(0);
+                    // 위치 조정
+                    if (offsetRight >= 100) {
+                        setOffsetDown(20);
+                        setOffsetRight(0);
+                    }
+
+                    // 새 창 띄우기
+                    const newChat = window.open(
+                        `/chatting/${room_no}`,
+                        `Chat Room ${room_no}`,
+                        `width=800, height=600, top=${100 + offsetDown}, left=${1000 + offsetRight}, scrollbars=yes, resizable=no`
+                    );
+
+                    // 새 창 데이터 추가
+                    setOpenChats(preOpenChats => [
+                        ...preOpenChats,
+                        { room_no, window: newChat }
+                    ]);
+
+                    // 다음 창의 위치 조정
+                    setOffsetDown(preOffsetDown => preOffsetDown + 20);
+                    setOffsetRight(preOffsetRight => preOffsetRight + 20);
                 }
-
-                // 새 창 띄우기
-                const newChat = window.open(
-                    `/chatting/${room_no}`,
-                    `Chat Room ${room_no}`,
-                    `width=800, height=600, top=${100 + offsetDown}, left=${1000 + offsetRight}, scrollbars=yes, resizable=no`
-                );
-
-                // 새 창 데이터 추가
-                setOpenChats(preOpenChats => [
-                    ...preOpenChats,
-                    { room_no, window: newChat }
-                ]);
-
-                // 다음 창의 위치 조정
-                setOffsetDown(preOffsetDown => preOffsetDown + 20);
-                setOffsetRight(preOffsetRight => preOffsetRight + 20);
+            } else {
+                console.warn(`No chat room found with room_no: ${room_no}`);
             }
-        } else {
-            console.warn(`No chat room found with room_no: ${room_no}`);
+        } catch (error) {
+            console.error("Error opening chat: ", error);
         }
-    } catch (error) {
-        console.error("Error opening chat: ", error);
-    }
-};
+    };
 
     // 페이지가 로드될 때 모든 채팅방 목록을 불러오는 메서드
     useEffect(() => {
@@ -188,24 +190,26 @@ function CompanyUserChatRoom() {
                     console.error("User is not set yet or emp_no is missing.");
                     return;
                 }
-                console.log("user.emp_no:", user.emp_no);
 
-                // 1. 사용자 emp_no로 모든 채팅방 목록 가져오기
+                // 1. 사용자 emp_no로 모든 채팅방 목록 가져오기 (사용자가 참여하고 있는 채팅방 목록)
                 const chatRoomResponse = await api.getChatRoomsByParticipant(user.emp_no);
                 // 서버에서 받아온 채팅방 데이터
                 const chatRooms = chatRoomResponse.data;
 
                 // 서버 응답이 배열인지 확인하고, 배열이 아니면 응답의 특정 키에서 배열을 추출
                 if (Array.isArray(chatRooms)) {
-                    // 각 채팅방의 room_participants를 처리하여 참가자 이름 문자열 생성
+                    // 각 채팅방의 room_participants를 processedEmpList 메서드로 처리하여 참가자의 숫자형 데이터를 이름인 문자열로 생성
                     const processedChatRooms = chatRooms.map(room => {
-                            // 로그인 사용자 제외한 다른 참가자 저장
+                            // 로그인 사용자를 제외한 다른 참가자들만 각 채팅방 목록 이름에 저장
+                            // filter로 사용자를 제외하고 남은 participant를 find 한다
                             const otherParticipants = room.room_participants.filter(participant => String(participant) !== String(user.emp_no)).map(participant => {
+                                // paricipant를 processedEmpList 메서드로 문자열 생성
                                 const emp = processedEmpList.find(e => e.emp_no === Number(participant));
+                                // 해당 내용이 있다면 저장하고 없으면 ''로 저장
                                 return emp ? emp.emp_name : '';
                         });
 
-                        // 참가자 이름을 문자열로 변환
+                        // 참가자가 여러 명인 경우 ,로 연결 (한 명이면 적용이 안됨)
                         const participantNames = otherParticipants.join(', ');
 
                         // 각 room에 participantNames 추가
@@ -215,18 +219,20 @@ function CompanyUserChatRoom() {
                         };
                     });
 
-                    // 2. chatRooms로 각 채팅방의 room_no로 가장 최근 메시지 불러오기
+                    // 2. 불러온 채팅방 목록인 processedChatRooms의 각 채팅방 room_no로 가장 최근 메시지 불러오기
                     const allRecentMessages = await Promise.all(
                         processedChatRooms.map(async (room) => {
-                            // 해당 room_no의 모든 메시지를 가져오기
+                            // room_no 마다 각 채팅방의 모든 메시지를 가져오기
                             const chatResponse = await api.getMostRecentMessageByRoomNo(room.room_no);
                             const chatDataArray = chatResponse.data;
 
-                            // chatDataArray가 배열일 경우, 가장 최근 메시지를 찾음
+                            // chatDataArray가 배열일 경우, 가장 최근 메시지를 찾음 (가장 최근 메시지인지 검사 전)
                             let mostRecentMessage = chatDataArray[0]; // 초기값 설정
 
-                            // 배열이 비어 있지 않다면, 가장 최근 메시지를 찾음
+                            // 배열이 비어 있지 않다면, 가장 최근 메시지를 찾음 (가장 최근 메시지인지 검사)
                             if (Array.isArray(chatDataArray) && chatDataArray.length > 0) {
+                                // chatDataArray 배열의 첫 번째 요소로 latest가 설정되어 순회 중인 message 값과 비교한다
+                                // 따라서 reduce 함수의 콜백은 첫 번째 요소와 두 번쨰 요소를 비교하면서 시작되고, 최신의 메시지가 latest가 된다.
                                 mostRecentMessage = chatDataArray.reduce((latest, message) => {
                                     return new Date(message.chat_date) > new Date(latest.chat_date) ? message : latest;
                                 });
@@ -242,28 +248,35 @@ function CompanyUserChatRoom() {
                         })
                     );
 
-                     // 가장 최근 메시지를 room_no를 키로 하는 객체로 변환하여 상태 업데이트
+                    // allRecentMessages 배열에 각각의 room_no가 저장되어있으므로 room_no를 키로 하여 저장
+                    // → 가장 최근 메시지를 room_no를 키로 하는 객체로 변환하여 상태 업데이트
+                    // 각 roomData 객체를 키-값으로 변환 후 객체화
                     const messagesObj = allRecentMessages.reduce((acc, roomData) => {
                         acc[roomData.room_no] = {
                             chat_content_recent: roomData.chat_content_recent,
                             chat_date_recent: roomData.chat_date_recent,
                             unread: roomData.unread
                         };
-                        console.log("acc:", acc);
                         return acc;
                     }, {});
-
-                    // 최근 메시지 업데이트
-                    setRecentMessages(messagesObj);
-
+                    
                     // 업데이트된 메시지를 최근 날짜 순으로 정렬 (최신 메시지가 위로 오도록 내림차순)
-                    const sortedChatRooms = processedChatRooms.sort((a, b) => {
+                    const sortedChatRooms = processedChatRooms.map(room => {
+                        return {
+                            ...room,
+                            ...messagesObj[room.room_no]
+                        };
+                    }).sort((a, b) => {
                         // chat_date_recent가 없는 경우 기본 날짜를 과거의 날짜(new Date(0))으로 설정하여 undefined 방지 - new Date(0) : 1970년 1월 1일 00:00:00 UTC (자바 스크립트의 Date 객체 시간의 시작점 기준, UNIX 시간의 시작 날짜)
                         // 따라서 채팅 날짜가 없다면 채팅 목록에서 가장 아래로 정렬된다
-                        const dateA = recentMessages[a.room_no]?.chat_date_recent ? new Date(recentMessages[a.room_no].chat_date_recent) : new Date(0);
-                        const dateB = recentMessages[b.room_no]?.chat_date_recent ? new Date(recentMessages[b.room_no].chat_date_recent) : new Date(0);
+                        const dateA = a.chat_date_recent ? new Date(a.chat_date_recent) : new Date(0);
+                        const dateB = b.chat_date_recent ? new Date(b.chat_date_recent) : new Date(0);
                         return dateB - dateA;
                     })
+
+                    // 최근 메시지 업데이트
+                    // recentMessages에는 room_no로 구분되며 가장 최근 메시지(chat_content_recent), 가장 최근 전송 시간(chat_date_recent), 읽지 않은 수(unread)의 데이터를 가지고 있다
+                    setRecentMessages(messagesObj);
 
                     // 정렬된 목록으로 업데이트
                     setChatRoomList(sortedChatRooms);
@@ -277,7 +290,12 @@ function CompanyUserChatRoom() {
         if (user) {
             fetchChatRooms();
         }
-    }, [user, recentMessages]);
+    }, [user]);
+
+    // 상태 변경 후의 값을 추적하는 useEffect
+    useEffect(() => {
+        console.log("Updated chatRoomList:", chatRoomList);
+    }, [chatRoomList]);
 
     if (!user) {
         return <div>Loading...</div>;
@@ -319,7 +337,7 @@ function CompanyUserChatRoom() {
                                                 {room.participantNames}
                                             </div>
                                             <div className={styles.eachChat_lastTime}>
-                                                {recentMessages[room.room_no]?.chat_content_recent ? formatChatDate(recentMessages[room.room_no].chat_date_recent) : ''}
+                                                {recentMessages[room.room_no]?.chat_date_recent ? formatChatDate(recentMessages[room.room_no].chat_date_recent) : ''}
                                             </div>
                                         </div>
                                         <div className={styles.eachChat_row}>
