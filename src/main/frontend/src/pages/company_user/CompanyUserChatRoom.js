@@ -4,6 +4,7 @@ import styles from '../../styles/company/company_chatroom.module.css';
 import OrgChart from '../layout/org_chart';
 import { Button, Modal } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
+import { differenceInCalendarYears, format, isToday, isYesterday } from 'date-fns';
 
 function CompanyUserChatRoom() {
     const [searchParams] = useSearchParams();
@@ -18,11 +19,10 @@ function CompanyUserChatRoom() {
     useEffect(() => {
         // empList에서 empNo와 일치하는 직원 찾기
         const foundUser = empList.find(emp => emp.emp_no === empNo);
-
         if (foundUser) {
             setUser(foundUser);
         }
-    }, [empNo]); // empNo가 변경될 때마다 실행
+    }, []);
 
     // ** 더미 데이터 ** //
     // 직원
@@ -83,7 +83,6 @@ function CompanyUserChatRoom() {
     // 가장 최근 메시지 저장하는 객체
     const [recentMessages, setRecentMessages] = useState({});
 
-    // [프로필 모달창]
     // 프로필 모달창 상태 변수
     const [profileModal, setProfileModal] = useState(false);
 
@@ -103,13 +102,26 @@ function CompanyUserChatRoom() {
         setProfileModal(true);
     }
 
-    // [chatting]
     // 창이 열려있는지 확인하는 변수
     const [openChats, setOpenChats] = useState([]);
 
     // 새 창이 열릴 때마다 위치 조정해주는 변수
     const [offsetDown, setOffsetDown] = useState(0);
     const [offsetRight, setOffsetRight] = useState(0);
+
+    // 날짜 포맷하는 함수
+    const formatChatDate = (dateString) => {
+        const date = new Date(dateString);
+        if (isToday(date)) {
+            return format(date, 'HH:mm');
+        } else if (isYesterday(date)) {
+            return '어제';
+        } else if (differenceInCalendarYears(new Date(), date) > 0) {
+            return format(date, 'yyyy.M.d');
+        } else {
+            return format(date, 'M.d');
+        }
+    }
 
     // 채팅 새 창
     const chatting = async (room_no) => {
@@ -173,9 +185,10 @@ function CompanyUserChatRoom() {
             try {
                 // user가 null인 경우 API 요청을 중지
                 if (!user || !user.emp_no) {
-                console.error("User is not set yet or emp_no is missing.");
-                return;
-            }
+                    console.error("User is not set yet or emp_no is missing.");
+                    return;
+                }
+                console.log("user.emp_no:", user.emp_no);
 
                 // 1. 사용자 emp_no로 모든 채팅방 목록 가져오기
                 const chatRoomResponse = await api.getChatRoomsByParticipant(user.emp_no);
@@ -187,8 +200,8 @@ function CompanyUserChatRoom() {
                     // 각 채팅방의 room_participants를 처리하여 참가자 이름 문자열 생성
                     const processedChatRooms = chatRooms.map(room => {
                             // 로그인 사용자 제외한 다른 참가자 저장
-                            const otherParticipants = room.room_participants.filter(participant => participant.N !== String(user.emp_no)).map(participant => {
-                                const emp = empList.find(e => e.emp_no === Number(participant.N));
+                            const otherParticipants = room.room_participants.filter(participant => String(participant) !== String(user.emp_no)).map(participant => {
+                                const emp = processedEmpList.find(e => e.emp_no === Number(participant));
                                 return emp ? emp.emp_name : '';
                         });
 
@@ -202,25 +215,29 @@ function CompanyUserChatRoom() {
                         };
                     });
 
-                    setChatRoomList(processedChatRooms); // 채팅방 목록을 배열로 설정
-                    console.log("chatRoomList:", chatRoomList);
-
                     // 2. chatRooms로 각 채팅방의 room_no로 가장 최근 메시지 불러오기
                     const allRecentMessages = await Promise.all(
-                        chatRooms.map(async (room) => {
+                        processedChatRooms.map(async (room) => {
+                            // 해당 room_no의 모든 메시지를 가져오기
                             const chatResponse = await api.getMostRecentMessageByRoomNo(room.room_no);
-                            // 가장 최근 메시지 저장, 없으면 빈 객체로 저장
-                            const recentMessage = chatResponse.data || {};
+                            const chatDataArray = chatResponse.data;
 
-                            const chatCountResponse = await api.getChatCountByRoomNo(room.room_no);
-                            const unreadCount = chatCountResponse.data.count || 0;
+                            // chatDataArray가 배열일 경우, 가장 최근 메시지를 찾음
+                            let mostRecentMessage = chatDataArray[0]; // 초기값 설정
 
+                            // 배열이 비어 있지 않다면, 가장 최근 메시지를 찾음
+                            if (Array.isArray(chatDataArray) && chatDataArray.length > 0) {
+                                mostRecentMessage = chatDataArray.reduce((latest, message) => {
+                                    return new Date(message.chat_date) > new Date(latest.chat_date) ? message : latest;
+                                });
+                            }
+
+                            // mostRecentMessage를 사용하여 필요한 정보 저장
                             return {
                                 room_no: room.room_no,
-                                chat_content_recent: recentMessage.content || '',
-                                chat_date_recent: recentMessage.chat_date || '',
-                                participantNames: room.participantNames, // 참가자 이름 문자열 포함
-                                unread: unreadCount
+                                chat_content_recent: mostRecentMessage.chat_content || '',
+                                chat_date_recent: mostRecentMessage.chat_date || '',
+                                unread: mostRecentMessage.chat_count || 0
                             };
                         })
                     );
@@ -230,12 +247,26 @@ function CompanyUserChatRoom() {
                         acc[roomData.room_no] = {
                             chat_content_recent: roomData.chat_content_recent,
                             chat_date_recent: roomData.chat_date_recent,
-                            participantNames: roomData.participantNames, // 추가된 참가자 이름
                             unread: roomData.unread
                         };
+                        console.log("acc:", acc);
                         return acc;
                     }, {});
+
+                    // 최근 메시지 업데이트
                     setRecentMessages(messagesObj);
+
+                    // 업데이트된 메시지를 최근 날짜 순으로 정렬 (최신 메시지가 위로 오도록 내림차순)
+                    const sortedChatRooms = processedChatRooms.sort((a, b) => {
+                        // chat_date_recent가 없는 경우 기본 날짜를 과거의 날짜(new Date(0))으로 설정하여 undefined 방지 - new Date(0) : 1970년 1월 1일 00:00:00 UTC (자바 스크립트의 Date 객체 시간의 시작점 기준, UNIX 시간의 시작 날짜)
+                        // 따라서 채팅 날짜가 없다면 채팅 목록에서 가장 아래로 정렬된다
+                        const dateA = recentMessages[a.room_no]?.chat_date_recent ? new Date(recentMessages[a.room_no].chat_date_recent) : new Date(0);
+                        const dateB = recentMessages[b.room_no]?.chat_date_recent ? new Date(recentMessages[b.room_no].chat_date_recent) : new Date(0);
+                        return dateB - dateA;
+                    })
+
+                    // 정렬된 목록으로 업데이트
+                    setChatRoomList(sortedChatRooms);
                 } else {
                     console.error("채팅방 목록 데이터가 배열 형태가 아닙니다:", chatRoomResponse);
                 }
@@ -246,7 +277,7 @@ function CompanyUserChatRoom() {
         if (user) {
             fetchChatRooms();
         }
-    }, [user]);
+    }, [user, recentMessages]);
 
     if (!user) {
         return <div>Loading...</div>;
@@ -278,17 +309,17 @@ function CompanyUserChatRoom() {
                         </div>
                         <div className={styles.chatRoomList_content}>
                             {chatRoomList.map((room) => (
-                                <div key={room.room_no} className={styles.eachChat} onClick={() => chatting(room.room_participants)} >
-                                    <div className={styles.eachChat_profile} onClick={(e) => { e.stopPropagation(); clickProfile(room.room_participants); }}>
+                                <div key={room.room_no} className={styles.eachChat} onClick={() => chatting(room.room_no)} >
+                                    <div className={styles.eachChat_profile} onClick={(e) => { e.stopPropagation(); clickProfile(room.room_no); }}>
                                         <img src="https://via.placeholder.com/60" alt="Profile" className={styles.image} />
                                     </div>
                                     <div className={styles.eachChat_info}>
                                         <div className={styles.eachChat_row}>
                                             <div className={styles.eachChat_name}>
-                                                {room.room_participants}
+                                                {room.participantNames}
                                             </div>
                                             <div className={styles.eachChat_lastTime}>
-                                                {recentMessages[room.room_no]?.chat_date_recent}
+                                                {recentMessages[room.room_no]?.chat_content_recent ? formatChatDate(recentMessages[room.room_no].chat_date_recent) : ''}
                                             </div>
                                         </div>
                                         <div className={styles.eachChat_row}>
