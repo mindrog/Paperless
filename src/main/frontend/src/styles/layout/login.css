@@ -22,6 +22,7 @@
 .input_id,
 .input_pw,
 .input_number,.input_password,.input_passwordchk {
+    font-family: 'NanumSquare';
     width: 40vh;
     height: 5vh;
     margin-bottom: 1vh;

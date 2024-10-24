@@ -21,11 +21,11 @@ function Login() {
     const postLogin = async (empId, empPw) => {
         try {
             const response = await axios.post('http://localhost:8080/login', {
-                empCode: empId,
-                empPw: empPw,
+                username: empId,
+                password: empPw,
             }, {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                 },
                 withCredentials: true
             });
@@ -50,6 +50,7 @@ function Login() {
                     <p className='input_id_sub'>아이디</p>
                 </div>
                 <input type="text"
+                className='input_id'
                     id="empId"
                     value={empId}
                     onChange={handleIdChange} />
@@ -58,6 +59,7 @@ function Login() {
                     <p className='input_id_sub'>비밀번호</p>
                 </div>
                 <input type="password"
+                className='input_pw'
                     id="empPw"
                     value={empPw}
                     onChange={handlePwChange} />

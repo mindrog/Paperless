@@ -1,6 +1,5 @@
 package com.ss.paperless;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,8 +10,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
 
 import com.ss.paperless.employee.LoginFilter;
 
@@ -21,16 +18,16 @@ import com.ss.paperless.employee.LoginFilter;
 public class SecurityConfig {
 
 		private final AuthenticationConfiguration authenticationConfiguration;
-		
+		//JWTUtil 주입
 		private final JWTUtil jwtUtil;
 
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
 
         this.authenticationConfiguration = authenticationConfiguration;
-		this.jwtUtil = jwtUtil;
+				this.jwtUtil = jwtUtil;
     }
 
-	@Bean
+		@Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
 
         return configuration.getAuthenticationManager();
@@ -44,25 +41,33 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    	System.out.println("Configuring security filter chain...");
-        http
-            .csrf(auth -> auth.disable())
-            .formLogin(auth -> auth.disable())
-            .httpBasic(auth -> auth.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(new AntPathRequestMatcher("/login"), 
-                        new AntPathRequestMatcher("/"), 
-                        new AntPathRequestMatcher("/join"),
-                        new AntPathRequestMatcher("/api/login")).permitAll()
-                .anyRequest().authenticated());
+    	 http
+         		.cors();
 
-        // AuthenticationManager를 생성하고 LoginFilter에 주입합니다.
-        http.addFilterBefore(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), 
-                UsernamePasswordAuthenticationFilter.class)
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http
+                .csrf((auth) -> auth.disable());
+
+        http
+                .formLogin((auth) -> auth.disable());
+
+        http
+                .httpBasic((auth) -> auth.disable());
+
+        http
+        .authorizeHttpRequests((auth) -> auth
+            .mvcMatchers("/login", "/", "/join", "/api/login").permitAll()
+            .anyRequest().authenticated()
+        );
+
+		
+        
+        http
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+        http
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
-    
 }
