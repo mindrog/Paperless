@@ -65,15 +65,15 @@ function CompanyUserChatRoom() {
     const processedEmpList = empList.map(emp => {
         const company = compList.find(comp => comp.comp_no === emp.emp_comp_no); // emp_comp_no와 일치하는 회사 정보 찾기
         const department = deptList.find(dept => dept.dept_no === emp.emp_dept_no); // 해당 부서 정보 찾기
-        const team = deptList.find(dept => dept.dept_team_name === emp.emp_team_name);
+        const team = deptList.find(dept => dept.dept_no === emp.emp_dept_no);
         const position = posiList.find(posi => posi.posi_no === emp.emp_posi_no); // 해당 직급 정보 찾기
   
         return {
         ...emp,
-        company_name: company ? company.comp_name : 'Unknown', // 회사 이름 동적 참조
-        department_name: department ? department.dept_name : 'Unknown', // 부서 이름 동적 참조
-        team_name: team ? team.dept_team_name : 'Unknown', // 팀 이름 동적 참조
-        position_name: position ? position.posi_name : 'Unknown' // 직급 이름 동적 참조
+        emp_comp_name: company ? company.comp_name : 'Unknown', // 회사 이름 동적 참조
+        emp_dept_name: department ? department.dept_name : 'Unknown', // 부서 이름 동적 참조
+        emp_team_name: team ? team.dept_team_name : 'Unknown', // 팀 이름 동적 참조
+        emp_posi_name: position ? position.posi_name : 'Unknown' // 직급 이름 동적 참조
         };
     });
 
@@ -86,8 +86,8 @@ function CompanyUserChatRoom() {
     // 프로필 모달창 상태 변수
     const [profileModal, setProfileModal] = useState(false);
 
-    // 프로필 데이터에 대한 변수
-    const [profileInfo, setProfileInfo] = useState('');
+    // 프로필 데이터에 대한 객체
+    const [profileInfo, setProfileInfo] = useState({});
 
     // 모달창 상태 메서드 (Close)
     const closeProfileModal = () => {
@@ -95,10 +95,22 @@ function CompanyUserChatRoom() {
     };
 
     // 채팅 목록의 프로필 클릭할 때 메서드
-    const clickProfile = (room_no) => {
-        // 클릭한 프로필의 name과 empList 비교하여 데이터를 저장하는 변수
-        
-        setProfileInfo();
+    const clickProfile = (emp_no) => {
+        console.log("emp_no:", emp_no);
+        if (emp_no) {
+            // 전달된 emp_no를 통해 사용자 정보를 찾고 업데이트
+            const selectedProfile = processedEmpList.find(emp => emp.emp_no === emp_no);
+            console.log("selectedProfile:", selectedProfile);
+            if (selectedProfile) {
+                setProfileInfo(selectedProfile);
+                console.log("profileInfo:", profileInfo);
+            } else {
+                console.error(`Profile not found for emp_no: ${emp_no}`);
+            }
+        } else {
+            // 기본 값 또는 여러 명일 경우 기본 설정
+            setProfileInfo({ emp_name: '그룹', emp_position: '' }); // 예시 값으로 기본 설정
+        }
         setProfileModal(true);
     }
 
@@ -207,19 +219,20 @@ function CompanyUserChatRoom() {
                                 const emp = processedEmpList.find(e => e.emp_no === Number(participant));
                                 // 해당 내용이 있다면 저장하고 없으면 ''로 저장
                                 return emp ? { emp_no: emp.emp_no, emp_name: emp.emp_name } : { emp_no: participant, emp_name: '' };
-                        });
+                            });
 
-                        // 참가자가 여러 명인 경우 ,로 연결 (한 명이면 적용이 안됨)
-                        const participantNames = otherParticipants.join(', ');
+                            // 참가자 emp_no만 추출하여 배열로 저장
+                            const participantNos = otherParticipants.map(part => part.emp_no);
 
-                        // 각 room에 participantNames 추가
-                        return {
-                            ...room,
-                            // 참가자 이름 목록
-                            participantNames,
-                            // 참가자 객체 목록 { emp_no, emp_name }
-                            participants: otherParticipants
-                        };
+                            // 참가자 이름만 추출하여 ,로 연결
+                            const participantNames = otherParticipants.map(part => part.emp_name).join(', ');
+                           
+                            // 각 room에 participantNames와 participantNos 추가
+                            return {
+                                ...room,
+                                participantNames,  // 참가자 이름 문자열
+                                participantNos     // 참가자 emp_no 배열
+                            };
                     });
 
                     // 2. 불러온 채팅방 목록인 processedChatRooms의 각 채팅방 room_no로 가장 최근 메시지 불러오기
@@ -330,8 +343,8 @@ function CompanyUserChatRoom() {
                         </div>
                         <div className={styles.chatRoomList_content}>
                             {chatRoomList.map((room) => (
-                                <div key={room.room_no} className={styles.eachChat} onClick={() => chatting()} >
-                                    <div className={styles.eachChat_profile} onClick={(e) => { e.stopPropagation(); clickProfile(room.room_no); }}>
+                                <div key={room.room_no} className={styles.eachChat} onClick={(e) => { e.stopPropagation(); room.participantNos?.length === 1 ? chatting(room.participantNos[0]) : chatting(); }} >
+                                    <div className={styles.eachChat_profile} onClick={(e) => { e.stopPropagation(); room.participantNos?.length === 1 ? clickProfile(room.participantNos[0]) : clickProfile(); }}>
                                         <img src="https://via.placeholder.com/60" alt="Profile" className={styles.image} />
                                     </div>
                                     <div className={styles.eachChat_info}>
@@ -356,7 +369,7 @@ function CompanyUserChatRoom() {
                             ))}
                             <Modal show={profileModal} onHide={closeProfileModal} dialogClassName={styles.modal_content} size='lg' centered>
                                 <Modal.Header className={styles.modal_header} closeButton onClick={(e) => e.stopPropagation()}>
-                                    <Modal.Title className={styles.modal_title}>{profileInfo.name} 님의 프로필</Modal.Title>
+                                    <Modal.Title className={styles.modal_title}>{profileInfo.emp_name} 님의 프로필</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
                                     <div className={styles.modal_body}>
@@ -368,15 +381,15 @@ function CompanyUserChatRoom() {
                                                 <tbody>
                                                     <tr>
                                                         <td><h5 className={styles.infoTitle}>소속 부서</h5></td>
-                                                        <td><p className={styles.infoValue}>{profileInfo.dept}</p></td>
+                                                        <td><p className={styles.infoValue}>{profileInfo.emp_dept_name} {profileInfo.emp_team_name}</p></td>
                                                     </tr>
                                                     <tr>
                                                         <td><h5 className={styles.infoTitle}>내선 번호</h5></td>
-                                                        <td><p className={styles.infoValue}>{profileInfo.phone}</p></td>
+                                                        <td><p className={styles.infoValue}>{profileInfo.emp_phone}</p></td>
                                                     </tr>
                                                     <tr>
                                                         <td><h5 className={styles.infoTitle}>이 &nbsp;메 &nbsp;일</h5></td>
-                                                        <td><p className={styles.infoValue}>{profileInfo.email}</p></td>
+                                                        <td><p className={styles.infoValue}>{profileInfo.emp_email}</p></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
