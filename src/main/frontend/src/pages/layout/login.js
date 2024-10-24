@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate  } from 'react-router-dom';
 import logo from '../../img/logo-img.png';
 import axios from 'axios';
 
@@ -9,6 +9,7 @@ import '../../styles/style.css';
 function Login() {
     const [empId, setEmpId] = useState('');
     const [empPw, setEmpPw] = useState('');
+    const navigate = useNavigate();
 
     const handleIdChange = (event) => {
         setEmpId(event.target.value);
@@ -29,10 +30,20 @@ function Login() {
                 },
                 withCredentials: true
             });
-            console.log('응답:', response.data);
-        } catch (error) {
-            console.error('로그인 실패:', error.response ? error.response.data : error.message);
+            console.log(response);
+            const token = response.headers['authorization']; // 'authorization'에 JWT가 담겨 있다고 가정
+
+        if (token) {
+            // 로컬 스토리지에 JWT 저장
+            localStorage.setItem('jwt', token);
+            console.log('토큰 저장 완료!:', localStorage.getItem('jwt'));
+            navigate('/company/user/');
+        } else {
+            console.error('토큰을 찾을 수 없습니다.');
         }
+    } catch (error) {
+        console.error('로그인 실패:', error.response ? error.response.data : error.message);
+    }
     };
 
     const handleSubmit = (event) => {

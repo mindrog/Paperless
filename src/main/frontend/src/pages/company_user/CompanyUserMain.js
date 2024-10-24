@@ -3,7 +3,7 @@ import styles from '../../styles/company/company_main.module.css';
 import '../../styles/style.css';
 import Menubar from '../layout/menubar';
 import GraphChart from '../layout/GraphChart';
-
+import axios from 'axios';
 const mailboxData = [
     {
         id: 1,
@@ -76,6 +76,15 @@ const reportData = [
 ];
 
 function CompanyUserMain() {
+    const token = localStorage.getItem('jwt');
+    axios.get('http://localhost:8080/company/user', {
+        headers: {
+            'Authorization': token // 발급받은 토큰
+        }
+    })
+    .then(response => console.log(response.data))
+    .catch(error => console.error('Error:', error));
+    
     return (
         <div className="container-xl conbox1">
             <Menubar />
@@ -151,7 +160,9 @@ function CompanyUserMain() {
                 </div>
             </div>
         </div>
+        
     );
+    
 }
 
 export default CompanyUserMain;
