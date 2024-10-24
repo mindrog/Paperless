@@ -41,11 +41,38 @@ const HeaderTwo = ({ toggleMenu }) => (
         </div>
     </header>
 );
+const HeaderThree = ({ toggleMenu }) => (
+    <header className='header-two'>
+        <div className='logo_Img'>
+        <Link to='/'>
+            <img src={logo} className='Header-logo' alt='Logo Two' />
+            </Link> 
+        </div>
+        <div className='menu_Container'>
 
+        </div>
+        <div className='btn_Container'>
+            <Link to='/login'>
+            <button type='button' className='header_btn'>로그아웃</button>
+            </Link>
+        </div>
+    </header>
+);
 const Header = ({ toggleMenu }) => {
     const [lastScrollY, setLastScrollY] = useState(0);
     const [headerToShow, setHeaderToShow] = useState('one');
     const [logoSize, setLogoSize] = useState(1); // 초기 로고 크기
+    const [hasToken, setHasToken] = useState(false);
+
+    useEffect(() => {
+        // 로컬 스토리지에서 JWT 토큰 확인
+        const token = localStorage.getItem('jwt');
+        if (token) {
+            setHasToken(true);
+        } else {
+            setHasToken(false);
+        }
+    }, []); // 처음 렌더링 시 한 번만 실행
 
     const handleScroll = () => {
         const currentScrollY = window.scrollY;
@@ -72,9 +99,17 @@ const Header = ({ toggleMenu }) => {
 
     return (
         <>
-            {headerToShow === 'one' ? <HeaderOne logoSize={logoSize} toggleMenu={toggleMenu} /> : <HeaderTwo toggleMenu={toggleMenu} />}
+            {hasToken ? (
+                <HeaderThree toggleMenu={toggleMenu} />
+            ) : (
+                headerToShow === 'one' ? (
+                    <HeaderOne logoSize={logoSize} toggleMenu={toggleMenu} />
+                ) : (
+                    <HeaderTwo toggleMenu={toggleMenu} />
+                )
+            )}
         </>
     );
-};
+}
 
 export default Header;
