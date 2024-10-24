@@ -10,6 +10,7 @@ const Menubar = ({ isMenuOpen }) => {
     const [notificationModal, setNotificationModal] = useState(false); // 알림 모달
     const [activeItem, setActiveItem] = useState(null); // 클릭된 메뉴 항목을 추적하는 상태
     const [isDraftSectionActive, setIsDraftSectionActive] = useState(false); // 기안 관리 섹션 활성화 상태
+    const [openChatRoom, setOpenChatRoom] = useState(); // 창이 열려있는지 추적하는 상태
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -22,6 +23,38 @@ const Menubar = ({ isMenuOpen }) => {
         setIsDocDropdownOpen(false); // 기안 문서함 드롭다운 닫기
         setIsFormDropdownOpen(false); // 기안 양식 드롭다운 닫기
         navigate(itemName); // 해당 경로로 이동
+    };
+
+    // 채팅 아이콘 클릭
+    const handleChatItemClick = async (url) => {
+        try {
+            console.log("url:", url);
+            const emp_no = 1;
+
+            if (emp_no) {
+                if (openChatRoom && !openChatRoom.closed) {
+                    // 열려있는 창이 있으면 focus
+                    openChatRoom.window.focus();
+                } else {
+                    // 새 창 띄우기
+                    const newChat = window.open(
+                        `${url}?emp_no=${emp_no}`, "chatWindow",
+                        `width=920, height=780, top=50, left=180, scrollbars=yes, resizable=no`
+                    );
+
+                    if (newChat) {
+                        // 새 창 데이터 추가
+                        setOpenChatRoom(newChat);
+                    } else {
+                        console.error("Failed to open the chat window. Please allow pop-ups.");
+                    }
+                }
+            } else {
+                console.warn(`No chatRoom page fount with emp_no: ${emp_no}`);
+            }
+        } catch (error) {
+            console.error("Error opening chat: ", error);
+        }
     };
 
     // 기안 관리 하위 메뉴 클릭
@@ -97,7 +130,7 @@ const Menubar = ({ isMenuOpen }) => {
                         <div className={styles.iconbox}>
                             <button onClick={showEmployeeNotificationModal}><i className="material-icons notifications">notifications</i></button>
                             <button onClick={() => handleItemClick('/company/user/email')}><i className="material-icons mail">mail</i></button>
-                            <button onClick={() => handleItemClick('/company/user/chatroom')}><i className="material-icons chat_bubble">chat_bubble</i></button>
+                            <button onClick={() => handleChatItemClick('/chatroom')}><i className="material-icons chat_bubble">chat_bubble</i></button>
                         </div>
                     </div>
                 </div>

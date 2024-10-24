@@ -4,6 +4,7 @@ import styles from '../../styles/company/company_chatroom.module.css';
 import OrgChart from '../layout/org_chart';
 import { Button, Modal } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
+import { differenceInCalendarYears, format, isToday, isYesterday } from 'date-fns';
 
 function CompanyUserChatRoom() {
     const [searchParams] = useSearchParams();
@@ -18,11 +19,10 @@ function CompanyUserChatRoom() {
     useEffect(() => {
         // empList에서 empNo와 일치하는 직원 찾기
         const foundUser = empList.find(emp => emp.emp_no === empNo);
-
         if (foundUser) {
             setUser(foundUser);
         }
-    }, [empNo]); // empNo가 변경될 때마다 실행
+    }, []);
 
     // ** 더미 데이터 ** //
     // 직원
@@ -65,15 +65,15 @@ function CompanyUserChatRoom() {
     const processedEmpList = empList.map(emp => {
         const company = compList.find(comp => comp.comp_no === emp.emp_comp_no); // emp_comp_no와 일치하는 회사 정보 찾기
         const department = deptList.find(dept => dept.dept_no === emp.emp_dept_no); // 해당 부서 정보 찾기
-        const team = deptList.find(dept => dept.dept_team_name === emp.emp_team_name);
+        const team = deptList.find(dept => dept.dept_no === emp.emp_dept_no);
         const position = posiList.find(posi => posi.posi_no === emp.emp_posi_no); // 해당 직급 정보 찾기
   
         return {
         ...emp,
-        company_name: company ? company.comp_name : 'Unknown', // 회사 이름 동적 참조
-        department_name: department ? department.dept_name : 'Unknown', // 부서 이름 동적 참조
-        team_name: team ? team.dept_team_name : 'Unknown', // 팀 이름 동적 참조
-        position_name: position ? position.posi_name : 'Unknown' // 직급 이름 동적 참조
+        emp_comp_name: company ? company.comp_name : 'Unknown', // 회사 이름 동적 참조
+        emp_dept_name: department ? department.dept_name : 'Unknown', // 부서 이름 동적 참조
+        emp_team_name: team ? team.dept_team_name : 'Unknown', // 팀 이름 동적 참조
+        emp_posi_name: position ? position.posi_name : 'Unknown' // 직급 이름 동적 참조
         };
     });
 
@@ -83,12 +83,11 @@ function CompanyUserChatRoom() {
     // 가장 최근 메시지 저장하는 객체
     const [recentMessages, setRecentMessages] = useState({});
 
-    // [프로필 모달창]
     // 프로필 모달창 상태 변수
     const [profileModal, setProfileModal] = useState(false);
 
-    // 프로필 데이터에 대한 변수
-    const [profileInfo, setProfileInfo] = useState('');
+    // 프로필 데이터에 대한 객체
+    const [profileInfo, setProfileInfo] = useState({});
 
     // 모달창 상태 메서드 (Close)
     const closeProfileModal = () => {
@@ -96,14 +95,25 @@ function CompanyUserChatRoom() {
     };
 
     // 채팅 목록의 프로필 클릭할 때 메서드
-    const clickProfile = (name) => {
-        // 클릭한 프로필의 name과 empList 비교하여 데이터를 저장하는 변수
-        const emp = empList.find(emp => emp.name === name);
-        setProfileInfo(emp);
+    const clickProfile = (emp_no) => {
+        console.log("emp_no:", emp_no);
+        if (emp_no) {
+            // 전달된 emp_no를 통해 사용자 정보를 찾고 업데이트
+            const selectedProfile = processedEmpList.find(emp => emp.emp_no === emp_no);
+            console.log("selectedProfile:", selectedProfile);
+            if (selectedProfile) {
+                setProfileInfo(selectedProfile);
+                console.log("profileInfo:", profileInfo);
+            } else {
+                console.error(`Profile not found for emp_no: ${emp_no}`);
+            }
+        } else {
+            // 기본 값 또는 여러 명일 경우 기본 설정
+            setProfileInfo({ emp_name: '그룹', emp_position: '' }); // 예시 값으로 기본 설정
+        }
         setProfileModal(true);
     }
 
-    // [chatting]
     // 창이 열려있는지 확인하는 변수
     const [openChats, setOpenChats] = useState([]);
 
@@ -111,12 +121,22 @@ function CompanyUserChatRoom() {
     const [offsetDown, setOffsetDown] = useState(0);
     const [offsetRight, setOffsetRight] = useState(0);
 
+    // 날짜 포맷하는 함수
+    const formatChatDate = (dateString) => {
+        const date = new Date(dateString);
+        if (isToday(date)) {
+            return format(date, 'HH:mm');
+        } else if (isYesterday(date)) {
+            return '어제';
+        } else {
+            return format(date, 'yyyy-M-d');
+        }
+    }
+
     // 채팅 새 창
     const chatting = async (room_no) => {
         try {
-            // 해당 room_no의 모든 메시지를 가져오기
-            const chatMessagesResponse = await api.getMessagesByRoomNo(room_no);
-            const chatMessages = chatMessagesResponse.data;
+            console.log("room_no:", room_no);
 
             // 해당 room_no의 채팅방 정보 찾기
             const room = chatRoomList.find(room => room.room_no === room_no);
@@ -128,44 +148,43 @@ function CompanyUserChatRoom() {
                      // 열려있는 창 중에 같은 room_no의 창이 있다면 해당 창 보여주기
                     openChatRoom.window.focus();
                 } else {
-                // 참가자 정보와 메시지 저장
-                // JSON.stringify: 문자열로 저장
-                localStorage.setItem(`chatting-room-${room_no}`, JSON.stringify({
-                    room_no,
-                    participants: room.participantNames,
-                    messages: chatMessages
-                }));
+                    // 참가자 정보와 메시지 저장
+                    // JSON.stringify: 문자열로 저장
+                    localStorage.setItem(`chatting-room-${room_no}`, JSON.stringify({
+                        room_no, 
+                        participants: room.participantNames
+                    }));
 
-                // 위치 조정
-                if (offsetRight >= 100) {
-                    setOffsetDown(20);
-                    setOffsetRight(0);
+                    // 위치 조정
+                    if (offsetRight >= 100) {
+                        setOffsetDown(20);
+                        setOffsetRight(0);
+                    }
+
+                    // 새 창 띄우기
+                    const newChat = window.open(
+                        `/chatting/${room_no}`,
+                        `Chat Room ${room_no}`,
+                        `width=800, height=600, top=${100 + offsetDown}, left=${1000 + offsetRight}, scrollbars=yes, resizable=no`
+                    );
+
+                    // 새 창 데이터 추가
+                    setOpenChats(preOpenChats => [
+                        ...preOpenChats,
+                        { room_no, window: newChat }
+                    ]);
+
+                    // 다음 창의 위치 조정
+                    setOffsetDown(preOffsetDown => preOffsetDown + 20);
+                    setOffsetRight(preOffsetRight => preOffsetRight + 20);
                 }
-
-                // 새 창 띄우기
-                const newChat = window.open(
-                    `/chatting/${room_no}`,
-                    `Chat Room ${room_no}`,
-                    `width=800, height=600, top=${100 + offsetDown}, left=${1000 + offsetRight}, scrollbars=yes, resizable=no`
-                );
-
-                // 새 창 데이터 추가
-                setOpenChats(preOpenChats => [
-                    ...preOpenChats,
-                    { room_no, window: newChat }
-                ]);
-
-                // 다음 창의 위치 조정
-                setOffsetDown(preOffsetDown => preOffsetDown + 20);
-                setOffsetRight(preOffsetRight => preOffsetRight + 20);
+            } else {
+                console.warn(`No chat room found with room_no: ${room_no}`);
             }
-        } else {
-            console.warn(`No chat room found with room_no: ${room_no}`);
+        } catch (error) {
+            console.error("Error opening chat: ", error);
         }
-    } catch (error) {
-        console.error("Error opening chat: ", error);
-    }
-};
+    };
 
     // 페이지가 로드될 때 모든 채팅방 목록을 불러오는 메서드
     useEffect(() => {
@@ -173,69 +192,103 @@ function CompanyUserChatRoom() {
             try {
                 // user가 null인 경우 API 요청을 중지
                 if (!user || !user.emp_no) {
-                console.error("User is not set yet or emp_no is missing.");
-                return;
-            }
+                    console.error("User is not set yet or emp_no is missing.");
+                    return;
+                }
 
-                // 1. 사용자 emp_no로 모든 채팅방 목록 가져오기
+                // 1. 사용자 emp_no로 모든 채팅방 목록 가져오기 (사용자가 참여하고 있는 채팅방 목록)
                 const chatRoomResponse = await api.getChatRoomsByParticipant(user.emp_no);
                 // 서버에서 받아온 채팅방 데이터
                 const chatRooms = chatRoomResponse.data;
 
                 // 서버 응답이 배열인지 확인하고, 배열이 아니면 응답의 특정 키에서 배열을 추출
                 if (Array.isArray(chatRooms)) {
-                    // 각 채팅방의 room_participants를 처리하여 참가자 이름 문자열 생성
+                    // 각 채팅방의 room_participants를 processedEmpList 메서드로 처리하여 참가자의 숫자형 데이터를 이름인 문자열로 생성
                     const processedChatRooms = chatRooms.map(room => {
-                            // 로그인 사용자 제외한 다른 참가자 저장
-                            const otherParticipants = room.room_participants.filter(participant => participant.N !== String(user.emp_no)).map(participant => {
-                                const emp = empList.find(e => e.emp_no === Number(participant.N));
-                                return emp ? emp.emp_name : '';
-                        });
+                            // 로그인 사용자를 제외한 다른 참가자들만 각 채팅방 목록 이름에 저장
+                            // filter로 사용자를 제외하고 남은 participant를 find 한다
+                            const otherParticipants = room.room_participants.filter(participant => String(participant) !== String(user.emp_no)).map(participant => {
+                                // paricipant를 processedEmpList 메서드로 문자열 생성
+                                const emp = processedEmpList.find(e => e.emp_no === Number(participant));
+                                // 해당 내용이 있다면 저장하고 없으면 ''로 저장
+                                return emp ? { emp_no: emp.emp_no, emp_name: emp.emp_name } : { emp_no: participant, emp_name: '' };
+                            });
 
-                        // 참가자 이름을 문자열로 변환
-                        const participantNames = otherParticipants.join(', ');
+                            // 참가자 emp_no만 추출하여 배열로 저장
+                            const participantNos = otherParticipants.map(part => part.emp_no);
 
-                        // 각 room에 participantNames 추가
-                        return {
-                            ...room,
-                            participantNames
-                        };
+                            // 참가자 이름만 추출하여 ,로 연결
+                            const participantNames = otherParticipants.map(part => part.emp_name).join(', ');
+                           
+                            // 각 room에 participantNames와 participantNos 추가
+                            return {
+                                ...room,
+                                participantNames,  // 참가자 이름 문자열
+                                participantNos     // 참가자 emp_no 배열
+                            };
                     });
 
-                    setChatRoomList(processedChatRooms); // 채팅방 목록을 배열로 설정
-                    console.log("chatRoomList:", chatRoomList);
-
-                    // 2. chatRooms로 각 채팅방의 room_no로 가장 최근 메시지 불러오기
+                    // 2. 불러온 채팅방 목록인 processedChatRooms의 각 채팅방 room_no로 가장 최근 메시지 불러오기
                     const allRecentMessages = await Promise.all(
-                        chatRooms.map(async (room) => {
+                        processedChatRooms.map(async (room) => {
+                            // room_no 마다 각 채팅방의 모든 메시지를 가져오기
                             const chatResponse = await api.getMostRecentMessageByRoomNo(room.room_no);
-                            // 가장 최근 메시지 저장, 없으면 빈 객체로 저장
-                            const recentMessage = chatResponse.data || {};
+                            const chatDataArray = chatResponse.data;
 
-                            const chatCountResponse = await api.getChatCountByRoomNo(room.room_no);
-                            const unreadCount = chatCountResponse.data.count || 0;
+                            // chatDataArray가 배열일 경우, 가장 최근 메시지를 찾음 (가장 최근 메시지인지 검사 전)
+                            let mostRecentMessage = chatDataArray[0]; // 초기값 설정
 
+                            // 배열이 비어 있지 않다면, 가장 최근 메시지를 찾음 (가장 최근 메시지인지 검사)
+                            if (Array.isArray(chatDataArray) && chatDataArray.length > 0) {
+                                // chatDataArray 배열의 첫 번째 요소로 latest가 설정되어 순회 중인 message 값과 비교한다
+                                // 따라서 reduce 함수의 콜백은 첫 번째 요소와 두 번쨰 요소를 비교하면서 시작되고, 최신의 메시지가 latest가 된다.
+                                mostRecentMessage = chatDataArray.reduce((latest, message) => {
+                                    return new Date(message.chat_date) > new Date(latest.chat_date) ? message : latest;
+                                });
+                            }
+
+                            // mostRecentMessage를 사용하여 필요한 정보 저장
                             return {
                                 room_no: room.room_no,
-                                chat_content_recent: recentMessage.content || '',
-                                chat_date_recent: recentMessage.chat_date || '',
-                                participantNames: room.participantNames, // 참가자 이름 문자열 포함
-                                unread: unreadCount
+                                chat_content_recent: mostRecentMessage.chat_content || '',
+                                chat_date_recent: mostRecentMessage.chat_date || '',
+                                unread: mostRecentMessage.chat_count || 0
                             };
                         })
                     );
 
-                     // 가장 최근 메시지를 room_no를 키로 하는 객체로 변환하여 상태 업데이트
+                    // allRecentMessages 배열에 각각의 room_no가 저장되어있으므로 room_no를 키로 하여 저장
+                    // → 가장 최근 메시지를 room_no를 키로 하는 객체로 변환하여 상태 업데이트
+                    // 각 roomData 객체를 키-값으로 변환 후 객체화
                     const messagesObj = allRecentMessages.reduce((acc, roomData) => {
                         acc[roomData.room_no] = {
                             chat_content_recent: roomData.chat_content_recent,
                             chat_date_recent: roomData.chat_date_recent,
-                            participantNames: roomData.participantNames, // 추가된 참가자 이름
                             unread: roomData.unread
                         };
                         return acc;
                     }, {});
+                    
+                    // 업데이트된 메시지를 최근 날짜 순으로 정렬 (최신 메시지가 위로 오도록 내림차순)
+                    const sortedChatRooms = processedChatRooms.map(room => {
+                        return {
+                            ...room,
+                            ...messagesObj[room.room_no]
+                        };
+                    }).sort((a, b) => {
+                        // chat_date_recent가 없는 경우 기본 날짜를 과거의 날짜(new Date(0))으로 설정하여 undefined 방지 - new Date(0) : 1970년 1월 1일 00:00:00 UTC (자바 스크립트의 Date 객체 시간의 시작점 기준, UNIX 시간의 시작 날짜)
+                        // 따라서 채팅 날짜가 없다면 채팅 목록에서 가장 아래로 정렬된다
+                        const dateA = a.chat_date_recent ? new Date(a.chat_date_recent) : new Date(0);
+                        const dateB = b.chat_date_recent ? new Date(b.chat_date_recent) : new Date(0);
+                        return dateB - dateA;
+                    })
+
+                    // 최근 메시지 업데이트
+                    // recentMessages에는 room_no로 구분되며 가장 최근 메시지(chat_content_recent), 가장 최근 전송 시간(chat_date_recent), 읽지 않은 수(unread)의 데이터를 가지고 있다
                     setRecentMessages(messagesObj);
+
+                    // 정렬된 목록으로 업데이트
+                    setChatRoomList(sortedChatRooms);
                 } else {
                     console.error("채팅방 목록 데이터가 배열 형태가 아닙니다:", chatRoomResponse);
                 }
@@ -247,6 +300,11 @@ function CompanyUserChatRoom() {
             fetchChatRooms();
         }
     }, [user]);
+
+    // 상태 변경 후의 값을 추적하는 useEffect
+    useEffect(() => {
+        console.log("Updated chatRoomList:", chatRoomList);
+    }, [chatRoomList]);
 
     if (!user) {
         return <div>Loading...</div>;
@@ -278,17 +336,17 @@ function CompanyUserChatRoom() {
                         </div>
                         <div className={styles.chatRoomList_content}>
                             {chatRoomList.map((room) => (
-                                <div key={room.room_no} className={styles.eachChat} onClick={() => chatting(room.room_participants)} >
-                                    <div className={styles.eachChat_profile} onClick={(e) => { e.stopPropagation(); clickProfile(room.room_participants); }}>
+                                <div key={room.room_no} className={styles.eachChat} onClick={() => { chatting(room.room_no) }} >
+                                    <div className={styles.eachChat_profile} onClick={(e) => { e.stopPropagation(); room.participantNos?.length === 1 ? clickProfile(room.participantNos[0]) : clickProfile(); }}>
                                         <img src="https://via.placeholder.com/60" alt="Profile" className={styles.image} />
                                     </div>
                                     <div className={styles.eachChat_info}>
                                         <div className={styles.eachChat_row}>
                                             <div className={styles.eachChat_name}>
-                                                {room.room_participants}
+                                                {room.participantNames}
                                             </div>
                                             <div className={styles.eachChat_lastTime}>
-                                                {recentMessages[room.room_no]?.chat_date_recent}
+                                                {recentMessages[room.room_no]?.chat_date_recent ? formatChatDate(recentMessages[room.room_no].chat_date_recent) : ''}
                                             </div>
                                         </div>
                                         <div className={styles.eachChat_row}>
@@ -304,7 +362,7 @@ function CompanyUserChatRoom() {
                             ))}
                             <Modal show={profileModal} onHide={closeProfileModal} dialogClassName={styles.modal_content} size='lg' centered>
                                 <Modal.Header className={styles.modal_header} closeButton onClick={(e) => e.stopPropagation()}>
-                                    <Modal.Title className={styles.modal_title}>{profileInfo.name} 님의 프로필</Modal.Title>
+                                    <Modal.Title className={styles.modal_title}>{profileInfo.emp_name} 님의 프로필</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
                                     <div className={styles.modal_body}>
@@ -316,15 +374,15 @@ function CompanyUserChatRoom() {
                                                 <tbody>
                                                     <tr>
                                                         <td><h5 className={styles.infoTitle}>소속 부서</h5></td>
-                                                        <td><p className={styles.infoValue}>{profileInfo.dept}</p></td>
+                                                        <td><p className={styles.infoValue}>{profileInfo.emp_dept_name} {profileInfo.emp_team_name}</p></td>
                                                     </tr>
                                                     <tr>
                                                         <td><h5 className={styles.infoTitle}>내선 번호</h5></td>
-                                                        <td><p className={styles.infoValue}>{profileInfo.phone}</p></td>
+                                                        <td><p className={styles.infoValue}>{profileInfo.emp_phone}</p></td>
                                                     </tr>
                                                     <tr>
                                                         <td><h5 className={styles.infoTitle}>이 &nbsp;메 &nbsp;일</h5></td>
-                                                        <td><p className={styles.infoValue}>{profileInfo.email}</p></td>
+                                                        <td><p className={styles.infoValue}>{profileInfo.emp_email}</p></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
