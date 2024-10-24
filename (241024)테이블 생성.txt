@@ -33,28 +33,20 @@ DROP TABLE IF EXISTS `Inquiry`;
 -- 10. Stock 테이블 삭제
 DROP TABLE IF EXISTS `Stock`;
 
--- 11. Chat 테이블 삭제
-DROP TABLE IF EXISTS `Chat`;
-
--- 12. Chatroom 테이블 삭제
-DROP TABLE IF EXISTS `Chatroom`;
-
--- 13. Emailmessage 테이블 삭제
+-- 11. Emailmessage 테이블 삭제
 DROP TABLE IF EXISTS `Emailmessage`;
 
--- 14. Employee 테이블 삭제
+-- 12. Employee 테이블 삭제
 DROP TABLE IF EXISTS `Employee`;
 
--- 15. Position 테이블 삭제
+-- 13. Position 테이블 삭제
 DROP TABLE IF EXISTS `Position`;
 
--- 16. Department 테이블 삭제
+-- 14. Department 테이블 삭제
 DROP TABLE IF EXISTS `Department`;
 
--- 17. Company 테이블 삭제
+-- 15. Company 테이블 삭제
 DROP TABLE IF EXISTS `Company`;
-
-
 
 
 -- 1. Company 테이블 생성 (기업 정보)
@@ -275,32 +267,7 @@ CREATE TABLE `Stock` (
 	FOREIGN KEY (`stock_comp_no`) REFERENCES `Company` (`comp_no`)
 );
 
--- 15. Chatroom 테이블 생성 (채팅방)
-CREATE TABLE `Chatroom` (
-	`room_no`	BIGINT	NOT NULL,
-	`room_participants`	BIGINT	NOT NULL,
-	`room_date`	TIMESTAMP	NOT NULL	DEFAULT NOW(),
-	PRIMARY KEY (`room_no`),
-	FOREIGN KEY (`room_participants`) REFERENCES `Employee` (`emp_no`)
-);
-
--- 16. Chat 테이블 생성 (채팅메시지)
-CREATE TABLE `Chat` (
-	`chat_no`	BIGINT	NOT NULL,
-	`chat_room_no`	BIGINT	NOT NULL,
-	`chat_sender`	BIGINT	NOT NULL,
-	`chat_recipient`	BIGINT	NULL,
-	`chat_content`	varchar(500)	NOT NULL,
-	`chat_type`	varchar(100)	NOT NULL	DEFAULT 'text',
-	`chat_count`	int	NOT NULL	DEFAULT 1,
-	`chat_send_date`	TIMESTAMP	NOT NULL	DEFAULT NOW(),
-	PRIMARY KEY (`chat_no`),
-	FOREIGN KEY (`chat_room_no`) REFERENCES `Chatroom` (`room_no`),
-	FOREIGN KEY (`chat_sender`) REFERENCES `Employee` (`emp_no`),
-	FOREIGN KEY (`chat_recipient`) REFERENCES `Employee` (`emp_no`)
-);
-
--- 17. Emailmessage 테이블 생성 (이메일메시지)
+-- 15. Emailmessage 테이블 생성 (이메일메시지)
 CREATE TABLE `Emailmessage` (
 	`email_no`	BIGINT	NOT NULL,
 	`email_writer`	BIGINT	NOT NULL,
