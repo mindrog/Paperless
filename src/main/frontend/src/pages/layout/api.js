@@ -49,24 +49,41 @@ api.deleteChatRoom = (room_no) => {
 
 // ***** 채팅 메시지 (Chat) ***** //
 
-// 5. 특정 채팅방의 채팅 메시지 조회 (GET 요청)
-api.getChatMessages = (emp_no) => {
-  // 특정 채팅방에 속한 모든 채팅 메시지를 가져옴
-  // chat_room_no는 조회할 채팅방의 번호
+// 5. 특정 채팅방의 가장 최근 메시지 조회 (GET 요청)
+api.getMostRecentMessageByRoomNo = (room_no) => {
   return api.get('/chat', {
     params: {
-      emp_no: emp_no,
+      room_no: room_no
+    }
+  });
+};
+
+// 6. 특정 채팅방의 모든 메시지 조회 (GET 요청)
+api.getMessagesByRoomNo = (room_no) => {
+  return api.get('/chat', {
+    params: {
+      room_no: room_no
+    }
+  })
+};
+
+// 7. 특정 채팅방의 읽지 않은 메시지 수 조회 (GET 요청)
+api.getChatCountByRoomNo = (room_no) => {
+  // 특정 채팅방의 읽지 않은 메시지 개수를 가져옴
+  return api.get(`/chat/unread`, {
+    params: {
+      room_no: room_no,
     },
   });
 };
 
-// 6. 채팅 메시지 전송 (POST 요청)
+// 8. 채팅 메시지 전송 (POST 요청)
 api.sendMessage = (data) => {
   // 새로운 메시지를 전송함 (데이터에는 메시지 내용이 포함됨)
   return api.post('/chat', data);
 };
 
-// 7. 채팅 메시지 삭제 (DELETE 요청)
+// 9. 채팅 메시지 삭제 (DELETE 요청)
 api.deleteChatMessage = (chat_room_no, chat_no) => {
   // 특정 채팅 메시지를 삭제함
   // chat_room_no는 채팅방 번호, chat_no는 삭제할 메시지의 번호

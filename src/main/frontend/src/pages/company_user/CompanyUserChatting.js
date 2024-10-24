@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import styles from '../../styles/company/company_chatting.module.css'
 import { Button } from 'react-bootstrap';
 import EmojiPicker from 'emoji-picker-react';
@@ -17,18 +17,75 @@ function Chatting() {
     // 더미 데이터
     // 알고리즘: 연결한 소켓 기준 채팅방에서 불러온 메시지들을 시간 순으로 정리해서 불러온 후 보낸 사람과 받는 사람의 기준으로 로그인 된 아이디와 비교하여 구분 (백엔드 연결 전 : 하드코딩)
     // 메시지 sender: 보낸 사람, recipient: 받는 사람, content: 메시지 내용, count: 읽지 않은 사람(수신 수), state: 메시지 읽음 상태, sendTime: 메시지를 전송한 시간 
-    const messageList1 = [
-        { sender: '배수지', recipient: '장원영', content: `오늘 뭐 마실래??`, count: 1, state: '읽음', sendTime: '2024-10-10 10:30', },
-        { sender: '장원영', recipient: '배수지', content: `나는 아아~`, count: 1, state: '읽음', sendTime: '2024-10-10 10:40', },
-        { sender: '배수지', recipient: '장원영', content: `알겠어!!`, count: 1, state: '읽음', sendTime: '2024-10-10 10:45', },
-        { sender: '배수지', recipient: '장원영', content: `이따봐~`, count: 1, state: '읽음', sendTime: '2024-10-10 10:45', },
-        { sender: '장원영', recipient: '배수지', content: `오키~`, count: 1, state: '읽음', sendTime: '2024-10-10 11:00', },
-        { sender: '장원영', recipient: '배수지', content: `커피 잘 마실게~ 고마워!!`, count: 1, state: '읽음', sendTime: '2024-10-10 11:24', },
-        {
-            sender: '장원영', recipient: '배수지', content: `수지야
-            오늘 점심 뭐 먹지?`, count: 1, state: '안읽음', sendTime: '2024-10-15 11:30',
-        },
+    // ** 더미 데이터를 이용하여 로그인 객체 하드코딩 ** //
+    // const empNo = 1; // 현재 로그인한 사용자
+
+    const [user, setUser] = useState(null); // 상태 변수로 사용자 정보를 초기화
+
+    const [searchParams] = useSearchParams();
+    const empNo = Number(searchParams.get('emp_no'));
+
+    // 직원 정보 저장 로직
+    useEffect(() => {
+        // empList에서 empNo와 일치하는 직원 찾기
+        const foundUser = empList.find(emp => emp.emp_no === empNo);
+        if (foundUser) {
+            setUser(foundUser);
+        }
+    }, []);
+
+    // ** 더미 데이터 ** //
+    // 직원
+    const empList = [
+        { emp_no: 1, emp_name: '배수지', emp_email: 'suji0123@naver.com', emp_phone: '010-9876-5432', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_team_name: '', emp_posi_no: 6},
+        { emp_no: 2, emp_name: '장원영', emp_email: 'jang0101@naver.com', emp_phone: '010-1234-1234', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 7},
+        { emp_no: 3, emp_name: '박보영', emp_email: 'boyoung0202@naver.com', emp_phone: '010-2345-2345', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 7},
+        { emp_no: 4, emp_name: '박보검', emp_email: 'gumgum0303@gmail.com', emp_phone: '010-3456-3456', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 5},
+        { emp_no: 5, emp_name: '전지현', emp_email: 'jjh0404@naver.com', emp_phone: '010-4567-4567', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 1, emp_posi_no: 4},
+        { emp_no: 6, emp_name: '이도현', emp_email: 'dodo0505@gmail.com', emp_phone: '010-5678-5678', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 4},
+        { emp_no: 7, emp_name: '김태리', emp_email: 'kimlee0606@gmail.com', emp_phone: '010-6789-6789', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 5},
+        { emp_no: 8, emp_name: '강동원', emp_email: 'dongwon0707@naver.com', emp_phone: '010-7890-7890', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 3},
     ];
+
+    // 회사
+    const compList = [
+	{ comp_no: 0, comp_name: 'IT 대표 업체' },
+	{ comp_no: 1, comp_name: 'Paperless' },
+    ];
+
+    // 부서
+    const deptList = [
+        { dept_no: 0, dept_name: 'it 개발부', dept_team_name: '콘텐츠 기획팀' },
+        { dept_no: 1, dept_name: 'it 개발부', dept_team_name: 'SW 개발팀'},
+    ];
+    
+    // 직급
+    const posiList = [
+        { posi_no: 0, posi_name: '대표' },
+        { posi_no: 1, posi_name: '사장' },
+        { posi_no: 2, posi_name: '부장' },
+        { posi_no: 3, posi_name: '차장' },
+        { posi_no: 4, posi_name: '과장' },
+        { posi_no: 5, posi_name: '팀장' },
+        { posi_no: 6, posi_name: '대리' },
+        { posi_no: 7, posi_name: '사원' },
+    ];
+
+    // 직원 목록을 각 회사 정보와 함께 저장할 배열
+    const processedEmpList = empList.map(emp => {
+        const company = compList.find(comp => comp.comp_no === emp.emp_comp_no); // emp_comp_no와 일치하는 회사 정보 찾기
+        const department = deptList.find(dept => dept.dept_no === emp.emp_dept_no); // 해당 부서 정보 찾기
+        const team = deptList.find(dept => dept.dept_team_name === emp.emp_team_name);
+        const position = posiList.find(posi => posi.posi_no === emp.emp_posi_no); // 해당 직급 정보 찾기
+  
+        return {
+        ...emp,
+        company_name: company ? company.comp_name : 'Unknown', // 회사 이름 동적 참조
+        department_name: department ? department.dept_name : 'Unknown', // 부서 이름 동적 참조
+        team_name: team ? team.dept_team_name : 'Unknown', // 팀 이름 동적 참조
+        position_name: position ? position.posi_name : 'Unknown' // 직급 이름 동적 참조
+        };
+    });
 
      // 메시지 목록 상태 변수
      const [messageList, setMessageList] = useState([]);
