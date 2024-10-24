@@ -12,11 +12,7 @@
 }
 
 .chatContainer ul {
-    padding-left: 16px;
-}
-
-.chatContainer li {
-    padding-left: 20px;
+    padding-left: 12px;
 }
 
 .chatContainer {
@@ -268,7 +264,8 @@
 
 /* 모달창 */
 .modal_content {
-    width: 650px;
+    width: 500px;
+    height: 300px;
 }
 
 .modal_title {
