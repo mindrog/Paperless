@@ -20,20 +20,14 @@ import com.ss.paperless.employee.LoginDTO;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api")
+
 public class MainController {
 	@Autowired
 	EmployeeService service;
 	@Value("${kakao-API-key}")
 	private String kakao;
-	@Autowired
-    private AuthenticationService authService;
-
-    @PostMapping("/login")
-    public String login(@RequestBody LoginDTO request) {
-    	
-        return authService.authenticate(request.getEmpCode(), request.getEmpPw());
-    }
+	
+    
 	
 	
 }

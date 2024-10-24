@@ -21,6 +21,7 @@ public class EmployeeService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String empCode) throws UsernameNotFoundException {
 	    EmployeeEntity userData = employeeRepository.findByEmpCode(empCode);
+	    System.out.println("loadUserByUsername" + userData);
 	    
 	    if (userData == null) {
 	        throw new UsernameNotFoundException("User not found with emp_code: " + empCode);
