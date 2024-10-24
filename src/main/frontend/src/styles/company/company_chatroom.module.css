@@ -3,10 +3,6 @@
     margin: 0;
 }
 
-.chatContainer h2 {
-    margin: 0px;
-}
-
 .chatContainer h3 {
     margin: 8px 0;
 }
@@ -265,7 +261,6 @@
 /* 모달창 */
 .modal_content {
     width: 500px;
-    height: 300px;
 }
 
 .modal_title {
@@ -283,7 +278,7 @@
 }
 
 .modal_body_profile {
-    width: 180px;
+    width: 130px;
     aspect-ratio: 1/1;
     background-color: lightgray;
     border-radius: 100%;
@@ -291,7 +286,7 @@
 }
 
 .modal_body_profile image {
-    width: 180px;
+    width: 130px;
     aspect-ratio: 1/1;
     background-color: lightgray;
     text-align: center;
@@ -303,10 +298,11 @@
 }
 
 .modal_body_info td {
-    padding: 10px;
+    padding: 5px;
 }
 
 .infoTitle {
+    margin-bottom: 8px;
     font-weight: bold;
 }
 

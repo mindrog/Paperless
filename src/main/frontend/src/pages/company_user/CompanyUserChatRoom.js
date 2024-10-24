@@ -385,21 +385,21 @@ function CompanyUserChatRoom() {
                                 <Modal.Body>
                                     <div className={styles.modal_body}>
                                         <div className={styles.modal_body_profile}>
-                                            <img src="https://via.placeholder.com/100" alt="Profile" className={styles.image} />
+                                            <img src="https://via.placeholder.com/120" alt="Profile" className={styles.image} />
                                         </div>
                                         <div className={styles.modal_body_info}>
                                             <table>
                                                 <tbody>
                                                     <tr>
-                                                        <td><h5 className={styles.infoTitle}>소속 부서</h5></td>
+                                                        <td><p className={styles.infoTitle}>소속 부서</p></td>
                                                         <td><p className={styles.infoValue}>{profileInfo.emp_dept_name} {profileInfo.emp_team_name}</p></td>
                                                     </tr>
                                                     <tr>
-                                                        <td><h5 className={styles.infoTitle}>내선 번호</h5></td>
+                                                        <td><p className={styles.infoTitle}>내선 번호</p></td>
                                                         <td><p className={styles.infoValue}>{profileInfo.emp_phone}</p></td>
                                                     </tr>
                                                     <tr>
-                                                        <td><h5 className={styles.infoTitle}>이 &nbsp;메 &nbsp;일</h5></td>
+                                                        <td><p className={styles.infoTitle}>이 &nbsp;메 &nbsp;일</p></td>
                                                         <td><p className={styles.infoValue}>{profileInfo.emp_email}</p></td>
                                                     </tr>
                                                 </tbody>
