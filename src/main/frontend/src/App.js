@@ -120,7 +120,7 @@ function App() {
                         <Route path='/company/user/calender' element={<CompanyUserCalender />} />
 
                         {/* 채팅 */}
-                        <Route path='/company/user/chatroom' element={<CompanyUserChatRoom />} />
+                        <Route path='/chatroom' element={<CompanyUserChatRoom />} />
                         <Route path='/chatting/:name' element={<Chatting />} />
 
                     </Routes>
@@ -134,7 +134,7 @@ function App() {
 // /chatting으로 시작하는 URL에서 Header 숨기기
 function HeaderToggle() {
     const location = useLocation();
-    const HeaderHiddenPaths = ['/chatting','/login','/email_Auth','/email_Auth/searchPW'];
+    const HeaderHiddenPaths = ['/chatting','/login','/email_Auth','/email_Auth/searchPW', '/chatroom'];
 
     return (
         <>
@@ -150,7 +150,7 @@ function HeaderToggle() {
 function MenubarToggle({ isMenuOpen }) {
     const location = useLocation();
     const chattingPath = useMatch('/chatting/:name');
-    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte', '/chatting','/email_Auth/searchPW'];
+    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte', '/chatroom', '/chatting', '/email_Auth/searchPW'];
     const isMenubarHiddenPaths = MenubarHiddenPaths.includes(location.pathname) || chattingPath;
 
     return (

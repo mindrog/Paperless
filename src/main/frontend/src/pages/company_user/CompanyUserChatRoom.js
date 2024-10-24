@@ -128,21 +128,15 @@ function CompanyUserChatRoom() {
             return format(date, 'HH:mm');
         } else if (isYesterday(date)) {
             return '어제';
-        } else if (differenceInCalendarYears(new Date(), date) > 0) {
-            return format(date, 'yyyy.M.d');
         } else {
-            return format(date, 'M.d');
+            return format(date, 'yyyy-M-d');
         }
     }
 
     // 채팅 새 창
     const chatting = async (room_no) => {
         try {
-            // 해당 room_no의 모든 메시지를 가져오기
-            const chatMessagesResponse = await api.getMessagesByRoomNo(room_no);
-            const chatMessages = chatMessagesResponse.data;
-
-            console.log("chatting의 chatRoomList:", chatRoomList);
+            console.log("room_no:", room_no);
 
             // 해당 room_no의 채팅방 정보 찾기
             const room = chatRoomList.find(room => room.room_no === room_no);
@@ -157,9 +151,8 @@ function CompanyUserChatRoom() {
                     // 참가자 정보와 메시지 저장
                     // JSON.stringify: 문자열로 저장
                     localStorage.setItem(`chatting-room-${room_no}`, JSON.stringify({
-                        room_no,
-                        participants: room.participantNames,
-                        messages: chatMessages
+                        room_no, 
+                        participants: room.participantNames
                     }));
 
                     // 위치 조정
@@ -343,7 +336,7 @@ function CompanyUserChatRoom() {
                         </div>
                         <div className={styles.chatRoomList_content}>
                             {chatRoomList.map((room) => (
-                                <div key={room.room_no} className={styles.eachChat} onClick={(e) => { e.stopPropagation(); room.participantNos?.length === 1 ? chatting(room.participantNos[0]) : chatting(); }} >
+                                <div key={room.room_no} className={styles.eachChat} onClick={() => { chatting(room.room_no) }} >
                                     <div className={styles.eachChat_profile} onClick={(e) => { e.stopPropagation(); room.participantNos?.length === 1 ? clickProfile(room.participantNos[0]) : clickProfile(); }}>
                                         <img src="https://via.placeholder.com/60" alt="Profile" className={styles.image} />
                                     </div>
