@@ -95,10 +95,10 @@ function CompanyUserChatRoom() {
     };
 
     // 채팅 목록의 프로필 클릭할 때 메서드
-    const clickProfile = (name) => {
+    const clickProfile = (room_no) => {
         // 클릭한 프로필의 name과 empList 비교하여 데이터를 저장하는 변수
-        const emp = empList.find(emp => emp.name === name);
-        setProfileInfo(emp);
+        
+        setProfileInfo();
         setProfileModal(true);
     }
 
@@ -206,7 +206,7 @@ function CompanyUserChatRoom() {
                                 // paricipant를 processedEmpList 메서드로 문자열 생성
                                 const emp = processedEmpList.find(e => e.emp_no === Number(participant));
                                 // 해당 내용이 있다면 저장하고 없으면 ''로 저장
-                                return emp ? emp.emp_name : '';
+                                return emp ? { emp_no: emp.emp_no, emp_name: emp.emp_name } : { emp_no: participant, emp_name: '' };
                         });
 
                         // 참가자가 여러 명인 경우 ,로 연결 (한 명이면 적용이 안됨)
@@ -215,7 +215,10 @@ function CompanyUserChatRoom() {
                         // 각 room에 participantNames 추가
                         return {
                             ...room,
-                            participantNames
+                            // 참가자 이름 목록
+                            participantNames,
+                            // 참가자 객체 목록 { emp_no, emp_name }
+                            participants: otherParticipants
                         };
                     });
 
@@ -327,7 +330,7 @@ function CompanyUserChatRoom() {
                         </div>
                         <div className={styles.chatRoomList_content}>
                             {chatRoomList.map((room) => (
-                                <div key={room.room_no} className={styles.eachChat} onClick={() => chatting(room.room_no)} >
+                                <div key={room.room_no} className={styles.eachChat} onClick={() => chatting()} >
                                     <div className={styles.eachChat_profile} onClick={(e) => { e.stopPropagation(); clickProfile(room.room_no); }}>
                                         <img src="https://via.placeholder.com/60" alt="Profile" className={styles.image} />
                                     </div>
