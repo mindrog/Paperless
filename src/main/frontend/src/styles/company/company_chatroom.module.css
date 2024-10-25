@@ -273,21 +273,21 @@
 .modal_body {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 50px;
-    padding-top: 10px;
 }
 
 .modal_body_profile {
-    width: 130px;
-    aspect-ratio: 1/1;
+    width: 150px;
+    height: 150px;
     background-color: lightgray;
     border-radius: 100%;
     display: flex;
 }
 
 .modal_body_profile image {
-    width: 130px;
-    aspect-ratio: 1/1;
+    width: 150px;
+    height: 150px;
     background-color: lightgray;
     text-align: center;
 }
@@ -298,11 +298,12 @@
 }
 
 .modal_body_info td {
-    padding: 5px;
+    padding: 1px;
 }
 
 .infoTitle {
-    margin-bottom: 8px;
+    color: #2e3d86;
+    margin-bottom: 0;
     font-weight: bold;
 }
 

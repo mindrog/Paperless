@@ -4,7 +4,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import styles from '../../styles/company/company_chatting.module.css'
 import { Button } from 'react-bootstrap';
 import EmojiPicker from 'emoji-picker-react';
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay, isValid, parse } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import useWebSocket from 'react-use-websocket';
 import { v4 as uuidv4 } from 'uuid';
@@ -73,15 +73,15 @@ function Chatting() {
     const processedEmpList = empList.map(emp => {
         const company = compList.find(comp => comp.comp_no === emp.emp_comp_no); // emp_comp_no와 일치하는 회사 정보 찾기
         const department = deptList.find(dept => dept.dept_no === emp.emp_dept_no); // 해당 부서 정보 찾기
-        const team = deptList.find(dept => dept.dept_team_name === emp.emp_team_name);
+        const team = deptList.find(dept => dept.dept_no === emp.emp_dept_no);
         const position = posiList.find(posi => posi.posi_no === emp.emp_posi_no); // 해당 직급 정보 찾기
 
         return {
             ...emp,
-            company_name: company ? company.comp_name : 'Unknown', // 회사 이름 동적 참조
-            department_name: department ? department.dept_name : 'Unknown', // 부서 이름 동적 참조
-            team_name: team ? team.dept_team_name : 'Unknown', // 팀 이름 동적 참조
-            position_name: position ? position.posi_name : 'Unknown' // 직급 이름 동적 참조
+            emp_comp_name: company ? company.comp_name : 'Unknown', // 회사 이름 동적 참조
+            emp_dept_name: department ? department.dept_name : 'Unknown', // 부서 이름 동적 참조
+            emp_team_name: team ? team.dept_team_name : 'Unknown', // 팀 이름 동적 참조
+            emp_posi_name: position ? position.posi_name : 'Unknown' // 직급 이름 동적 참조
         };
     });
 
@@ -96,9 +96,6 @@ function Chatting() {
 
     // // 고유한 사용자 아이디를 생성
     // const [userId] = useState(uuidv4());
-
-    // URL에서 가져온 name 저장하는 변수 (더미 이용한 변수)
-    const { name } = useParams();
 
     // 로컬 스토리지에 저장된 emp 데이터 저장하는 변수 (더미 이용한 변수)
     // 대화 상대 (로그인한 사람과 채팅할 대상)
@@ -149,6 +146,17 @@ function Chatting() {
     // 이모지 선택 시 메서드
     const emojiClick = (selectEmoji) => {
         setMessage(preMessage => preMessage + selectEmoji.emoji);
+    };
+
+    // 날짜 파싱 메서드
+    const parseChatDate = (dateString) => {
+        // chat_date 형식이 "YYYY-MM-DD HH:mm"이므로 이에 맞는 파싱을 수행
+        const date = parse(dateString, 'yyyy-MM-dd HH:mm', new Date());
+        if (!isValid(date)) {
+            console.warn("Invalid date format detected:", dateString);
+            return null;
+        }
+        return date;
     };
 
     // 메시지 전송 버튼 메서드
@@ -239,21 +247,31 @@ function Chatting() {
                 // 인코딩된 데이터를 디코딩하고 JSON으로 파싱
                 const chatData = JSON.parse(decodeURIComponent(encodedData));
 
+                console.log('Decoded chatData:', chatData);
+                console.log('chatData.messages:', chatData.messages);
+
                 // URL에서 가져온 메시지 리스트를 상태에 설정
-                setMessageList(chatData.messages || []);
+                // messages가 있는지 확인 후 설정
+                if (Array.isArray(chatData.messages)) {
+                    console.log("Updating messageList with:", chatData.messages);
+                    setMessageList(chatData.messages);
+                } else {
+                    console.warn('Invalid messageList:', chatData.messages);
+                }
 
                 // participantNos 배열의 첫 번째 참가자를 기반으로 emp 정보 설정
                 const empFromData = processedEmpList.find(emp => emp.emp_no === chatData.participantNos[0]);
+                console.log('chatData.participantNos[0]:', chatData.participantNos[0]);
                 console.log('empFromData:', empFromData);
-                
+                console.log('type chatData.participantNos[0]:', typeof (chatData.participantNos[0]));
+                console.log('type empFromData:', typeof (empFromData));
+
                 if (empFromData) {
+                    console.log("Updating emp with:", empFromData);
                     setEmp(empFromData);
                 } else {
                     console.warn("유효한 emp 정보를 찾을 수 없습니다.");
                 }
-                
-                setEmp(empFromData);
-                console.log('emp:', emp);
             } else {
                 console.error("URL에 인코딩된 데이터가 없습니다.");
             }
@@ -266,24 +284,23 @@ function Chatting() {
         <>
             <Helmet>
                 <link rel="icon" type="image/png" href="/img/final_favicon.png" sizes="16x16" />
-                <title>{emp.participants}님과의 채팅</title>
+                <title>{emp ? `${emp.participants}님과의 채팅` : 'Loading...'}</title>
             </Helmet>
             <div className="container-xl" style={{ padding: '0' }}>
                 <div className={styles.chatting_container}>
                     <header>{emp ? (
                         <div className={styles.header_profile}>
                             <div className={styles.header_profile_img}>
-                                <img src={emp.profile} alt="Profile" className={styles.image} />
+                                <img src={emp?.emp_profile || 'https://via.placeholder.com/60'} alt="Profile" className={styles.image} />
                             </div>
                             <div className={styles.header_profile_container}>
                                 <div className={styles.header_profile_info}>
                                     <div className={styles.header_profile_dept}>
-                                        <p>{emp.dept}</p>
+                                        <p>{emp?.emp_dept_name || 'Unknown Department'}</p>
                                     </div>
                                     <div className={styles.header_profile_name}>
-                                        <p>{emp.name} {emp.posi}</p>
+                                        <p>{`${emp?.emp_name || 'Unknown Name'} ${emp?.emp_posi_name || 'Unknown Name'}`}</p>
                                     </div>
-
                                 </div>
                                 <div className={styles.select_chatting}>
                                     <div>
@@ -301,20 +318,25 @@ function Chatting() {
                     )}
                     </header>
                     <div className={styles.main_container} ref={mainContainerRef}>
-                        {messageList.some(message => emp?.name === message.sender || emp?.name === message.recipient) ?
+                        {messageList.length > 0 ? (
                             messageList.map((message, index) => {
+                                // 날짜 파싱을 개선한 parseChatDate 함수 사용
+                                const messageDate = parseChatDate(message.chat_date);
+
+                                if (!messageDate) return null; // 유효하지 않은 날짜는 건너뜀
+
                                 // 날짜가 다른지 확인
-                                const checkDate = index === 0 || !isSameDay(new Date(messageList[index - 1].sendTime), message.sendTime);
+                                const checkDate = index === 0 || !isSameDay(new Date(messageList[index - 1].chat_date), messageDate);
 
                                 // 날짜가 다른 경우 Date 포맷 변환
-                                const formattedDate = format(message.sendTime, 'yyyy년 M월 d일 EEEE', { locale: ko });
+                                const formattedDate = format(messageDate, 'yyyy년 M월 d일 EEEE', { locale: ko });
 
                                 // sendTime을 HH:mm 포맷 변환
-                                const formattedTime = format(new Date(message.sendTime), 'HH:mm');
+                                const formattedTime = format(new Date(messageDate), 'HH:mm');
 
                                 // 이전 메시지와 비교 (프로필 정보)
                                 // checkMessage가 true면 프로필 띄우기, false면 프로필 띄우지 않기(메시지만 보임)
-                                const checkMessage = index === 0 || messageList[index - 1].sender !== message.sender;
+                                const checkMessage = index === 0 || messageList[index - 1].chat_sender !== message.chat_sender;
 
                                 return (
                                     <React.Fragment key={index}>
@@ -323,36 +345,36 @@ function Chatting() {
                                                 {formattedDate}
                                             </div>
                                         )}
-                                        {(emp?.name === message.sender || emp?.name === message.recipient) && (
-                                            <div className={`${emp?.name === message.recipient ? styles.sendMessageBox : styles.receiveMessageBox}`}>
-                                                <div className={styles.chatting_messageBox}>
-                                                    {checkMessage && emp?.name === message.sender && (
-                                                        <div className={styles.sender_profile}>
-                                                            <img src={emp.profile} alt="Profile" className={styles.image} />
-                                                            <p>{message.sender}</p>
+
+                                        <div className={`${emp?.emp_name === message.chat_recipient ? styles.sendMessageBox : styles.receiveMessageBox}`}>
+                                            <div className={styles.chatting_messageBox}>
+                                                {checkMessage && emp?.emp_name === message.chat_recipient.S && (
+                                                    <div className={styles.sender_profile}>
+                                                        <img src={emp.emp_profile} alt="Profile" className={styles.image} />
+                                                        <p>{message.chat_sender}</p>
+                                                    </div>
+                                                )}
+                                                <div className={styles.messageBox}>
+                                                    <div className={styles.message_content}>
+                                                        {message.chat_content}
+                                                    </div>
+                                                    <div className={styles.message_state_and_sendTime}>
+                                                        <div className={styles.message_sendTime}>
+                                                            {formattedTime}
                                                         </div>
-                                                    )}
-                                                    <div className={styles.messageBox}>
-                                                        <div className={styles.message_content}>
-                                                            {message.content}
-                                                        </div>
-                                                        <div className={styles.message_state_and_sendTime}>
-                                                            <div className={styles.message_sendTime}>
-                                                                {formattedTime}
-                                                            </div>
-                                                            <div className={styles.message_state}>
-                                                                {message.state === '읽음' ? '' : `${message.count}`}
-                                                            </div>
+                                                        <div className={styles.message_state}>
+                                                            {message.state === '읽음' ? '' : `${message.chat_count}`}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        )}
+                                        </div>
                                     </React.Fragment>
                                 );
                             })
-                            : <div>메시지를 입력하여 대화를 시작해보세요.</div>
-                        }
+                        ) : (
+                            <div>메시지를 입력하여 대화를 시작해보세요.</div>
+                        )}
                     </div>
                     <div className={`${styles.input_emojiPickerDiv} ${styles.epr_c90x4z} ${styles['epr_-6npj90']}`} style={{ display: isEmojiToggle ? 'block' : 'none' }} ref={emojiRef}>
                         <EmojiPicker className={styles.input_emojiPicker_css} onEmojiClick={emojiClick} />
