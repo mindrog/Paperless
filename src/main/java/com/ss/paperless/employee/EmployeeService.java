@@ -17,7 +17,8 @@ public class EmployeeService implements UserDetailsService {
 	public EmployeeService(EmployeeRepository employeeRepository) {
 		this.employeeRepository = employeeRepository;
 	}
-
+	@Autowired
+	EmployeeMapper mapper;
 	@Override
 	public UserDetails loadUserByUsername(String empCode) throws UsernameNotFoundException {
 	    EmployeeEntity userData = employeeRepository.findByEmpCode(empCode);
@@ -31,5 +32,12 @@ public class EmployeeService implements UserDetailsService {
 	    System.out.println(userData);
 	    return new CustomUserDetails(userData);
 	}
+
+	public EmployeeDTO getEmpInfo(String emp_code) {
+		return mapper.getEmpInfo(emp_code);
+		
+	}
+
+	
 
 }

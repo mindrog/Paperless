@@ -1,7 +1,10 @@
 package com.ss.paperless.employee;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import javax.persistence.Column;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,21 +14,20 @@ import lombok.NoArgsConstructor;
 @Data
 
 public class EmployeeDTO {
-	private int emp_no; //식별번호 
-	private String emp_code; //원코드
-	private String emp_id; //아이디
-	private String emp_pw; //비밀번호
-	private String emp_email; //이메일
-	private String emp_phone; //핸드폰 번호
-	private String emp_sign; //서명
-	private String emp_profile; //프로필사진
-	private int emp_comp_no; //회사번호 (fk) 
-	private int emp_dept_no; //부서번호 (fk) 
-	private int emp_posi_no; //직급번호 (fk) 
-	private String emp_role; //20241023 추가
-	private LocalDateTime emp_enroll_date; //등록일
-	private LocalDateTime emp_join_date; //입사일
-	private String emp_lastmsg; //마지막 수신 메세지
-	private String emp_lastemailmsg; //마지막 이메일 메세지
-	private List<String> roles;
+	private Long emp_no;
+    private String emp_code;
+    private String emp_pw;
+    private String emp_name;
+    private String emp_email;
+    private String emp_phone;
+    private String emp_sign;
+    private String emp_profile;
+    private Long emp_comp_no;
+    private Long emp_dept_no;
+    private Long emp_posi_no;
+    private Timestamp emp_enroll_date;
+    private Timestamp emp_join_date;
+    private String emp_lastmsg;
+    private String emp_lastemailmsg;
+    private String emp_role;
 }
