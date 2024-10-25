@@ -398,7 +398,7 @@ function Chatting() {
                                                             {formattedTime}
                                                         </div>
                                                         <div className={styles.message_state}>
-                                                            {message.chat_count}
+                                                            {message.chat_count ? message.chat_count : ''}
                                                         </div>
                                                     </div>
                                                 </div>
