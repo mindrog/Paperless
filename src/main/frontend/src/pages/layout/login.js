@@ -37,7 +37,19 @@ function Login() {
             // 로컬 스토리지에 JWT 저장
             localStorage.setItem('jwt', token);
             console.log('토큰 저장 완료!:', localStorage.getItem('jwt'));
-            navigate('/company/user/');
+            axios.get('http://localhost:8080/api/userinfo', {
+                headers: {
+                    'Authorization': localStorage.getItem('jwt') // 발급받은 토큰
+                }
+            })
+            .then(response => {if(response.data.emp_role == "admin"){
+                    navigate("/system/admin/inquiry");
+                 }else if(response.data.emp_role == "companyadmin"){
+                    navigate("/company/admin");
+                 }else{
+                    navigate("/company/user");
+                }}
+                )
         } else {
             console.error('토큰을 찾을 수 없습니다.');
         }
