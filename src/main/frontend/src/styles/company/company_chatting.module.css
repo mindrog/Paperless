@@ -199,6 +199,10 @@
     flex-direction: row-reverse;
 }
 
+.sendMessageBox .message_state {
+    text-align: right;
+}
+
 /* 받은 메시지 */
 .receiveMessageBox {
     display: flex;
