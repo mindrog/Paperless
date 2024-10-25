@@ -77,7 +77,8 @@ const reportData = [
 
 function CompanyUserMain() {
     const token = localStorage.getItem('jwt');
-    axios.get('http://localhost:8080/company/user', {
+    
+    axios.get('http://localhost:8080/api/userinfo', {
         headers: {
             'Authorization': token // 발급받은 토큰
         }

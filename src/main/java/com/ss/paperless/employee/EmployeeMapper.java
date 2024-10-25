@@ -9,4 +9,6 @@ public interface EmployeeMapper {
 	public EmployeeDTO EmployeeById(String username);
 
 	public int existsByUsername(String username);
+
+	public EmployeeDTO getEmpInfo(String emp_code);
 }

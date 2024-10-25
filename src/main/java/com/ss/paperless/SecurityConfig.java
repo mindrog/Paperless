@@ -78,7 +78,7 @@ public class SecurityConfig {
 
         http
         .authorizeHttpRequests((auth) -> auth
-            .mvcMatchers("/login", "/", "/join", "/api/login").permitAll()
+            .mvcMatchers("/login", "/", "/join", "/api/login","/api/name","api/userifo").permitAll()
             .anyRequest().authenticated()
         );
 

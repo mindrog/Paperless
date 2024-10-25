@@ -21,15 +21,31 @@ import com.ss.paperless.employee.EmployeeService;
 import com.ss.paperless.employee.LoginDTO;
 
 @CrossOrigin(origins = "http://localhost:3000")
-@ResponseBody
+@RestController
+@RequestMapping("/api")
 public class MainController {
-	
-	@GetMapping("/company/user/name") 
+	@Autowired
+	EmployeeService empService;
+	@GetMapping("/name") 
 	public String CompanyUser(){
 		System.out.println("CompanyUser located ...");
-		String name = SecurityContextHolder.getContext().getAuthentication().getName();
+		if(SecurityContextHolder.getContext() != null) {
+		String name =  SecurityContextHolder.getContext().getAuthentication().getName();
 		System.out.println("nowmem : " + name);
-		return name;
+		return name;}
+		else {
+			System.out.println("SecurityContextHolder null" );
+			return "null";
+		}
+	}
+	@GetMapping("/userinfo")
+	public EmployeeDTO GetUserInfo() {
+		System.out.println("userinfo locate...");
+		String emp_code =  SecurityContextHolder.getContext().getAuthentication().getName();
+		empService.getEmpInfo(emp_code);
+		EmployeeDTO nowmem = empService.getEmpInfo(emp_code);;
+		System.out.println("nowmem : " + nowmem);
+		return nowmem;
 	}
     
 	
