@@ -20,6 +20,7 @@
   <li>pdf 변환기 api-itext</li>
   <li>네이버 윅스 이메일 인증 api</li>
   <li>AWS 알림 API - Amazon SNS</li>
+  <li>AWS - lambda, DynamoDB, WebSocket API,REST API, S3</li>
 </ol>
 
 
