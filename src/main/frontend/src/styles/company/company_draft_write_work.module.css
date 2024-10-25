@@ -38,7 +38,7 @@ body {
 }
 
 .apprLineTbody {
-  width: 60%;
+  width: 40%;
 }
 
 .docKey {
@@ -87,14 +87,22 @@ body {
   border-color: #2e3d86;
 }
 
-.cancelBtn:hover, .saveAsBtn:hover, .saveBtn:hover {
+.apprLineBtn {
+  margin: 10px;
+  padding: 8px;
+  width: 80px;
+  background-color: #2e3d86;
+  border-color: #2e3d86;
+}
+
+.cancelBtn:hover, .saveAsBtn:hover, .saveBtn:hover, .apprLineBtn:hover {
   border-color: #7289CF;
   background-color: #7289CF;
   /* color:#1b1b1b; */
   font-weight: bold;
 }
 
-.cancelBtn:focus, .saveAsBtn:focus, .saveBtn:focus {
+.cancelBtn:focus, .saveAsBtn:focus, .saveBtn:focus, .apprLineBox:focus {
   border-color: #2e3d86 !important;
   background-color: #2e3d86 !important;
   font-weight: bold;
