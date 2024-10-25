@@ -226,7 +226,7 @@ VALUES
     ('사장');
 
 -- employee/직원
-INSERT INTO `Employee` (`empCode`, `empPw`, `empName`, `empEmail`, `empPhone`, `empSign`, `empProfile`, `empCompNo`, `empDeptNo`, `empPosiNo`, `empJoinDate`, `empRole`)
+INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
 VALUES
 
 -- (digitalsolution 대표)
@@ -242,7 +242,7 @@ VALUES
 ('DS1009', 'password123', '정우성', 'jws@digitalsolution.com', '010-7070-8080', '정우성 서명', 'https://via.placeholder.com/60', 1, 500, 6, '2022-06-25', 'user'),  
 ('DS1010', 'password123', '박보영', 'boyoung@digitalsolution.com', '010-9090-0000', '박보영 서명', 'https://via.placeholder.com/60', 1, 100, 3, '2021-10-10', 'user');
 
-INSERT INTO `Employee` (`empCode`, `empPw`, `empName`, `empEmail`, `empPhone`, `empSign`, `empProfile`, `empCompNo`, `empDeptNo`, `empPosiNo`, `empJoinDate`, `empRole`)
+INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
 VALUES
 -- (nextware 대표)
 ('NW1000', 'password123', '이지수', 'lee@nextware.co.kr', '010-8765-4321', '이지수 서명', 'https://via.placeholder.com/60', 2, 210, 10, '2019-03-10', 'admin'),  
@@ -257,7 +257,7 @@ VALUES
 ('NW1009', 'password123', '유연석', 'you@nextware.co.kr', '010-7878-8989', '유연석 서명', 'https://via.placeholder.com/60', 2, 500, 6, '2020-11-12', 'user'),  
 ('NW1010', 'password123', '박형식', 'hsik@nextware.co.kr', '010-9091-0011', '박형식 서명', 'https://via.placeholder.com/60', 2, 100, 3, '2022-03-05', 'user');
 
-INSERT INTO `Employee` (`empCode`, `empPw`, `empName`, `empEmail`, `empPhone`, `empSign`, `empProfile`, `empCompNo`, `empDeptNo`, `empPosiNo`, `empJoinDate`, `empRole`)
+INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
 VALUES
 -- (itmate 대표)
 ('ITM1000', 'password123', '박진영', 'park@itmate.net', '010-2468-1357', '박진영 서명', 'https://via.placeholder.com/60', 3, 300, 10, '2018-07-22', 'admin'),
@@ -273,7 +273,7 @@ VALUES
 ('ITM1010', 'password123', '이광수', 'gwangsoo@itmate.net', '010-1111-2222', '이광수 서명', 'https://via.placeholder.com/60', 3, 500, 3, '2019-10-30', 'user');
 
 
-INSERT INTO `Employee` (`empCode`, `empPw`, `empName`, `empEmail`, `empPhone`, `empSign`, `empProfile`, `empCompNo`, `empDeptNo`, `empPosiNo`, `empJoinDate`, `empRole`)
+INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
 VALUES
 -- (futuretech 대표)
 ('FT1000', 'password123', '송민우', 'song@futuretech.co.kr', '010-9753-8642', '송민우 서명', 'https://via.placeholder.com/60', 4, 500, 10, '2021-05-30', 'admin'),
@@ -288,7 +288,7 @@ VALUES
 ('FT1009', 'password123', '이현우', 'hyunwoo@futuretech.co.kr', '010-8989-9090', '이현우 서명', 'https://via.placeholder.com/60', 4, 100, 4, '2020-08-10', 'user'),  
 ('FT1010', 'password123', '김민규', 'mingyu@futuretech.co.kr', '010-1111-2323', '김민규 서명', 'https://via.placeholder.com/60', 4, 500, 3, '2019-10-30', 'user');
 
-INSERT INTO `Employee` (`empCode`, `empPw`, `empName`, `empEmail`, `empPhone`, `empSign`, `empProfile`, `empCompNo`, `empDeptNo`, `empPosiNo`, `empJoinDate`, `empRole`)
+INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
 VALUES
 -- (Paperless 대표)
 ('PL1000', 'password123', '이범상', 'beom@paperless.com', '010-1357-2468', '이범상 서명', 'https://via.placeholder.com/60', 5, 410, 10, '2019-03-10', 'admin'),
