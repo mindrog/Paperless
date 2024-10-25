@@ -36,7 +36,7 @@ function Chatting() {
     // 직원
     const empList = [
         { emp_no: 1, emp_name: '배수지', emp_email: 'suji0123@naver.com', emp_phone: '010-9876-5432', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_team_name: '', emp_posi_no: 6 },
-        { emp_no: 2, emp_name: '장원영', emp_email: 'jang0101@naver.com', emp_phone: '010-1234-1234', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 7 },
+        { emp_no: 2, emp_name: '장원영', emp_email: 'jang0101@naver.com', emp_phone: '010-1234-1234', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 6 },
         { emp_no: 3, emp_name: '박보영', emp_email: 'boyoung0202@naver.com', emp_phone: '010-2345-2345', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 7 },
         { emp_no: 4, emp_name: '박보검', emp_email: 'gumgum0303@gmail.com', emp_phone: '010-3456-3456', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 5 },
         { emp_no: 5, emp_name: '전지현', emp_email: 'jjh0404@naver.com', emp_phone: '010-4567-4567', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 1, emp_posi_no: 4 },
@@ -282,9 +282,44 @@ function Chatting() {
 
     return (
         <>
-            <Helmet>
+            {/* <Helmet>
                 <link rel="icon" type="image/png" href="/img/final_favicon.png" sizes="16x16" />
                 <title>{emp ? `${emp.participants}님과의 채팅` : 'Loading...'}</title>
+            </Helmet>
+
+            <div>
+                <p>emp_no: {emp?.emp_no}</p>
+                <p>emp_name: {emp ? `${emp.emp_name}님과의 채팅` : 'Loading...'}</p>
+                <p>emp_email: {emp?.emp_email}</p>
+                <p>emp_phone: {emp?.emp_phone}</p>
+                <p>emp_profile: <img src={emp?.emp_profile} alt="Profile" style={{ width: '50px', height: '50px' }} /></p>
+                <p>emp_comp_name: {emp?.emp_comp_name}</p>
+                <p>emp_dept_name: {emp?.emp_dept_name} {emp?.emp_team_name}</p>
+                <p>emp_posi_name: {emp?.emp_posi_name}</p>
+
+                <h2>Message List:</h2>
+                {messageList.length > 0 ? (
+                    messageList.map((message, index) => (
+                        <div key={index}>
+                            <hr></hr>
+                            <p>chat_sender: {message.chat_sender}</p>
+                            <p>chat_recipient: {message.chat_recipient}</p>
+                            <p>chat_date: {message.chat_date}</p>
+                            <p>chat_content: {message.chat_content}</p>
+                            <p>chat_count: {message.chat_count}</p>
+                            <p>chat_room_no: {message.chat_room_no}</p>
+                            <p>chat_no: {message.chat_no}</p>
+                            <p>chat_type: {message.chat_type}</p>
+                            <hr></hr>
+                        </div>
+                    ))
+                ) : (
+                    <p>Message list is empty</p>
+                )}
+            </div> */}
+            <Helmet>
+                <link rel="icon" type="image/png" href="/img/final_favicon.png" sizes="16x16" />
+                <title>{emp ? `${emp.emp_name}님과의 채팅` : 'Loading...'}</title>
             </Helmet>
             <div className="container-xl" style={{ padding: '0' }}>
                 <div className={styles.chatting_container}>
@@ -296,18 +331,18 @@ function Chatting() {
                             <div className={styles.header_profile_container}>
                                 <div className={styles.header_profile_info}>
                                     <div className={styles.header_profile_dept}>
-                                        <p>{emp?.emp_dept_name || 'Unknown Department'}</p>
+                                        <p>{emp?.emp_dept_name}</p>
                                     </div>
                                     <div className={styles.header_profile_name}>
-                                        <p>{`${emp?.emp_name || 'Unknown Name'} ${emp?.emp_posi_name || 'Unknown Name'}`}</p>
+                                        <p>{emp?.emp_name} {emp?.emp_posi_name}</p>
                                     </div>
                                 </div>
                                 <div className={styles.select_chatting}>
-                                    <div>
+                                    {/*<div>
                                         <p>연결 확인: {connectionStatus}</p>
                                         <p>수신 확인: {lastMessage ? lastMessage.data : '메시지x '}</p>
                                         <p>사용자 ID: {empNo}</p>
-                                    </div>
+                                    </div>*/}
                                     <input type='text' className={`${styles.select_input} ${showSelectInput ? styles.select_input_show : styles.select_input_hide}`} placeholder='내용을 입력해주세요.'></input>
                                     <Button className={styles.select_chattingButton} onClick={selectToggle}><i class="material-icons">search</i></Button>
                                 </div>
@@ -346,11 +381,11 @@ function Chatting() {
                                             </div>
                                         )}
 
-                                        <div className={`${emp?.emp_name === message.chat_recipient ? styles.sendMessageBox : styles.receiveMessageBox}`}>
+                                        <div className={`${emp?.emp_no !== message.chat_recipient ? styles.sendMessageBox : styles.receiveMessageBox}`}>
                                             <div className={styles.chatting_messageBox}>
-                                                {checkMessage && emp?.emp_name === message.chat_recipient.S && (
+                                                {checkMessage && emp?.emp_no === message.chat_recipient.S && (
                                                     <div className={styles.sender_profile}>
-                                                        <img src={emp.emp_profile} alt="Profile" className={styles.image} />
+                                                        <img src={emp?.emp_profile || 'https://via.placeholder.com/60'} alt="Profile" className={styles.image} />
                                                         <p>{message.chat_sender}</p>
                                                     </div>
                                                 )}
@@ -363,7 +398,7 @@ function Chatting() {
                                                             {formattedTime}
                                                         </div>
                                                         <div className={styles.message_state}>
-                                                            {message.state === '읽음' ? '' : `${message.chat_count}`}
+                                                            {message.chat_count}
                                                         </div>
                                                     </div>
                                                 </div>
