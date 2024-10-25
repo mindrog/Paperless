@@ -172,7 +172,7 @@ const CompanyUserDraftWriteWork = () => {
             <tr>
               <td className={styles.docKey}>배수지</td>
               <td>
-                <Button className={styles.cancelBtn} onClick={handleApprLineModal}>결재선 지정</Button>
+                <Button className={styles.apprLineBtn} onClick={handleApprLineModal}>결재선</Button>
               </td>
             </tr>
             <tr>
