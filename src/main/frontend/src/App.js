@@ -67,7 +67,6 @@ function App() {
             <div className='App'>
                 <HeaderToggle />
                 <MenubarToggle isMenuOpen={isMenuOpen} />
-                <GraphChartToggle />
                 <ApprovalLineToggle />
                 {/* <PaginationToggle /> */}
                 <main className='app'>
