@@ -59,12 +59,6 @@ public class EmployeeEntity {
     @Column(name = "emp_join_date", nullable = false)
     private Timestamp empJoinDate;
 
-    @Column(name = "emp_lastmsg")
-    private String empLastMsg;
-
-    @Column(name = "emp_lastemailmsg")
-    private String empLastEmailMsg;
-
     @Column(name = "emp_role", nullable = false, columnDefinition = "VARCHAR(100) DEFAULT 'user'")
     private String empRole;
     //('admin2', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김성현', 'kim@digitalsolution.com', '010-1234-5678', '김성현 서명', 'https://via.placeholder.com/60', 1, 210, 7, '2019-11-01', 'admin'),
