@@ -168,7 +168,6 @@ function CompanyUserChatRoom() {
                 }
 
                 const encodedData = encodeURIComponent(JSON.stringify(chatData));
-                console.log('encodedData:', encodedData);
                 
                 // // 참가자 정보와 메시지 저장
                 // // JSON.stringify: 문자열로 저장
@@ -378,28 +377,34 @@ function CompanyUserChatRoom() {
                                     </div>
                                 </div>
                             ))}
-                            <Modal show={profileModal} onHide={closeProfileModal} dialogClassName={styles.modal_content} size='lg' centered>
+                            <Modal show={profileModal} onHide={closeProfileModal} dialogClassName={styles.modal_content} centered>
                                 <Modal.Header className={styles.modal_header} closeButton onClick={(e) => e.stopPropagation()}>
                                     <Modal.Title className={styles.modal_title}>{profileInfo.emp_name} 님의 프로필</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
                                     <div className={styles.modal_body}>
                                         <div className={styles.modal_body_profile}>
-                                            <img src="https://via.placeholder.com/120" alt="Profile" className={styles.image} />
+                                            <img src="https://via.placeholder.com/150" alt="Profile" className={styles.image} />
                                         </div>
                                         <div className={styles.modal_body_info}>
                                             <table>
                                                 <tbody>
                                                     <tr>
                                                         <td><p className={styles.infoTitle}>소속 부서</p></td>
+                                                    </tr>
+                                                    <tr>
                                                         <td><p className={styles.infoValue}>{profileInfo.emp_dept_name} {profileInfo.emp_team_name}</p></td>
                                                     </tr>
                                                     <tr>
                                                         <td><p className={styles.infoTitle}>내선 번호</p></td>
+                                                    </tr>
+                                                    <tr>
                                                         <td><p className={styles.infoValue}>{profileInfo.emp_phone}</p></td>
                                                     </tr>
                                                     <tr>
                                                         <td><p className={styles.infoTitle}>이 &nbsp;메 &nbsp;일</p></td>
+                                                    </tr>
+                                                    <tr>
                                                         <td><p className={styles.infoValue}>{profileInfo.emp_email}</p></td>
                                                     </tr>
                                                 </tbody>
