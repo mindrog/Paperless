@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import {Link} from 'react-router-dom';
-import '../../styles/layout/layout.css';
-import logo from '../../img/logo-img.png';
-
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import '../../styles/layout/layout.css'
+import logo from '../../img/logo-img.png'; // 로고 이미지 경로
+import { setUserData } from '../../store/userSlice';
 const HeaderOne = ({ logoSize, toggleMenu }) => (
+    
     <header className='header-one'>
         <div className='logo_Img_start'>
             {/* 햄버거 아이콘이 중간 화면에서만 보이도록 className 적용 */}
@@ -41,54 +43,51 @@ const HeaderTwo = ({ toggleMenu }) => (
         </div>
     </header>
 );
-const HeaderThree = ({ toggleMenu }) => (
-    
+const HeaderThree = ({ toggleMenu, userData, handleLogout }) => (
     <header className='header-two'>
         <div className='logo_Img'>
-        <Link to='/'>
-            <img src={logo} className='Header-logo' alt='Logo Two' />
-            </Link> 
+            <Link to='/'>
+                <img src={logo} className='Header-logo' alt='Logo Two' />
+            </Link>
         </div>
         <div className='menu_Container'>
-
+            {/* 메뉴 항목 추가 */}
         </div>
         <div className='btn_Container'>
-            <Link to='/login'>
-            <button type='button' className='header_btn'>로그아웃</button>
-            </Link>
+            <p className='header_emp_name'>{userData.emp_name}</p>
+            <button type='button' className='header_btn' onClick={handleLogout}>
+                로그아웃
+            </button>
         </div>
     </header>
 );
+
 const Header = ({ toggleMenu }) => {
     const [lastScrollY, setLastScrollY] = useState(0);
     const [headerToShow, setHeaderToShow] = useState('one');
-    const [logoSize, setLogoSize] = useState(1); // 초기 로고 크기
-    const [hasToken, setHasToken] = useState(false);
-
+    const [logoSize, setLogoSize] = useState(1);
+    const userData = useSelector((state) => state.user.data);
+    const dispatch = useDispatch();
+    
     useEffect(() => {
-        // 로컬 스토리지에서 JWT 토큰 확인
         const token = localStorage.getItem('jwt');
         if (token) {
-            setHasToken(true);
-        } else {
-            setHasToken(false);
+            
         }
-    }, []); // 처음 렌더링 시 한 번만 실행
+    }, []);
 
     const handleScroll = () => {
         const currentScrollY = window.scrollY;
-
-        // 로고 크기 조정
-        const newLogoSize = Math.max(0.5, 1 - currentScrollY / 400); // 스크롤에 따라 크기 조정
+        const newLogoSize = Math.max(0.5, 1 - currentScrollY / 400);
         setLogoSize(newLogoSize);
 
         if (currentScrollY > 100) {
-            setHeaderToShow('two'); // 스크롤이 100 이상일 때 HeaderTwo 표시
+            setHeaderToShow('two');
         } else {
-            setHeaderToShow('one'); // 그렇지 않을 때 HeaderOne 표시
+            setHeaderToShow('one');
         }
 
-        setLastScrollY(currentScrollY); // 마지막 스크롤 위치 업데이트
+        setLastScrollY(currentScrollY);
     };
 
     useEffect(() => {
@@ -98,10 +97,16 @@ const Header = ({ toggleMenu }) => {
         };
     }, [lastScrollY]);
 
+    const handleLogout = () => {
+        localStorage.removeItem('jwt'); // 로컬 스토리지에서 토큰 제거
+        dispatch(setUserData(null)); // Redux 스토어에서 유저 데이터 제거
+        // 필요한 경우 navigate('/login') 추가
+    };
+
     return (
         <>
-            {hasToken ? (
-                <HeaderThree toggleMenu={toggleMenu} />
+            {userData ? (
+                <HeaderThree toggleMenu={toggleMenu} userData={userData} handleLogout={handleLogout} />
             ) : (
                 headerToShow === 'one' ? (
                     <HeaderOne logoSize={logoSize} toggleMenu={toggleMenu} />
@@ -111,6 +116,6 @@ const Header = ({ toggleMenu }) => {
             )}
         </>
     );
-}
+};
 
 export default Header;

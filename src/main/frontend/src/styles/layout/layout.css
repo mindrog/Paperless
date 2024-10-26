@@ -28,7 +28,11 @@
 /* .footer_compant_info{
     
 } */
-
+.header_emp_name{
+    font-family: 'ONE-Mobile-Regular';
+    font-size: 1rem;
+    color: black;
+}
 header{
     z-index: 1;
     display: flex;
@@ -48,10 +52,15 @@ header{
     height: 10vh;
     
 }
+
 .btn_Container{
     width: 30vw;
     height: 10vh;
     background-color: btn_Container;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 .Header-logo{
     width:40%;
