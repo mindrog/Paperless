@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styles from '../../styles/layout/menubar.module.css'; // CSS 모듈 사용 시
 import { Button, Modal } from 'react-bootstrap';
@@ -114,16 +115,16 @@ const Menubar = ({ isMenuOpen }) => {
     const toggleFormDropdown = () => {
         setIsFormDropdownOpen(!isFormDropdownOpen);
     };
-
+    const userData = useSelector((state) => state.user.data);
     return (
         <nav className={`${styles.menubar} ${isMenuOpen ? styles.showMenu : ''}`}>
             <div className={styles.menubar}>
                 <div className={styles.profil}>
                     <div className={styles.profilbox}>
                         <div className={styles.profiltitle} onClick={handlerCompanyMain}>
-                            <p>기획전략팀</p>
+                            <p></p>
                             <div className={styles.titlename}>
-                                <div className={styles.userName}>{profileName}</div>
+                                <div className={styles.userName}>{userData.emp_name}</div>
                                 <div className={styles.userGrade}>{getUserGrade()}</div>
                             </div>
                         </div>
