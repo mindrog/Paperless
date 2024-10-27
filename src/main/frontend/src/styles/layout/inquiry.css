@@ -72,6 +72,7 @@ body{
     border-radius: 10px;
     padding: 0 10px; /* 입력 여백 추가 */
     outline: none; /* 기본 아웃라인 제거 */
+    font-size: large;
     
 }
 .input_company_name:focus,

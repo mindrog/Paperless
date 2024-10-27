@@ -149,7 +149,7 @@ function HeaderToggle() {
 function MenubarToggle({ isMenuOpen }) {
     const location = useLocation();
     const chattingPath = useMatch('/chatting/:name');
-    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte', '/chatroom', '/chatting', '/email_Auth/searchPW'];
+    const MenubarHiddenPaths = ['/','/inquiry/Write', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte', '/chatroom', '/chatting', '/email_Auth/searchPW'];
     const isMenubarHiddenPaths = MenubarHiddenPaths.includes(location.pathname) || chattingPath;
 
     return (
