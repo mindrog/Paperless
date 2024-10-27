@@ -27,4 +27,10 @@
 		WHERE `username` = '입력할_사용자이름'
 		) AS user_exists;
 	</select>
+
+	<update id="updateEmp" parameterType="Long">
+		UPDATE Employee
+		SET column_name = new_value
+		WHERE id = #{id}
+	</update>
 </mapper>
