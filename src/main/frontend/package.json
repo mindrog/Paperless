@@ -19,7 +19,7 @@
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "emoji-picker-react": "^4.12.0",
-    "http-proxy-middelware": "^0.0.1-security",
+    "http-proxy-middleware": "^0.0.1-security",
     "openssl": "^2.0.0",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.5",
