@@ -1,5 +1,12 @@
 package com.ss.paperless.inquiry;
 
-public class InquiryMapper {
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface InquiryMapper {
+
+	public int GetInquiry(InquiryDTO inquiryDTO);
+
+	public int GetRequest(RequestDTO requestDTO);
 
 }
