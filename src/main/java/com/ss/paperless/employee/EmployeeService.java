@@ -38,6 +38,15 @@ public class EmployeeService implements UserDetailsService {
 		
 	}
 
+	public String getUserPosi(String emp_code) {
+		
+		return mapper.getUserPosi(emp_code);
+	}
+
+	
+	}
+
+	
 	
 
-}
+	
