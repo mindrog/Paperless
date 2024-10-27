@@ -1,13 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import styles from '../../styles/company/company_chatting.module.css'
 import { Button } from 'react-bootstrap';
 import EmojiPicker from 'emoji-picker-react';
 import { format, isSameDay, isValid, parse } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import useWebSocket from 'react-use-websocket';
-import { v4 as uuidv4 } from 'uuid';
 import api from '../layout/api';
 
 // .env 파일
@@ -22,14 +21,15 @@ function Chatting() {
 
     const [user, setUser] = useState(null); // 상태 변수로 사용자 정보를 초기화
 
-    const [searchParams] = useSearchParams();
-    const empNo = Number(searchParams.get('emp_no'));
+    const empNo = 1;
 
     // 사용자 정보 저장 로직
     useEffect(() => {
         // empList에서 empNo와 일치하는 직원 찾기
         const foundUser = empList.find(emp => emp.emp_no === empNo);
+        console.log("foundUser:", foundUser);
         if (foundUser) setUser(foundUser);
+        console.log("empNo:", empNo);
     }, [empNo]);
 
     // ** 더미 데이터 ** //
@@ -123,7 +123,12 @@ function Chatting() {
     //  서버에서 메시지가 올 때마다 업데이트
     // readyState: WebSocket의 연결 상태를 나타내는 함수
     //  총 4가지로 0: 연결 시도 중, 1: 연결, 2: 연결 종료 시도 중, 3: 연결 종료
-    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
+    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+        onOpen: () => console.log('WebSocket 연결 성공!'),
+        onClose: () => console.log('WebSocket 연결 해제됨'),
+        onError: (event) => console.error('WebSocket 에러:', event),
+        shouldReconnect: (CloseEvent) => true,
+    });
 
     // WebSocket 연결 상태 메시지 매핑
     const connectionStatus = useMemo(() => ({
@@ -152,28 +157,31 @@ function Chatting() {
     const parseChatDate = (dateString) => {
         // chat_date 형식이 "YYYY-MM-DD HH:mm"이므로 이에 맞는 파싱을 수행
         const date = parse(dateString, 'yyyy-MM-dd HH:mm', new Date());
-        if (!isValid(date)) {
-            console.warn("Invalid date format detected:", dateString);
-            return null;
-        }
-        return date;
+        return isValid(date) ? date : null;
     };
 
     // 메시지 전송 버튼 메서드
     const handlerSendMessage = async () => {
         if (message.trim() && emp && emp.participants) {
             try {
-                // REST API를 통해 메시지 전송
-                await api.sendMessage({
+                // 새 메시지 전송할 경우
+                const newMessage = {
                     chat_room_no: emp.chat_room_no,
                     chat_sender: empNo,
-                    chat_recipient: emp.participants,
+                    chat_recipient: emp.participants.map(p => p.emp_no),
                     chat_content: message,
                     chat_type: 'text',
-                });
+                    chat_date: new Date().toISOString()
+                };
+                
+                // REST API를 통해 메시지 전송
+                sendMessage(JSON.stringify(newMessage));
+                console.log('메시지 전송 중:', newMessage);
+
+                await api.sendMessage(newMessage);
 
                 // WebSocket을 통해 메시지를 보내기도 함
-                sendMessage(JSON.stringify({ action: 'sendMessage', message, empNo }));
+                sendMessage(prev => [...prev, newMessage]);
                 setMessage(''); // 메시지 입력란 초기화
             } catch (error) {
                 console.error('메시지 전송 중 오류 발생:', error);
@@ -196,7 +204,7 @@ function Chatting() {
 
         // 연결 되었을 때
         if (readyState === 1) {
-            console.log('연결 성공!');
+            console.log('WebSocket 연결 성공!');
         }
     }, [readyState]);
 
@@ -263,14 +271,10 @@ function Chatting() {
                 const empFromData = processedEmpList.find(emp => emp.emp_no === chatData.participantNos[0]);
                 console.log('chatData.participantNos[0]:', chatData.participantNos[0]);
                 console.log('empFromData:', empFromData);
-                console.log('type chatData.participantNos[0]:', typeof (chatData.participantNos[0]));
-                console.log('type empFromData:', typeof (empFromData));
 
                 if (empFromData) {
                     console.log("Updating emp with:", empFromData);
                     setEmp(empFromData);
-                } else {
-                    console.warn("유효한 emp 정보를 찾을 수 없습니다.");
                 }
             } else {
                 console.error("URL에 인코딩된 데이터가 없습니다.");
@@ -282,41 +286,6 @@ function Chatting() {
 
     return (
         <>
-            {/* <Helmet>
-                <link rel="icon" type="image/png" href="/img/final_favicon.png" sizes="16x16" />
-                <title>{emp ? `${emp.participants}님과의 채팅` : 'Loading...'}</title>
-            </Helmet>
-
-            <div>
-                <p>emp_no: {emp?.emp_no}</p>
-                <p>emp_name: {emp ? `${emp.emp_name}님과의 채팅` : 'Loading...'}</p>
-                <p>emp_email: {emp?.emp_email}</p>
-                <p>emp_phone: {emp?.emp_phone}</p>
-                <p>emp_profile: <img src={emp?.emp_profile} alt="Profile" style={{ width: '50px', height: '50px' }} /></p>
-                <p>emp_comp_name: {emp?.emp_comp_name}</p>
-                <p>emp_dept_name: {emp?.emp_dept_name} {emp?.emp_team_name}</p>
-                <p>emp_posi_name: {emp?.emp_posi_name}</p>
-
-                <h2>Message List:</h2>
-                {messageList.length > 0 ? (
-                    messageList.map((message, index) => (
-                        <div key={index}>
-                            <hr></hr>
-                            <p>chat_sender: {message.chat_sender}</p>
-                            <p>chat_recipient: {message.chat_recipient}</p>
-                            <p>chat_date: {message.chat_date}</p>
-                            <p>chat_content: {message.chat_content}</p>
-                            <p>chat_count: {message.chat_count}</p>
-                            <p>chat_room_no: {message.chat_room_no}</p>
-                            <p>chat_no: {message.chat_no}</p>
-                            <p>chat_type: {message.chat_type}</p>
-                            <hr></hr>
-                        </div>
-                    ))
-                ) : (
-                    <p>Message list is empty</p>
-                )}
-            </div> */}
             <Helmet>
                 <link rel="icon" type="image/png" href="/img/final_favicon.png" sizes="16x16" />
                 <title>{emp ? `${emp.emp_name}님과의 채팅` : 'Loading...'}</title>
@@ -357,8 +326,8 @@ function Chatting() {
                             messageList.map((message, index) => {
                                 // 날짜 파싱을 개선한 parseChatDate 함수 사용
                                 const messageDate = parseChatDate(message.chat_date);
-
-                                if (!messageDate) return null; // 유효하지 않은 날짜는 건너뜀
+                                // 유효하지 않은 날짜는 건너뜀
+                                if (!messageDate) return null; 
 
                                 // 날짜가 다른지 확인
                                 const checkDate = index === 0 || !isSameDay(new Date(messageList[index - 1].chat_date), messageDate);
@@ -381,9 +350,9 @@ function Chatting() {
                                             </div>
                                         )}
 
-                                        <div className={`${emp?.emp_no !== message.chat_recipient ? styles.sendMessageBox : styles.receiveMessageBox}`}>
+                                        <div className={`${emp?.emp_no !== message.chat_sender ? styles.sendMessageBox : styles.receiveMessageBox}`}>
                                             <div className={styles.chatting_messageBox}>
-                                                {checkMessage && emp?.emp_no === message.chat_recipient.S && (
+                                                {checkMessage && emp?.emp_no === message.chat_sender && (
                                                     <div className={styles.sender_profile}>
                                                         <img src={emp?.emp_profile || 'https://via.placeholder.com/60'} alt="Profile" className={styles.image} />
                                                         <p>{message.chat_sender}</p>
