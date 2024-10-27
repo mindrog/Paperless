@@ -33,7 +33,7 @@ const HeaderTwo = ({ toggleMenu }) => (
 
         </div>
         <div className='btn_Container'>
-            <Link to='/inquiryWrite'>
+            <Link to='/inquiry/Write'>
             <button type='button' className='header_btn'>문의하기</button>
             </Link><Link to='/inquiry'>
             <button type='button' className='header_btn'>신청하기</button>
@@ -54,7 +54,7 @@ const HeaderThree = ({ toggleMenu, userData, handleLogout }) => (
             {/* 메뉴 항목 추가 */}
         </div>
         <div className='btn_Container'>
-            <p className='header_emp_name'>{userData.emp_name}</p>
+            <p className='header_emp_name'>{userData.emp_name} 님 </p>
             <button type='button' className='header_btn' onClick={handleLogout}>
                 로그아웃
             </button>

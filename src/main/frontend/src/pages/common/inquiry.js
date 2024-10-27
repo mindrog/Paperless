@@ -33,7 +33,21 @@ function Inquiry() {
                 </div>
                 <div className='input_company_name_container'>
                     <p className='input_company_name_title'>* 회사 업종을 선택해주세요</p>
-                    <input type='text' className='input_company_type'></input>
+                    <select type='text' className='input_company_type'>
+                        <option>IT</option>
+                        <option>제조/건설</option>
+                        <option>의료/건설</option>
+                        <option>교육</option>
+                        <option>미디어/광고/엔터테인먼트</option>
+                        <option>금융</option>
+                        <option>유통</option>
+                        <option>공공</option>
+                        <option>법무/세무/노무</option>
+                        <option>여행/숙박/식음료/미용</option>
+                        <option>비영리단체</option>
+                        <option>방산</option>
+                        <option>기타</option>
+                    </select>
                 </div>
                 <div className='input_company_name_container'>
                     <p className='input_company_name_title'>* 신청하시는 분의 이름을 입력해주세요</p>
