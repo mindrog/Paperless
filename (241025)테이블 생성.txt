@@ -1,7 +1,7 @@
 -- # 1025 SQL Script #
--- DROP database paperless;
--- CREATE DATABASE IF NOT EXISTS paperless;
--- USE paperless;
+ DROP database paperless;
+CREATE DATABASE IF NOT EXISTS paperless;
+USE paperless;
 
 -- 1. 기존 테이블 삭제
 DROP TABLE IF EXISTS `Scheduler`;
@@ -169,11 +169,28 @@ CREATE TABLE `Stock` (
 
 -- Inquiry 테이블 생성
 CREATE TABLE `Inquiry` (
-    `inqu_no` BIGINT NOT NULL,
+    `inqu_no` BIGINT NOT NULL AUTO_INCREMENT,
     `inqu_writer` VARCHAR(100) NOT NULL,
+    `inqu_compName` VARCHAR(100) NOT NULL,
+    `inqu_compType` VARCHAR(100) NOT NULL,
+    `inqu_email` VARCHAR(100) NOT NULL,
+    `inqu_phone` VARCHAR(100) NOT NULL,
+    `inqu_numberOfPeople` VARCHAR(100) NOT NULL,
+    `inqu_enroll` timestamp NOT NULL,
+    
     PRIMARY KEY (`inqu_no`)
 );
-
+CREATE TABLE `request` (
+    `requ_no` BIGINT NOT NULL AUTO_INCREMENT,
+    `requ_title` VARCHAR(100) NOT NULL,
+    `requ_writer` VARCHAR(100) NOT NULL,
+    `requ_phone` VARCHAR(100) NOT NULL,
+    `requ_email` VARCHAR(100) NOT NULL,
+    `requ_contents` TEXT NOT NULL,
+    `requ_enroll` timestamp NOT NULL,
+    
+    PRIMARY KEY (`requ_no`)
+);
 -- Emailmessage 테이블 생성
 CREATE TABLE `Emailmessage` (
     `email_no` BIGINT NOT NULL,
@@ -309,3 +326,6 @@ select * from company;
 select * from department;
 select * from position; 
 select * from employee;
+select * from inquiry;
+select * from request;
+select posi_name from position join employee on position.posi_no = employee.emp_posi_no where employee.emp_name = '김성현';

@@ -58,6 +58,10 @@ body{
     flex-direction: column;
     margin-bottom: 3vh;
 }
+option:active{
+    background-color: #b9c3f8;
+    
+}
 .input_company_name,
 .input_company_type,
 .input_client_name,
