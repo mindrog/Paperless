@@ -4,6 +4,8 @@ import '../../styles/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ComposeButton from '../component/ComposeButton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 
 function CompanyUserEmailDetail() {
   const location = useLocation();
@@ -291,9 +293,23 @@ function CompanyUserEmailDetail() {
       {/* 이메일 상세 내용 */}
       <div className={styles['email-detail']}>
         <div className={styles['email-header']}>
-          <button className={styles.btn} onClick={() => navigate(-1)}>
-            뒤로 가기
-          </button>
+          {/* <button className={styles.btn} onClick={() => navigate(-1)}>
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </button> */}
+          <span
+            className={styles.backIcon}
+            onClick={() => navigate(-1)}
+            tabIndex="0"
+            role="button"
+            aria-label="뒤로 가기"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                navigate(-1);
+              }
+            }}
+          >
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </span>
           <h2>{email.subject}</h2>
         </div>
         <p>

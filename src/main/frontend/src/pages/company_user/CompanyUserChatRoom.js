@@ -69,11 +69,11 @@ function CompanyUserChatRoom() {
         const position = posiList.find(posi => posi.posi_no === emp.emp_posi_no); // 해당 직급 정보 찾기
   
         return {
-        ...emp,
-        emp_comp_name: company ? company.comp_name : 'Unknown', // 회사 이름 동적 참조
-        emp_dept_name: department ? department.dept_name : 'Unknown', // 부서 이름 동적 참조
-        emp_team_name: team ? team.dept_team_name : 'Unknown', // 팀 이름 동적 참조
-        emp_posi_name: position ? position.posi_name : 'Unknown' // 직급 이름 동적 참조
+            ...emp,
+            emp_comp_name: company ? company.comp_name : 'Unknown', // 회사 이름 동적 참조
+            emp_dept_name: department ? department.dept_name : 'Unknown', // 부서 이름 동적 참조
+            emp_team_name: team ? team.dept_team_name : 'Unknown', // 팀 이름 동적 참조
+            emp_posi_name: position ? position.posi_name : 'Unknown' // 직급 이름 동적 참조
         };
     });
 
@@ -145,7 +145,6 @@ function CompanyUserChatRoom() {
             const room = chatRoomList.find(room => room.room_no === room_no);
 
             if (!room) return;
-
             
             const openChatRoom = openChats.find(chat => chat.room_no === room_no);
             
@@ -175,7 +174,6 @@ function CompanyUserChatRoom() {
                 //     room_no, 
                 //     participants: room.participantNames
                 // }));
-
 
                 // 새 창 띄우기
                 const newChat = window.open(
@@ -305,7 +303,6 @@ function CompanyUserChatRoom() {
                     // 최근 메시지 업데이트
                     // recentMessages에는 room_no로 구분되며 가장 최근 메시지(chat_content_recent), 가장 최근 전송 시간(chat_date_recent), 읽지 않은 수(unread)의 데이터를 가지고 있다
                     setRecentMessages(recentMessages);
-
                 } else {
                     console.error("채팅방 목록 데이터가 배열 형태가 아닙니다:", chatRoomResponse);
                 }

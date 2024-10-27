@@ -3,7 +3,27 @@
 <!--  풀 패키지명을 namespace작성한다
 그래야지만 mapper 인터페이스에서 함수 호출시
 매핑해서 sql을 실행할 수 있다. -->
-<mapper namespace="com.ss.paperless.inquiry.InquiryDTO">
-	
-	
+<mapper namespace="com.ss.paperless.inquiry.InquiryMapper">
+	<insert id="GetInquiry"
+    parameterType="com.ss.paperless.inquiry.InquiryDTO"
+    >
+    	insert into inquiry (inqu_compName, inqu_compType, inqu_writer, inqu_email, inqu_phone, inqu_numberOfPeople, inqu_enroll)
+    	 values (#{inqu_compName},#{inqu_compType},#{inqu_writer},#{inqu_email},#{inqu_phone},#{inqu_numberOfPeople},sysdate())
+	</insert>
+	<insert id="GetRequest" parameterType="com.ss.paperless.inquiry.RequestDTO">
+	INSERT INTO `request` (
+    `requ_title`,
+    `requ_writer`,
+    `requ_phone`,
+    `requ_email`,
+    `requ_contents`,
+    `requ_enroll`
+) VALUES (
+    #{requ_title},
+    #{requ_writer},
+    #{requ_phone},
+    #{requ_email},
+    #{requ_contents},
+    SYSDATE()
+)</insert>
 </mapper>

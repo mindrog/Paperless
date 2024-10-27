@@ -68,7 +68,6 @@ function App() {
                 <HeaderToggle />
                 <MenubarToggle isMenuOpen={isMenuOpen} />
                 <ApprovalLineToggle />
-                {/* <PaginationToggle /> */}
                 <main className='app'>
                     <Routes>
                         <Route path='/' element={<Home />} />
@@ -149,7 +148,7 @@ function HeaderToggle() {
 function MenubarToggle({ isMenuOpen }) {
     const location = useLocation();
     const chattingPath = useMatch('/chatting/:name');
-    const MenubarHiddenPaths = ['/', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte', '/chatroom', '/chatting', '/email_Auth/searchPW'];
+    const MenubarHiddenPaths = ['/','/inquiry/Write', '/inquiry', '/inquiry/success', '/login', '/email_Auth', '/inquiry/wirte', '/chatroom', '/chatting', '/email_Auth/searchPW'];
     const isMenubarHiddenPaths = MenubarHiddenPaths.includes(location.pathname) || chattingPath;
 
     return (
@@ -182,6 +181,7 @@ function FooterToggle() {
 function GraphChartToggle() {
     const location = useLocation();
     const allowedPaths = ['/company/user/', '/company/admin/'];  // GraphChart를 보여줄 경로
+    const showGraphChart = allowedPaths.some(path => location.pathname.startsWith(path));
 
     return (
         <>

@@ -58,6 +58,10 @@ body{
     flex-direction: column;
     margin-bottom: 3vh;
 }
+option:active{
+    background-color: #b9c3f8;
+    
+}
 .input_company_name,
 .input_company_type,
 .input_client_name,
@@ -72,6 +76,7 @@ body{
     border-radius: 10px;
     padding: 0 10px; /* 입력 여백 추가 */
     outline: none; /* 기본 아웃라인 제거 */
+    font-size: large;
     
 }
 .input_company_name:focus,

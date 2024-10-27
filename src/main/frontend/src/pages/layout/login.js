@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Link, useNavigate  } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setUserData, setUserPosi } from '../../store/userSlice';
 import logo from '../../img/logo-img.png';
 import axios from 'axios';
 
@@ -10,6 +12,7 @@ function Login() {
     const [empId, setEmpId] = useState('');
     const [empPw, setEmpPw] = useState('');
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleIdChange = (event) => {
         setEmpId(event.target.value);
@@ -30,39 +33,48 @@ function Login() {
                 },
                 withCredentials: true
             });
-            console.log(response);
-            const token = response.headers['authorization']; // 'authorization'에 JWT가 담겨 있다고 가정
-
-        if (token) {
-            // 로컬 스토리지에 JWT 저장
-            localStorage.setItem('jwt', token);
-            console.log('토큰 저장 완료!:', localStorage.getItem('jwt'));
-            axios.get('http://localhost:8080/api/userinfo', {
-                headers: {
-                    'Authorization': localStorage.getItem('jwt') // 발급받은 토큰
-                }
-            })
-            .then(response => {if(response.data.emp_role == "admin"){
+    
+            const token = response.headers['authorization'];
+    
+            if (token) {
+                localStorage.setItem('jwt', token); // JWT 토큰 저장
+                console.log('토큰 저장 완료!:', localStorage.getItem('jwt'));
+    
+                const userInfoResponse = await axios.get('http://localhost:8080/api/userinfo', {
+                    headers: {
+                        'Authorization': token
+                    }
+                });
+    
+                const userData = userInfoResponse.data;
+                dispatch(setUserData(userData)); // Redux 상태에 사용자 데이터 저장
+                const userPosiResponse = await axios.get('http://localhost:8080/api/userposi', {
+                    headers: {
+                        'Authorization': token
+                    }
+                });
+                const userPosi =userPosiResponse.data;
+                dispatch(setUserPosi(userPosi));
+                
+                // Navigate 로직
+                if (userData.emp_role === "admin") {
                     navigate("/system/admin/inquiry");
-                 }else if(response.data.emp_role == "companyadmin"){
+                } else if (userData.emp_role === "companyadmin") {
                     navigate("/company/admin");
-                 }else{
+                } else {
                     navigate("/company/user");
-                }}
-                )
-        } else {
-            console.error('토큰을 찾을 수 없습니다.');
+                }
+            } else {
+                console.error('토큰을 찾을 수 없습니다.');
+            }
+        } catch (error) {
+            console.error('로그인 실패:', error.response ? error.response.data : error.message);
         }
-    } catch (error) {
-        console.error('로그인 실패:', error.response ? error.response.data : error.message);
-    }
     };
 
     const handleSubmit = (event) => {
-        event.preventDefault(); 
-        console.log('ID:', empId);
-        console.log('Password:', empPw);
-        postLogin(empId, empPw); 
+        event.preventDefault();
+        postLogin(empId, empPw);
     };
 
     return (
@@ -73,7 +85,7 @@ function Login() {
                     <p className='input_id_sub'>아이디</p>
                 </div>
                 <input type="text"
-                className='input_id'
+                    className='input_id'
                     id="empId"
                     value={empId}
                     onChange={handleIdChange} />
@@ -82,7 +94,7 @@ function Login() {
                     <p className='input_id_sub'>비밀번호</p>
                 </div>
                 <input type="password"
-                className='input_pw'
+                    className='input_pw'
                     id="empPw"
                     value={empPw}
                     onChange={handlePwChange} />

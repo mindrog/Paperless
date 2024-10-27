@@ -1,0 +1,119 @@
+@font-face {
+    font-family: 'ONE-Mobile-Title';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-Title.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'ONE-Mobile-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+.requestWrite{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    
+}
+.requestWriteform{
+    display: flex;
+    flex-direction: column;
+    width: 60vw;
+    height: 85vh;
+    border: 1px solid #b9b8b8;
+    border-radius: 10px;
+    align-items: baseline;
+    justify-content: baseline;
+    
+    padding: 3vh 10vh 3vh 10vh;
+    
+}
+.requestTitle{
+    font-family:  'ONE-Mobile-Title';
+    font-size: 3rem;
+    text-align: left;     
+}
+.requestSubTitle{
+    font-family:  'ONE-Mobile-Regular';
+    font-size: 1rem;
+    text-align: left; 
+    margin-bottom: 3vh;
+}
+.requestTitleInput,
+.requestWriterInput,
+.requestPhoneInput,
+.requestEmailInput
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'NanumSquare';
+    height: 5vh;
+    margin-bottom: 2vh;
+    border: 1px solid #b9b8b8; /* 기본 테두리 색상 */
+    border-radius: 10px;
+    padding: 0 10px; /* 입력 여백 추가 */
+    outline: none; /* 기본 아웃라인 제거 */
+    transition: border-color 0.3s, border-width 0.3s;
+
+}
+.requestTitleInput,
+.requestEmailInput{
+    width: 41.5vw;
+}
+.requestWriterInput{
+    width: 20vw;
+}
+.requestPhoneInput{
+    width: 30vw;
+}
+.requestSub{
+    width: 7vh;
+    height: 3vh;
+    margin: 0;
+    padding: 0;
+    text-align: start;
+}
+.requestInput{
+    height: 6vh;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: baseline;
+    
+}
+.requestInputCon{
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+}
+.requestContentsInput{
+    font-family: 'NanumSquare';
+    height: 25vh;
+    width: 45vw;
+    margin-bottom: 1vh;
+    border: 1px solid #b9b8b8; /* 기본 테두리 색상 */
+    border-radius: 10px;
+    padding: 0 10px; /* 입력 여백 추가 */
+    outline: none; /* 기본 아웃라인 제거 */
+    transition: border-color 0.3s, border-width 0.3s;
+}
+.btnBack,
+.btnSubmit{
+    font-size: 1em;
+    width: 10vw;
+    height: 5vh;
+    margin: 3vh 1vw;
+    border-radius: 8px;
+    background-color: #020202;
+    font-family: 'ONE-Mobile-Regular';
+    color: #fefefe;
+    font-weight: 800;
+    border: 1px solid black;
+    text-align: center; /* 텍스트 중앙 정렬 */
+    
+     /* 블록처럼 보이도록 */
+    text-decoration: none;
+}

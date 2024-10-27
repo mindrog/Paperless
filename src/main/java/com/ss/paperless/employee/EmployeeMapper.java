@@ -11,4 +11,8 @@ public interface EmployeeMapper {
 	public int existsByUsername(String username);
 
 	public EmployeeDTO getEmpInfo(String emp_code);
+
+	public String getUserPosi(String emp_code);
+
+	public int updateEmp(Long id);
 }
