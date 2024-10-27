@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react'
 import { Table, Button, Form, Row, Col, Modal } from 'react-bootstrap';
 import styles from '../../styles/company/admin/company_member.module.css';
 import Menubar from '../layout/menubar';
+import OrgChart from '../layout/org_chart';
 
 function CompanyAdminMember() {
     const [showAddModal, setShowAddModal] = useState(false); // 직원 추가 모달 상태
     const [showEditModal, setShowEditModal] = useState(false); // 직원 수정 모달 상태
     const [selectedEmployee, setSelectedEmployee] = useState(null); // 수정할 직원 정보
     const [position, setPosition] = useState(''); // 직급 상태 관리
-
+    const orgChartRef = useRef(null); // orgChart 컴포넌트를 참조할 ref 생성
     const [searchCategory, setSearchCategory] = useState('name'); // 검색 카테고리 선택 상태
 
     // 검색 카테고리 변경 핸들러
@@ -44,14 +45,20 @@ function CompanyAdminMember() {
         handleCloseEditModal();
     };
 
-    const employeeData = [
-        { id: 1, department: "Mark", team: "Mark", name: "Otto", email: "@mdo", position: "대리" },
-        { id: 2, department: "Jacob", team: "Mark", name: "Thornton", email: "@fat", position: "과장" }
-    ];
+    const [employeeData, setEmployeeData] = useState([
+        { id: 'PL1000', department: '경영지원', team: '경영지원팀', name: '이범상', email: 'beom@paperless.com', position: '사장' },
+        { id: 'PL1001', department: '마케팅', team: '마케팅팀', name: '김다미', email: 'dami@paperless.com', position: '사원' },
+        { id: 'PL1002', department: '마케팅', team: '마케팅팀', name: '이도현', email: 'dohyun@paperless.com', position: '주임' },
+        { id: 'PL1003', department: '기획', team: '기획팀', name: '최수빈', email: 'subin@paperless.com', position: '과장' },
+        { id: 'PL1004', department: '기획', team: '기획팀', name: '이유미', email: 'yumi@paperless.com', position: '차장' },
+        { id: 'PL1005', department: '경영지원', team: '경영지원팀', name: '나인우', email: 'inwoo@paperless.com', position: '대리' },
+        { id: 'PL1006', department: '경영지원', team: '경영지원팀', name: '박지훈', email: 'jihoon@paperless.com', position: '차장' },
+        { id: 'PL1007', department: '기획', team: '기획팀', name: '임윤아', email: 'yoona@paperless.com', position: '과장' },
+        { id: 'PL1008', department: '마케팅', team: '마케팅팀', name: '이성경', email: 'seong@paperless.com', position: '주임' },
+        { id: 'PL1009', department: '기획', team: '기획팀', name: '정경호', email: 'kyungho@paperless.com', position: '대리' },
+        { id: 'PL1010', department: '경영지원', team: '경영지원팀', name: '김지원', email: 'jiwon@paperless.com', position: '대리' },
+    ]);
 
-    const positionOptions = [
-        '사원', '주임', '대리', '과장', '차장', '부장', '이사', '상무', '전무', '부사장', '사장'
-    ];
 
     // 전체 선택 체크박스 클릭 핸들러
     const handleSelectAll = () => {
@@ -74,6 +81,51 @@ function CompanyAdminMember() {
         }
     };
 
+    const handleInputChange = (e, id, field) => {
+        const newValue = e.target.value;
+        setEmployeeData((prevData) =>
+            prevData.map((item) =>
+                item.id === id ? { ...item, [field]: newValue } : item
+            )
+        );
+    };
+
+    const handleUpdate = async (id) => {
+        const updatedItem = employeeData.find((item) => item.id === id);
+        console.log("Updated item:", updatedItem);
+
+        try {
+            const response = await fetch(`/api/updateMember/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedItem),
+            });
+
+            // 통신 에러 발생 시
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            console.log("Server에서 받은 데이터 :", data);
+
+            alert(`직원 ${id}이(가) 업데이트되었습니다.`);
+
+        } catch (error) {
+            console.error("Error updating item:", error);
+            alert("업데이트 중 오류가 발생했습니다.");
+        }
+    };
+
+    // 모든 드롭다운을 닫는 함수
+    const closeAllDropdowns = () => {
+        if (orgChartRef.current) {
+            orgChartRef.current.closeAllDropdowns(); // closeAllDropdowns 호출
+        }
+    };
+
     return (
         <div className="container-xl">
             <Menubar />
@@ -84,168 +136,113 @@ function CompanyAdminMember() {
                     <p className={styles.memberCount}>🧑‍💼 10</p>
                 </div>
             </div>
-            <Table className={styles.memberTable}>
-                <thead>
-                    <tr className={styles.headBox}>
-                        <th>
-                            <input type='checkbox'
-                                className={styles.inputCheckBox}
-                                onChange={handleSelectAll}
-                                checked={isAllSelected} />
-                        </th>
-                        <th className={styles.optionBox}>
-                            <Form inline>
-                                <Button variant="primary" className={styles.insertBtn} onClick={handleShowAddModal}>직원 추가</Button>
-                                <Button variant="primary" className={styles.deleteBtn}>직원 삭제</Button>
-                            </Form>
-                        </th>
-                        <th colSpan={5}>
-                            <Form inline className={styles.sreachFormBox} onSubmit={handleSearchSubmit}>
-                                <Row>
-                                    <Col xs="auto">
-                                        {/* 검색 카테고리 드롭다운 */}
-                                        <Form.Select
-                                            value={searchCategory}
-                                            onChange={handleCategoryChange}
-                                            className={styles.searchSelect}
-                                        >
-                                            <option value="name">직원명</option>
-                                            <option value="email">이메일</option>
-                                            <option value="department">소속 본부</option>
-                                            <option value="position">직급</option>
-                                        </Form.Select>
-                                    </Col>
-                                    <Col xs="auto">
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Search"
-                                            className="mr-sm-2"
-                                        />
-                                    </Col>
-                                    <Col xs="auto">
-                                        <Button type="submit" className={styles.sreachBtn}>검색</Button>
-                                    </Col>
-                                </Row>
-                            </Form>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>#</th>
-                        <th>소속 본부</th>
-                        <th>소속 부서</th>
-                        <th>직원명</th>
-                        <th className={styles.userEmail}>이메일</th>
-                        <th>직급</th>
-                        <th className={styles.updateBtnCol}></th>
-                    </tr>
-                </thead>
-                <tbody className={styles.tableBody}>
-                    {employeeData.map((employee) => (
-                        <tr key={employee.id}>
-                            <th><input
-                                    type='checkbox'
-                                    checked={selectedEmployees.includes(employee.id)}
-                                    onChange={() => handleEmployeeSelect(employee.id)}
-                                />
-                            </th>
-                            <td>{employee.department}</td>
-                            <td>{employee.team}</td>
-                            <td>{employee.name}</td>
-                            <td>{employee.email}</td>
-                            <td>{employee.position}</td>
-                            <td>
-                                <Button
-                                    variant="primary"
-                                    className={styles.updateBtn}
-                                    onClick={() => handleShowEditModal(employee)}
+
+            <div className={styles.content}>
+                <div className={styles.formBox}>
+                    <Form inline>
+                        <Button variant="primary" className={styles.insertBtn} onClick={handleShowAddModal}>직원 추가</Button>
+                        <Button variant="primary" className={styles.deleteBtn}>직원 삭제</Button>
+                    </Form>
+
+                    <Form inline className={styles.sreachFormBox} onSubmit={handleSearchSubmit}>
+                        <Row>
+                            <Col xs="auto">
+                                {/* 검색 카테고리 드롭다운 */}
+                                <Form.Select
+                                    value={searchCategory}
+                                    onChange={handleCategoryChange}
+                                    className={styles.searchSelect}
                                 >
-                                    수정
-                                </Button>
-                            </td>
+                                    <option value="name">직원명</option>
+                                    <option value="email">이메일</option>
+                                    <option value="department">소속 본부</option>
+                                    <option value="position">직급</option>
+                                </Form.Select>
+                            </Col>
+                            <Col xs="auto">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Search"
+                                    className="mr-sm-2"
+                                />
+                            </Col>
+                            <Col xs="auto">
+                                <Button type="submit" className={styles.sreachBtn}>검색</Button>
+                            </Col>
+                        </Row>
+                    </Form>
+                </div>
+                <Table bordered className={styles.contentTable}>
+                    <thead>
+                        <tr>
+                            <th className={styles.productChartCol}>조직도</th>
+                            <th className={styles.productListCol}>직원 목록</th>
                         </tr>
-                    ))}
-                </tbody>
-            </Table>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th className={styles.productChartCol}>
+                                <div className={styles.orgChartBox}>
+                                    <div className={styles.dropdownCloseBtnBox}>
+                                        <Button className={styles.dropdownCloseBtn} onClick={closeAllDropdowns}> 모두 닫기</Button>
+                                    </div>
+                                    <OrgChart className={styles.orgChart} ref={orgChartRef} />
+                                </div>
+                            </th>
+                            <th className={styles.productListCol}>
+                                <div className={styles.productTableBox}>
+                                    <Table bordered className={styles.memberTable}>
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <input type='checkbox'
+                                                        className={styles.inputCheckBox}
+                                                        onChange={handleSelectAll}
+                                                        checked={isAllSelected} />
+                                                </th>
+                                                <th>소속 본부</th>
+                                                <th>소속 부서</th>
+                                                <th>직원명</th>
+                                                <th className={styles.userEmail}>이메일</th>
+                                                <th>직급</th>
+                                                <th className={styles.updateBtnCol}></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className={styles.tableBody}>
+                                            {employeeData.map((employee) => (
+                                                <tr key={employee.id}>
+                                                    <th><input
+                                                        type='checkbox'
+                                                        checked={selectedEmployees.includes(employee.id)}
+                                                        onChange={() => handleEmployeeSelect(employee.id)}
+                                                    />
+                                                    </th>
+                                                    <td>{employee.department}</td>
+                                                    <td>{employee.team}</td>
+                                                    <td>{employee.name}</td>
+                                                    <td>{employee.email}</td>
+                                                    <td>{employee.position}</td>
+                                                    <td>
+                                                        <Button
+                                                            variant="primary"
+                                                            className={styles.updateBtn}
+                                                            onClick={() => handleUpdate(employee.id)}
+                                                        >
+                                                            수정
+                                                        </Button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </Table>
+                                </div>
+                            </th>
+                        </tr>
+                    </tbody>
+                </Table>
+                {/* content */}
+            </div>
 
-            {/* 직원 추가 모달 */}
-            <Modal show={showAddModal} onHide={handleCloseAddModal} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>직원 추가</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form onSubmit={handleFormSubmit}>
-                        <Form.Group controlId="formDepartment" className={styles.formContext}>
-                            <Form.Label className={styles.formLabel}>소속 본부</Form.Label>
-                            <Form.Control type="text" placeholder="소속 본부" className={styles.formValue} required />
-                        </Form.Group>
-                        <Form.Group controlId="formTeam" className={styles.formContext}>
-                            <Form.Label className={styles.formLabel}>소속 부서</Form.Label>
-                            <Form.Control type="text" placeholder="소속 부서" className={styles.formValue} required />
-                        </Form.Group>
-                        <Form.Group controlId="formName" className={styles.formContext}>
-                            <Form.Label className={styles.formLabel}>직원명</Form.Label>
-                            <Form.Control type="text" placeholder="직원명" className={styles.formValue} required />
-                        </Form.Group>
-                        <Form.Group controlId="formEmail" className={styles.formContext}>
-                            <Form.Label className={styles.formLabel}>이메일</Form.Label>
-                            <Form.Control type="email" placeholder="이메일" className={styles.formValue} required />
-                        </Form.Group>
-                        <Form.Group controlId="formPosition" className={styles.formContext}>
-                            <Form.Label className={styles.formLabel}>직급</Form.Label>
-                            <Form.Select required className={styles.formValue}>
-                                {positionOptions.map((position, idx) => (
-                                    <option key={idx} value={position}>{position}</option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
-                        <div className={styles.FormSubmitBtn}>
-                            <Button variant="primary" type="submit" className={styles.saveBtn}>
-                                저장
-                            </Button>
-                        </div>
-                    </Form>
-                </Modal.Body>
-            </Modal>
-
-            {/* 직원 수정 모달 */}
-            <Modal show={showEditModal} onHide={handleCloseEditModal} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>직원 수정</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form onSubmit={handleFormSubmit}>
-                        <Form.Group controlId="formDepartment" className={styles.formContext}>
-                            <Form.Label className={styles.formLabel}>소속 본부</Form.Label>
-                            <Form.Control type="text" className={styles.formValue} defaultValue={selectedEmployee?.department} required />
-                        </Form.Group>
-                        <Form.Group controlId="formTeam" className={styles.formContext}>
-                            <Form.Label className={styles.formLabel}>소속 부서</Form.Label>
-                            <Form.Control type="text" className={styles.formValue} defaultValue={selectedEmployee?.team} required />
-                        </Form.Group>
-                        <Form.Group controlId="formName" className={styles.formContext}>
-                            <Form.Label className={styles.formLabel}>직원명</Form.Label>
-                            <Form.Control type="text" className={styles.formValue} defaultValue={selectedEmployee?.name} required />
-                        </Form.Group>
-                        <Form.Group controlId="formEmail" className={styles.formContext}>
-                            <Form.Label className={styles.formLabel}>이메일</Form.Label>
-                            <Form.Control type="email" className={styles.formValue} defaultValue={selectedEmployee?.email} required />
-                        </Form.Group>
-                        <Form.Group controlId="formPosition" className={styles.formContext}>
-                            <Form.Label className={styles.formLabel}>직급</Form.Label>
-                            <Form.Select defaultValue={selectedEmployee?.position} className={styles.formValue} required>
-                                {positionOptions.map((position, idx) => (
-                                    <option key={idx} value={position}>{position}</option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
-                        <div className={styles.FormSubmitBtn}>
-                            <Button variant="primary" type="submit" className={styles.saveBtn}>
-                                저장
-                            </Button>
-                        </div>
-                    </Form>
-                </Modal.Body>
-            </Modal>
         </div>
     );
 }

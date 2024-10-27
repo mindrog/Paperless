@@ -14,5 +14,5 @@ public interface EmployeeMapper {
 
 	public String getUserPosi(String emp_code);
 
-	
+	public int updateEmp(Long id);
 }

@@ -1,0 +1,64 @@
+.container {
+    margin-top: 10px;
+    height: 500px;
+}
+
+.contentTable {
+    margin-top: 20px;
+    height: 500px;
+    padding: 10px;
+}
+
+.productChartCol {
+    width: 400px;
+}
+
+.stockChartBox { 
+    width: auto;
+    height: 490px; 
+    overflow-y: auto; 
+}
+
+.stockChart {
+    margin-top: 50px;
+    max-height: 100%; /* 부모 요소의 높이에 맞게 */
+    overflow-y: auto; 
+}
+
+.productTableBox {
+    height: 500px;
+    overflow-y: auto; 
+}
+
+.productTable {
+    width: 100%; 
+    table-layout: fixed; 
+}
+
+.dropdownCloseBtnBox {
+    text-align: right;
+}
+
+.dropdownCloseBtn {
+    background-color: #2e3d86 !important;
+    color: aliceblue !important;
+    border:none;
+}
+
+.dropdownCloseBtn:hover {
+    background-color: #7289CF !important;
+    border: none !important;
+    color:#fefefe !important;
+}
+
+.noCol {
+    width: 40px;
+}
+
+.inputCount {
+    width: 80px;
+}
+
+.inputPrice {
+    width: 100px;
+}

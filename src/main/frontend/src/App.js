@@ -68,7 +68,6 @@ function App() {
                 <HeaderToggle />
                 <MenubarToggle isMenuOpen={isMenuOpen} />
                 <ApprovalLineToggle />
-                {/* <PaginationToggle /> */}
                 <main className='app'>
                     <Routes>
                         <Route path='/' element={<Home />} />
@@ -182,6 +181,7 @@ function FooterToggle() {
 function GraphChartToggle() {
     const location = useLocation();
     const allowedPaths = ['/company/user/', '/company/admin/'];  // GraphChart를 보여줄 경로
+    const showGraphChart = allowedPaths.some(path => location.pathname.startsWith(path));
 
     return (
         <>

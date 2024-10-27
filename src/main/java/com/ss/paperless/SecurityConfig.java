@@ -78,7 +78,7 @@ public class SecurityConfig {
 
         http
         .authorizeHttpRequests((auth) -> auth
-            .mvcMatchers("/login", "/", "/join", "/api/login","/api/name","api/userifo").permitAll()
+            .mvcMatchers("/login", "/", "/join", "/api/login","/api/name","api/userifo","/api/inquirysend","/api/requestsend").permitAll()
             .anyRequest().authenticated()
         );
 
@@ -92,5 +92,5 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
-    }
+    }  
 }
