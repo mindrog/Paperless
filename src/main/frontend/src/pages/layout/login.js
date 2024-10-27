@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setUserData } from '../../store/userSlice';
+import { setUserData, setUserPosi } from '../../store/userSlice';
 import logo from '../../img/logo-img.png';
 import axios from 'axios';
 
@@ -48,7 +48,14 @@ function Login() {
     
                 const userData = userInfoResponse.data;
                 dispatch(setUserData(userData)); // Redux 상태에 사용자 데이터 저장
-    
+                const userPosiResponse = await axios.get('http://localhost:8080/api/userposi', {
+                    headers: {
+                        'Authorization': token
+                    }
+                });
+                const userPosi =userPosiResponse.data;
+                dispatch(setUserPosi(userPosi));
+                
                 // Navigate 로직
                 if (userData.emp_role === "admin") {
                     navigate("/system/admin/inquiry");

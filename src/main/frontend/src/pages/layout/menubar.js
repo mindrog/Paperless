@@ -115,7 +115,9 @@ const Menubar = ({ isMenuOpen }) => {
     const toggleFormDropdown = () => {
         setIsFormDropdownOpen(!isFormDropdownOpen);
     };
+
     const userData = useSelector((state) => state.user.data);
+    const userPosi = useSelector((state) => state.user.userPosi)
     return (
         <nav className={`${styles.menubar} ${isMenuOpen ? styles.showMenu : ''}`}>
             <div className={styles.menubar}>
@@ -125,7 +127,7 @@ const Menubar = ({ isMenuOpen }) => {
                             <p></p>
                             <div className={styles.titlename}>
                                 <div className={styles.userName}>{userData.emp_name}</div>
-                                <div className={styles.userGrade}>{getUserGrade()}</div>
+                                <div className={styles.userGrade}>{userPosi}</div>
                             </div>
                         </div>
                         <div className={styles.iconbox}>

@@ -48,6 +48,12 @@ public class MainController {
 		return nowmem;
 	}
     
-	
+	@GetMapping("/userposi")
+	public String GetUserPosi() {
+		String emp_code =  SecurityContextHolder.getContext().getAuthentication().getName();
+		String emp_row_posi = empService.getUserPosi(emp_code);
+		System.out.println(emp_row_posi);
+		return emp_row_posi;
+	} 
 	
 }
