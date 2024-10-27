@@ -115,9 +115,44 @@ function CompanyUserEmailSend () {
     };
 
     // 이메일 작성 폼에서 보내기 버튼 클릭 시
-    const handleFormSend = () => {
-        alert('이메일이 전송되었습니다!');
-    };
+    const handleFormSend = async (e) => {
+        e.preventDefault();
+      
+        // FormData 객체 생성
+        const formData = new FormData();
+        formData.append('receiverEmail', receiverEmail);
+        formData.append('ccEmail', ccEmail);
+        formData.append('title', title);
+        formData.append('emailContent', emailContent);
+      
+        try {
+          const response = await fetch('/api/emails/send', {
+            method: 'POST',
+            headers: {
+              // 파일 업로드가 없으므로 JSON 형식으로 보냅니다.
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              receiverEmail,
+              ccEmail,
+              title,
+              emailContent,
+            }),
+          });
+      
+          if (response.ok) {
+            alert('이메일이 성공적으로 전송되었습니다.');
+            // 폼 초기화 (필요에 따라)
+            navigator('/Company/user/email');
+          } else {
+            // 에러 처리
+            alert('이메일 전송에 실패했습니다.');
+          }
+        } catch (error) {
+          console.error('Error sending email:', error);
+          alert('이메일 전송 중 오류가 발생했습니다.');
+        }
+      };
 
     // 첨부파일 총 크기 계산 함수
     const calculateTotalFileSize = () => {

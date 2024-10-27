@@ -49,6 +49,10 @@ public class EmployeeService implements UserDetailsService {
 	public int updateEmp(Long id) {
 		return mapper.updateEmp(id);
 	}
+	
+    public EmployeeEntity findByEmail(String email) {
+        return employeeRepository.findByEmpEmail(email);
+    }
 }
 
 	

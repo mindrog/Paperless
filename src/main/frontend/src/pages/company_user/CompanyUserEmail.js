@@ -5,9 +5,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Pagination from '../component/Pagination';
 import ComposeButton from '../component/ComposeButton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelopeOpen } from '@fortawesome/free-regular-svg-icons';
 
 function CompanyUserEmail() {
-    
+
     // 이메일 생성 함수
     const generateEmails = () => {
         const emailList = [];
@@ -20,7 +23,7 @@ function CompanyUserEmail() {
                 content: `이것은 이메일 내용 ${i}입니다.`,
                 receivedAt: `2024-10-${String(i).padStart(2, '0')} 10:00`,
                 hasAttachment: i % 2 === 0, // 짝수 번호 이메일은 첨부파일이 있다고 가정
-                isRead: false,
+                isRead: i === 1,
             });
         }
         return emailList;
@@ -43,7 +46,7 @@ function CompanyUserEmail() {
 
     useEffect(() => {
         console.log('Current pathname:', location.pathname);
-      }, [location.pathname]);
+    }, [location.pathname]);
 
     // 상세 검색 상태
     const [detailSearch, setDetailSearch] = useState({
@@ -453,7 +456,11 @@ function CompanyUserEmail() {
                                 />
                             </td>
                             <td onClick={() => handleEmailClick(email)}>
-                                {email.isRead ? '읽음' : '안읽음'}
+                                {email.isRead ? (
+                                    <FontAwesomeIcon icon={faEnvelopeOpen} />
+                                ) : (
+                                    <FontAwesomeIcon icon={faEnvelope} style={{ color: 'skyblue' }} />
+                                )}
                             </td>
                             <td onClick={() => handleEmailClick(email)}>{email.sender}</td>
                             <td onClick={() => handleEmailClick(email)}>{email.subject}</td>
@@ -468,9 +475,9 @@ function CompanyUserEmail() {
                     totalPages={totalPages}
                     onPageChange={(pageNumber) => setCurrentPage(pageNumber)}
                     className={styles.pagination}
-                    
+
                 />
-                <ComposeButton onClick={handleCompose} className={styles.composeButton}/>
+                <ComposeButton onClick={handleCompose} className={styles.composeButton} />
             </div>
 
         </div>
