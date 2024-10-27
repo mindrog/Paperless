@@ -24,18 +24,23 @@
     background-color: lightgrey;
 }
 
+.productChartCol {
+    width: 350px;
+}
+
+.productListCol {
+    width: 1000px;
+}
+
 /* table */
 .memberTable {
-    margin-top: 50px;
+    padding: 5px;
 }
 
 .tableBody th, .tableBody td{
     vertical-align: middle;
 }
 
-.inputCheckBox {
-    margin-bottom: 22px;
-}
 
 .optionBox {
     width: 250px;
@@ -52,10 +57,12 @@
     margin-left:25px;
 }
 
+.formBox {
+    margin: 10px 0 15px 350px;
+}
+
 .sreachFormBox {
-    display: flex;
-    justify-content: end;
-    margin-bottom: 10px;
+    margin-left: 510px;
 }
 
 .updateBtnCol {
@@ -64,6 +71,28 @@
 
 .userEmail {
     width: 300px;
+}
+
+.orgChartBox { 
+    width: auto;
+    height: 490px; 
+    overflow-y: auto; 
+}
+
+.orgChart {
+    margin-top: 50px;
+    max-height: 100%; /* 부모 요소의 높이에 맞게 */
+    overflow-y: auto; 
+}
+
+.productTableBox {
+    height: 500px;
+    overflow-y: auto; 
+}
+
+.productTable {
+    width: 100%; 
+    table-layout: fixed; 
 }
 
 /* 버튼 css */
@@ -103,66 +132,20 @@
     height: 38px;
 }
 
-/* 모달 */
-.modal {
-    font-family: 'ONE-Mobile-Regular';
-}
-
-.modalTitle {
-    color: #2e3d86;
-    font-weight: bold;
-    margin-left: 15px;
-}
-
-.formContext {
-    margin: 10px;
-}
-
-.formLabel {
-    font-weight: bold;
-    margin-left: 5px;
+/* 드롭다운 버튼 */
+.dropdownCloseBtnBox {
+    text-align: left;
+    margin-right: 10px;
     margin-bottom: 10px;
 }
 
-.saveBtn {
-    width: 100px;
+.dropdownCloseBtn {
     background-color: #2e3d86 !important;
     border:#2e3d86 !important;
 }
 
-.saveBtn:hover {
-    background-color: #7289CF;
-    border:#7289CF;
+.dropdownCloseBtn:hover {
+    background-color: #7289CF !important;
+    border:#7289CF !important;
     color:#fefefe;
-}
-
-.saveBtn.active, .saveBtn:focus {
-    background-color: #2e3d86 !important;
-    border:#2e3d86 !important;
-}
-
-.FormSubmitBtn {
-    margin-top: 30px;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.formValue {
-    border-radius: 0 !important;
-    border: none !important;
-    border-bottom: 1.5px solid black !important;
-    margin-bottom: 30px !important;
-    width: 100% !important; 
-}
-
-.formValue:focus {
-    border-bottom: 3px solid #2e3d86 !important;
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-.formValue:active {
-    border-bottom: 3px solid #2e3d86 !important;
-    outline: none !important;
-    box-shadow: none !important;
 }
