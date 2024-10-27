@@ -7,5 +7,8 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Intege
     
     // emp_code로 직원 조회
     EmployeeEntity findByEmpCode(String empCode);
+    
+    // emp_Email로 이메일 조회
+    EmployeeEntity findByEmpEmail(String empEmail);
 	
 }
