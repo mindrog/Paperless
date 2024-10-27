@@ -17,8 +17,10 @@ public class EmployeeService implements UserDetailsService {
 	public EmployeeService(EmployeeRepository employeeRepository) {
 		this.employeeRepository = employeeRepository;
 	}
+
 	@Autowired
 	EmployeeMapper mapper;
+
 	@Override
 	public UserDetails loadUserByUsername(String empCode) throws UsernameNotFoundException {
 	    EmployeeEntity userData = employeeRepository.findByEmpCode(empCode);
@@ -43,8 +45,11 @@ public class EmployeeService implements UserDetailsService {
 		return mapper.getUserPosi(emp_code);
 	}
 
-	
+
+	public int updateEmp(Long id) {
+		return mapper.updateEmp(id);
 	}
+}
 
 	
 	

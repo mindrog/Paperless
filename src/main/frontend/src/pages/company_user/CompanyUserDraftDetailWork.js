@@ -13,7 +13,7 @@ function CompanyUserDraftDetailAtten() {
   const [formErrors, setFormErrors] = useState({});
 
   // 결재 상태
-  const [appr_status, setApprStatus] = useState("wait"); 
+  const [appr_status, setApprStatus] = useState("pending"); 
   
   return (
     <div>
@@ -21,10 +21,10 @@ function CompanyUserDraftDetailAtten() {
         <div className={styles.apprSumbitBtnBox}>
           <h2 className={styles.pageTitle}>업무 보고 기안 상세</h2>
           <div>
-            <Button className={styles.SumbitCancelBtn} disabled={appr_status !== "wait"}>상신 취소</Button>
+            <Button className={styles.SumbitCancelBtn} disabled={appr_status !== "pending"}>상신 취소</Button>
           </div>
           <div>
-            <Button className={styles.WithdrawBtn} disabled={appr_status === "wait"}>회신</Button>
+            <Button className={styles.WithdrawBtn} disabled={appr_status === "pending"}>회신</Button>
           </div>
         </div>
         <Form>

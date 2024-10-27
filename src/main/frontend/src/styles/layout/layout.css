@@ -53,15 +53,7 @@ header{
     height: 10vh;
     
 }
-.btn_Container{
-    width: 30vw;
-    height: 10vh;
-    background-color: btn_Container;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-}
+
 .btn_Container{
     width: 30vw;
     height: 10vh;
