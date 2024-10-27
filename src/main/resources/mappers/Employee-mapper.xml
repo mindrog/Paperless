@@ -15,6 +15,10 @@
     LEFT JOIN employee_roles r ON e.emp_code = r.emp_code
     WHERE e.emp_code = #{username}
 	</select>
+	<select id="getUserPosi" parameterType="String"
+		resultType="String">
+		select posi_name from position join employee on position.posi_no = employee.emp_posi_no where employee.emp_code = #{emp_code};
+	</select>
 	<select id="existsByUsername" parameterType="String"
 		resultType="int">
 		SELECT EXISTS (
@@ -23,4 +27,10 @@
 		WHERE `username` = '입력할_사용자이름'
 		) AS user_exists;
 	</select>
+
+	<update id="updateEmp" parameterType="Long">
+		UPDATE Employee
+		SET column_name = new_value
+		WHERE id = #{id}
+	</update>
 </mapper>
