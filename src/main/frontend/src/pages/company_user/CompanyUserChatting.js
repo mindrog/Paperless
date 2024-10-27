@@ -282,41 +282,6 @@ function Chatting() {
 
     return (
         <>
-            {/* <Helmet>
-                <link rel="icon" type="image/png" href="/img/final_favicon.png" sizes="16x16" />
-                <title>{emp ? `${emp.participants}님과의 채팅` : 'Loading...'}</title>
-            </Helmet>
-
-            <div>
-                <p>emp_no: {emp?.emp_no}</p>
-                <p>emp_name: {emp ? `${emp.emp_name}님과의 채팅` : 'Loading...'}</p>
-                <p>emp_email: {emp?.emp_email}</p>
-                <p>emp_phone: {emp?.emp_phone}</p>
-                <p>emp_profile: <img src={emp?.emp_profile} alt="Profile" style={{ width: '50px', height: '50px' }} /></p>
-                <p>emp_comp_name: {emp?.emp_comp_name}</p>
-                <p>emp_dept_name: {emp?.emp_dept_name} {emp?.emp_team_name}</p>
-                <p>emp_posi_name: {emp?.emp_posi_name}</p>
-
-                <h2>Message List:</h2>
-                {messageList.length > 0 ? (
-                    messageList.map((message, index) => (
-                        <div key={index}>
-                            <hr></hr>
-                            <p>chat_sender: {message.chat_sender}</p>
-                            <p>chat_recipient: {message.chat_recipient}</p>
-                            <p>chat_date: {message.chat_date}</p>
-                            <p>chat_content: {message.chat_content}</p>
-                            <p>chat_count: {message.chat_count}</p>
-                            <p>chat_room_no: {message.chat_room_no}</p>
-                            <p>chat_no: {message.chat_no}</p>
-                            <p>chat_type: {message.chat_type}</p>
-                            <hr></hr>
-                        </div>
-                    ))
-                ) : (
-                    <p>Message list is empty</p>
-                )}
-            </div> */}
             <Helmet>
                 <link rel="icon" type="image/png" href="/img/final_favicon.png" sizes="16x16" />
                 <title>{emp ? `${emp.emp_name}님과의 채팅` : 'Loading...'}</title>
