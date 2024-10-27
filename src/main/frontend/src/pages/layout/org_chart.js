@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, forwardRef, useImperativeHandle } from 'react'
 import styles from '../../styles/layout/org_chart.module.css';
 
-const OrgChart = () => {
+const OrgChart = forwardRef((props, ref) => {
     const [isDropdown, setIsDropdown] = useState({
         // 회사 내부 조직도
         orgChart: true,
@@ -23,12 +23,27 @@ const OrgChart = () => {
         contentPlanning: false
     });
 
+    // ref를 통해 상위 컴포넌트에서 closeAllDropdowns 접근 가능
+    useImperativeHandle(ref, () => ({
+        closeAllDropdowns,
+    }));
+
     const toggleDropdown = (menu) => {
         setIsDropdown((menuState) => ({
             // 이전 setIsDropdown 상태 불러오기
             ...menuState,
             [menu]: !menuState[menu]
         }));
+    };
+
+    // 모두 닫기 메서드
+    const closeAllDropdowns = () => {
+        setIsDropdown((prevState) =>
+            Object.keys(prevState).reduce((acc, key) => {
+                acc[key] = false;
+                return acc;
+            }, {})
+        );
     };
 
     const menuList = [
@@ -107,6 +122,6 @@ const OrgChart = () => {
             </ul>
         </div>
     );
-};
+});
 
 export default OrgChart;

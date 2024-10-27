@@ -10,14 +10,14 @@
     font-weight: normal;
     font-style: normal;
 }
-.inquiryWrite{
+.requestWrite{
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     
 }
-.inquiryWriteform{
+.requestWriteform{
     display: flex;
     flex-direction: column;
     width: 60vw;
@@ -30,21 +30,21 @@
     padding: 3vh 10vh 3vh 10vh;
     
 }
-.inquiryTitle{
+.requestTitle{
     font-family:  'ONE-Mobile-Title';
     font-size: 3rem;
     text-align: left;     
 }
-.inquirySubTitle{
+.requestSubTitle{
     font-family:  'ONE-Mobile-Regular';
     font-size: 1rem;
     text-align: left; 
     margin-bottom: 3vh;
 }
-.inquiryTitleInput,
-.inquiryWriterInput,
-.inquiryPhoneInput,
-.inquiryEmailInput
+.requestTitleInput,
+.requestWriterInput,
+.requestPhoneInput,
+.requestEmailInput
 {
     display: flex;
     justify-content: center;
@@ -59,24 +59,24 @@
     transition: border-color 0.3s, border-width 0.3s;
 
 }
-.inquiryTitleInput,
-.inquiryEmailInput{
+.requestTitleInput,
+.requestEmailInput{
     width: 41.5vw;
 }
-.inquiryWriterInput{
+.requestWriterInput{
     width: 20vw;
 }
-.inquiryPhoneInput{
+.requestPhoneInput{
     width: 30vw;
 }
-.inquirySub{
+.requestSub{
     width: 7vh;
     height: 3vh;
     margin: 0;
     padding: 0;
     text-align: start;
 }
-.inquiryInput{
+.requestInput{
     height: 6vh;
     display: flex;
     flex-direction: row;
@@ -84,12 +84,12 @@
     justify-content: baseline;
     
 }
-.inquiryInputCon{
+.requestInputCon{
     display: flex;
     flex-direction: column;
     align-items: baseline;
 }
-.inquiryContentsInput{
+.requestContentsInput{
     font-family: 'NanumSquare';
     height: 25vh;
     width: 45vw;

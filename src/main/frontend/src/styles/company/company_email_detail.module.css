@@ -59,9 +59,10 @@
 
 .search-button:hover,
 .detail-button:hover,
-.left-buttons .btn:hover  {
+.left-buttons .btn:hover {
     background-color: #1d2a6d;
 }
+
 
 
 /* 상세 검색 스타일 */
@@ -132,6 +133,20 @@
     cursor: pointer;
 }
 
+.backIcon {
+    cursor: pointer;
+    font-size: 1.5em;
+    color: #2e3d86;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-right: 10px;
+}
+
+.backIcon:hover {
+    color: #1d2a6d;
+}
+
 .email-header .btn:hover {
     background-color: #1d2a6d;
 }
@@ -169,6 +184,7 @@
 .attachment-section {
     margin-top: 10px;
 }
+
 .attachment-link {
     color: #2e3d86;
     text-decoration: underline;
@@ -187,16 +203,17 @@
 
 .footer {
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     align-items: center;
     margin-top: 6px;
     position: relative;
 }
+
 .composeButton {
-    position: relative; 
-    margin-left: auto; 
-   
-  }
+    position: relative;
+    margin-left: auto;
+
+}
 
 
 .email-detail,
