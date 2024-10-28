@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet';
-import { useSearchParams } from 'react-router-dom';
 import styles from '../../styles/company/company_chatting.module.css'
 import { Button } from 'react-bootstrap';
 import EmojiPicker from 'emoji-picker-react';
@@ -8,7 +7,6 @@ import { format, isSameDay, isValid, parse } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import useWebSocket from 'react-use-websocket';
 import api from '../layout/api';
-import { connect } from 'react-redux';
 
 // .env 파일
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
@@ -177,7 +175,7 @@ function Chatting() {
                     chat_recipient: emp.participants.map(p => p.emp_no),
                     chat_content: message,
                     chat_type: 'text',
-                    chat_date: new Date().toISOString()
+                    chat_date: new Date().toISOString(),
                 };
     
                 if (readyState === 1) { 
@@ -229,7 +227,7 @@ function Chatting() {
     useEffect(() => {
         if(lastMessage !== null && readyState === 1) {
             console.log('메시지 수신:', lastMessage);
-            setSocketUrl(null);
+            setSocketUrl(null); // 연결 해제    
         }
     }, [lastMessage, readyState]);
 
