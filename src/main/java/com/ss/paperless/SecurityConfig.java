@@ -78,7 +78,8 @@ public class SecurityConfig {
 
         http
         .authorizeHttpRequests((auth) -> auth
-            .mvcMatchers("/login", "/", "/join", "/api/login","/api/name","api/userifo","/api/inquirysend","/api/requestsend").permitAll()
+            .mvcMatchers("/login", "/", "/join", "/api/login","/api/name","/api/userifo","/api/inquirysend","/api/requestsend").permitAll()
+                .mvcMatchers("/api/updateEmp/{id}").hasRole("admin")
             .anyRequest().authenticated()
         );
 
