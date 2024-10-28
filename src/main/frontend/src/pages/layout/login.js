@@ -57,9 +57,9 @@ function Login() {
                 dispatch(setUserPosi(userPosi));
                 
                 // Navigate 로직
-                if (userData.emp_role === "admin") {
+                if (userData.emp_role === "super") {
                     navigate("/system/admin/inquiry");
-                } else if (userData.emp_role === "companyadmin") {
+                } else if (userData.emp_role === "admin") {
                     navigate("/company/admin");
                 } else {
                     navigate("/company/user");
