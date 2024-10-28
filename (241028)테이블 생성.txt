@@ -1,0 +1,503 @@
+-- # 1028 SQL Script #
+DROP database paperless;
+CREATE DATABASE IF NOT EXISTS paperless;
+USE paperless;
+
+-- 1. 기존 테이블 삭제
+DROP TABLE IF EXISTS `Scheduler`;
+DROP TABLE IF EXISTS `Recipient`;
+DROP TABLE IF EXISTS `Reference`;
+DROP TABLE IF EXISTS `Approver`;
+DROP TABLE IF EXISTS `Attachment`;
+DROP TABLE IF EXISTS `PurchaseReport`;
+DROP TABLE IF EXISTS `AttendanceReport`;
+DROP TABLE IF EXISTS `WorkReport`;
+DROP TABLE IF EXISTS `Inquiry`;
+DROP TABLE IF EXISTS `Stock`;
+DROP TABLE IF EXISTS `Emailmessage`;
+DROP TABLE IF EXISTS `Employee`;
+DROP TABLE IF EXISTS `Position`;
+DROP TABLE IF EXISTS `Department`;
+DROP TABLE IF EXISTS `Company`;
+
+-- 2. 테이블 생성
+
+-- Company 테이블 생성
+CREATE TABLE `Company` (
+    `comp_no` BIGINT NOT NULL AUTO_INCREMENT,
+    `comp_name` VARCHAR(300) NOT NULL,
+    `comp_industry` VARCHAR(100) NOT NULL,
+    `comp_requester` VARCHAR(100) NOT NULL,
+    `comp_email` VARCHAR(300) NOT NULL,
+    `comp_phone` VARCHAR(100) NOT NULL,
+    `comp_headcount` INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (`comp_no`)
+);
+
+-- Department 테이블 생성
+CREATE TABLE `Department` (
+    `dept_no` BIGINT NOT NULL,
+    `dept_name` VARCHAR(100) NOT NULL,
+    `dept_team_name` VARCHAR(100) NOT NULL,
+    PRIMARY KEY (`dept_no`)
+);
+
+-- Position 테이블 생성
+CREATE TABLE `Position` (
+    `posi_no` BIGINT NOT NULL AUTO_INCREMENT,
+    `posi_name` VARCHAR(100) NOT NULL,
+    PRIMARY KEY (`posi_no`)
+);
+
+-- Employee 테이블 생성
+CREATE TABLE `Employee` (
+    `emp_no` BIGINT NOT NULL AUTO_INCREMENT,
+    `emp_code` VARCHAR(100) NOT NULL,
+    `emp_pw` VARCHAR(100) NOT NULL,
+    `emp_name` VARCHAR(100) NOT NULL,
+    `emp_email` VARCHAR(300) NOT NULL,
+    `emp_phone` VARCHAR(100) NOT NULL,
+    `emp_sign` VARCHAR(100) NULL,
+    `emp_profile` VARCHAR(300) NULL,
+    `emp_comp_no` BIGINT NOT NULL,
+    `emp_dept_no` BIGINT NOT NULL,
+    `emp_posi_no` BIGINT NOT NULL,
+    `emp_enroll_date` TIMESTAMP NOT NULL DEFAULT NOW(),
+    `emp_join_date` TIMESTAMP NOT NULL,
+    `emp_role` VARCHAR(100) NOT NULL DEFAULT 'user',
+    PRIMARY KEY (`emp_no`),
+    FOREIGN KEY (`emp_comp_no`) REFERENCES `Company` (`comp_no`),
+    FOREIGN KEY (`emp_dept_no`) REFERENCES `Department` (`dept_no`),
+    FOREIGN KEY (`emp_posi_no`) REFERENCES `Position` (`posi_no`)
+);
+
+-- Report 테이블 생성
+CREATE TABLE `Report` (
+    `repo_no` BIGINT NOT NULL AUTO_INCREMENT,
+    `repo_emp_no` BIGINT NOT NULL,
+    `repo_title` VARCHAR(300) NOT NULL,
+    `repo_content` TEXT NOT NULL,
+    `repo_status` VARCHAR(100) NOT NULL DEFAULT 'pending',
+    `repo_type` VARCHAR(100) NOT NULL,
+    `submission_date` TIMESTAMP NULL,
+    `cancel_date` TIMESTAMP NULL,
+    PRIMARY KEY (`repo_no`),
+    FOREIGN KEY (`repo_emp_no`) REFERENCES `Employee` (`emp_no`)
+);
+
+-- WorkReport 테이블 생성
+CREATE TABLE `WorkReport` (
+    `work_repo_no` BIGINT NOT NULL,
+    `repo_start_time` TIMESTAMP NULL,
+    `repo_end_time` TIMESTAMP NULL,
+    PRIMARY KEY (`work_repo_no`),
+    FOREIGN KEY (`work_repo_no`) REFERENCES `Report` (`repo_no`)
+);
+
+-- AttendanceReport 테이블 생성
+CREATE TABLE `AttendanceReport` (
+    `atten_repo_no` BIGINT NOT NULL,
+    `vacation_type` VARCHAR(50) NOT NULL,
+    `atten_start_date` DATE NOT NULL,
+    `atten_end_date` DATE NULL,
+    PRIMARY KEY (`atten_repo_no`),
+    FOREIGN KEY (`atten_repo_no`) REFERENCES `Report` (`repo_no`)
+);
+
+-- PurchaseReport 테이블 생성
+CREATE TABLE `PurchaseReport` (
+    `purch_repo_no` BIGINT NOT NULL,
+    `product_name` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`purch_repo_no`),
+    FOREIGN KEY (`purch_repo_no`) REFERENCES `Report` (`repo_no`)
+);
+
+-- Approver 테이블 생성
+CREATE TABLE `Approver` (
+    `appr_no` BIGINT NOT NULL AUTO_INCREMENT,
+    `appr_repo_no` BIGINT NOT NULL,
+    `appr_emp_no` BIGINT NOT NULL,
+    `appr_status` VARCHAR(100) NOT NULL DEFAULT 'pending',
+    PRIMARY KEY (`appr_no`),
+    FOREIGN KEY (`appr_repo_no`) REFERENCES `Report` (`repo_no`),
+    FOREIGN KEY (`appr_emp_no`) REFERENCES `Employee` (`emp_no`)
+);
+
+-- Recipient 테이블 생성
+CREATE TABLE `Recipient` (
+    `reci_no` BIGINT NOT NULL,
+    `reci_repo_no` BIGINT NOT NULL,
+    `reci_emp_no` BIGINT NOT NULL,
+    PRIMARY KEY (`reci_no`),
+    FOREIGN KEY (`reci_repo_no`) REFERENCES `Report` (`repo_no`),
+    FOREIGN KEY (`reci_emp_no`) REFERENCES `Employee` (`emp_no`)
+);
+
+-- Reference 테이블 생성
+CREATE TABLE `Reference` (
+    `refe_no` BIGINT NOT NULL,
+    `refe_repo_no` BIGINT NOT NULL,
+    `refe_emp_no` BIGINT NOT NULL,
+    PRIMARY KEY (`refe_no`),
+    FOREIGN KEY (`refe_repo_no`) REFERENCES `Report` (`repo_no`),
+    FOREIGN KEY (`refe_emp_no`) REFERENCES `Employee` (`emp_no`)
+);
+
+-- Attachment 테이블 (첨부파일 기본 정보 저장)
+CREATE TABLE `Attachment` (
+    `atta_no` BIGINT NOT NULL AUTO_INCREMENT,
+    `atta_key` VARCHAR(500) NOT NULL,
+    `atta_url` VARCHAR(1000) NOT NULL,
+    `atta_original_name` VARCHAR(500) NOT NULL,
+    `atta_size` BIGINT NOT NULL,
+    PRIMARY KEY (`atta_no`)
+);
+
+-- Emailmessage 테이블 생성
+CREATE TABLE `Emailmessage` (
+    `email_no` BIGINT NOT NULL,
+    `email_writer` BIGINT NOT NULL,
+    `email_recipient` BIGINT NOT NULL,
+    PRIMARY KEY (`email_no`),
+    FOREIGN KEY (`email_writer`) REFERENCES `Employee` (`emp_no`),
+    FOREIGN KEY (`email_recipient`) REFERENCES `Employee` (`emp_no`)
+);
+
+-- EmailAttachment 테이블 (이메일과 첨부파일의 관계)
+CREATE TABLE `EmailAttachment` (
+    `email_no` BIGINT NOT NULL,
+    `atta_no` BIGINT NOT NULL,
+    PRIMARY KEY (`email_no`, `atta_no`),
+    FOREIGN KEY (`email_no`) REFERENCES `Emailmessage` (`email_no`),
+    FOREIGN KEY (`atta_no`) REFERENCES `Attachment` (`atta_no`)
+);
+
+-- ChatAttachment 테이블 (채팅 첨부파일)
+CREATE TABLE `ChatAttachment` (
+    `chat_atta_no` BIGINT NOT NULL,
+    `chat_atta_key` VARCHAR(500) NOT NULL,
+    `chat_atta_url` TEXT NOT NULL,
+    `chat_atta_name` VARCHAR(500) NOT NULL,
+    PRIMARY KEY (`chat_atta_no`)
+);
+
+-- Scheduler 테이블 생성
+CREATE TABLE `Scheduler` (
+    `sche_no` BIGINT NOT NULL,
+    `sche_emp_no` BIGINT NOT NULL,
+    PRIMARY KEY (`sche_no`),
+    FOREIGN KEY (`sche_emp_no`) REFERENCES `Employee` (`emp_no`)
+);
+
+-- Stock 테이블 생성
+CREATE TABLE `Stock` (
+    `stock_no` BIGINT NOT NULL,
+    `stock_comp_no` BIGINT NOT NULL,
+    `stock_name` VARCHAR(500) NOT NULL,
+    `stock_category` VARCHAR(500) NOT NULL,
+    `stock_quantity`BIGINT NOT NULL,
+    `stock_price` BIGINT NOT NULL,
+    PRIMARY KEY (`stock_no`),
+    FOREIGN KEY (`stock_comp_no`) REFERENCES `Company` (`comp_no`)
+);
+
+-- Inquiry 테이블 생성
+CREATE TABLE `Inquiry` (
+    `inqu_no` BIGINT NOT NULL AUTO_INCREMENT,
+    `inqu_writer` VARCHAR(100) NOT NULL,
+    `inqu_compName` VARCHAR(100) NOT NULL,
+    `inqu_compType` VARCHAR(100) NOT NULL,
+    `inqu_email` VARCHAR(100) NOT NULL,
+    `inqu_phone` VARCHAR(100) NOT NULL,
+    `inqu_numberOfPeople` VARCHAR(100) NOT NULL,
+    `inqu_enroll` timestamp NOT NULL,
+    
+    PRIMARY KEY (`inqu_no`)
+);
+
+-- `Request`  테이블 생성
+CREATE TABLE `Request` (
+    `requ_no` BIGINT NOT NULL AUTO_INCREMENT,
+    `requ_title` VARCHAR(100) NOT NULL,
+    `requ_writer` VARCHAR(100) NOT NULL,
+    `requ_phone` VARCHAR(100) NOT NULL,
+    `requ_email` VARCHAR(100) NOT NULL,
+    `requ_contents` TEXT NOT NULL,
+    `requ_enroll` timestamp NOT NULL,
+    
+    PRIMARY KEY (`requ_no`)
+);
+
+
+
+-- 3. 데이터 삽입
+-- company/기업
+INSERT INTO `Company` (`comp_name`, `comp_industry`, `comp_requester`, `comp_email`, `comp_phone`, `comp_headcount`)
+VALUES 
+('Digitalsolution', '소프트웨어 개발', '김성현', 'kim@digitalsolution.com', '010-1234-5678', 50),
+('Nextware', '클라우드 서비스', '이지수', 'lee@nextware.co.kr', '010-8765-4321', 120),
+('Itmate', '네트워크 장비', '박진영', 'park@itmate.net', '010-2468-1357', 80),
+('Futuretech', '하드웨어 부품', '송민우', 'song@futuretech.co.kr', '010-9753-8642', 60),
+('Paperless', '데이터센터 운영', '이범상', 'beom@paperless.com', '010-1357-2468', 150);
+
+
+-- department/부서
+INSERT INTO Department (dept_no, dept_name, dept_team_name)
+VALUES 
+    -- IT 부서
+    (100, 'IT부서', '개발팀'),
+    (110, 'IT부서', '인프라팀'),
+    (120, 'IT부서', '보안팀'),
+
+    -- 마케팅 부서
+    (200, '마케팅부서', '디지털마케팅팀'),
+    (210, '마케팅부서', '브랜드팀'),
+    (220, '마케팅부서', '시장조사팀'),
+
+    -- 영업 부서
+    (300, '영업부서', '국내영업팀'),
+    (310, '영업부서', '해외영업팀'),
+    (320, '영업부서', '영업기획팀'),
+
+    -- HR 부서
+    (400, 'HR부서', '채용팀'),
+    (410, 'HR부서', '인사관리팀'),
+    (420, 'HR부서', '교육팀'),
+
+    -- 구매 부서
+    (500, '구매부서', '구매팀'),
+    (510, '구매부서', '자재관리팀'),
+
+    -- 재무 부서
+    (600, '재무부서', '회계팀'),
+    (610, '재무부서', '세무팀'),
+    (620, '재무부서', '자금팀'),
+
+    -- 고객 지원 부서
+    (700, '고객지원부서', '고객상담팀'),
+    (710, '고객지원부서', '클레임처리팀'),
+
+    -- 연구개발 부서
+    (800, '연구개발부서', '제품개발팀'),
+    (810, '연구개발부서', '기술개발팀'),
+
+    -- 경영지원 부서
+    (900, '경영지원부서', '총무팀'),
+    (910, '경영지원부서', '법무팀'),
+    (920, '경영지원부서', '비서팀');
+
+-- position/직급
+INSERT INTO `Position` (`posi_name`)
+VALUES
+    ('사원'),
+    ('주임'),
+    ('대리'),
+    ('과장'),
+    ('차장'),
+    ('부장'),
+    ('이사'),
+    ('상무'),
+    ('전무'),
+    ('부사장'),
+    ('사장');
+
+-- employee/직원
+
+-- 시스템 관리자 
+INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
+VALUES
+('admin01','$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '관리자', 'systemAdmin@paperless.co.kr', '010-1298-7542','관리자 서명','https://via.placeholder.com/60',5,710,6,'2019-03-10','super');
+
+INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
+VALUES
+
+-- (digitalsolution 대표)
+('DS1000', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김성현', 'kim@digitalsolution.com', '010-1234-5678', '김성현 서명', 'https://via.placeholder.com/60', 1, 210, 7, '2019-11-01', 'admin'),
+('DS1001', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '배수지', 'suzy@digitalsolution.com', '010-1234-5678', '배수지 서명', 'https://via.placeholder.com/60', 1, 100, 4, '2021-05-12', 'user'),  
+('DS1002', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '강동원', 'dongwon@digitalsolution.com', '010-8765-4321', '강동원 서명', 'https://via.placeholder.com/60', 1, 100, 6, '2020-09-15', 'user'),  
+('DS1003', 'password123', '김태리', 'taeri@digitalsolution.com', '010-2345-6789', '김태리 서명', 'https://via.placeholder.com/60', 1, 500, 3, '2019-04-10', 'user'),  
+('DS1004', 'password123', '이준호', 'junho@digitalsolution.com', '010-3456-7890', '이준호 서명', 'https://via.placeholder.com/60', 1, 110, 4, '2020-01-20', 'user'),
+('DS1005', 'password123', '박서준', 'seojun@digitalsolution.com', '010-5555-1234', '박서준 서명', 'https://via.placeholder.com/60', 1, 200, 3, '2021-07-30', 'user'),  
+('DS1006', 'password123', '이서진', 'seojin@digitalsolution.com', '010-1010-2020', '이서진 서명', 'https://via.placeholder.com/60', 1, 200, 4, '2022-01-10', 'user'),  
+('DS1007', 'password123', '유아인', 'yooain@digitalsolution.com', '010-3030-4040', '유아인 서명', 'https://via.placeholder.com/60', 1, 210, 5, '2021-12-01', 'user'),  
+('DS1008', 'password123', '공효진', 'gonghj@digitalsolution.com', '010-5050-6060', '공효진 서명', 'https://via.placeholder.com/60', 1, 100, 2, '2020-03-12', 'user'),  
+('DS1009', 'password123', '정우성', 'jws@digitalsolution.com', '010-7070-8080', '정우성 서명', 'https://via.placeholder.com/60', 1, 500, 6, '2022-06-25', 'user'),  
+('DS1010', 'password123', '박보영', 'boyoung@digitalsolution.com', '010-9090-0000', '박보영 서명', 'https://via.placeholder.com/60', 1, 100, 3, '2021-10-10', 'user');
+
+INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
+VALUES
+-- (nextware 대표)
+('NW1000', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이지수', 'lee@nextware.co.kr', '010-8765-4321', '이지수 서명', 'https://via.placeholder.com/60', 2, 210, 10, '2019-03-10', 'admin'),  
+('NW1001', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '장원영', 'wonyoung@nextware.co.kr', '010-1234-5678', '장원영 서명', 'https://via.placeholder.com/60', 2, 100, 3, '2020-05-15', 'user'),  
+('NW1002', 'password123', '김우석', 'wooseok@nextware.co.kr', '010-2345-6789', '김우석 서명', 'https://via.placeholder.com/60', 2, 100, 4, '2019-08-22', 'user'),  
+('NW1003', 'password123', '차은우', 'eunwoo@nextware.co.kr', '010-3456-7890', '차은우 서명', 'https://via.placeholder.com/60', 2, 110, 2, '2021-02-05', 'user'), 
+('NW1004', 'password123', '도경수', 'kyungsoo@nextware.co.kr', '010-4567-8901', '도경수 서명', 'https://via.placeholder.com/60', 2, 110, 6, '2018-09-12', 'user'),  
+('NW1005', 'password123', '전지현', 'jihyun@nextware.co.kr', '010-5678-9012', '전지현 서명', 'https://via.placeholder.com/60', 2, 200, 3, '2021-05-25', 'user'),  
+('NW1006', 'password123', '김세정', 'sejeong@nextware.co.kr', '010-1212-2323', '김세정 서명', 'https://via.placeholder.com/60', 2, 200, 4, '2020-09-15', 'user'),  
+('NW1007', 'password123', '이상윤', 'sangyun@nextware.co.kr', '010-3434-4545', '이상윤 서명', 'https://via.placeholder.com/60', 2, 110, 5, '2021-01-05', 'user'),  
+('NW1008', 'password123', '서강준', 'seo@nextware.co.kr', '010-5656-6767', '서강준 서명', 'https://via.placeholder.com/60', 2, 100, 2, '2022-07-25', 'user'),  
+('NW1009', 'password123', '유연석', 'you@nextware.co.kr', '010-7878-8989', '유연석 서명', 'https://via.placeholder.com/60', 2, 500, 6, '2020-11-12', 'user'),  
+('NW1010', 'password123', '박형식', 'hsik@nextware.co.kr', '010-9091-0011', '박형식 서명', 'https://via.placeholder.com/60', 2, 100, 3, '2022-03-05', 'user');
+
+INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
+VALUES
+-- (itmate 대표)
+('ITM1000', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '박진영', 'park@itmate.net', '010-2468-1357', '박진영 서명', 'https://via.placeholder.com/60', 3, 300, 10, '2018-07-22', 'admin'),
+('ITM1001', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이준기', 'junki@itmate.net', '010-1111-1234', '이준기 서명', 'https://via.placeholder.com/60', 3, 100, 3, '2021-06-10', 'user'),  
+('ITM1002', 'password123', '이하늬', 'hani@itmate.net', '010-2222-2345', '이하늬 서명', 'https://via.placeholder.com/60', 3, 100, 4, '2019-10-20', 'user'), 
+('ITM1003', 'password123', '안보현', 'bohyun@itmate.net', '010-3333-3456', '안보현 서명', 'https://via.placeholder.com/60', 3, 110, 2, '2020-01-05', 'user'), 
+('ITM1004', 'password123', '박보검', 'bogum@itmate.net', '010-4444-4567', '박보검 서명', 'https://via.placeholder.com/60', 3, 110, 6, '2018-12-15', 'user'), 
+('ITM1005', 'password123', '김우빈', 'woobin@itmate.net', '010-5555-5678', '김우빈 서명', 'https://via.placeholder.com/60', 3, 300, 3, '2021-03-01', 'user'),
+('ITM1006', 'password123', '강하늘', 'haneul@itmate.net', '010-1212-3434', '강하늘 서명', 'https://via.placeholder.com/60', 3, 300, 6, '2022-01-15', 'user'),  
+('ITM1007', 'password123', '신세경', 'sekyung@itmate.net', '010-4545-5656', '신세경 서명', 'https://via.placeholder.com/60', 3, 110, 5, '2021-05-20', 'user'),  
+('ITM1008', 'password123', '이성경', 'sungkyung@itmate.net', '010-6767-7878', '이성경 서명', 'https://via.placeholder.com/60', 3, 100, 2, '2021-09-25', 'user'),  
+('ITM1009', 'password123', '조정석', 'joseok@itmate.net', '010-8989-9090', '조정석 서명', 'https://via.placeholder.com/60', 3, 100, 4, '2020-08-10', 'user'),  
+('ITM1010', 'password123', '이광수', 'gwangsoo@itmate.net', '010-1111-2222', '이광수 서명', 'https://via.placeholder.com/60', 3, 500, 3, '2019-10-30', 'user');
+
+
+INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
+VALUES
+-- (futuretech 대표)
+('FT1000', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '송민우', 'song@futuretech.co.kr', '010-9753-8642', '송민우 서명', 'https://via.placeholder.com/60', 4, 500, 10, '2021-05-30', 'admin'),
+('FT1001', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '한소희', 'sohee@futuretech.co.kr', '010-1234-5678', '한소희 서명', 'https://via.placeholder.com/60', 4, 100, 3, '2021-03-10', 'user'), 
+('FT1002', 'password123', '정해인', 'haein@futuretech.co.kr', '010-2345-6789', '정해인 서명', 'https://via.placeholder.com/60', 4, 100, 4, '2020-07-25', 'user'), 
+('FT1003', 'password123', '박보검', 'bogum@futuretech.co.kr', '010-3456-7890', '박보검 서명', 'https://via.placeholder.com/60', 4, 110, 2, '2019-12-15', 'user'),  
+('FT1004', 'password123', '남주혁', 'juhyuk@futuretech.co.kr', '010-4567-8901', '남주혁 서명', 'https://via.placeholder.com/60', 4, 110, 6, '2018-05-10', 'user'),  
+('FT1005', 'password123', '김고은', 'goeun@futuretech.co.kr', '010-5678-9012', '김고은 서명', 'https://via.placeholder.com/60', 4, 500, 3, '2021-01-20', 'user'),
+('FT1006', 'password123', '김수현', 'su@futuretech.co.kr', '010-2323-3434', '김수현 서명', 'https://via.placeholder.com/60', 4, 500, 6, '2022-01-15', 'user'),  
+('FT1007', 'password123', '김세정', 'sejeong@futuretech.co.kr', '010-4545-5656', '김세정 서명', 'https://via.placeholder.com/60', 4, 110, 5, '2021-05-20', 'user'),  
+('FT1008', 'password123', '유승호', 'sung@futuretech.co.kr', '010-6767-7878', '유승호 서명', 'https://via.placeholder.com/60', 4, 100, 2, '2021-09-25', 'user'),  
+('FT1009', 'password123', '이현우', 'hyunwoo@futuretech.co.kr', '010-8989-9090', '이현우 서명', 'https://via.placeholder.com/60', 4, 100, 4, '2020-08-10', 'user'),  
+('FT1010', 'password123', '김민규', 'mingyu@futuretech.co.kr', '010-1111-2323', '김민규 서명', 'https://via.placeholder.com/60', 4, 500, 3, '2019-10-30', 'user');
+
+INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
+VALUES
+-- IT부서 - 개발팀
+('PL1001', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김다미', 'dami@paperless.com', '010-1234-5678', '김다미 서명', 'https://via.placeholder.com/60', 5, 100, 3, '2021-05-12', 'user'),
+('PL1002', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이도현', 'dohyun@paperless.com', '010-2345-6789', '이도현 서명', 'https://via.placeholder.com/60', 5, 100, 4, '2019-08-22', 'user'),
+('PL1003', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '주지훈', 'jihoon@paperless.com', '010-1212-4545', '주지훈 서명', 'https://via.placeholder.com/60', 5, 100, 2, '2022-03-12', 'user'),
+('PL1004', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '임윤찬', 'yunchan@paperless.com', '010-3434-5656', '임윤찬 서명', 'https://via.placeholder.com/60', 5, 100, 4, '2021-05-16', 'user'),
+('PL1005', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이상민', 'sangmin@paperless.com', '010-5656-7878', '이상민 서명', 'https://via.placeholder.com/60', 5, 100, 3, '2020-07-20', 'user'),
+
+-- IT부서 - 인프라팀
+('PL1006', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이상우', 'sangwoo@paperless.com', '010-6767-8989', '이상우 서명', 'https://via.placeholder.com/60', 5, 110, 3, '2019-02-15', 'user'),
+('PL1007', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '하정우', 'jungwoo@paperless.com', '010-7878-9090', '하정우 서명', 'https://via.placeholder.com/60', 5, 110, 4, '2020-10-10', 'user'),
+('PL1008', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '조정래', 'jongrae@paperless.com', '010-8989-2323', '조정래 서명', 'https://via.placeholder.com/60', 5, 110, 5, '2021-11-01', 'user'),
+
+-- IT부서 - 보안팀
+('PL1009', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김선호', 'sunho@paperless.com', '010-1111-4444', '김선호 서명', 'https://via.placeholder.com/60', 5, 120, 3, '2021-10-12', 'user'),
+('PL1010', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '정소민', 'somin@paperless.com', '010-2222-5555', '정소민 서명', 'https://via.placeholder.com/60', 5, 120, 4, '2020-11-20', 'user'),
+('PL1011', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '정일우', 'ilwoo@paperless.com', '010-3333-6666', '정일우 서명', 'https://via.placeholder.com/60', 5, 120, 5, '2022-01-15', 'user'),
+
+-- 마케팅부서 - 디지털마케팅팀
+('PL1012', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '류준열', 'junyeol@paperless.com', '010-1111-3434', '류준열 서명', 'https://via.placeholder.com/60', 5, 200, 2, '2022-06-25', 'user'),
+('PL1013', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '유선호', 'sunho@paperless.com', '010-2323-4545', '유선호 서명', 'https://via.placeholder.com/60', 5, 200, 3, '2021-02-20', 'user'),
+('PL1014', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '권유리', 'yuri@paperless.com', '010-3434-5656', '권유리 서명', 'https://via.placeholder.com/60', 5, 200, 4, '2020-09-12', 'user'),
+
+-- 마케팅부서 - 브랜드팀
+('PL1015', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '강소라', 'sora@paperless.com', '010-4545-6767', '강소라 서명', 'https://via.placeholder.com/60', 5, 210, 2, '2020-08-11', 'user'),
+('PL1016', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이시영', 'siyoung@paperless.com', '010-5656-7878', '이시영 서명', 'https://via.placeholder.com/60', 5, 210, 3, '2021-04-09', 'user'),
+('PL1017', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '지현우', 'hyunwoo@paperless.com', '010-6767-8989', '지현우 서명', 'https://via.placeholder.com/60', 5, 210, 4, '2019-11-20', 'user'),
+
+-- 마케팅부서 - 시장조사팀
+('PL1018', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이동욱', 'dongwook@paperless.com', '010-4444-7777', '이동욱 서명', 'https://via.placeholder.com/60', 5, 220, 2, '2021-03-18', 'user'),
+('PL1019', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '유승호', 'seungho@paperless.com', '010-5555-8888', '유승호 서명', 'https://via.placeholder.com/60', 5, 220, 3, '2020-06-23', 'user'),
+('PL1020', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김지원', 'jiwon@paperless.com', '010-6666-9999', '김지원 서명', 'https://via.placeholder.com/60', 5, 220, 4, '2019-05-21', 'user'),
+
+-- 영업부서 - 국내영업팀
+('PL1021', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '송중기', 'song@paperless.com', '010-7878-9090', '송중기 서명', 'https://via.placeholder.com/60', 5, 300, 2, '2020-03-05', 'user'),
+('PL1022', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이제훈', 'jehoon@paperless.com', '010-8989-1212', '이제훈 서명', 'https://via.placeholder.com/60', 5, 300, 3, '2019-09-14', 'user'),
+('PL1023', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '신민아', 'mina@paperless.com', '010-9090-2323', '신민아 서명', 'https://via.placeholder.com/60', 5, 300, 4, '2021-07-22', 'user'),
+
+-- 영업부서 - 해외영업팀
+('PL1024', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이민호', 'minho@paperless.com', '010-7777-0000', '이민호 서명', 'https://via.placeholder.com/60', 5, 310, 3, '2022-04-12', 'user'),
+('PL1025', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '박신혜', 'shinhye@paperless.com', '010-8888-1212', '박신혜 서명', 'https://via.placeholder.com/60', 5, 310, 4, '2020-09-30', 'user'),
+('PL1026', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '주원', 'joowon@paperless.com', '010-9999-2323', '주원 서명', 'https://via.placeholder.com/60', 5, 310, 5, '2019-02-18', 'user'),
+
+-- 영업부서 - 영업기획팀
+('PL1027', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김혜수', 'hyesoo@paperless.com', '010-1010-3434', '김혜수 서명', 'https://via.placeholder.com/60', 5, 320, 2, '2021-05-10', 'user'),
+('PL1028', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '차태현', 'taehyun@paperless.com', '010-2121-4545', '차태현 서명', 'https://via.placeholder.com/60', 5, 320, 3, '2020-08-15', 'user'),
+('PL1029', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이하늬', 'hani@paperless.com', '010-3232-5656', '이하늬 서명', 'https://via.placeholder.com/60', 5, 320, 4, '2019-12-02', 'user'),
+
+-- HR부서 - 채용팀
+('PL1030', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '한예슬', 'yeseul@paperless.com', '010-4343-6767', '한예슬 서명', 'https://via.placeholder.com/60', 5, 400, 2, '2021-10-01', 'user'),
+('PL1031', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '고아라', 'ara@paperless.com', '010-5454-7878', '고아라 서명', 'https://via.placeholder.com/60', 5, 400, 3, '2020-03-17', 'user'),
+('PL1032', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이수혁', 'soohyeok@paperless.com', '010-6565-8989', '이수혁 서명', 'https://via.placeholder.com/60', 5, 400, 4, '2019-11-11', 'user'),
+
+-- HR부서 - 인사관리팀
+('PL1033', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김혜자', 'hyeja@paperless.com', '010-7676-9090', '김혜자 서명', 'https://via.placeholder.com/60', 5, 410, 2, '2021-12-05', 'user'),
+('PL1034', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '유재석', 'jaeseok@paperless.com', '010-8787-1010', '유재석 서명', 'https://via.placeholder.com/60', 5, 410, 3, '2020-08-08', 'user'),
+('PL1035', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '박해일', 'haeil@paperless.com', '010-9898-1212', '박해일 서명', 'https://via.placeholder.com/60', 5, 410, 4, '2019-07-01', 'user'),
+
+-- HR부서 - 교육팀
+('PL1036', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이하늘', 'haneul@paperless.com', '010-1111-2323', '이하늘 서명', 'https://via.placeholder.com/60', 5, 420, 2, '2021-03-22', 'user'),
+('PL1037', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '최준', 'joon@paperless.com', '010-2323-3434', '최준 서명', 'https://via.placeholder.com/60', 5, 420, 3, '2020-10-30', 'user'),
+('PL1038', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이보영', 'boyoung@paperless.com', '010-3434-4545', '이보영 서명', 'https://via.placeholder.com/60', 5, 420, 4, '2019-06-07', 'user'),
+
+-- 구매부서 - 구매팀
+('PL1039', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '정경호', 'kyungho@paperless.com', '010-1010-3434', '정경호 서명', 'https://via.placeholder.com/60', 5, 500, 3, '2021-02-22', 'user'),
+('PL1040', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '문채원', 'chaewon@paperless.com', '010-2121-4545', '문채원 서명', 'https://via.placeholder.com/60', 5, 500, 4, '2020-06-15', 'user'),
+('PL1041', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이광수', 'gwangsoo@paperless.com', '010-3232-5656', '이광수 서명', 'https://via.placeholder.com/60', 5, 500, 2, '2019-10-03', 'user'),
+
+-- 구매부서 - 자재관리팀
+('PL1042', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '전도연', 'doyeon@paperless.com', '010-4343-6767', '전도연 서명', 'https://via.placeholder.com/60', 5, 510, 3, '2021-04-01', 'user'),
+('PL1043', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김영철', 'youngchul@paperless.com', '010-5454-7878', '김영철 서명', 'https://via.placeholder.com/60', 5, 510, 4, '2020-07-18', 'user'),
+('PL1044', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이보영', 'boyoung@paperless.com', '010-6565-8989', '이보영 서명', 'https://via.placeholder.com/60', 5, 510, 2, '2019-12-20', 'user'),
+
+-- 재무부서 - 회계팀
+('PL1045', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '조정석', 'joseok@paperless.com', '010-7676-9090', '조정석 서명', 'https://via.placeholder.com/60', 5, 600, 3, '2021-09-05', 'user'),
+('PL1046', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '한예리', 'yerihan@paperless.com', '010-8787-1010', '한예리 서명', 'https://via.placeholder.com/60', 5, 600, 4, '2020-08-13', 'user'),
+('PL1047', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김유정', 'yujeong@paperless.com', '010-9898-2323', '김유정 서명', 'https://via.placeholder.com/60', 5, 600, 2, '2019-05-27', 'user'),
+
+-- 재무부서 - 세무팀
+('PL1048', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '손예진', 'yejin@paperless.com', '010-1212-3434', '손예진 서명', 'https://via.placeholder.com/60', 5, 610, 3, '2021-03-09', 'user'),
+('PL1049', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이제훈', 'jehoon@paperless.com', '010-2323-4545', '이제훈 서명', 'https://via.placeholder.com/60', 5, 610, 4, '2020-10-19', 'user'),
+('PL1050', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '정유미', 'yumi@paperless.com', '010-3434-5656', '정유미 서명', 'https://via.placeholder.com/60', 5, 610, 2, '2019-06-28', 'user'),
+
+-- 재무부서 - 자금팀
+('PL1051', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '류덕환', 'deokhwan@paperless.com', '010-4545-6767', '류덕환 서명', 'https://via.placeholder.com/60', 5, 620, 3, '2021-07-07', 'user'),
+('PL1052', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김윤석', 'yoonseok@paperless.com', '010-5656-7878', '김윤석 서명', 'https://via.placeholder.com/60', 5, 620, 4, '2020-05-11', 'user'),
+('PL1053', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '오정세', 'jungse@paperless.com', '010-6767-8989', '오정세 서명', 'https://via.placeholder.com/60', 5, 620, 2, '2019-12-16', 'user'),
+
+-- 고객지원부서 - 고객상담팀
+('PL1054', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이서진', 'seojin@paperless.com', '010-7878-9090', '이서진 서명', 'https://via.placeholder.com/60', 5, 700, 3, '2021-02-04', 'user'),
+('PL1055', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '박지윤', 'jiyun@paperless.com', '010-8989-1010', '박지윤 서명', 'https://via.placeholder.com/60', 5, 700, 4, '2020-11-22', 'user'),
+('PL1056', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김혜수', 'hyesoo@paperless.com', '010-9090-1212', '김혜수 서명', 'https://via.placeholder.com/60', 5, 700, 2, '2019-07-30', 'user'),
+
+-- 고객지원부서 - 클레임처리팀
+('PL1057', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이제니', 'jenny@paperless.com', '010-1212-2323', '이제니 서명', 'https://via.placeholder.com/60', 5, 710, 3, '2021-03-18', 'user'),
+('PL1058', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '황정민', 'jungmin@paperless.com', '010-2323-3434', '황정민 서명', 'https://via.placeholder.com/60', 5, 710, 4, '2020-09-02', 'user'),
+('PL1059', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이효리', 'hyori@paperless.com', '010-3434-4545', '이효리 서명', 'https://via.placeholder.com/60', 5, 710, 2, '2019-08-09', 'user'),
+
+-- 연구개발부서 - 제품개발팀
+('PL1060', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '유해진', 'haejin@paperless.com', '010-4545-5656', '유해진 서명', 'https://via.placeholder.com/60', 5, 800, 3, '2021-05-22', 'user'),
+('PL1061', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '조진웅', 'jinwoong@paperless.com', '010-5656-6767', '조진웅 서명', 'https://via.placeholder.com/60', 5, 800, 4, '2020-04-15', 'user'),
+('PL1062', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김주혁', 'joohyuk@paperless.com', '010-6767-7878', '김주혁 서명', 'https://via.placeholder.com/60', 5, 800, 2, '2019-12-05', 'user'),
+
+-- 연구개발부서 - 기술개발팀
+('PL1063', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '윤계상', 'gyesang@paperless.com', '010-7878-8989', '윤계상 서명', 'https://via.placeholder.com/60', 5, 810, 3, '2021-01-10', 'user'),
+('PL1064', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이희준', 'heejun@paperless.com', '010-8989-9090', '이희준 서명', 'https://via.placeholder.com/60', 5, 810, 4, '2020-08-18', 'user'),
+('PL1065', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '정우', 'woojung@paperless.com', '010-9090-1010', '정우 서명', 'https://via.placeholder.com/60', 5, 810, 2, '2019-07-01', 'user'),
+
+-- 경영지원부서 - 총무팀
+('PL1066', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김상중', 'sangjung@paperless.com', '010-1111-1212', '김상중 서명', 'https://via.placeholder.com/60', 5, 900, 3, '2021-04-22', 'user'),
+('PL1067', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '송강호', 'kangho@paperless.com', '010-1212-2323', '송강호 서명', 'https://via.placeholder.com/60', 5, 900, 4, '2020-09-17', 'user'),
+('PL1068', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '최수종', 'soojong@paperless.com', '010-2323-3434', '최수종 서명', 'https://via.placeholder.com/60', 5, 900, 2, '2019-06-14', 'user'),
+
+-- 경영지원부서 - 법무팀
+('PL1069', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '강호동', 'hodong@paperless.com', '010-3434-4545', '강호동 서명', 'https://via.placeholder.com/60', 5, 910, 3, '2021-03-03', 'user'),
+('PL1070', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이상민', 'sangmin@paperless.com', '010-4545-5656', '이상민 서명', 'https://via.placeholder.com/60', 5, 910, 4, '2020-05-11', 'user'),
+('PL1071', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김희애', 'heeae@paperless.com', '010-5656-6767', '김희애 서명', 'https://via.placeholder.com/60', 5, 910, 2, '2019-08-22', 'user'),
+
+-- 경영지원부서 - 비서팀
+('PL1072', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이성경', 'seongkyoung@paperless.com', '010-6767-7878', '이성경 서명', 'https://via.placeholder.com/60', 5, 920, 3, '2021-06-25', 'user'),
+('PL1073', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '공유', 'gongyu@paperless.com', '010-7878-8989', '공유 서명', 'https://via.placeholder.com/60', 5, 920, 4, '2020-02-05', 'user'),
+('PL1074', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '서강준', 'seo@paperless.com', '010-8989-9090', '서강준 서명', 'https://via.placeholder.com/60', 5, 920, 2, '2019-04-17', 'user');
+
+commit;
+
+select * from company;
+select * from department;
+select * from position; 
+select * from employee;
+select * from inquiry;
