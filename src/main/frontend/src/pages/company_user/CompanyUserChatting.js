@@ -1,28 +1,25 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet';
-import { useSearchParams } from 'react-router-dom';
 import styles from '../../styles/company/company_chatting.module.css'
 import { Button } from 'react-bootstrap';
 import EmojiPicker from 'emoji-picker-react';
 import { format, isSameDay, isValid, parse } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import useWebSocket from 'react-use-websocket';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 import api from '../layout/api';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 // .env 파일
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
 function Chatting() {
-    // 더미 데이터
-    // 알고리즘: 연결한 소켓 기준 채팅방에서 불러온 메시지들을 시간 순으로 정리해서 불러온 후 보낸 사람과 받는 사람의 기준으로 로그인 된 아이디와 비교하여 구분 (백엔드 연결 전 : 하드코딩)
-    // 메시지 sender: 보낸 사람, recipient: 받는 사람, content: 메시지 내용, count: 읽지 않은 사람(수신 수), state: 메시지 읽음 상태, sendTime: 메시지를 전송한 시간 
-    // ** 더미 데이터를 이용하여 로그인 객체 하드코딩 ** //
-    // const empNo = 1; // 현재 로그인한 사용자
+    // Redux에서 사용자 정보 가져오기
+    const userData = useSelector((state) => state.user.data);
 
-    const [user, setUser] = useState(null); // 상태 변수로 사용자 정보를 초기화
+    const empNo = userData.emp_no;
 
-    const empNo = 1;
+    // 상태 변수로 사용자 정보를 초기화
+    const [user, setUser] = useState(null);
 
     // 사용자 정보 저장 로직
     useEffect(() => {
@@ -30,58 +27,65 @@ function Chatting() {
         const foundUser = empList.find(emp => emp.emp_no === empNo);
         console.log("foundUser:", foundUser);
         if (foundUser) setUser(foundUser);
-        console.log("empNo:", empNo);
     }, [empNo]);
 
     // ** 더미 데이터 ** //
     // 직원
     const empList = [
-        { emp_no: 1, emp_name: '배수지', emp_email: 'suji0123@naver.com', emp_phone: '010-9876-5432', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_team_name: '', emp_posi_no: 6 },
-        { emp_no: 2, emp_name: '장원영', emp_email: 'jang0101@naver.com', emp_phone: '010-1234-1234', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 6 },
-        { emp_no: 3, emp_name: '박보영', emp_email: 'boyoung0202@naver.com', emp_phone: '010-2345-2345', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 7 },
-        { emp_no: 4, emp_name: '박보검', emp_email: 'gumgum0303@gmail.com', emp_phone: '010-3456-3456', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 5 },
-        { emp_no: 5, emp_name: '전지현', emp_email: 'jjh0404@naver.com', emp_phone: '010-4567-4567', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 1, emp_posi_no: 4 },
-        { emp_no: 6, emp_name: '이도현', emp_email: 'dodo0505@gmail.com', emp_phone: '010-5678-5678', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 4 },
-        { emp_no: 7, emp_name: '김태리', emp_email: 'kimlee0606@gmail.com', emp_phone: '010-6789-6789', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 5 },
-        { emp_no: 8, emp_name: '강동원', emp_email: 'dongwon0707@naver.com', emp_phone: '010-7890-7890', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 3 },
+        { emp_no: 2, emp_name: '배수지', emp_email: 'suzy@digitalsolution.com', emp_phone: '010-1234-5678', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 4 },
+        { emp_no: 3, emp_name: '강동원', emp_email: 'dongwon@digitalsolution.com', emp_phone: '010-8765-4321', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 6 },
+        { emp_no: 4, emp_name: '김태리', emp_email: 'taeri@digitalsolution.com', emp_phone: '010-2345-6789', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 500, emp_posi_no: 3 },
+        { emp_no: 5, emp_name: '이준호', emp_email: 'junho@digitalsolution.com', emp_phone: '010-3456-7890', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 110, emp_posi_no: 4 },
+        { emp_no: 6, emp_name: '박서준', emp_email: 'seojun@digitalsolution.com', emp_phone: '010-5555-1234', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 200, emp_posi_no: 3 },
+        { emp_no: 7, emp_name: '이서진', emp_email: 'seojin@digitalsolution.com', emp_phone: '010-1010-2020', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 200, emp_posi_no: 4 },
+        { emp_no: 8, emp_name: '유아인', emp_email: 'yooain@digitalsolution.com', emp_phone: '010-3030-4040', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 210, emp_posi_no: 5 },
+        { emp_no: 9, emp_name: '공효진', emp_email: 'gonghj@digitalsolution.com', emp_phone: '010-5050-6060', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 2 },
     ];
 
     // 회사
     const compList = [
-        { comp_no: 0, comp_name: 'IT 대표 업체' },
-        { comp_no: 1, comp_name: 'Paperless' },
+        { comp_no: 1, comp_name: 'Digitalsolution' },
+        { comp_no: 2, comp_name: 'Nextware' },
     ];
 
     // 부서
     const deptList = [
-        { dept_no: 0, dept_name: 'it 개발부', dept_team_name: '콘텐츠 기획팀' },
-        { dept_no: 1, dept_name: 'it 개발부', dept_team_name: 'SW 개발팀' },
+        { dept_no: 100, dept_name: 'IT부서', dept_team_name: '개발팀' },
+        { dept_no: 110, dept_name: 'IT부서', dept_team_name: '인프라팀' },
+        { dept_no: 200, dept_name: '마케팅부서', dept_team_name: '디지털마케팅팀' },
+        { dept_no: 210, dept_name: '마케팅부서', dept_team_name: '브랜드팀' },
+        { dept_no: 300, dept_name: '영업부서', dept_team_name: '국내영업팀' },
+        { dept_no: 310, dept_name: '영업부서', dept_team_name: '해외영업팀' },
+        { dept_no: 400, dept_name: 'HR부서', dept_team_name: '채용팀' },
+        { dept_no: 410, dept_name: 'HR부서', dept_team_name: '인사관리팀' },
+        { dept_no: 500, dept_name: '구매부서', dept_team_name: '구매팀' },
+        { dept_no: 510, dept_name: '구매부서', dept_team_name: '자재관리팀' },
     ];
 
     // 직급
     const posiList = [
-        { posi_no: 0, posi_name: '대표' },
-        { posi_no: 1, posi_name: '사장' },
-        { posi_no: 2, posi_name: '부장' },
-        { posi_no: 3, posi_name: '차장' },
-        { posi_no: 4, posi_name: '과장' },
-        { posi_no: 5, posi_name: '팀장' },
-        { posi_no: 6, posi_name: '대리' },
-        { posi_no: 7, posi_name: '사원' },
+        { posi_no: 1, posi_name: '사원' },
+        { posi_no: 2, posi_name: '주임' },
+        { posi_no: 3, posi_name: '대리' },
+        { posi_no: 4, posi_name: '차장' },
+        { posi_no: 5, posi_name: '과장' },
+        { posi_no: 6, posi_name: '차장' },
+        { posi_no: 7, posi_name: '이사' },
+        { posi_no: 8, posi_name: '상무' },
+        { posi_no: 9, posi_name: '전무' },
+        { posi_no: 10, posi_name: '부사장' },
     ];
 
     // 직원 목록을 각 회사 정보와 함께 저장할 배열
     const processedEmpList = empList.map(emp => {
         const company = compList.find(comp => comp.comp_no === emp.emp_comp_no); // emp_comp_no와 일치하는 회사 정보 찾기
         const department = deptList.find(dept => dept.dept_no === emp.emp_dept_no); // 해당 부서 정보 찾기
-        const team = deptList.find(dept => dept.dept_no === emp.emp_dept_no);
         const position = posiList.find(posi => posi.posi_no === emp.emp_posi_no); // 해당 직급 정보 찾기
 
         return {
             ...emp,
             emp_comp_name: company ? company.comp_name : 'Unknown', // 회사 이름 동적 참조
-            emp_dept_name: department ? department.dept_name : 'Unknown', // 부서 이름 동적 참조
-            emp_team_name: team ? team.dept_team_name : 'Unknown', // 팀 이름 동적 참조
+            emp_dept_name: department ? `${department.dept_name}${department.dept_team_name ? ' - ' + department.dept_team_name : ''}` : 'Unknown', // 부서, 팀 이름 동적 참조
             emp_posi_name: position ? position.posi_name : 'Unknown' // 직급 이름 동적 참조
         };
     });
@@ -92,12 +96,9 @@ function Chatting() {
     // 메시지를 저장하고 출력하는 변수
     const [message, setMessage] = useState('');
 
-    // // 고유한 사용자 아이디를 생성
-    // const [userId] = useState(uuidv4());
-
     // 로컬 스토리지에 저장된 emp 데이터 저장하는 변수 (더미 이용한 변수)
     // 대화 상대 (로그인한 사람과 채팅할 대상)
-    const [emp, setEmp] = useState();
+    const [emp, setEmp] = useState(null);
 
     // 돋보기 토글 상태
     const [showSelectInput, setShowSelectInput] = useState(true);
@@ -114,11 +115,16 @@ function Chatting() {
     // mainContainerRef 참조 변수
     const mainContainerRef = useRef(null);
 
-    // socket
-    const [socketUrl, setSocketUrl] = useState(null);
+    // socketUrl과 WebSocket 객체를 상태로 관리
+    const [socket, setSocket] = useState(null);
 
-    // 채팅 메시지 입력하면 전송 버튼 활성화
-    const isSendButtonDisabled = message.trim() === '' || readyState !== 1;
+    // // socket
+    // const [socketUrl, setSocketUrl] = useState(null);
+
+    // 메시지 입력 상태와 WebSocket 연결 상태에 따라 전송 버튼 활성화
+    const isSendButtonDisabled = useMemo(() => {
+        return message.trim() === '';
+    }, [message]);
 
     // 보낸 메시지 관리
     // sendMessage: WebSocket 서버로 메시지를 보내는 함수
@@ -127,12 +133,17 @@ function Chatting() {
     //  서버에서 메시지가 올 때마다 업데이트
     // readyState: WebSocket의 연결 상태를 나타내는 함수
     //  총 4가지로 0: 연결 시도 중, 1: 연결, 2: 연결 종료 시도 중, 3: 연결 종료
-    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+    const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(WEBSOCKET_URL, {
+        shouldReconnect: () => true,
         onOpen: () => console.log('WebSocket 연결 성공!'),
         onClose: () => console.log('WebSocket 연결 해제됨'),
         onError: (event) => console.error('WebSocket 에러:', event),
-        shouldReconnect: () => false, // 연결 실패 시 재연결 막기
-    }, !!socketUrl); // URL이 있을 때에만 WebSocket 연결
+    }); // WebSocket이 수동으로 연결되도록 설정
+
+    // 페이지 접근 시 WebSocket 연결
+    useEffect(() => {
+        getWebSocket();
+    }, [getWebSocket]);
 
     // WebSocket 연결 상태 메시지 매핑
     const connectionStatus = useMemo(() => ({
@@ -166,44 +177,49 @@ function Chatting() {
 
     // 메시지 전송 버튼 메서드
     const handlerSendMessage = async () => {
-        if (message.trim() && emp && emp.participants) {
-            try {
-                // WebSocket 연결 시도
-                setSocketUrl(WEBSOCKET_URL); // 입력 시 WebSocket을 연결
+        if (!message.trim() || !emp || !Array.isArray(emp.participants)) {
+            console.warn('메시지 전송 조건이 충족되지 않았습니다.');
+            return;
+        }
 
-                const newMessage = {
-                    chat_room_no: emp.chat_room_no,
-                    chat_sender: empNo,
-                    chat_recipient: emp.participants.map(p => p.emp_no),
-                    chat_content: message,
-                    chat_type: 'text',
-                    chat_date: new Date().toISOString()
-                };
+        const chatRoomNo = emp.chat_room_no;
+        const totalMessages = messageList.length;
+        const currentTime = new Date().toISOString();
+        const chatRecipientNos = emp.participants.filter(p => p.emp_no !== empNo).map(p => p.emp_no);
 
-                if (readyState === 1) {
-                    // 연결 상태가 '열림'인 경우
-                    // 메시지 전송
-                    sendMessage(JSON.stringify(newMessage));
-                    console.log('메시지 전송 중:', newMessage);
+        if (chatRecipientNos.length === 0) {
+            console.warn('채팅방 참여자가 없습니다.');
+            return;
+        }
 
-                    // REST API를 통해 메시지 전송
-                    await api.sendMessage(newMessage);
+        const newMessage = {
+            chat_room_no: chatRoomNo,
+            chat_no: totalMessages + 1,
+            chat_sender: empNo,
+            chat_recipient: chatRecipientNos,
+            chat_content: message,
+            chat_count: chatRecipientNos.length,
+            chat_type: 'text',
+            chat_date: currentTime,
+        };
 
-                    // 메시지 리스트 업데이트
-                    setMessageList(prev => [...prev, newMessage]);
-                    // 메시지 입력란 초기화
-                    setMessage('');
+        try {
+            // WebSocket을 통해 메시지 전송
+            if (readyState === ReadyState.OPEN) {
+                sendMessage(JSON.stringify(newMessage));
+                console.log('메시지 전송 중:', newMessage);
 
-                    // WebSocket URL을 null로 설정하여 연결 해제
-                    setSocketUrl(null);
-                } else {
-                    console.warn('WebSocket이 아직 연결되지 않았습니다.');
-                }
-            } catch (error) {
-                console.error('메시지 전송 중 오류 발생:', error);
+                // REST API를 통해 메시지 저장
+                await api.sendMessage(newMessage);
+                
+                // 메시지 리스트 업데이트
+                setMessageList((prev) => [...prev, newMessage]);
+                setMessage('');
+            } else {
+                console.warn('WebSocket이 아직 연결되지 않았습니다.');
             }
-        } else {
-            console.warn('메시지 또는 emp 정보가 올바르지 않습니다.');
+        } catch (error) {
+            console.error('메시지 전송 중 오류 발생:', error);
         }
     };
 
@@ -214,38 +230,12 @@ function Chatting() {
         }
     }, [messageList]);
 
-    // readyState가 변경될 때마다 함수를 실행
+    // WebSocket에서 마지막 메시지 수신 시 처리
     useEffect(() => {
-        console.log('WEBSOCKET_URL:', WEBSOCKET_URL);
-        console.log('WebSocket 연결 상태:', readyState);
-
-        // 연결 되었을 때
-        if (readyState === 1) {
-            console.log('WebSocket 연결 성공!');
+        if (lastMessage !== null) {
+            console.log('서버로부터 받은 메시지:', lastMessage);
         }
-    }, [readyState]);
-
-    // 메시지 전송 후 WebSocket 연결 해제
-    useEffect(() => {
-        if (lastMessage !== null && readyState === 1) {
-            console.log('메시지 수신:', lastMessage);
-            setSocketUrl(null);
-        }
-    }, [lastMessage, readyState]);
-
-    // // chat.js에서 emp.name 가져오기
-    // useEffect(() => {
-    //     try {
-    //         // 로컬 스토리지에 저장된 key: `chatting-emp-${emp.name}`에서 emp.name을 name으로 바꿔서 불러오기
-    //         // → emp를 불러와야하므로 url에서 가져온 name으로 emp 찾기
-    //         const storageEmp = localStorage.getItem(`chatting-emp-${name}`);
-
-    //         // 저장된 emp가 있다면 저장된 문자열을 원래의 객체 형식으로 저장 (여기선 emp)
-    //         if (storageEmp) setEmp(JSON.parse(storageEmp));
-    //     } catch (error) {
-    //         console.error("Error fetching employee data from localStorage: ", error);
-    //     }
-    // }, [name]);
+    }, [lastMessage]);
 
     // 특정 영역 외 클릭을 감지하여 searchRef 상태 업데이트
     useEffect(() => {
@@ -308,9 +298,14 @@ function Chatting() {
                 console.log('chatData.participantNos[0]:', chatData.participantNos[0]);
                 console.log('empFromData:', empFromData);
 
+                // participants 배열 확인 및 초기화
+                const participants = Array.isArray(chatData.participants) ? chatData.participants : Array.isArray(chatData.participantNos) ? chatData.participantNos : [];
+
+                // emp 객체에 participants 정보 추가
                 if (empFromData) {
-                    console.log("Updating emp with:", empFromData);
-                    setEmp(empFromData);
+                    setEmp({ ...empFromData, participants: participants.map(no => ({ emp_no: no })), chat_room_no: chatData.room_no });
+                } else {
+                    console.warn("empFromData가 설정되지 않았습니다.");
                 }
             } else {
                 console.error("URL에 인코딩된 데이터가 없습니다.");
