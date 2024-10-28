@@ -7,3 +7,8 @@ export const setUserPosi = (userPosi) => ({
     type: 'SET_USER_POSI',
     payload: userPosi
 });
+
+export const setUserCompNo = (userCompNo) => ({
+    type: 'SET_USER_Comp_No',
+    payload: userCompNo
+});
