@@ -1,42 +1,54 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react'
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react'
+import { useSelector } from 'react-redux';
 import styles from '../../styles/layout/org_chart.module.css';
+import axios from 'axios';
 
 const OrgChart = forwardRef((props, ref) => {
-    const [isDropdown, setIsDropdown] = useState({
-        // 회사 내부 조직도
-        orgChart: true,
-        // CEO
-        ceo: false,
-        // S/W 연구팀
-        swSearch: false,
-        // 전략기획팀
-        strategicPlanning: false,
-        // 경영지원팀
-        managementSupport: false,
-        // SaaS 운영팀
-        saasOperation: false,
-        // 서비스 개발팀
-        serviceDevelopment: false,
-        // 플랫폼팀
-        platform: false,
-        // 콘텐츠 기획팀
-        contentPlanning: false
-    });
+    const [isDropdown, setIsDropdown] = useState([]);
+    const [menuList, setMenuList] = useState([]);
 
-    // ref를 통해 상위 컴포넌트에서 closeAllDropdowns 접근 가능
+    // 조직도 데이터
+    const userData = useSelector((state) => state.user.data);
+
+    // `localStorage`에서 `jwt` 값을 가져오기
+    const token = localStorage.getItem('jwt');
+
+    useEffect(() => {
+        const fetchMenuList = async () => {
+            if (token) {
+                try {
+                    const response = await axios.post('/api/getMenuList',
+                        {},  // 빈 객체로 전달하거나 필요한 요청 데이터를 여기에 전달
+                        {
+                            headers: {
+                                'Authorization': token
+                            }
+                        }
+                    );
+                    setMenuList(response.data);
+                    console.log('Menu list fetched:', response.data);
+                } catch (error) {
+                    console.error('Error fetching menu list:', error);
+                }
+            } else {
+                console.log('토큰이나 사용자 데이터가 없습니다.');
+            }
+        };
+
+        fetchMenuList();
+    }, [token, userData]);
+
     useImperativeHandle(ref, () => ({
         closeAllDropdowns,
     }));
 
     const toggleDropdown = (menu) => {
         setIsDropdown((menuState) => ({
-            // 이전 setIsDropdown 상태 불러오기
             ...menuState,
             [menu]: !menuState[menu]
         }));
     };
 
-    // 모두 닫기 메서드
     const closeAllDropdowns = () => {
         setIsDropdown((prevState) =>
             Object.keys(prevState).reduce((acc, key) => {
@@ -46,82 +58,48 @@ const OrgChart = forwardRef((props, ref) => {
         );
     };
 
-    const menuList = [
-        {
-            name: '조직도', key: 'orgChart', subMenu: [
-                {
-                    name: 'CEO', key: 'ceo', subMenu: [
-                        { name: '홍길동', key: '홍길동', type: 'user' }
-                    ]
-                },
-                {
-                    name: 'S/W 연구팀', key: 'swSearch', subMenu: [
-                        { name: '하태홍 전무', key: '하태홍', type: 'user' },
-                        { name: 'SaaS 운영팀', key: 'saasOperation', count: 6 },
-                        { name: '서비스 개발팀', key: 'serviceDevelopment', count: 8 },
-                        { name: '플랫폼팀', key: 'platform', count: 10 },
-                        {
-                            name: '콘텐츠 기획팀', key: 'contentPlanning', count: 15, subMenu: [
-                                { name: '전지현', key: '전지현', type: 'user' },
-                                { name: '장원영', key: '장원영', type: 'user' },
-                                { name: '이도현', key: '이도현', type: 'user' },
-                                { name: '박보영', key: '박보영', type: 'user' },
-                                { name: '김태리', key: '김태리', type: 'user' },
-                                { name: '박보검', key: '박보검', type: 'user' },
-                                { name: '차은우', key: '차은우', type: 'user' },
-                                { name: '김수현', key: '김수현', type: 'user' },
-                                { name: '마동석', key: '마동석', type: 'user' },
-                                { name: '변우석', key: '변우석', type: 'user' },
-                                { name: '김지원', key: '김지원', type: 'user' },
-                                { name: '박지환', key: '박지환', type: 'user' },
-                                { name: '박성훈', key: '박성훈', type: 'user' },
-                                { name: '이제훈', key: '이제훈', type: 'user' },
-                                { name: '손석구', key: '손석구', type: 'user' },
-                            ]
-                        }
-                    ]
-                },
-                { name: '전략기획팀', key: 'strategicPlanning' },
-                { name: '경영지원팀', key: 'managementSupport' },
-            ],
-        },
-    ]
-
     const handleDragStart = (e, person) => {
         e.dataTransfer.setData('person', JSON.stringify(person)); // 드래그한 데이터를 저장
         console.log('Dragging:', person);
     };
 
     const renderMenu = (menu) => {
-        const isUser = `${menu.type}` === 'user'? true : false;
-        const icon = isDropdown[menu.key] ? `📂` : `📁`;
         return (
-            <li key={menu.key} style={{listStyle: 'none'}}>
-                <button onClick={() => toggleDropdown(menu.key)} 
-                    style={{ fontWeight: isDropdown[menu.key] ? 'bold' : 'normal'}}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, menu)} // 모든 항목에 드래그 이벤트 처리
-                >
-                    {isUser ? `🧑‍💼` : icon }
-                    {menu.name}
-                    {menu.count && ` (${menu.count}명)`}
-                </button>
-                {isDropdown[menu.key] && menu.subMenu && (
-                    <ul className={styles.orgChartList}>
-                        {menu.subMenu.map((subMenu) => renderMenu(subMenu))}
+            <li key={menu.department} style={{ listStyle: 'none' }}>
+                <strong>{menu.department}</strong>
+                {menu.subMenu && (
+                    <ul>
+                        {menu.subMenu.map((team) => (
+                            <li key={team.name} style={{ marginLeft: '20px', listStyle: 'none' }}>
+                                <button onClick={() => toggleDropdown(team.name)}>
+                                    {isDropdown[team.name] ? '📂' : '📁'} {team.name}
+                                </button>
+                                {isDropdown[team.name] && team.members && (
+                                    <ul style={{ marginLeft: '20px' }}>
+                                        {team.members.map((member) => (
+                                            <li key={member.key} style={{ listStyle: 'none' }}>
+                                                🧑‍💼 {member.name}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </li>
+                        ))}
                     </ul>
                 )}
             </li>
         );
     };
+    
 
     return (
         <div className={styles.container_orgChart}>
-            <ul className={styles.orgChartList}>
-                {menuList.map((menu) => renderMenu(menu))}
-            </ul>
-        </div>
+        <ul className={styles.orgChartList}>
+            {menuList.map((menu) => renderMenu(menu))}
+        </ul>
+    </div>
     );
 });
+
 
 export default OrgChart;

@@ -4,14 +4,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000")
 public class EmployeeController {
 
     @Autowired
@@ -37,6 +39,26 @@ public class EmployeeController {
         }
 
         return ResponseEntity.ok("Employee with ID " + id + " updated successfully.");
+    }
+
+    @PostMapping("/getMenuList")
+    public List<EmployeeDTO> getMenuList() {
+        String emp_code =  SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("emp_code : " + emp_code);
+        int emp_comp_no = employeeService.getEmpCompNo(emp_code);
+        List<EmployeeDTO> menulist = employeeService.getEmpMenuList(emp_comp_no);
+
+
+        // 부서별로 데이터를 그룹화
+        Map<String, DepartmentDTO> departMap = new HashMap<String, DepartmentDTO>();
+
+//        for (EmployeeDTO emp : menulist) {
+//            String department = emp.getEmp_dept_no();
+//        }
+
+
+
+        return menulist;
     }
 
 }
