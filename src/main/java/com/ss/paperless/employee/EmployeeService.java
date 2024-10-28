@@ -55,8 +55,8 @@ public class EmployeeService implements UserDetailsService {
         return employeeRepository.findByEmpEmail(email);
     }
 
-    public List<EmployeeDTO> getEmpMenuList(int compNo) {
-		return mapper.getEmpMenuList(compNo);
+    public List<EmployeeDTO> getEmpDepartMenuList(int compNo) {
+		return mapper.getEmpDepartMenuList(compNo);
     }
 
 	public EmployeeEntity findByEmpCode(String empCode) {
