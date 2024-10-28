@@ -12,9 +12,12 @@ const userSlice = createSlice({
     },
     setUserPosi: (state, action) => {
       state.userPosi = action.payload;
-  },
+    },
+    setUserCompNo: (state, action) => {
+      state.userCompNo = action.payload;
+    },
   },
 });
 
-export const { setUserData, setUserPosi } = userSlice.actions;
+export const { setUserData, setUserPosi, setUserCompNo } = userSlice.actions;
 export default userSlice.reducer;

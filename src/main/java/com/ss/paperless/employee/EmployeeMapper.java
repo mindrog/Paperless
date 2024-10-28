@@ -2,6 +2,8 @@ package com.ss.paperless.employee;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface EmployeeMapper {
 	public EmployeeDTO EmployeeLogin(EmployeeDTO employee);
@@ -15,4 +17,8 @@ public interface EmployeeMapper {
 	public String getUserPosi(String emp_code);
 
 	public int updateEmp(Long id);
+
+	List<EmployeeDTO> getEmpMenuList(int compNo);
+
+	int getEmpCompNo(String empCode);
 }

@@ -1,10 +1,8 @@
 package com.ss.paperless.employee;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmployeeService implements UserDetailsService {
 	private final EmployeeRepository employeeRepository;
+
 
 	public EmployeeService(EmployeeRepository employeeRepository) {
 		this.employeeRepository = employeeRepository;
@@ -34,7 +33,9 @@ public class EmployeeService implements UserDetailsService {
 	    System.out.println(userData);
 	    return new CustomUserDetails(userData);
 	}
-
+	public int getEmpCompNo(String emp_code){
+		return mapper.getEmpCompNo(emp_code);
+	}
 	public EmployeeDTO getEmpInfo(String emp_code) {
 		return mapper.getEmpInfo(emp_code);
 		
@@ -52,6 +53,10 @@ public class EmployeeService implements UserDetailsService {
 	
     public EmployeeEntity findByEmail(String email) {
         return employeeRepository.findByEmpEmail(email);
+    }
+
+    public List<EmployeeDTO> getEmpMenuList(int compNo) {
+		return mapper.getEmpMenuList(compNo);
     }
 
 	public EmployeeEntity findByEmpCode(String empCode) {
