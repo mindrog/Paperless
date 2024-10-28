@@ -53,6 +53,10 @@ public class EmployeeService implements UserDetailsService {
     public EmployeeEntity findByEmail(String email) {
         return employeeRepository.findByEmpEmail(email);
     }
+
+	public EmployeeEntity findByEmpCode(String empCode) {
+		return employeeRepository.findByEmpCode(empCode);
+	}
 }
 
 	
