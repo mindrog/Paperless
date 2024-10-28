@@ -155,12 +155,15 @@ CREATE TABLE `Attachment` (
 
 -- Emailmessage 테이블 생성
 CREATE TABLE `Emailmessage` (
-    `email_no` BIGINT NOT NULL,
-    `email_writer` BIGINT NOT NULL,
-    `email_recipient` BIGINT NOT NULL,
+    `email_no` BIGINT NOT NULL AUTO_INCREMENT,
+    `email_writer` VARCHAR(20) NOT NULL,
+    `email_content` VARCHAR(500) NOT NULL,
+    `email_recipient` VARCHAR(20) NOT NULL,
+    `email_status` VARCHAR(100) NOT NULL DEFAULT 'unread',
+    `email_send_date` TIMESTAMP NOT NULL DEFAULT NOW(),
     PRIMARY KEY (`email_no`),
-    FOREIGN KEY (`email_writer`) REFERENCES `Employee` (`emp_no`),
-    FOREIGN KEY (`email_recipient`) REFERENCES `Employee` (`emp_no`)
+    FOREIGN KEY (`email_writer`) REFERENCES `Employee` (`emp_code`),
+    FOREIGN KEY (`email_recipient`) REFERENCES `Employee` (`emp_code`)
 );
 
 -- EmailAttachment 테이블 (이메일과 첨부파일의 관계)
