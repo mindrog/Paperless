@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet';
+import { useSearchParams } from 'react-router-dom';
 import styles from '../../styles/company/company_chatting.module.css'
 import { Button } from 'react-bootstrap';
 import EmojiPicker from 'emoji-picker-react';
@@ -7,11 +8,12 @@ import { format, isSameDay, isValid, parse } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import useWebSocket from 'react-use-websocket';
 import api from '../layout/api';
+import { connect } from 'react-redux';
 
 // .env 파일
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
-function CompanyUserChatting() {
+function Chatting() {
     // 더미 데이터
     // 알고리즘: 연결한 소켓 기준 채팅방에서 불러온 메시지들을 시간 순으로 정리해서 불러온 후 보낸 사람과 받는 사람의 기준으로 로그인 된 아이디와 비교하여 구분 (백엔드 연결 전 : 하드코딩)
     // 메시지 sender: 보낸 사람, recipient: 받는 사람, content: 메시지 내용, count: 읽지 않은 사람(수신 수), state: 메시지 읽음 상태, sendTime: 메시지를 전송한 시간 
@@ -87,9 +89,6 @@ function CompanyUserChatting() {
     // 메시지 목록 상태 변수
     const [messageList, setMessageList] = useState([]);
 
-    // WEBSOCKET_URL 저장 변수
-    const [socketUrl] = useState(WEBSOCKET_URL);
-
     // 메시지를 저장하고 출력하는 변수
     const [message, setMessage] = useState('');
 
@@ -115,6 +114,12 @@ function CompanyUserChatting() {
     // mainContainerRef 참조 변수
     const mainContainerRef = useRef(null);
 
+    // socket
+    const [socketUrl, setSocketUrl] = useState(null);
+
+    // 채팅 메시지 입력하면 전송 버튼 활성화
+    const isSendButtonDisabled = message.trim() === '' || readyState !== 1;
+
     // 보낸 메시지 관리
     // sendMessage: WebSocket 서버로 메시지를 보내는 함수
     //  클라이언트가 서버에 데이터를 전송할 때 사용
@@ -126,8 +131,8 @@ function CompanyUserChatting() {
         onOpen: () => console.log('WebSocket 연결 성공!'),
         onClose: () => console.log('WebSocket 연결 해제됨'),
         onError: (event) => console.error('WebSocket 에러:', event),
-        shouldReconnect: (CloseEvent) => true,
-    });
+        shouldReconnect: () => false, // 연결 실패 시 재연결 막기
+    }, !!socketUrl); // URL이 있을 때에만 WebSocket 연결
 
     // WebSocket 연결 상태 메시지 매핑
     const connectionStatus = useMemo(() => ({
@@ -135,7 +140,7 @@ function CompanyUserChatting() {
         1: '연결됨',
         2: '연결 종료 시도 중..',
         3: '연결 종료'
-    }), [readyState]);
+    }), []);
 
     // 돋보기 토글 상태 변환 메서드
     const selectToggle = () => {
@@ -163,25 +168,37 @@ function CompanyUserChatting() {
     const handlerSendMessage = async () => {
         if (message.trim() && emp && emp.participants) {
             try {
-                // 새 메시지 전송할 경우
+                // WebSocket 연결 시도
+                setSocketUrl(WEBSOCKET_URL); // 입력 시 WebSocket을 연결
+
                 const newMessage = {
                     chat_room_no: emp.chat_room_no,
                     chat_sender: empNo,
                     chat_recipient: emp.participants.map(p => p.emp_no),
                     chat_content: message,
                     chat_type: 'text',
-                    chat_date: new Date().toISOString(),
+                    chat_date: new Date().toISOString()
                 };
-                
-                // REST API를 통해 메시지 전송
-                sendMessage(JSON.stringify(newMessage));
-                console.log('메시지 전송 중:', newMessage);
 
-                await api.sendMessage(newMessage);
+                if (readyState === 1) {
+                    // 연결 상태가 '열림'인 경우
+                    // 메시지 전송
+                    sendMessage(JSON.stringify(newMessage));
+                    console.log('메시지 전송 중:', newMessage);
 
-                // WebSocket을 통해 메시지를 보내기도 함
-                sendMessage(prev => [...prev, newMessage]);
-                setMessage(''); // 메시지 입력란 초기화
+                    // REST API를 통해 메시지 전송
+                    await api.sendMessage(newMessage);
+
+                    // 메시지 리스트 업데이트
+                    setMessageList(prev => [...prev, newMessage]);
+                    // 메시지 입력란 초기화
+                    setMessage('');
+
+                    // WebSocket URL을 null로 설정하여 연결 해제
+                    setSocketUrl(null);
+                } else {
+                    console.warn('WebSocket이 아직 연결되지 않았습니다.');
+                }
             } catch (error) {
                 console.error('메시지 전송 중 오류 발생:', error);
             }
@@ -200,6 +217,7 @@ function CompanyUserChatting() {
     // readyState가 변경될 때마다 함수를 실행
     useEffect(() => {
         console.log('WEBSOCKET_URL:', WEBSOCKET_URL);
+        console.log('WebSocket 연결 상태:', readyState);
 
         // 연결 되었을 때
         if (readyState === 1) {
@@ -207,17 +225,14 @@ function CompanyUserChatting() {
         }
     }, [readyState]);
 
-<<<<<<< HEAD
     // 메시지 전송 후 WebSocket 연결 해제
     useEffect(() => {
-        if(lastMessage !== null && readyState === 1) {
+        if (lastMessage !== null && readyState === 1) {
             console.log('메시지 수신:', lastMessage);
-            setSocketUrl(null); // 연결 해제    
+            setSocketUrl(null);
         }
     }, [lastMessage, readyState]);
 
-=======
->>>>>>> 10a38495dd5d9353e590eae85a6de63450afd9f3
     // // chat.js에서 emp.name 가져오기
     // useEffect(() => {
     //     try {
@@ -268,13 +283,24 @@ function CompanyUserChatting() {
                 console.log('Decoded chatData:', chatData);
                 console.log('chatData.messages:', chatData.messages);
 
+                // 메시지 리스트 설정 시, 정보를 processedEmpList에서 찾아 추가
+                const processedMessages = chatData.messages.map((message) => {
+                    // 전송자 찾기
+                    const senderInfo = processedEmpList.find(emp => emp.emp_no === message.chat_sender);
+                    return {
+                        ...message,
+                        senderName: senderInfo ? senderInfo.emp_name : 'Unknown',
+                        senderProfile: senderInfo ? senderInfo.emp_profile : 'https://via.placeholder.com/60'
+                    };
+                });
+
                 // URL에서 가져온 메시지 리스트를 상태에 설정
                 // messages가 있는지 확인 후 설정
                 if (Array.isArray(chatData.messages)) {
-                    console.log("Updating messageList with:", chatData.messages);
-                    setMessageList(chatData.messages);
+                    console.log("Updating messageList with:", processedMessages);
+                    setMessageList(processedMessages);
                 } else {
-                    console.warn('Invalid messageList:', chatData.messages);
+                    console.warn('Invalid messageList:', processedMessages);
                 }
 
                 // participantNos 배열의 첫 번째 참가자를 기반으로 emp 정보 설정
@@ -337,7 +363,7 @@ function CompanyUserChatting() {
                                 // 날짜 파싱을 개선한 parseChatDate 함수 사용
                                 const messageDate = parseChatDate(message.chat_date);
                                 // 유효하지 않은 날짜는 건너뜀
-                                if (!messageDate) return null; 
+                                if (!messageDate) return null;
 
                                 // 날짜가 다른지 확인
                                 const checkDate = index === 0 || !isSameDay(new Date(messageList[index - 1].chat_date), messageDate);
@@ -360,12 +386,12 @@ function CompanyUserChatting() {
                                             </div>
                                         )}
 
-                                        <div className={`${emp?.emp_no !== message.chat_sender ? styles.sendMessageBox : styles.receiveMessageBox}`}>
+                                        <div className={`${user.emp_no === message.chat_sender ? styles.sendMessageBox : styles.receiveMessageBox}`}>
                                             <div className={styles.chatting_messageBox}>
-                                                {checkMessage && emp?.emp_no === message.chat_sender && (
+                                                {checkMessage && user.emp_no !== message.chat_sender && (
                                                     <div className={styles.sender_profile}>
-                                                        <img src={emp?.emp_profile || 'https://via.placeholder.com/60'} alt="Profile" className={styles.image} />
-                                                        <p>{message.chat_sender}</p>
+                                                        <img src={message.senderProfile} alt="Profile" className={styles.image} />
+                                                        <p>{message.senderName}</p>
                                                     </div>
                                                 )}
                                                 <div className={styles.messageBox}>
@@ -401,7 +427,7 @@ function CompanyUserChatting() {
                             <input type='text' value={message} onChange={(e) => { setMessage(e.target.value) }} placeholder='메시지를 입력하세요'></input>
                             <div className={styles.input_message_button}>
                                 <Button className={styles.input_message_attachButton}><i class="material-icons">attach_file</i></Button>
-                                <Button className={styles.input_message_sendButton} onClick={handlerSendMessage} disabled={readyState !== 1}><i class="material-icons">send</i></Button>
+                                <Button className={styles.input_message_sendButton} onClick={handlerSendMessage} disabled={isSendButtonDisabled}><i class="material-icons">send</i></Button>
                             </div>
                         </div>
                     </footer>
@@ -411,4 +437,4 @@ function CompanyUserChatting() {
     );
 };
 
-export default CompanyUserChatting;
+export default Chatting;
