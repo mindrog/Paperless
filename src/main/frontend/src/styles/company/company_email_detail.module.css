@@ -140,7 +140,9 @@
     background: none;
     border: none;
     padding: 0;
+    
     margin-right: 10px;
+    margin-bottom: 5px;
 }
 
 .backIcon:hover {
