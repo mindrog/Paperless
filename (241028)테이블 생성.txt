@@ -305,7 +305,6 @@ VALUES
     ('사장');
 
 -- employee/직원
-
 -- 시스템 관리자 
 INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
 VALUES
@@ -375,6 +374,9 @@ VALUES
 
 INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
 VALUES
+-- (Paperless 대표)
+('PL1000', 'password123', '이범상', 'beom@paperless.com', '010-1357-2468', '이범상 서명', 'https://via.placeholder.com/60', 5, 410, 10, '2019-03-10', 'admin');
+
 -- IT부서 - 개발팀
 ('PL1001', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김다미', 'dami@paperless.com', '010-1234-5678', '김다미 서명', 'https://via.placeholder.com/60', 5, 100, 3, '2021-05-12', 'user'),
 ('PL1002', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이도현', 'dohyun@paperless.com', '010-2345-6789', '이도현 서명', 'https://via.placeholder.com/60', 5, 100, 4, '2019-08-22', 'user'),

@@ -121,8 +121,8 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
                     <Table bordered striped className={styles.selectedPeopleTable}>
                       <thead>
                         <tr>
-                          <th className={styles.headquarters}>본부</th>
-                          <th className={styles.department}>부서</th>
+                          <th className={styles.headquarters}>소속 부서</th>
+                          <th className={styles.department}>소속 팀</th>
                           <th className={styles.empUser}>직원명</th>
                           <th></th>
                         </tr>
