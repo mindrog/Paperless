@@ -18,7 +18,7 @@ public interface EmployeeMapper {
 
 	public int updateEmp(Long id);
 
-	List<EmployeeDTO> getEmpMenuList(int compNo);
+	List<EmployeeDTO> getEmpDepartMenuList(int compNo);
 
 	int getEmpCompNo(String empCode);
 }
