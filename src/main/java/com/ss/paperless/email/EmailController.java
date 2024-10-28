@@ -34,7 +34,7 @@ public class EmailController {
             Principal principal) {
 
         try {
-            // 현재 로그인한 사용자 정보 가져오기 (발신자)
+            // 현재 로그인한 사용자 정보 가져오기 
             String senderEmail = principal.getName();
             EmployeeEntity sender = employeeService.findByEmail(senderEmail);
 
@@ -52,8 +52,7 @@ public class EmailController {
 
             // 첨부파일 처리 (현재는 처리하지 않음)
             if (attachments != null && !attachments.isEmpty()) {
-                // 향후 파일 처리 로직을 여기에 추가합니다.
-                // 현재는 파일을 처리하지 않고 무시합니다.
+                
             }
 
             // 응답 반환
@@ -64,7 +63,7 @@ public class EmailController {
         }
     }
 
-    // 이메일 목록 조회 (필요 시)
+    // 이메일 목록 조회 
     @GetMapping
     public ResponseEntity<?> getEmails(Principal principal) {
         try {
@@ -83,7 +82,7 @@ public class EmailController {
         }
     }
 
-    // 이메일 상세 조회 (필요 시)
+    // 이메일 상세 조회 
     @GetMapping("/{id}")
     public ResponseEntity<?> getEmailById(@PathVariable Long id) {
         try {
@@ -98,5 +97,5 @@ public class EmailController {
         }
     }
 
-    // 추가적인 엔드포인트 구현 가능
+    
 }

@@ -6,8 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Modal, Button } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-function CompanyUserEmailSend () {
+function CompanyUserEmailSend() {
     const [dragOver, setDragOver] = useState(false);
     const [files, setFiles] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +25,11 @@ function CompanyUserEmailSend () {
     const [title, setTitle] = useState('');
     const [emailContent, setEmailContent] = useState('');
 
-    
+    const employee = useSelector((state) => state.user.data); 
+
+    const email = employee ? employee.emp_email : null;
+
+    console.log(email);
 
     // 파일 업로드 제한 설정
     const MAX_FILES = 10;
@@ -117,42 +122,43 @@ function CompanyUserEmailSend () {
     // 이메일 작성 폼에서 보내기 버튼 클릭 시
     const handleFormSend = async (e) => {
         e.preventDefault();
-      
+
         // FormData 객체 생성
         const formData = new FormData();
+        formData.append('senderEmail')
         formData.append('receiverEmail', receiverEmail);
         formData.append('ccEmail', ccEmail);
         formData.append('title', title);
         formData.append('emailContent', emailContent);
-      
+
         try {
-          const response = await fetch('/api/emails/send', {
-            method: 'POST',
-            headers: {
-              // 파일 업로드가 없으므로 JSON 형식으로 보냅니다.
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              receiverEmail,
-              ccEmail,
-              title,
-              emailContent,
-            }),
-          });
-      
-          if (response.ok) {
-            alert('이메일이 성공적으로 전송되었습니다.');
-            // 폼 초기화 (필요에 따라)
-            navigator('/Company/user/email');
-          } else {
-            // 에러 처리
-            alert('이메일 전송에 실패했습니다.');
-          }
+            const response = await fetch('/api/emails/send', {
+                method: 'POST',
+                headers: {
+                    // 파일 업로드가 없으므로 JSON 형식으로 보냅니다.
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    receiverEmail,
+                    ccEmail,
+                    title,
+                    emailContent,
+                }),
+            });
+
+            if (response.ok) {
+                alert('이메일이 성공적으로 전송되었습니다.');
+
+                navigator('/Company/user/email');
+            } else {
+                // 에러 처리
+                alert('이메일 전송에 실패했습니다.');
+            }
         } catch (error) {
-          console.error('Error sending email:', error);
-          alert('이메일 전송 중 오류가 발생했습니다.');
+            console.error('Error sending email:', error);
+            alert('이메일 전송 중 오류가 발생했습니다.');
         }
-      };
+    };
 
     // 첨부파일 총 크기 계산 함수
     const calculateTotalFileSize = () => {
@@ -165,9 +171,9 @@ function CompanyUserEmailSend () {
         // if (bytes < 1024) {
         //     return `${bytes} bytes`;
         // } else 
-        if(bytes===0){
+        if (bytes === 0) {
             return `0 KB`;
-        }else if (bytes < 1024 * 1024) {
+        } else if (bytes < 1024 * 1024) {
             return `${(bytes / 1024).toFixed(1)} KB`;
         } else {
             return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
@@ -315,26 +321,26 @@ function CompanyUserEmailSend () {
                 </Modal.Header>
                 <Modal.Body>
                     <div className={styles['email-preview']}>
-                        
+
                         <h3 className={styles['email-title']}>{title}</h3>
-                       
+
                         <p><strong>보낸 사람:</strong> me@paperless.com</p>
                         <p><strong>받는 사람:</strong> {receiverEmail}</p>
                         <p><strong>참조:</strong> {ccEmail}</p>
-                        
+
                         <div className={styles['attachment-section']}>
-                        
+
                             <hr className={styles['attachment-divider']} />
-                            <p>첨부파일: 
-                            {files.length === 0 ? (
-                                ' 첨부한 파일이 없습니다.'
-                            ) : files.length === 1 ? (
-                                ` ${files[0].name} (${formatBytes(files[0].size)})`
-                            ) : (
-                               
-                                ` 첨부파일 ${files.length}개 (${calculateTotalFileSize()})`
-                                
-                            )}
+                            <p>첨부파일:
+                                {files.length === 0 ? (
+                                    ' 첨부한 파일이 없습니다.'
+                                ) : files.length === 1 ? (
+                                    ` ${files[0].name} (${formatBytes(files[0].size)})`
+                                ) : (
+
+                                    ` 첨부파일 ${files.length}개 (${calculateTotalFileSize()})`
+
+                                )}
                             </p>
                             <hr className={styles['attachment-divider']} />
                         </div>
