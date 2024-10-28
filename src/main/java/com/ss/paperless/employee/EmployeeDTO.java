@@ -24,6 +24,8 @@ public class EmployeeDTO {
     private String emp_profile;
     private Long emp_comp_no;
     private Long emp_dept_no;
+    private String dept_name;
+    private String dept_team_name;
     private Long emp_posi_no;
     private Timestamp emp_enroll_date;
     private Timestamp emp_join_date;

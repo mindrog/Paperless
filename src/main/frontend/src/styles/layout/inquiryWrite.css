@@ -57,7 +57,11 @@
     padding: 0 10px; /* 입력 여백 추가 */
     outline: none; /* 기본 아웃라인 제거 */
     transition: border-color 0.3s, border-width 0.3s;
-    
+    /* 코드 추가 - ming */
+    flex: 1; /* 입력 필드의 크기 조절 */
+    padding: 8px;
+    font-size: 16px;
+    align-items: baseline;
 
 }
 .requestTitleInput,
@@ -76,6 +80,9 @@
     margin: 0;
     padding: 0;
     text-align: start;
+    /* 코드 추가 - ming */
+    font-size: 16px;
+    font-weight: bold;
 }
 .requestInput{
     height: 6vh;
@@ -84,7 +91,9 @@
     align-content: center;
     justify-content: baseline;
     vertical-align: middle; 
-    
+    /* 코드 추가 - ming */
+    gap: 10px;
+    align-items: baseline;
 }
 .requestInputCon{
     display: flex;

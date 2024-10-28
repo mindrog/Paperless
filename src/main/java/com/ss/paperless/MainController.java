@@ -24,8 +24,10 @@ import com.ss.paperless.employee.LoginDTO;
 @RestController
 @RequestMapping("/api")
 public class MainController {
+
 	@Autowired
 	EmployeeService empService;
+
 	@GetMapping("/name") 
 	public String CompanyUser(){
 		System.out.println("CompanyUser located ...");
