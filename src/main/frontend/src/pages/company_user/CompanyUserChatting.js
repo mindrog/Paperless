@@ -11,7 +11,7 @@ import api from '../layout/api';
 // .env 파일
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
-function Chatting() {
+function CompanyUserChatting() {
     // 더미 데이터
     // 알고리즘: 연결한 소켓 기준 채팅방에서 불러온 메시지들을 시간 순으로 정리해서 불러온 후 보낸 사람과 받는 사람의 기준으로 로그인 된 아이디와 비교하여 구분 (백엔드 연결 전 : 하드코딩)
     // 메시지 sender: 보낸 사람, recipient: 받는 사람, content: 메시지 내용, count: 읽지 않은 사람(수신 수), state: 메시지 읽음 상태, sendTime: 메시지를 전송한 시간 
@@ -435,4 +435,4 @@ function Chatting() {
     );
 };
 
-export default Chatting;
+export default CompanyUserChatting;
