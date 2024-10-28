@@ -58,6 +58,10 @@ public class EmployeeService implements UserDetailsService {
     public List<EmployeeDTO> getEmpMenuList(int compNo) {
 		return mapper.getEmpMenuList(compNo);
     }
+
+	public EmployeeEntity findByEmpCode(String empCode) {
+		return employeeRepository.findByEmpCode(empCode);
+	}
 }
 
 	

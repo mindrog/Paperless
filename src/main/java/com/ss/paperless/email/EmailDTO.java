@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class EmailDTO {
 	private int email_no;
 	private String email_writer; //작성자 (fk)
+	private String email_title;
 	private String email_content; //내용
 	private String email_recipient; //수신자 (fk)
 	private String email_status; //상태 (읽음, 안읽음)
