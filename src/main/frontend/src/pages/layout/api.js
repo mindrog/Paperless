@@ -79,6 +79,8 @@ api.getChatCountByRoomNo = (room_no) => {
 
 // 8. 채팅 메시지 전송 (POST 요청)
 api.sendMessage = (data) => {
+   // 데이터 확인
+  console.log('Sending message data:', data);
   // 새로운 메시지를 전송함 (데이터에는 메시지 내용이 포함됨)
   return api.post('/chat', data);
 };
