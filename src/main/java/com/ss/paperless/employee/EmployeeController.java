@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -42,23 +43,29 @@ public class EmployeeController {
     }
 
     @PostMapping("/getMenuList")
-    public List<EmployeeDTO> getMenuList() {
+    public Map<Object, List<EmployeeDTO>> getMenuList() {
         String emp_code =  SecurityContextHolder.getContext().getAuthentication().getName();
         System.out.println("emp_code : " + emp_code);
         int emp_comp_no = employeeService.getEmpCompNo(emp_code);
-        List<EmployeeDTO> menulist = employeeService.getEmpMenuList(emp_comp_no);
-
+        List<EmployeeDTO> menulist = employeeService.getEmpDepartMenuList(emp_comp_no);
+        System.out.println("menulist : " + menulist);
 
         // 부서별로 데이터를 그룹화
-        Map<String, DepartmentDTO> departMap = new HashMap<String, DepartmentDTO>();
+        Map<Object, List<EmployeeDTO>> departmentGroupedMenu = menulist.stream()
+                .collect(Collectors.groupingBy(EmployeeDTO::getDept_name));
+        System.out.println("departmentGroupedMenu : " + departmentGroupedMenu);
 
-//        for (EmployeeDTO emp : menulist) {
-//            String department = emp.getEmp_dept_no();
-//        }
+        for (EmployeeDTO emp : menulist) {
+            Long departNo = emp.getEmp_dept_no();       // 부서코드
+            String departName = emp.getDept_name();     // 부서 이름
+            String team = emp.getDept_team_name();      // 팀 이름
 
+            System.out.println("departNo : " + departNo);
+            System.out.println("departName : " + departName);
+            System.out.println("team : " + team);
+        }
 
-
-        return menulist;
+        return departmentGroupedMenu;
     }
 
 }
