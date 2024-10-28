@@ -143,12 +143,32 @@ CREATE TABLE `Reference` (
     FOREIGN KEY (`refe_emp_no`) REFERENCES `Employee` (`emp_no`)
 );
 
--- Attachment 테이블 생성
+-- Attachment 테이블 (첨부파일 기본 정보 저장)
 CREATE TABLE `Attachment` (
+    `atta_no` BIGINT NOT NULL AUTO_INCREMENT,
+    `atta_key` VARCHAR(500) NOT NULL,
+    `atta_url` VARCHAR(1000) NOT NULL,
+    `atta_original_name` VARCHAR(500) NOT NULL,
+    `atta_size` BIGINT NOT NULL,
+    PRIMARY KEY (`atta_no`)
+);
+
+-- EmailAttachment 테이블 (이메일과 첨부파일의 관계)
+CREATE TABLE `EmailAttachment` (
+    `email_no` BIGINT NOT NULL,
     `atta_no` BIGINT NOT NULL,
-    `atta_repo_no` BIGINT NULL,
-    PRIMARY KEY (`atta_no`),
-    FOREIGN KEY (`atta_repo_no`) REFERENCES `Report` (`repo_no`)
+    PRIMARY KEY (`email_no`, `atta_no`),
+    FOREIGN KEY (`email_no`) REFERENCES `Emailmessage` (`email_no`),
+    FOREIGN KEY (`atta_no`) REFERENCES `Attachment` (`atta_no`)
+);
+
+-- ChatAttachment 테이블 (채팅과 첨부파일의 관계)
+CREATE TABLE `ChatAttachment` (
+    `chat_no` BIGINT NOT NULL,
+    `atta_no` BIGINT NOT NULL,
+    PRIMARY KEY (`chat_no`, `atta_no`),
+    FOREIGN KEY (`chat_no`) REFERENCES `ChatMessage` (`chat_no`),
+    FOREIGN KEY (`atta_no`) REFERENCES `Attachment` (`atta_no`)
 );
 
 -- Scheduler 테이블 생성
@@ -180,7 +200,9 @@ CREATE TABLE `Inquiry` (
     
     PRIMARY KEY (`inqu_no`)
 );
-CREATE TABLE `request` (
+
+-- `Request`  테이블 생성
+CREATE TABLE `Request` (
     `requ_no` BIGINT NOT NULL AUTO_INCREMENT,
     `requ_title` VARCHAR(100) NOT NULL,
     `requ_writer` VARCHAR(100) NOT NULL,
