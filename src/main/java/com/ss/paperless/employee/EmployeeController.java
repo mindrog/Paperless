@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/emp")
+@RequestMapping("/api")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
+    @PutMapping("/emp/updateEmp/{id}")
     public ResponseEntity<String> updateEmployee(@PathVariable Long id) {
         log.info("Updating employee with id: " + id);
 

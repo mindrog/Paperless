@@ -57,6 +57,7 @@
     padding: 0 10px; /* 입력 여백 추가 */
     outline: none; /* 기본 아웃라인 제거 */
     transition: border-color 0.3s, border-width 0.3s;
+    
 
 }
 .requestTitleInput,
@@ -82,6 +83,7 @@
     flex-direction: row;
     align-content: center;
     justify-content: baseline;
+    vertical-align: middle; 
     
 }
 .requestInputCon{

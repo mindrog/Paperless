@@ -46,33 +46,33 @@ function CompanyUserStock() {
     );
   };
 
-  // const handleUpdate = async (id) => {
-  //   const updatedItem = inventoryData.find((item) => item.id === id);
-  //   console.log("Updated item:", updatedItem);
+  const handleUpdate = async (id) => {
+    const updatedItem = inventoryData.find((item) => item.id === id);
+    console.log("Updated item:", updatedItem);
 
-  //   try {
-  //     const response = await fetch(`/api/update-item/${id}`, {
-  //       method: 'PUT',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(updatedItem),
-  //     });
+    try {
+      const response = await fetch(`/api/update-item/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedItem),
+      });
   
-  //     // 통신 에러 발생 시
-  //     if (!response.ok) {
-  //       throw new Error('Network response was not ok');
-  //     }
+      // 통신 에러 발생 시
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
   
-  //     const data = await response.json();
-  //     console.log("Server에서 받은 데이터 :", data);
+      const data = await response.json();
+      console.log("Server에서 받은 데이터 :", data);
 
-  //     alert(`Item ${id}이(가) 업데이트되었습니다.`);
-  //   } catch (error) {
-  //     console.error("Error updating item:", error);
-  //     alert("업데이트 중 오류가 발생했습니다.");
-  //   }
-  // };
+      alert(`Item ${id}이(가) 업데이트되었습니다.`);
+    } catch (error) {
+      console.error("Error updating item:", error);
+      alert("업데이트 중 오류가 발생했습니다.");
+    }
+  };
 
   const handleCloseAddModal = () => setShowAddModal(false);
   const handleCloseEditModal = () => setShowEditModal(false);
@@ -157,13 +157,13 @@ function CompanyUserStock() {
                                 />
                               </td>
                               <td>
-                                {/* <Button
+                                <Button
                                   variant="primary"
                                   className={styles.updateBtn}
                                   onClick={() => handleUpdate(item.id)}
                                 >
                                   수정
-                                </Button> */}
+                                </Button>
                               </td>
                             </tr>
                           ))}
