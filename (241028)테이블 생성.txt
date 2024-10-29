@@ -156,16 +156,16 @@ CREATE TABLE `Attachment` (
 -- Emailmessage 테이블 생성
 CREATE TABLE `Emailmessage` (
     `email_no` BIGINT NOT NULL AUTO_INCREMENT,
-    `email_writer` VARCHAR(20) NOT NULL,
+    `email_writer` BIGINT NOT NULL,
     `email_content` VARCHAR(500) NOT NULL,
-    `email_recipient` VARCHAR(20) NOT NULL,
-    `email_cc` VARCHAR(20) DEFAULT NULL,
+    `email_recipient` BIGINT NOT NULL,
+    `email_cc` BIGINT DEFAULT NULL,
     `email_status` VARCHAR(100) NOT NULL DEFAULT 'unread',
     `email_send_date` TIMESTAMP NOT NULL DEFAULT NOW(),
     PRIMARY KEY (`email_no`),
-    FOREIGN KEY (`email_writer`) REFERENCES `Employee` (`emp_code`),
-    FOREIGN KEY (`email_recipient`) REFERENCES `Employee` (`emp_code`),
-    FOREIGN KEY (`email_cc`) REFERENCES `Employee` (`emp_code`)
+    FOREIGN KEY (`email_writer`) REFERENCES `Employee` (`emp_no`),
+    FOREIGN KEY (`email_recipient`) REFERENCES `Employee` (`emp_no`),
+    FOREIGN KEY (`email_cc`) REFERENCES `Employee` (`emp_no`)
 );
 
 -- EmailAttachment 테이블 (이메일과 첨부파일의 관계)
@@ -323,7 +323,7 @@ VALUES
 ('DS1004', 'password123', '이준호', 'junho@digitalsolution.com', '010-3456-7890', '이준호 서명', 'https://via.placeholder.com/60', 1, 110, 4, '2020-01-20', 'user'),
 ('DS1005', 'password123', '박서준', 'seojun@digitalsolution.com', '010-5555-1234', '박서준 서명', 'https://via.placeholder.com/60', 1, 200, 3, '2021-07-30', 'user'),  
 ('DS1006', 'password123', '이서진', 'seojin@digitalsolution.com', '010-1010-2020', '이서진 서명', 'https://via.placeholder.com/60', 1, 200, 4, '2022-01-10', 'user'),  
-('DS1007', 'password123', '유아인', 'yooain@digitalsolution.com', '010-3030-4040', '유아인 서명', 'https://via.placeholder.com/60', 1, 210, 5, '2021-12-01', 'user'),  
+('DS1007', 'password123', '김수현', 'yooain@digitalsolution.com', '010-3030-4040', '김수현 서명', 'https://via.placeholder.com/60', 1, 210, 5, '2021-12-01', 'user'),  
 ('DS1008', 'password123', '공효진', 'gonghj@digitalsolution.com', '010-5050-6060', '공효진 서명', 'https://via.placeholder.com/60', 1, 100, 2, '2020-03-12', 'user'),  
 ('DS1009', 'password123', '정우성', 'jws@digitalsolution.com', '010-7070-8080', '정우성 서명', 'https://via.placeholder.com/60', 1, 500, 6, '2022-06-25', 'user'),  
 ('DS1010', 'password123', '박보영', 'boyoung@digitalsolution.com', '010-9090-0000', '박보영 서명', 'https://via.placeholder.com/60', 1, 100, 3, '2021-10-10', 'user');
@@ -377,7 +377,7 @@ VALUES
 INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
 VALUES
 -- (Paperless 대표)
-('PL1000', 'password123', '이범상', 'beom@paperless.com', '010-1357-2468', '이범상 서명', 'https://via.placeholder.com/60', 5, 410, 10, '2019-03-10', 'admin');
+('PL1000', 'password123', '이범상', 'beom@paperless.com', '010-1357-2468', '이범상 서명', 'https://via.placeholder.com/60', 5, 410, 10, '2019-03-10', 'admin'),
 
 -- IT부서 - 개발팀
 ('PL1001', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김다미', 'dami@paperless.com', '010-1234-5678', '김다미 서명', 'https://via.placeholder.com/60', 5, 100, 3, '2021-05-12', 'user'),
