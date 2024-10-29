@@ -1,5 +1,7 @@
 package com.ss.paperless.inquiry;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,14 @@ public class InquiryService {
 	public int GetRequest(RequestDTO requestDTO) {
 		// TODO Auto-generated method stub
 		return mapper.GetRequest(requestDTO);
+	}
+	public List<InquiryDTO> GetAdminInquiry() {
+		// TODO Auto-generated method stub
+		return mapper.GetAdminInquiry();
+	}
+	public List<InquiryDTO> GetAdminRequest() {
+		// TODO Auto-generated method stub
+		return mapper.GetAdminRequest();
 	}
 
 }
