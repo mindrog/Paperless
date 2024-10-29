@@ -70,16 +70,7 @@ public class SecurityConfig {
 
 		http.formLogin((auth) -> auth.disable());
 
-<<<<<<< HEAD
-		http.httpBasic((auth) -> auth.disable());
-=======
-        http
-        .authorizeHttpRequests((auth) -> auth
-            .mvcMatchers("/login", "/", "/join", "/api/login","/api/name","/api/userifo","/api/inquirysend","/api/requestsend","/api/getadminusers","/api/getMenuList").permitAll()
-                .mvcMatchers("/api/updateEmp/{id}").hasRole("admin")
-            .anyRequest().authenticated()
-        );
->>>>>>> e461c457521198654d7ce1abd586f1daa6aa6630
+
 
 		http.authorizeHttpRequests((auth) -> auth
 				.mvcMatchers("/login", "/", "/join", "/api/login", "/api/name", "/api/userifo", "/api/inquirysend",
