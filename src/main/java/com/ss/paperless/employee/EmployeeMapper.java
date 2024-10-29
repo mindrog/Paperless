@@ -1,5 +1,7 @@
 package com.ss.paperless.employee;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -18,7 +20,11 @@ public interface EmployeeMapper {
 
 	public int updateEmp(Long id);
 
+
+	public List<AdminEmpGetVo> GetAdminUsers();
+
 	List<EmployeeDTO> getEmpDepartMenuList(int compNo);
 
 	int getEmpCompNo(String empCode);
+
 }
