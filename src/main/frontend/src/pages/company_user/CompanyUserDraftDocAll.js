@@ -22,7 +22,7 @@ function CompanyUserDraftDocAll() {
     // 임의의 문서 데이터 생성
     const generateDocs = () => {
       const docList = [];
-      for (let i = 1; i <= 30; i++) {
+      for (let i = 1; i <= 35; i++) {
         docList.push({
           id: i,
           docNumber: `DOC-${1000 + i}`,
