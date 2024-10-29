@@ -1,6 +1,7 @@
 package com.ss.paperless;
 
 import java.lang.ProcessBuilder.Redirect;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,9 +17,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ss.paperless.employee.AdminEmpGetVo;
 import com.ss.paperless.employee.EmployeeDTO;
 import com.ss.paperless.employee.EmployeeService;
 import com.ss.paperless.employee.LoginDTO;
+
+
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -55,5 +59,10 @@ public class MainController {
 		System.out.println(emp_row_posi);
 		return emp_row_posi;
 	} 
-	
+	@GetMapping("/getadminusers")
+	public List<AdminEmpGetVo> GetAdminUsers() {
+		List<AdminEmpGetVo> adminMembers = empService.GetAdminUsers();
+		System.out.println("admin : " + adminMembers);
+		return adminMembers;
+	}
 }
