@@ -37,7 +37,7 @@ function Login() {
             const token = response.headers['authorization'];
     
             if (token) {
-                localStorage.setItem('token', token); // JWT 토큰 저장
+                localStorage.setItem('jwt', token); // JWT 토큰 저장
                 console.log('토큰 저장 완료!:', localStorage.getItem('jwt'));
     
                 const userInfoResponse = await axios.get('http://localhost:8080/api/userinfo', {
