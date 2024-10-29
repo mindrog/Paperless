@@ -1,5 +1,7 @@
 package com.ss.paperless.employee;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
@@ -15,4 +17,6 @@ public interface EmployeeMapper {
 	public String getUserPosi(String emp_code);
 
 	public int updateEmp(Long id);
+
+	public List<AdminEmpGetVo> GetAdminUsers();
 }
