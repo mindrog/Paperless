@@ -4,14 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000")
 public class EmployeeController {
 
     @Autowired
@@ -37,6 +40,32 @@ public class EmployeeController {
         }
 
         return ResponseEntity.ok("Employee with ID " + id + " updated successfully.");
+    }
+
+    @PostMapping("/getMenuList")
+    public Map<Object, List<EmployeeDTO>> getMenuList() {
+        String emp_code =  SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("emp_code : " + emp_code);
+        int emp_comp_no = employeeService.getEmpCompNo(emp_code);
+        List<EmployeeDTO> menulist = employeeService.getEmpDepartMenuList(emp_comp_no);
+        System.out.println("menulist : " + menulist);
+
+        // 부서별로 데이터를 그룹화
+        Map<Object, List<EmployeeDTO>> departmentGroupedMenu = menulist.stream()
+                .collect(Collectors.groupingBy(EmployeeDTO::getDept_name));
+        System.out.println("departmentGroupedMenu : " + departmentGroupedMenu);
+
+        for (EmployeeDTO emp : menulist) {
+            Long departNo = emp.getEmp_dept_no();       // 부서코드
+            String departName = emp.getDept_name();     // 부서 이름
+            String team = emp.getDept_team_name();      // 팀 이름
+
+            System.out.println("departNo : " + departNo);
+            System.out.println("departName : " + departName);
+            System.out.println("team : " + team);
+        }
+
+        return departmentGroupedMenu;
     }
 
 }

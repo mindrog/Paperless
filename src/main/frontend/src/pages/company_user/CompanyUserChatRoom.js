@@ -3,20 +3,22 @@ import api from '../layout/api';
 import styles from '../../styles/company/company_chatroom.module.css';
 import OrgChart from '../layout/org_chart';
 import { Button, Modal } from 'react-bootstrap';
-import { useSearchParams } from 'react-router-dom';
-import { differenceInCalendarYears, format, isToday, isYesterday } from 'date-fns';
+import { format, isToday, isYesterday } from 'date-fns';
+import { useSelector } from 'react-redux';
 
 function CompanyUserChatRoom() {
-    const [searchParams] = useSearchParams();
-    const empNo = Number(searchParams.get('emp_no'));
+    // Redux에서 사용자 정보 가져오기
+    const userData = useSelector((state) => state.user.data);
+    // const userPosi = useSelector((state) => state.user.userPosi);
 
-    // ** 더미 데이터를 이용하여 로그인 객체 하드코딩 ** //
-    // const empNo = 1; // 현재 로그인한 사용자
+    const empNo = userData.emp_no;
 
-    const [user, setUser] = useState(null); // 상태 변수로 사용자 정보를 초기화
+    // Redux에서 사용자 정보 가져온 후 저장할 상태 변수
+    const [user, setUser] = useState(null);
 
     // 직원 정보 저장 로직
     useEffect(() => {
+        console.log("userData:", userData);
         // empList에서 empNo와 일치하는 직원 찾기
         const foundUser = empList.find(emp => emp.emp_no === empNo);
         if (foundUser) {
@@ -27,52 +29,61 @@ function CompanyUserChatRoom() {
     // ** 더미 데이터 ** //
     // 직원
     const empList = [
-        { emp_no: 1, emp_name: '배수지', emp_email: 'suji0123@naver.com', emp_phone: '010-9876-5432', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_team_name: '', emp_posi_no: 6},
-        { emp_no: 2, emp_name: '장원영', emp_email: 'jang0101@naver.com', emp_phone: '010-1234-1234', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 7},
-        { emp_no: 3, emp_name: '박보영', emp_email: 'boyoung0202@naver.com', emp_phone: '010-2345-2345', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 7},
-        { emp_no: 4, emp_name: '박보검', emp_email: 'gumgum0303@gmail.com', emp_phone: '010-3456-3456', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 5},
-        { emp_no: 5, emp_name: '전지현', emp_email: 'jjh0404@naver.com', emp_phone: '010-4567-4567', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 1, emp_posi_no: 4},
-        { emp_no: 6, emp_name: '이도현', emp_email: 'dodo0505@gmail.com', emp_phone: '010-5678-5678', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 4},
-        { emp_no: 7, emp_name: '김태리', emp_email: 'kimlee0606@gmail.com', emp_phone: '010-6789-6789', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 5},
-        { emp_no: 8, emp_name: '강동원', emp_email: 'dongwon0707@naver.com', emp_phone: '010-7890-7890', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 0, emp_posi_no: 3},
+        { emp_no: 3, emp_name: '배수지', emp_email: 'suzy@digitalsolution.com', emp_phone: '010-1234-5678', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 4 },
+        { emp_no: 4, emp_name: '강동원', emp_email: 'dongwon@digitalsolution.com', emp_phone: '010-8765-4321', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 5 },
+        { emp_no: 5, emp_name: '김태리', emp_email: 'taeri@digitalsolution.com', emp_phone: '010-2345-6789', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 500, emp_posi_no: 3 },
+        { emp_no: 6, emp_name: '이준호', emp_email: 'junho@digitalsolution.com', emp_phone: '010-3456-7890', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 110, emp_posi_no: 4 },
+        { emp_no: 7, emp_name: '박서준', emp_email: 'seojun@digitalsolution.com', emp_phone: '010-5555-1234', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 200, emp_posi_no: 3 },
+        { emp_no: 8, emp_name: '이서진', emp_email: 'seojin@digitalsolution.com', emp_phone: '010-1010-2020', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 200, emp_posi_no: 4 },
+        { emp_no: 9, emp_name: '유아인', emp_email: 'yooain@digitalsolution.com', emp_phone: '010-3030-4040', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 210, emp_posi_no: 5 },
+        { emp_no: 10, emp_name: '공효진', emp_email: 'gonghj@digitalsolution.com', emp_phone: '010-5050-6060', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 2 },
     ];
 
     // 회사
     const compList = [
-	{ comp_no: 0, comp_name: 'IT 대표 업체' },
-	{ comp_no: 1, comp_name: 'Paperless' },
+        { comp_no: 1, comp_name: 'Digitalsolution' },
+        { comp_no: 2, comp_name: 'Nextware' },
     ];
 
     // 부서
     const deptList = [
-        { dept_no: 0, dept_name: 'it 개발부', dept_team_name: '콘텐츠 기획팀' },
-        { dept_no: 1, dept_name: 'it 개발부', dept_team_name: 'SW 개발팀'},
+        { dept_no: 100, dept_name: 'IT부서', dept_team_name: '개발팀' },
+        { dept_no: 110, dept_name: 'IT부서', dept_team_name: '인프라팀' },
+        { dept_no: 200, dept_name: '마케팅부서', dept_team_name: '디지털마케팅팀' },
+        { dept_no: 210, dept_name: '마케팅부서', dept_team_name: '브랜드팀' },
+        { dept_no: 300, dept_name: '영업부서', dept_team_name: '국내영업팀' },
+        { dept_no: 310, dept_name: '영업부서', dept_team_name: '해외영업팀' },
+        { dept_no: 400, dept_name: 'HR부서', dept_team_name: '채용팀' },
+        { dept_no: 410, dept_name: 'HR부서', dept_team_name: '인사관리팀' },
+        { dept_no: 500, dept_name: '구매부서', dept_team_name: '구매팀' },
+        { dept_no: 510, dept_name: '구매부서', dept_team_name: '자재관리팀' },
     ];
-    
+
     // 직급
     const posiList = [
-        { posi_no: 0, posi_name: '대표' },
-        { posi_no: 1, posi_name: '사장' },
-        { posi_no: 2, posi_name: '부장' },
-        { posi_no: 3, posi_name: '차장' },
+        { posi_no: 1, posi_name: '사원' },
+        { posi_no: 2, posi_name: '주임' },
+        { posi_no: 3, posi_name: '대리' },
         { posi_no: 4, posi_name: '과장' },
-        { posi_no: 5, posi_name: '팀장' },
-        { posi_no: 6, posi_name: '대리' },
-        { posi_no: 7, posi_name: '사원' },
+        { posi_no: 5, posi_name: '차장' },
+        { posi_no: 6, posi_name: '부장' },
+        { posi_no: 7, posi_name: '이사' },
+        { posi_no: 8, posi_name: '상무' },
+        { posi_no: 9, posi_name: '전무' },
+        { posi_no: 10, posi_name: '부사장' },
+        { posi_no: 11, posi_name: '사장' },
     ];
 
     // 직원 목록을 각 회사 정보와 함께 저장할 배열
     const processedEmpList = empList.map(emp => {
         const company = compList.find(comp => comp.comp_no === emp.emp_comp_no); // emp_comp_no와 일치하는 회사 정보 찾기
         const department = deptList.find(dept => dept.dept_no === emp.emp_dept_no); // 해당 부서 정보 찾기
-        const team = deptList.find(dept => dept.dept_no === emp.emp_dept_no);
         const position = posiList.find(posi => posi.posi_no === emp.emp_posi_no); // 해당 직급 정보 찾기
-  
+
         return {
             ...emp,
             emp_comp_name: company ? company.comp_name : 'Unknown', // 회사 이름 동적 참조
-            emp_dept_name: department ? department.dept_name : 'Unknown', // 부서 이름 동적 참조
-            emp_team_name: team ? team.dept_team_name : 'Unknown', // 팀 이름 동적 참조
+            emp_dept_name: department ? `${department.dept_name}${department.dept_team_name ? ' - ' + department.dept_team_name : ''}` : 'Unknown', // 부서, 팀 이름 동적 참조
             emp_posi_name: position ? position.posi_name : 'Unknown' // 직급 이름 동적 참조
         };
     });
@@ -92,37 +103,17 @@ function CompanyUserChatRoom() {
     // 프로필 데이터에 대한 객체
     const [profileInfo, setProfileInfo] = useState({});
 
-    // 모달창 상태 메서드 (Close)
-    const closeProfileModal = () => {
-        setProfileModal(false);
-    };
-
-    // 채팅 목록의 프로필 클릭할 때 메서드
-    const clickProfile = (emp_no) => {
-        console.log("emp_no:", emp_no);
-        if (emp_no) {
-            // 전달된 emp_no를 통해 사용자 정보를 찾고 업데이트
-            const selectedProfile = processedEmpList.find(emp => emp.emp_no === emp_no);
-            console.log("selectedProfile:", selectedProfile);
-            if (selectedProfile) {
-                setProfileInfo(selectedProfile);
-                console.log("profileInfo:", profileInfo);
-            } else {
-                console.error(`Profile not found for emp_no: ${emp_no}`);
-            }
-        } else {
-            // 기본 값 또는 여러 명일 경우 기본 설정
-            setProfileInfo({ emp_name: '그룹', emp_position: '' }); // 예시 값으로 기본 설정
-        }
-        setProfileModal(true);
-    }
-
     // 창이 열려있는지 확인하는 변수
     const [openChats, setOpenChats] = useState([]);
 
     // 새 창이 열릴 때마다 위치 조정해주는 변수
     const [offsetDown, setOffsetDown] = useState(0);
     const [offsetRight, setOffsetRight] = useState(0);
+
+    // 모달창 상태 메서드 (Close)
+    const closeProfileModal = () => {
+        setProfileModal(false);
+    };
 
     // 날짜 포맷하는 함수
     const formatChatDate = (dateString) => {
@@ -136,6 +127,23 @@ function CompanyUserChatRoom() {
         }
     }
 
+    // 채팅 목록의 프로필 클릭할 때 메서드
+    const clickProfile = (emp_no) => {
+        if (emp_no) {
+            // 전달된 emp_no를 통해 사용자 정보를 찾고 업데이트
+            const selectedProfile = processedEmpList.find(emp => emp.emp_no === emp_no);
+            if (selectedProfile) {
+                setProfileInfo(selectedProfile);
+            } else {
+                console.error(`Profile not found for emp_no: ${emp_no}`);
+            }
+        } else {
+            // 기본 값 또는 여러 명일 경우 기본 설정
+            setProfileInfo({ emp_name: '그룹', emp_position: '' }); // 예시 값으로 기본 설정
+        }
+        setProfileModal(true);
+    }
+
     // 채팅 새 창
     const chatting = async (room_no) => {
         try {
@@ -145,19 +153,33 @@ function CompanyUserChatRoom() {
             const room = chatRoomList.find(room => room.room_no === room_no);
 
             if (!room) return;
-            
+
             const openChatRoom = openChats.find(chat => chat.room_no === room_no);
-            
+
             if (openChatRoom && openChatRoom.window && !openChatRoom.window.closed) {
                 // 열려있는 창 중에 같은 room_no의 창이 있다면 해당 창 보여주기
                 openChatRoom.window.focus();
             } else {
+                // 로그인한 사용자의 정보 찾기
+                const currentUser = processedEmpList.find(emp => emp.emp_no === user.emp_no);
+
                 // 채팅창으로 넘길 객체
                 const chatData = {
                     room_no,
-                    participantNos: room.participantNos,
-                    participants: room.participantNames,
+                    participantNos: room.participantNos || [],
+                    participants: room.participantNames || '',
                     messages: chatMessages[room_no] || [],
+                    currentUser: currentUser ? {
+                        emp_no: currentUser.emp_no,
+                        emp_name: currentUser.emp_name,
+                        emp_email: currentUser.emp_email,
+                        emp_phone: currentUser.emp_phone,
+                        emp_comp_name: currentUser.emp_comp_name,
+                        emp_dept_name: currentUser.emp_dept_name,
+                        emp_team_name: currentUser.emp_team_name,
+                        emp_posi_name: currentUser.emp_posi_name,
+                        emp_profile: currentUser.emp_profile,
+                    } : {} // currentUser가 없을 경우 빈 객체로 처리
                 };
 
                 // 위치 조정
@@ -167,7 +189,7 @@ function CompanyUserChatRoom() {
                 }
 
                 const encodedData = encodeURIComponent(JSON.stringify(chatData));
-                
+
                 // // 참가자 정보와 메시지 저장
                 // // JSON.stringify: 문자열로 저장
                 // localStorage.setItem(`chatting-room-${room_no}`, JSON.stringify({
@@ -216,27 +238,27 @@ function CompanyUserChatRoom() {
                 if (Array.isArray(chatRooms)) {
                     // 각 채팅방의 room_participants를 processedEmpList 메서드로 처리하여 참가자의 숫자형 데이터를 이름인 문자열로 생성
                     const processedChatRooms = chatRooms.map(room => {
-                            // 로그인 사용자를 제외한 다른 참가자들만 각 채팅방 목록 이름에 저장
-                            // filter로 사용자를 제외하고 남은 participant를 find 한다
-                            const otherParticipants = room.room_participants.filter(participant => String(participant) !== String(user.emp_no)).map(participant => {
-                                // paricipant를 processedEmpList 메서드로 문자열 생성
-                                const emp = processedEmpList.find(e => e.emp_no === Number(participant));
-                                // 해당 내용이 있다면 저장하고 없으면 ''로 저장
-                                return emp ? { emp_no: emp.emp_no, emp_name: emp.emp_name } : { emp_no: participant, emp_name: '' };
-                            });
+                        // 로그인 사용자를 제외한 다른 참가자들만 각 채팅방 목록 이름에 저장
+                        // filter로 사용자를 제외하고 남은 participant를 find 한다
+                        const otherParticipants = room.room_participants.filter(participant => String(participant) !== String(user.emp_no)).map(participant => {
+                            // paricipant를 processedEmpList 메서드로 문자열 생성
+                            const emp = processedEmpList.find(e => e.emp_no === Number(participant));
+                            // 해당 내용이 있다면 저장하고 없으면 ''로 저장
+                            return emp ? { emp_no: emp.emp_no, emp_name: emp.emp_name } : { emp_no: participant, emp_name: '' };
+                        });
 
-                            // 참가자 emp_no만 추출하여 배열로 저장
-                            const participantNos = otherParticipants.map(part => part.emp_no);
+                        // 참가자 emp_no만 추출하여 배열로 저장
+                        const participantNos = otherParticipants.map(part => part.emp_no);
 
-                            // 참가자 이름만 추출하여 ,로 연결
-                            const participantNames = otherParticipants.map(part => part.emp_name).join(', ');
-                           
-                            // 각 room에 participantNames와 participantNos 추가
-                            return {
-                                ...room,
-                                participantNos,     // 참가자 emp_no 배열
-                                participantNames    // 참가자 이름 문자열
-                            };
+                        // 참가자 이름만 추출하여 ,로 연결
+                        const participantNames = otherParticipants.map(part => part.emp_name).join(', ');
+
+                        // 각 room에 participantNames와 participantNos 추가
+                        return {
+                            ...room,
+                            participantNos,     // 참가자 emp_no 배열
+                            participantNames    // 참가자 이름 문자열
+                        };
                     });
 
                     // 2. 불러온 채팅방 목록인 processedChatRooms를 room_no로 각 채팅방의 모든 메시지들을 불러와 저장
@@ -279,7 +301,7 @@ function CompanyUserChatRoom() {
                         };
                         return acc;
                     }, {});
-                    
+
                     // 채팅방 목록을 최근 메시지 전송 시간 기준으로 정렬 (최신 메시지가 위로 오도록 내림차순)
                     const sortedChatRooms = processedChatRooms.map(room => {
                         return {
@@ -293,7 +315,7 @@ function CompanyUserChatRoom() {
                         const dateB = b.chat_date_recent ? new Date(b.chat_date_recent) : new Date(0);
                         return dateB - dateA;
                     })
-                    
+
                     // 정렬된 목록으로 업데이트
                     setChatRoomList(sortedChatRooms);
 
@@ -427,38 +449,3 @@ function CompanyUserChatRoom() {
 }
 
 export default CompanyUserChatRoom;
-
-    // // 채팅 목록 (더미 데이터)
-    // const chatList1 = [
-    //     {
-    //         profile: 'https://via.placeholder.com/75', name: '장원영', content: `수지야
-    //         오늘 점심 뭐 먹지?`, lastTime: '2024-10-15 11:30', unread: 2
-    //     }, => chat에서 불러올 내용은 content, lastTime, unread
-    //     {
-    //         profile: 'https://via.placeholder.com/75', name: '박보영', content: `대리님, 프레젠테이션 자료 이메일로 전송했습니다.
-    //         확인 부탁드립니다.`, lastTime: '2024-10-15 09:15', unread: 1
-    //     },
-    //     {
-    //         profile: 'https://via.placeholder.com/75', name: '박보검', content: `대리님, 요청하신 파일 보내드렸습니다.
-    //         확인하시고, 각 부서에 전달 바랍니다.
-    //         회의할 때 10부만 복사해주세요.`, lastTime: '2024-10-14 16:00', unread: 0
-    //     },
-    //     {
-    //         profile: 'https://via.placeholder.com/75', name: '전지현', content: `안녕하세요, 전지현입니다.
-    //         오늘 회의 내용 두 분이서 정리하시고 보고 부탁드립니다.`, lastTime: '2024-10-14 14:32', unread: 0
-    //     },
-    //     {
-    //         profile: 'https://via.placeholder.com/75', name: '이도현', content: `대리님, 지난 달 매출 정리하신 파일 보고서 찾았습니다!
-    //         감사합니다~`, lastTime: '2024-10-11 11:30', unread: 0
-    //     },
-    //     {
-    //         profile: 'https://via.placeholder.com/75', name: '김태리', content: `대리님, 안녕하세요. 
-    //         오늘 회의 참석 가능하실까요?`, lastTime: '2024-10-10 10:30', unread: 0
-    //     },
-    //     { profile: 'https://via.placeholder.com/75', name: '강동원', content: `대리님, 커피 어떤 거 드실래요?`, lastTime: '2024-10-09 09:00', unread: 0 },
-    //     {
-    //         profile: 'https://via.placeholder.com/75', name: '광고인', content: `[Web발신]
-    //         (광고) 공식몰
-    //         단 하루 100원 판매!`, lastTime: '2024-10-08 12:00', unread: 10
-    //     },
-    // ];
