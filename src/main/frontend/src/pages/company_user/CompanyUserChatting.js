@@ -12,7 +12,10 @@ import { useSelector } from 'react-redux';
 // .env 파일
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
-function Chatting() {
+function Chatting({ updateRecentMessages }) {
+    // 연결 상태를 추적하기 위한 상태 변수
+    const [connectionAlert, setConnectionAlert] = useState('');
+
     // Redux에서 사용자 정보 가져오기
     const userData = useSelector((state) => state.user.data);
 
@@ -33,12 +36,12 @@ function Chatting() {
     // 직원
     const empList = [
         { emp_no: 3, emp_name: '배수지', emp_email: 'suzy@digitalsolution.com', emp_phone: '010-1234-5678', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 4 },
-        { emp_no: 4, emp_name: '강동원', emp_email: 'dongwon@digitalsolution.com', emp_phone: '010-8765-4321', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 5 },
+        { emp_no: 4, emp_name: '강동원', emp_email: 'dongwon@digitalsolution.com', emp_phone: '010-8765-4321', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 6 },
         { emp_no: 5, emp_name: '김태리', emp_email: 'taeri@digitalsolution.com', emp_phone: '010-2345-6789', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 500, emp_posi_no: 3 },
         { emp_no: 6, emp_name: '이준호', emp_email: 'junho@digitalsolution.com', emp_phone: '010-3456-7890', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 110, emp_posi_no: 4 },
         { emp_no: 7, emp_name: '박서준', emp_email: 'seojun@digitalsolution.com', emp_phone: '010-5555-1234', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 200, emp_posi_no: 3 },
         { emp_no: 8, emp_name: '이서진', emp_email: 'seojin@digitalsolution.com', emp_phone: '010-1010-2020', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 200, emp_posi_no: 4 },
-        { emp_no: 9, emp_name: '유아인', emp_email: 'yooain@digitalsolution.com', emp_phone: '010-3030-4040', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 210, emp_posi_no: 5 },
+        { emp_no: 9, emp_name: '김수현', emp_email: 'yooain@digitalsolution.com', emp_phone: '010-3030-4040', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 210, emp_posi_no: 5 },
         { emp_no: 10, emp_name: '공효진', emp_email: 'gonghj@digitalsolution.com', emp_phone: '010-5050-6060', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 2 },
     ];
 
@@ -136,23 +139,45 @@ function Chatting() {
     //  총 4가지로 0: 연결 시도 중, 1: 연결, 2: 연결 종료 시도 중, 3: 연결 종료
     const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(WEBSOCKET_URL, {
         shouldReconnect: () => true,
-        onOpen: () => console.log('WebSocket 연결 성공!'),
-        onClose: () => console.log('WebSocket 연결 해제됨'),
-        onError: (event) => console.error('WebSocket 에러:', event),
-    }); // WebSocket이 수동으로 연결되도록 설정
+        onOpen: () => {
+            console.log('WebSocket 연결 성공!');
+            setConnectionAlert('연결 성공');
+        },
+        onClose: () => {
+            console.log('WebSocket 연결 해제됨');
+            setConnectionAlert('연결 해제');
+        },
+        onError: (event) => {
+            console.error('WebSocket 에러:', event);
+            setConnectionAlert('연결 오류');
+        },
+    });
+
+    // WebSocket 연결 상태 확인 및 경고 메시지 표시
+    useEffect(() => {
+        console.log('readyState:', readyState);
+        switch (readyState) {
+            case ReadyState.CONNECTING:
+                setConnectionAlert('연결 시도 중...');
+                break;
+            case ReadyState.OPEN:
+                setConnectionAlert('WebSocket 연결됨');
+                break;
+            case ReadyState.CLOSING:
+                setConnectionAlert('연결 종료 시도 중...');
+                break;
+            case ReadyState.CLOSED:
+                setConnectionAlert('연결 종료됨');
+                break;
+            default:
+                setConnectionAlert('알 수 없는 연결 상태');
+        }
+    }, [readyState]);
 
     // 페이지 접근 시 WebSocket 연결
     useEffect(() => {
         getWebSocket();
     }, [getWebSocket]);
-
-    // WebSocket 연결 상태 메시지 매핑
-    const connectionStatus = useMemo(() => ({
-        0: '연결 시도 중..',
-        1: '연결됨',
-        2: '연결 종료 시도 중..',
-        3: '연결 종료'
-    }), []);
 
     // 돋보기 토글 상태 변환 메서드
     const selectToggle = () => {
@@ -182,40 +207,39 @@ function Chatting() {
             console.warn('메시지 전송 조건이 충족되지 않았습니다.');
             return;
         }
-
         const chatRoomNo = emp.chat_room_no;
-        const totalMessages = messageList.length;
-        const currentTime = new Date().toISOString();
+         // messageList에서 가장 큰 chat_no를 찾고, 없으면 0을 기본값으로 설정
+        const lastChatNo = messageList.length > 0 ? Math.max(...messageList.map(msg => msg.chat_no)) : -1; // 메시지가 없다면 -1을 기본값으로
+        const currentTime = format(new Date(), 'yyyy-MM-dd HH:mm');
+        const chatRecipientNo = emp.emp_no;
         const chatRecipientNos = emp.participants.filter(p => p.emp_no !== empNo).map(p => p.emp_no);
-
         if (chatRecipientNos.length === 0) {
-            console.warn('채팅방 참여자가 없습니다.');
+            console.warn('그룹 채팅입니다.');
             return;
         }
-
         const newMessage = {
             chat_room_no: chatRoomNo,
-            chat_no: totalMessages + 1,
+            chat_no: lastChatNo + 1,
             chat_sender: empNo,
-            chat_recipient: chatRecipientNos,
+            chat_recipient: chatRecipientNo,
             chat_content: message,
             chat_count: chatRecipientNos.length,
             chat_type: 'text',
             chat_date: currentTime,
         };
-
         try {
             // WebSocket을 통해 메시지 전송
             if (readyState === ReadyState.OPEN) {
                 sendMessage(JSON.stringify(newMessage));
                 console.log('메시지 전송 중:', newMessage);
-
                 // REST API를 통해 메시지 저장
                 await api.sendMessage(newMessage);
-                
                 // 메시지 리스트 업데이트
                 setMessageList((prev) => [...prev, newMessage]);
                 setMessage('');
+
+                // // 부모 컴포넌트의 updateRecentMessages 함수를 호출하여 최신 메시지 업데이트
+                // updateRecentMessages(chatRoomNo, newMessage);
             } else {
                 console.warn('WebSocket이 아직 연결되지 않았습니다.');
             }
@@ -223,6 +247,13 @@ function Chatting() {
             console.error('메시지 전송 중 오류 발생:', error);
         }
     };
+
+    // 메시지 입력 시 Enter 키 이벤트 처리
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter' && !isSendButtonDisabled) {
+            handlerSendMessage();
+        }
+    }
 
     // 메시지 업데이트 시 스크롤 맨 아래로 이동
     useEffect(() => {
@@ -339,11 +370,6 @@ function Chatting() {
                                     </div>
                                 </div>
                                 <div className={styles.select_chatting}>
-                                    {/*<div>
-                                        <p>연결 확인: {connectionStatus}</p>
-                                        <p>수신 확인: {lastMessage ? lastMessage.data : '메시지x '}</p>
-                                        <p>사용자 ID: {empNo}</p>
-                                    </div>*/}
                                     <input type='text' className={`${styles.select_input} ${showSelectInput ? styles.select_input_show : styles.select_input_hide}`} placeholder='내용을 입력해주세요.'></input>
                                     <Button className={styles.select_chattingButton} onClick={selectToggle}><i class="material-icons">search</i></Button>
                                 </div>
@@ -381,7 +407,6 @@ function Chatting() {
                                                 {formattedDate}
                                             </div>
                                         )}
-
                                         <div className={`${user.emp_no === message.chat_sender ? styles.sendMessageBox : styles.receiveMessageBox}`}>
                                             <div className={styles.chatting_messageBox}>
                                                 {checkMessage && user.emp_no !== message.chat_sender && (
@@ -420,7 +445,7 @@ function Chatting() {
                             <div className={styles.input_message_emoji}>
                                 <Button ref={emojiButtonRef} className={styles.input_message_emojiButton} onClick={emojiToggle}><i class="material-icons">face</i></Button>
                             </div>
-                            <input type='text' value={message} onChange={(e) => { setMessage(e.target.value) }} placeholder='메시지를 입력하세요'></input>
+                            <input type='text' value={message} onChange={(e) => { setMessage(e.target.value) }} onKeyDown={handleKeyPress} placeholder='메시지를 입력하세요'></input>
                             <div className={styles.input_message_button}>
                                 <Button className={styles.input_message_attachButton}><i class="material-icons">attach_file</i></Button>
                                 <Button className={styles.input_message_sendButton} onClick={handlerSendMessage} disabled={isSendButtonDisabled}><i class="material-icons">send</i></Button>
