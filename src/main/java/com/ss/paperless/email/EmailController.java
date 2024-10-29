@@ -1,12 +1,18 @@
 package com.ss.paperless.email;
 
-import com.ss.paperless.email.Emailmessage;
-import com.ss.paperless.email.EmailmessageRepository;
 import com.ss.paperless.employee.EmployeeEntity;
 import com.ss.paperless.employee.EmployeeService;
+
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,11 +23,15 @@ public class EmailController {
 
     private final EmailmessageRepository emailmessageRepository;
     private final EmployeeService employeeService;
+    private final EmailService emailService;
 
     @Autowired
-    public EmailController(EmailmessageRepository emailmessageRepository, EmployeeService employeeService) {
+    public EmailController(EmailmessageRepository emailmessageRepository,
+                           EmployeeService employeeService,
+                           EmailService emailService) {
         this.emailmessageRepository = emailmessageRepository;
         this.employeeService = employeeService;
+        this.emailService = emailService;
     }
 
     /**
@@ -69,17 +79,12 @@ public class EmailController {
             email.setCc(cc);
             email.setTitle(title);
             email.setContent(content);
-            email.setSendDate(new Date());
+            email.setSendDate(LocalDateTime.now());
             email.setStatus("unread");
 
             emailmessageRepository.save(email);
 
             // TODO: 첨부파일 기능 구현 예정
-            /*
-            if (attachments != null && !attachments.isEmpty()) {
-                // 첨부파일 처리 로직 추가
-            }
-            */
 
             return ResponseEntity.ok("이메일이 성공적으로 전송되었습니다.");
         } catch (Exception e) {
@@ -89,33 +94,103 @@ public class EmailController {
     }
 
     /**
-     * 이메일 목록 조회 API
+     * 이메일 목록 조회 API (페이징 및 필터링 지원)
      *
-     * @param principal 인증된 사용자 정보
-     * @return 이메일 목록
+     * @param recipientId    수신자의 empNo
+     * @param sender         작성자 이메일 검색어 (옵션)
+     * @param recipientParam 수신자 이메일 검색어 (옵션)
+     * @param subject        이메일 제목 검색어 (옵션)
+     * @param content        이메일 내용 검색어 (옵션)
+     * @param startDateStr   이메일 발송 시작 날짜 (YYYY-MM-DD, 옵션)
+     * @param endDateStr     이메일 발송 종료 날짜 (YYYY-MM-DD, 옵션)
+     * @param hasAttachment  첨부파일 유무 (기본값: false)
+     * @param page           페이지 번호 (0부터 시작, 기본값: 0)
+     * @param size           페이지당 이메일 개수 (기본값: 10)
+     * @param sortBy         정렬 기준 필드 (기본값: sendDate)
+     * @param sortDir        정렬 방향 (asc 또는 desc, 기본값: desc)
+     * @return 필터링된 이메일 페이지
      */
-    @GetMapping("/list")
-    public ResponseEntity<?> getEmailList(Principal principal) {
-        String empCode = principal.getName();
-        EmployeeEntity user = employeeService.findByEmpCode(empCode);
+    @GetMapping("/list/{recipientId}")
+    public ResponseEntity<?> getEmailList(
+            @PathVariable Long recipientId,
+            @RequestParam(value = "sender", required = false) String sender,
+            @RequestParam(value = "recipient", required = false) String recipientParam,
+            @RequestParam(value = "subject", required = false) String subject,
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "startDate", required = false) String startDateStr,
+            @RequestParam(value = "endDate", required = false) String endDateStr,
+            @RequestParam(value = "hasAttachment", defaultValue = "false") boolean hasAttachment,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortBy", defaultValue = "sendDate") String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "desc") String sortDir
+    ) {
+        try {
+            // 날짜 문자열을 LocalDateTime으로 변환
+            LocalDateTime startDate = null;
+            LocalDateTime endDate = null;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            if (startDateStr != null && !startDateStr.isEmpty()) {
+                startDate = LocalDate.parse(startDateStr, formatter).atStartOfDay();
+            }
+            if (endDateStr != null && !endDateStr.isEmpty()) {
+                endDate = LocalDate.parse(endDateStr, formatter).atTime(23, 59, 59);
+            }
 
-        List<Emailmessage> emails = emailmessageRepository.findByRecipient(user);
+            // 정렬 설정
+            Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
-        List<Map<String, Object>> emailDTOs = emails.stream().map(email -> {
-            Map<String, Object> dto = new HashMap<>();
-            dto.put("emailNo", email.getEmailNo());
-            dto.put("writerName", email.getWriter().getEmpName());
-            dto.put("recipientName", email.getRecipient().getEmpName());
-            dto.put("ccName", email.getCc() != null ? email.getCc().getEmpName() : null);
-            dto.put("title", email.getTitle());
-            dto.put("content", email.getContent());
-            dto.put("status", email.getStatus());
-            dto.put("sendDate", email.getSendDate());
-            return dto;
-        }).collect(Collectors.toList());
+            // 페이징 객체 생성
+            PageRequest pageRequest = PageRequest.of(page, size, sort);
 
-        return ResponseEntity.ok(emailDTOs);
+            // 서비스 호출하여 이메일 목록 조회
+            Page<Emailmessage> emailPage = emailService.getEmailsByRecipientWithFilters(
+                    recipientId,
+                    sender,
+                    recipientParam,
+                    subject,
+                    content,
+                    startDate,
+                    endDate,
+                    hasAttachment,
+                    pageRequest
+            );
+
+            // Emailmessage 엔티티를 EmailDTO로 변환
+            List<EmailDTO> emailDtoList = emailPage.getContent().stream().map(email -> {
+                EmailDTO dto = new EmailDTO();
+                dto.setEmailNo(email.getEmailNo());
+                dto.setTitle(email.getTitle());
+                dto.setContent(email.getContent());
+                dto.setStatus(email.getStatus());
+                dto.setSendDate(email.getSendDate().toString());
+
+                // 연관된 엔티티의 필요한 정보만 설정
+                dto.setWriterEmail(email.getWriter().getEmpEmail());
+                dto.setRecipientEmail(email.getRecipient().getEmpEmail());
+                if (email.getCc() != null) {
+                    dto.setCcEmail(email.getCc().getEmpEmail());
+                }
+
+                return dto;
+            }).collect(Collectors.toList());
+
+            // 페이지 정보를 별도로 추출하여 응답 생성
+            Map<String, Object> response = new HashMap<>();
+            response.put("content", emailDtoList);
+            response.put("currentPage", emailPage.getNumber());
+            response.put("totalItems", emailPage.getTotalElements());
+            response.put("totalPages", emailPage.getTotalPages());
+
+            return ResponseEntity.ok(response);
+        } catch (DateTimeParseException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.singletonMap("message", "날짜 형식이 올바르지 않습니다. (YYYY-MM-DD)"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("message", "이메일 목록을 불러오는 중 오류가 발생했습니다: " + e.getMessage()));
+        }
     }
-
-    
 }
