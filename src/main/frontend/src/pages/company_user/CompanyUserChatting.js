@@ -55,12 +55,16 @@ function Chatting({ updateRecentMessages }) {
     const deptList = [
         { dept_no: 100, dept_name: 'IT부서', dept_team_name: '개발팀' },
         { dept_no: 110, dept_name: 'IT부서', dept_team_name: '인프라팀' },
+        { dept_no: 120, dept_name: 'IT부서', dept_team_name: '보안팀' },
         { dept_no: 200, dept_name: '마케팅부서', dept_team_name: '디지털마케팅팀' },
         { dept_no: 210, dept_name: '마케팅부서', dept_team_name: '브랜드팀' },
+        { dept_no: 220, dept_name: '마케팅부서', dept_team_name: '시장조사팀' },
         { dept_no: 300, dept_name: '영업부서', dept_team_name: '국내영업팀' },
         { dept_no: 310, dept_name: '영업부서', dept_team_name: '해외영업팀' },
+        { dept_no: 320, dept_name: '영업부서', dept_team_name: '영업기획팀' },
         { dept_no: 400, dept_name: 'HR부서', dept_team_name: '채용팀' },
         { dept_no: 410, dept_name: 'HR부서', dept_team_name: '인사관리팀' },
+        { dept_no: 420, dept_name: 'HR부서', dept_team_name: '교육팀' },
         { dept_no: 500, dept_name: '구매부서', dept_team_name: '구매팀' },
         { dept_no: 510, dept_name: '구매부서', dept_team_name: '자재관리팀' },
     ];
@@ -105,7 +109,7 @@ function Chatting({ updateRecentMessages }) {
     const [emp, setEmp] = useState(null);
 
     // 돋보기 토글 상태
-    const [showSelectInput, setShowSelectInput] = useState(true);
+    const [showSelectInput, setShowSelectInput] = useState(false);
 
     // 이모지 토글 상태
     const [isEmojiToggle, setIsEmojiToggle] = useState(false);
@@ -119,11 +123,81 @@ function Chatting({ updateRecentMessages }) {
     // mainContainerRef 참조 변수
     const mainContainerRef = useRef(null);
 
-    // socketUrl과 WebSocket 객체를 상태로 관리
-    const [socket, setSocket] = useState(null);
+    // 검색어 상태 변수
+    const [searchTerm, setSearchTerm] = useState('');
 
-    // // socket
-    // const [socketUrl, setSocketUrl] = useState(null);
+    // 검색 결과 인덱스 저장
+    const [searchResults, setSearchResults] = useState([]);
+
+    // 현재 검색 결과의 인덱스
+    const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
+
+    // 검색 초기화 버튼
+    const clearSearchTerm = () => {
+        setSearchTerm('');
+        setSearchResults([]);
+        setCurrentSearchIndex(0);
+    };
+
+    // 검색어 입력 핸들러
+    const handleSearchInputChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
+
+    // 검색 실행 함수
+    const handleSearch = () => {
+        // 검색어가 비어 있으면 아무것도 하지 않음
+        if (!searchTerm.trim()) return;
+
+        // 기존 검색어와 동일한 경우, 인덱스만 이동
+        if (searchResults.length > 0 && searchResults.some(result => result.chat_content.includes(searchTerm))) {
+            // 기존 검색어 결과에서 인덱스 이동
+            const nextIndex = (currentSearchIndex + 1) % searchResults.length;
+            setCurrentSearchIndex(nextIndex);
+            scrollToMessage(searchResults[nextIndex].index);
+        } else {
+            // 새로운 검색어 입력 시 새로운 검색 수행
+            const results = messageList
+                .map((message, index) => ({ ...message, index }))
+                .filter(message => message.chat_content.includes(searchTerm));
+
+            if (results.length > 0) {
+                setSearchResults(results);
+                setCurrentSearchIndex(0);
+                scrollToMessage(results[0].index); // 첫 번째 결과로 이동
+            } else {
+                setSearchResults([]);
+                setCurrentSearchIndex(0);
+            }
+        }
+    };
+
+    // 다음 검색 결과로 이동
+    const handleNextSearchResult = () => {
+        if (searchResults.length === 0) return;
+        const nextIndex = (currentSearchIndex + 1) % searchResults.length;
+        setCurrentSearchIndex(nextIndex);
+        scrollToMessage(searchResults[nextIndex].index);
+    };
+
+    // 이전 검색 결과로 이동
+    const handlePreviousSearchResult = () => {
+        if (searchResults.length === 0) return;
+        const prevIndex = (currentSearchIndex - 1 + searchResults.length) % searchResults.length;
+        setCurrentSearchIndex(prevIndex);
+        scrollToMessage(searchResults[prevIndex].index);
+    };
+
+    // 특정 메시지로 스크롤 이동
+    const scrollToMessage = (messageIndex) => {
+        if (mainContainerRef.current) {
+            // 메시지 컨테이너에서 해당 인덱스의 메시지로 이동
+            const targetMessage = mainContainerRef.current.querySelectorAll(`.${styles.chatting_messageBox}`)[messageIndex];
+            if (targetMessage) {
+                targetMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    };
 
     // 메시지 입력 상태와 WebSocket 연결 상태에 따라 전송 버튼 활성화
     const isSendButtonDisabled = useMemo(() => {
@@ -181,8 +255,58 @@ function Chatting({ updateRecentMessages }) {
 
     // 돋보기 토글 상태 변환 메서드
     const selectToggle = () => {
-        setShowSelectInput(!showSelectInput);
+        console.log('showSelectInput 상태:', showSelectInput);
+        // 검색창이 열려있고, 검색어가 있을 때는 검색을 수행
+        if (showSelectInput && searchTerm.trim()) {
+            handleSearch();
+        } else {
+            // 검색창을 토글하고, 검색창이 닫힐 때 검색어 초기화
+            setShowSelectInput((prev) => {
+                if (!prev) {
+                    // 검색창이 닫힐 때 초기화
+                    setSearchTerm('');
+                    setSearchResults([]);
+                    setCurrentSearchIndex(0);
+                }
+                return !prev;
+            });
+        }
     };
+
+    // 특수문자를 이스케이프 처리하는 함수
+    const escapeRegExp = (string) => {
+        // 정규식의 특수문자를 이스케이프 처리
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    // 메시지 컴포넌트 내에서 키워드 강조 처리 로직 추가
+    const highlightKeyword = (text, keyword) => {
+        if (!keyword.trim()) return text; // 키워드가 없을 경우 원본 텍스트 반환
+
+        // 정규 표현식으로 키워드를 찾고 <strong> 태그로 감싸기
+        const escapedKeyword = escapeRegExp(keyword); // 키워드를 이스케이프 처리
+        const regex = new RegExp(`(${escapedKeyword})`, 'gi'); // 키워드 대소문자 구분 없이 찾기
+        return text.replace(regex, "<strong>$1</strong>");
+    };
+
+    // handleKeyDown 함수 추가: ESC 키 이벤트를 처리
+    const handleKeyDown = (event) => {
+        if (event.key === 'Escape') {
+            clearSearchTerm(); // 검색 키워드 및 검색 결과 초기화
+            setShowSelectInput(false); // 검색 창 닫기
+        }
+    };
+
+    // 컴포넌트 마운트 시 ESC 키 이벤트 리스너 추가
+    useEffect(() => {
+        // 키다운 이벤트 리스너 추가
+        document.addEventListener('keydown', handleKeyDown);
+
+        // 컴포넌트 언마운트 시 이벤트 리스너 제거
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
 
     // 이모지 토글 상태 변환 메서드
     const emojiToggle = () => {
@@ -208,7 +332,7 @@ function Chatting({ updateRecentMessages }) {
             return;
         }
         const chatRoomNo = emp.chat_room_no;
-         // messageList에서 가장 큰 chat_no를 찾고, 없으면 0을 기본값으로 설정
+        // messageList에서 가장 큰 chat_no를 찾고, 없으면 0을 기본값으로 설정
         const lastChatNo = messageList.length > 0 ? Math.max(...messageList.map(msg => msg.chat_no)) : -1; // 메시지가 없다면 -1을 기본값으로
         const currentTime = format(new Date(), 'yyyy-MM-dd HH:mm');
         const chatRecipientNo = emp.emp_no;
@@ -234,6 +358,7 @@ function Chatting({ updateRecentMessages }) {
                 console.log('메시지 전송 중:', newMessage);
                 // REST API를 통해 메시지 저장
                 await api.sendMessage(newMessage);
+
                 // 메시지 리스트 업데이트
                 setMessageList((prev) => [...prev, newMessage]);
                 setMessage('');
@@ -370,8 +495,20 @@ function Chatting({ updateRecentMessages }) {
                                     </div>
                                 </div>
                                 <div className={styles.select_chatting}>
-                                    <input type='text' className={`${styles.select_input} ${showSelectInput ? styles.select_input_show : styles.select_input_hide}`} placeholder='내용을 입력해주세요.'></input>
+                                    {showSelectInput && (
+                                        <div>
+                                            <input type='text' className={`${styles.select_input} ${showSelectInput ? styles.select_input_show : styles.select_input_hide}`} value={searchTerm} placeholder='내용을 입력해주세요.' onChange={handleSearchInputChange} onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }} autoFocus ></input>
+                                            <Button className={styles.clearSearchButton} onClick={clearSearchTerm}><i className="material-icons">clear</i></Button>
+                                        </div>
+                                    )}
                                     <Button className={styles.select_chattingButton} onClick={selectToggle}><i class="material-icons">search</i></Button>
+                                    {searchResults.length > 0 && (
+                                        <div className={styles.searchNavigation}>
+                                            <Button onClick={handlePreviousSearchResult}><i className="material-icons">expand_less</i></Button>
+                                            <Button onClick={handleNextSearchResult}><i className="material-icons">expand_more</i></Button>
+                                            <span>{currentSearchIndex + 1} / {searchResults.length}</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -400,6 +537,8 @@ function Chatting({ updateRecentMessages }) {
                                 // checkMessage가 true면 프로필 띄우기, false면 프로필 띄우지 않기(메시지만 보임)
                                 const checkMessage = index === 0 || messageList[index - 1].chat_sender !== message.chat_sender;
 
+                                const highlightedContent = highlightKeyword(message.chat_content, searchTerm);
+
                                 return (
                                     <React.Fragment key={index}>
                                         {checkDate && (
@@ -416,8 +555,8 @@ function Chatting({ updateRecentMessages }) {
                                                     </div>
                                                 )}
                                                 <div className={styles.messageBox}>
-                                                    <div className={styles.message_content}>
-                                                        {message.chat_content}
+                                                    <div className={styles.message_content} dangerouslySetInnerHTML={{ __html: highlightedContent }}>
+
                                                     </div>
                                                     <div className={styles.message_state_and_sendTime}>
                                                         <div className={styles.message_sendTime}>
