@@ -1,13 +1,11 @@
 package com.ss.paperless.email;
 
-import com.ss.paperless.email.Emailmessage;
 import com.ss.paperless.employee.EmployeeEntity;
-
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
 
-public interface EmailmessageRepository extends JpaRepository<Emailmessage, Long> {
-	List<Emailmessage> findByRecipient(EmployeeEntity recipient);
-    List<Emailmessage> findByWriterOrRecipient(EmployeeEntity writer, EmployeeEntity recipient);
+@Repository
+public interface EmailmessageRepository extends JpaRepository<Emailmessage, Long>, JpaSpecificationExecutor<Emailmessage> {
+    // 기본 CRUD와 Specification 기능을 모두 지원
 }

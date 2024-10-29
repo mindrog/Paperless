@@ -15,7 +15,7 @@ const ApprovalLineTable = ({ handleApprLineModal }) => (
           <Button className={styles.apprLineBtn} onClick={handleApprLineModal}>결재선</Button>
         </td>
       </tr>
-      <tr><td className={styles.docValue_date}>2024/10/21</td><td>-</td></tr>
+      <tr><td className={styles.docValue_date}></td><td>-</td></tr>
     </tbody>
   </Table>
 );

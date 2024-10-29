@@ -8,28 +8,11 @@ import ComposeButton from '../component/ComposeButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faEnvelopeOpen } from '@fortawesome/free-regular-svg-icons';
+import { useSelector } from 'react-redux';
 
 function CompanyUserEmail() {
 
-    // 이메일 생성 함수
-    const generateEmails = () => {
-        const emailList = [];
-        for (let i = 1; i <= 30; i++) {
-            emailList.push({
-                id: i,
-                sender: `test${i}@paperless.pl`,
-                recipient: `recipient${i}@paperless.pl`,
-                subject: `테스트 이메일 ${i}`,
-                content: `이것은 이메일 내용 ${i}입니다.`,
-                receivedAt: `2024-10-${String(i).padStart(2, '0')} 10:00`,
-                hasAttachment: i % 2 === 0, // 짝수 번호 이메일은 첨부파일이 있다고 가정
-                isRead: i === 1,
-            });
-        }
-        return emailList;
-    };
-
-    const [emails, setEmails] = useState(generateEmails());
+    const [emails, setEmails] = useState([]);
     const navigate = useNavigate();
     const [selectedEmails, setSelectedEmails] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
@@ -37,6 +20,7 @@ function CompanyUserEmail() {
     // 페이지네이션 상태
     const [currentPage, setCurrentPage] = useState(1);
     const emailsPerPage = 10;
+    const [totalPages, setTotalPages] = useState(1);
 
     // 검색 상태 및 핸들러 추가
     const [searchTerm, setSearchTerm] = useState('');
@@ -59,97 +43,82 @@ function CompanyUserEmail() {
         hasAttachment: false,
     });
 
+    // JWT 토큰 가져오기
+    const getToken = () => {
+        return localStorage.getItem('jwt');
+    };
+
+    // Redux에서 사용자 정보 가져오기
+    const user = useSelector((state) => state.user.data);
+    console.log('User from Redux:', user);
+
+    // 로그인한 사용자 ID 가져오기
+    const recipientId = user ? user.emp_no : null;
+    // 이메일 데이터 가져오기
+    useEffect(() => {
+        if (!recipientId) {
+            console.error('로그인 정보가 없습니다.');
+            navigate('/login');
+            return;
+        }
+
+        const queryParams = new URLSearchParams();
+
+        if (searchTerm) {
+            queryParams.append('subject', searchTerm);
+        }
+
+        if (detailSearch.sender) {
+            queryParams.append('sender', detailSearch.sender);
+        }
+        if (detailSearch.recipient) {
+            queryParams.append('recipient', detailSearch.recipient);
+        }
+        if (detailSearch.content) {
+            queryParams.append('content', detailSearch.content);
+        }
+        if (detailSearch.startDate) {
+            queryParams.append('startDate', detailSearch.startDate);
+        }
+        if (detailSearch.endDate) {
+            queryParams.append('endDate', detailSearch.endDate);
+        }
+        if (detailSearch.hasAttachment) {
+            queryParams.append('hasAttachment', detailSearch.hasAttachment);
+        }
+
+        queryParams.append('page', currentPage - 1);
+        queryParams.append('size', emailsPerPage);
+
+        fetch(`/api/emails/list/${recipientId}?${queryParams.toString()}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `${getToken()}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(async response => {
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                setEmails(data.content);
+                setTotalPages(data.totalPages);
+            })
+            .catch(error => {
+                console.error('이메일 데이터를 가져오는 중 오류 발생:', error);
+                alert('이메일 데이터를 가져오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            });
+    }, [currentPage, searchTerm, detailSearch, recipientId]);
+
     // 검색 버튼 클릭 핸들러
     const handleSearch = () => {
-        setCurrentPage(1); // 검색 시 첫 페이지로 이동
+        setCurrentPage(1);
         setSelectAll(false);
         setSelectedEmails([]);
-        performSearch();
-    };
-
-    // 검색 실행 함수
-    const performSearch = () => {
-        // 상세 검색 조건에 따라 필터링
-        let filtered = emails.filter((email) => {
-            // 기본 검색어로 제목과 발신자 검색
-            const matchesSearchTerm =
-                email.sender.includes(searchTerm) || email.subject.includes(searchTerm);
-
-            // 상세 검색 조건 적용
-            const matchesSender = detailSearch.sender
-                ? email.sender.includes(detailSearch.sender)
-                : true;
-            const matchesRecipient = detailSearch.recipient
-                ? email.recipient.includes(detailSearch.recipient)
-                : true;
-            const matchesContent = detailSearch.content
-                ? email.content.includes(detailSearch.content)
-                : true;
-
-            // 기간 필터링
-            let matchesPeriod = true;
-            if (detailSearch.startDate && detailSearch.endDate) {
-                const emailDate = new Date(email.receivedAt);
-                const startDate = new Date(detailSearch.startDate);
-                const endDate = new Date(detailSearch.endDate);
-                matchesPeriod = emailDate >= startDate && emailDate <= endDate;
-            }
-
-            // 첨부파일 유무 필터링
-            const matchesAttachment = detailSearch.hasAttachment
-                ? email.hasAttachment
-                : true;
-
-            return (
-                matchesSearchTerm &&
-                matchesSender &&
-                matchesRecipient &&
-                matchesContent &&
-                matchesPeriod &&
-                matchesAttachment
-            );
-        });
-
-        setFilteredEmails(filtered);
-    };
-
-    // 검색된 이메일 상태
-    const [filteredEmails, setFilteredEmails] = useState(emails);
-
-    // 검색어 또는 상세 검색 조건 변경 시 검색 결과 업데이트
-    useEffect(() => {
-        performSearch();
-    }, [emails]);
-
-    // 현재 페이지의 이메일 가져오기
-    const indexOfLastEmail = currentPage * emailsPerPage;
-    const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
-    const currentEmails = filteredEmails.slice(indexOfFirstEmail, indexOfLastEmail);
-
-    // 총 페이지 수 재계산
-    const totalPages = Math.ceil(filteredEmails.length / emailsPerPage);
-
-    // 페이지 번호 생성
-    const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-    }
-
-    // 페이지 변경 핸들러
-    const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber);
-        setSelectAll(false);
-        setSelectedEmails([]);
-    };
-
-    // 이메일 클릭 시 읽음 상태로 변경하고 상세 페이지로 이동
-    const handleEmailClick = (email) => {
-        setEmails(
-            emails.map((e) =>
-                e.id === email.id ? { ...e, isRead: true } : e
-            )
-        );
-        navigate('/Company/user/email/detail', { state: { email } });
     };
 
     // 개별 이메일 선택/해제
@@ -166,30 +135,55 @@ function CompanyUserEmail() {
         if (selectAll) {
             setSelectedEmails([]);
         } else {
-            setSelectedEmails(currentEmails.map((email) => email.id));
+            setSelectedEmails(emails.map((email) => email.emailNo));
         }
         setSelectAll(!selectAll);
     };
 
-    // 삭제 버튼 클릭
+    // 이메일 클릭 시 상세 페이지로 이동
+    const handleEmailClick = (email) => {
+        navigate('/Company/user/email/detail', { state: { email } });
+    };
+
+    // 삭제 버튼 클릭 (백엔드 API 호출 필요)
     const handleDelete = () => {
-        setEmails(emails.filter((email) => !selectedEmails.includes(email.id)));
-        setSelectedEmails([]);
-        setSelectAll(false);
+        if (selectedEmails.length === 0) return;
+
+        fetch(`/api/emails/delete`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${getToken()}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ emailIds: selectedEmails }),
+        })
+            .then(response => {
+                if (response.ok) {
+                    // 삭제 성공 시 이메일 목록 재조회
+                    setSelectedEmails([]);
+                    setSelectAll(false);
+                    setCurrentPage(1);
+                } else {
+                    console.error('이메일 삭제 중 오류 발생');
+                }
+            })
+            .catch(error => {
+                console.error('이메일 삭제 중 오류 발생:', error);
+            });
     };
 
     // 답장 버튼 클릭
     const handleReply = () => {
         if (selectedEmails.length === 1) {
-            const email = emails.find((email) => email.id === selectedEmails[0]);
-            navigate('/Company/user/email/send', { state: { receiverEmail: email.sender } });
+            const email = emails.find((email) => email.emailNo === selectedEmails[0]);
+            navigate('/Company/user/email/send', { state: { receiverEmail: email.writerEmail } });
         }
     };
 
     // 전달 버튼 클릭
     const handleForward = () => {
         if (selectedEmails.length === 1) {
-            const email = emails.find((email) => email.id === selectedEmails[0]);
+            const email = emails.find((email) => email.emailNo === selectedEmails[0]);
             navigate('/Company/user/email/send', { state: { emailToForward: email } });
         }
     };
@@ -198,7 +192,6 @@ function CompanyUserEmail() {
     const handleCompose = () => {
         navigate('/Company/user/email/send');
     };
-
 
     // 상세 검색 토글
     const toggleDetailSearch = () => {
@@ -442,29 +435,29 @@ function CompanyUserEmail() {
                     </tr>
                 </thead>
                 <tbody>
-                    {currentEmails.map((email) => (
+                    {emails.map((email) => (
                         <tr
-                            key={email.id}
-                            className={`${email.isRead ? '' : styles.unread} ${selectedEmails.includes(email.id) ? styles.selected : ''
+                            key={email.emailNo}
+                            className={`${email.status === 'unread' ? styles.unread : ''} ${selectedEmails.includes(email.emailNo) ? styles.selected : ''
                                 }`}
                         >
                             <td>
                                 <input
                                     type="checkbox"
-                                    checked={selectedEmails.includes(email.id)}
-                                    onChange={() => handleCheckboxChange(email.id)}
+                                    checked={selectedEmails.includes(email.emailNo)}
+                                    onChange={() => handleCheckboxChange(email.emailNo)}
                                 />
                             </td>
                             <td onClick={() => handleEmailClick(email)}>
-                                {email.isRead ? (
-                                    <FontAwesomeIcon icon={faEnvelopeOpen} />
-                                ) : (
+                                {email.status === 'unread' ? (
                                     <FontAwesomeIcon icon={faEnvelope} style={{ color: 'skyblue' }} />
+                                ) : (
+                                    <FontAwesomeIcon icon={faEnvelopeOpen} />
                                 )}
                             </td>
-                            <td onClick={() => handleEmailClick(email)}>{email.sender}</td>
-                            <td onClick={() => handleEmailClick(email)}>{email.subject}</td>
-                            <td onClick={() => handleEmailClick(email)}>{email.receivedAt}</td>
+                            <td onClick={() => handleEmailClick(email)}>{email.writerEmail}</td>
+                            <td onClick={() => handleEmailClick(email)}>{email.title}</td>
+                            <td onClick={() => handleEmailClick(email)}>{email.sendDate.replace('T', ' ')}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -473,9 +466,8 @@ function CompanyUserEmail() {
                 <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
-                    onPageChange={(pageNumber) => setCurrentPage(pageNumber)}
+                    onPageChange={setCurrentPage}
                     className={styles.pagination}
-
                 />
                 <ComposeButton onClick={handleCompose} className={styles.composeButton} />
             </div>
