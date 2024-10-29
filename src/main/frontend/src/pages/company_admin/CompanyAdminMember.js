@@ -200,8 +200,8 @@ function CompanyAdminMember() {
                                                         onChange={handleSelectAll}
                                                         checked={isAllSelected} />
                                                 </th>
-                                                <th>소속 본부</th>
                                                 <th>소속 부서</th>
+                                                <th>소속 팀</th>
                                                 <th>직원명</th>
                                                 <th className={styles.userEmail}>이메일</th>
                                                 <th>직급</th>

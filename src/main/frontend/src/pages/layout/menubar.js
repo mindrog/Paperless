@@ -5,6 +5,11 @@ import styles from '../../styles/layout/menubar.module.css'; // CSS 모듈 사�
 import { Button, Modal } from 'react-bootstrap';
 
 const Menubar = ({ isMenuOpen }) => {
+    // Redux에서 로그인 사용자 정보 가져오기
+    const userData = useSelector((state) => state.user.data);
+    const userPosi = useSelector((state) => state.user.userPosi);
+    const emp_no = userData.emp_no;
+
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDocDropdownOpen, setIsDocDropdownOpen] = useState(false); // 기안 문서함 상태
     const [isFormDropdownOpen, setIsFormDropdownOpen] = useState(false); // 기안 양식 상태
@@ -30,7 +35,7 @@ const Menubar = ({ isMenuOpen }) => {
     const handleChatItemClick = async (url) => {
         try {
             console.log("url:", url);
-            const emp_no = 1;
+            console.log("emp_no:", emp_no);
 
             if (emp_no) {
                 if (openChatRoom && !openChatRoom.closed) {
@@ -116,8 +121,6 @@ const Menubar = ({ isMenuOpen }) => {
         setIsFormDropdownOpen(!isFormDropdownOpen);
     };
 
-    const userData = useSelector((state) => state.user.data);
-    const userPosi = useSelector((state) => state.user.userPosi)
     return (
         <nav className={`${styles.menubar} ${isMenuOpen ? styles.showMenu : ''}`}>
             <div className={styles.menubar}>
