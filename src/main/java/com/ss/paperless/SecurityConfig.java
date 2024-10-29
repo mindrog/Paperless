@@ -78,11 +78,7 @@ public class SecurityConfig {
 
         http
         .authorizeHttpRequests((auth) -> auth
-<<<<<<< HEAD
-            .mvcMatchers("/login", "/", "/join", "/api/login","/api/name","/api/userifo","/api/inquirysend","/api/requestsend","/api/getadminusers").permitAll()
-=======
-            .mvcMatchers("/login", "/", "/join", "/api/login","/api/name","/api/userifo","/api/inquirysend","/api/requestsend","/api/getMenuList").permitAll()
->>>>>>> 9d0da34466fd6fe2aee9603f334baec2f6488e61
+            .mvcMatchers("/login", "/", "/join", "/api/login","/api/name","/api/userifo","/api/inquirysend","/api/requestsend","/api/getadminusers","/api/getMenuList").permitAll()
                 .mvcMatchers("/api/updateEmp/{id}").hasRole("admin")
             .anyRequest().authenticated()
         );
