@@ -5,16 +5,16 @@ import axios from 'axios';
 
 function SystemAdminMember () {
     const [adminMember, setAdminMember] = useState([]);
-
+    
     useEffect(() => {
         const fetchAdminMember = async () => {
             try {
-                const token = localStorage.getItem('jwt');
+                const token = localStorage.getItem('token');
                 if (!token) {
+                    
                     console.error("토큰이 없습니다.");
                     return;
                 }
-
                 const adminMemberResponse = await axios.get('http://localhost:8080/api/getadminusers', {
                     headers: {
                         'Authorization': token

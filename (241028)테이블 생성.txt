@@ -502,6 +502,46 @@ VALUES
 ('PL1073', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '공유', 'gongyu@paperless.com', '010-7878-8989', '공유 서명', 'https://via.placeholder.com/60', 5, 920, 4, '2020-02-05', 'user'),
 ('PL1074', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '서강준', 'seo@paperless.com', '010-8989-9090', '서강준 서명', 'https://via.placeholder.com/60', 5, 920, 2, '2019-04-17', 'user');
 
+
+
+
+--email 더미 코드 
+
+INSERT INTO `Emailmessage` (
+    `email_writer`, 
+    `email_title`, 
+    `email_content`, 
+    `email_recipient`, 
+    `email_cc`, 
+    `email_status`, 
+    `email_send_date`
+) VALUES
+(1, 'test 1', 'test 1', 3, NULL, 'unread', NOW()),
+(1, 'test 2', 'test 2', 3, NULL, 'unread', NOW()),
+(1, 'test 3', 'test 3', 3, NULL, 'unread', NOW()),
+(1, 'test 4', 'test 4', 3, NULL, 'unread', NOW()),
+(1, 'test 5', 'test 5', 3, NULL, 'unread', NOW()),
+(1, 'test 6', 'test 6', 3, NULL, 'unread', NOW()),
+(1, 'test 7', 'test 7', 3, NULL, 'unread', NOW()),
+(1, 'test 8', 'test 8', 3, NULL, 'unread', NOW()),
+(1, 'test 9', 'test 9', 3, NULL, 'unread', NOW()),
+(1, 'test 10', 'test 10', 3, NULL, 'unread', NOW()),
+(1, 'test 11', 'test 11', 3, NULL, 'unread', NOW()),
+(1, 'test 12', 'test 12', 3, NULL, 'unread', NOW()),
+(1, 'test 13', 'test 13', 3, NULL, 'unread', NOW()),
+(1, 'test 14', 'test 14', 3, NULL, 'unread', NOW()),
+(1, 'test 15', 'test 15', 3, NULL, 'unread', NOW()),
+(1, 'test 16', 'test 16', 3, NULL, 'unread', NOW()),
+(1, 'test 17', 'test 17', 3, NULL, 'unread', NOW()),
+(1, 'test 18', 'test 18', 3, NULL, 'unread', NOW()),
+(1, 'test 19', 'test 19', 3, NULL, 'unread', NOW()),
+(1, 'test 20', 'test 20', 3, NULL, 'unread', NOW()),
+(1, 'test 21', 'test 21', 3, NULL, 'unread', NOW()),
+(1, 'test 22', 'test 22', 3, NULL, 'unread', NOW()),
+(1, 'test 23', 'test 23', 3, NULL, 'unread', NOW()),
+(1, 'test 24', 'test 24', 3, NULL, 'unread', NOW()),
+(1, 'test 25', 'test 25', 3, NULL, 'unread', NOW());
+
 commit;
 
 select * from company;
