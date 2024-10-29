@@ -2,6 +2,7 @@ package com.ss.paperless.inquiry;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -25,5 +26,7 @@ public class InquiryDTO {
     private String inqu_phone;
 	@JsonProperty("inqu_numberOfPeople")
     private String inqu_numberOfPeople;
-	private LocalDateTime inqu_enroll_date; //등록일
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@JsonProperty("inqu_enroll")
+	private LocalDateTime inqu_enroll; //등록일
 }
