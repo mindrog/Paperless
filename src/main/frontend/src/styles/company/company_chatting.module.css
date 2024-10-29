@@ -359,3 +359,10 @@
 .input_message_button button:active {
     background-color: lightgray !important;
 }
+
+.input_message_sendButton:disabled {
+    color: rgb(100, 100, 100);
+    background-color: transparent;
+    cursor: not-allowed;
+    border: none;
+}
