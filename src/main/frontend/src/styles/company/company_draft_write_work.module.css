@@ -24,12 +24,38 @@ body {
   vertical-align: middle;
 }
 
+.docContent {
+  margin-top: 10px;
+  border: 1px solid #dee2e6;
+}
+
+.docKeyFile {
+  height: 30px;
+  text-align: center;
+}
+
+.centerText {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.centerContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .docInfo {
   width: 300px;
 }
 
+.docInfo tr{
+  height: 40px;
+}
+
 .apprLineBox {
-  width: 300px;
+  width: 250px;
+  height: 200px;
 }
 
 .docTitle {
@@ -71,6 +97,17 @@ body {
   background-color: #a3b8e4; 
   border-color: #a3b8e4;
   color: #fefefe;
+}
+
+.inputFormDate {
+  margin-left: 8px;
+  width: auto;
+}
+
+.inputFormDate:active, .inputFormDate:focus {
+  outline: none !important;
+  box-shadow: none;
+  border: 1.3px solid #2e3d86;
 }
 
 /* btn */
