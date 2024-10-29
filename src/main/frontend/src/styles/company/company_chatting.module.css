@@ -78,6 +78,7 @@
     height: 50px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 /* 헤더 검색 input */
@@ -85,22 +86,79 @@
     border-radius: 5px;
     border: 2px solid lightgray;
     height: 45px;
+    width: 200px;
 }
 
 /* 검색 태그 show */
 .select_input_show {
-    opacity: 0;
-    width: 0;
-    transition: opacity 0.3s ease, width 0.3s ease;
-    transform-origin: left
-}
-
-/* 검색 태그 hide */
-.select_input_hide {
     opacity: 1;
     width: 200px;
     transition: opacity 0.3s ease, width 0.3s ease;
     transform-origin: left;
+    pointer-events: auto;
+}
+
+/* 검색 태그 hide */
+.select_input_hide {
+    opacity: 0;
+    width: 0;
+    transition: opacity 0.3s ease, width 0.3s ease;
+    transform-origin: left;
+    pointer-events: none;
+}
+
+/* 검색 navigation 버튼 */
+.searchNavigation Button {
+    padding: 0;
+    margin: 0;
+    height: 30px;
+    width: 30px;
+    color:#2e3d86;
+    background-color: inherit;
+    border: none;
+}
+
+.searchNavigation Button:hover {
+    color: #5A77B6;
+    background-color: transparent;
+}
+
+.searchNavigation Button:active {
+    background-color: lightgray !important;
+}
+
+.searchNavigation span {
+    font-size: 16px;
+    /* 줄바꿈 방지 */
+    white-space: nowrap;
+    margin-left: 10px;
+}
+
+/* 검색 키워드 */
+.sendMessageBox .message_content strong {
+    color: rgb(230, 66, 66);
+    font-family: 'ONE-Mobile-Title';
+}
+
+.receiveMessageBox .message_content strong {
+    color: rgb(230, 66, 66);
+    font-family: 'ONE-Mobile-Title';
+}
+
+/* 검색 초기화 버튼 */
+.clearSearchButton {
+    color: #2e3d86;
+    background-color: transparent;
+    border: none;
+}
+
+.clearSearchButton:hover {
+    color: #5A77B6;
+    background-color: transparent;
+}
+
+.clearSearchButton:active {
+    background-color: lightgray !important;
 }
 
 /* 헤더 검색 버튼 */
@@ -155,7 +213,6 @@
     gap: 10px;
     margin-left: 30px;
 }
-
 
 /* 채팅 메시지 박스 */
 .chatting_messageBox {
