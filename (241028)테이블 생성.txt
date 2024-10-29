@@ -157,6 +157,7 @@ CREATE TABLE `Attachment` (
 CREATE TABLE `Emailmessage` (
     `email_no` BIGINT NOT NULL AUTO_INCREMENT,
     `email_writer` BIGINT NOT NULL,
+    `email_title`  varchar(100) not null,
     `email_content` VARCHAR(500) NOT NULL,
     `email_recipient` BIGINT NOT NULL,
     `email_cc` BIGINT DEFAULT NULL,
