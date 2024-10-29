@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Form, Table } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import styles from '../../styles/company/company_draft_write_work.module.css';
@@ -13,9 +13,13 @@ import axios from 'axios';
 
 const CompanyUserDraftWriteWork = () => {
   const [data, setData] = useState([]);
+
   const [reportTitle, setReportTitle] = useState('');
   const [reportContent, setReportContent] = useState('');
+  const [reportDate, setReportDate] = useState('');
   const [repoStartTime, setRepoStartTime] = useState('');
+  const [repoEndTime, setRepoEndTime] = useState('');
+
   const [showModal, setShowModal] = useState(false); // 결재선 모달 상태
   const [showCancelModal, setShowCancelModal] = useState(false); // 취소 버튼 모달 상태
   const [showSaveModal, setShowSaveModal] = useState(false); // 임시 저장 확인 모달 상태
@@ -25,9 +29,24 @@ const CompanyUserDraftWriteWork = () => {
   const [formErrors, setFormErrors] = useState({});
   const [files, setFiles] = useState([]); // 첨부된 파일들을 저장할 상태
 
+
+  
+  // 기안날짜 (현재 날짜 불러오기)
+  useEffect(() => {
+    setReportDate(new Date().toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }));
+  }, []);
+
+
   const navigate = useNavigate();
 
-  // 모달을 열고 닫는 함수
+  // 모달을 열고 닫는 함수`
   const handleShowCancelModal = () => setShowCancelModal(true);
   const handleCloseCancelModal = () => setShowCancelModal(false);
 
@@ -38,7 +57,7 @@ const CompanyUserDraftWriteWork = () => {
     setIsSaved(true);
     setSaveDate(new Date().toLocaleDateString('ko-KR'));
     setShowCancelModal(false);
-    setShowSaveModal(true); 
+    setShowSaveModal(true);
   };
 
   const handleRedirectAfterSave = () => {
@@ -72,28 +91,28 @@ const CompanyUserDraftWriteWork = () => {
   // 통신
   const token = localStorage.getItem('jwt');
 
-    useEffect(() => {
-        const fetchMenuList = async () => {
-            if (token) {
-                try {
-                    const response = await axios.post('/api/getUserInfo', {}, {
-                        headers: { 'Authorization': token }
-                    });
-                    const data = response.data;
+  useEffect(() => {
+    const fetchMenuList = async () => {
+      if (token) {
+        try {
+          const response = await axios.get('/api/report/getUserInfo', {}, {
+            headers: { 'Authorization': token }
+          });
+          const data = response.data;
 
-                    console.log('Fetched menu data:', data); // 데이터 구조 확인
-                    setData(data);
-                } catch (error) {
-                    console.error('Error fetching menu list:', error);
-                    setData([]);
-                }
-            } else {
-                console.log('토큰이 없습니다.');
-            }
-        };
+          console.log('Fetched menu data:', data); // 데이터 구조 확인
+          setData(data);
+        } catch (error) {
+          console.error('Error fetching menu list:', error);
+          setData([]);
+        }
+      } else {
+        console.log('토큰이 없습니다.');
+      }
+    };
 
-        fetchMenuList();
-    }, [token]);
+    fetchMenuList();
+  }, [token]);
 
   return (
     <div className="container">
@@ -102,15 +121,15 @@ const CompanyUserDraftWriteWork = () => {
         <DraftTitleInput reportTitle={reportTitle} setReportTitle={setReportTitle} />
         <div className={styles.docHeader}>
           <DraftDocInfoTable
-            department="부서명"
-            team="팀명"
-            reporter="기안자"
-            reportDate="2023-10-30"
+            department={data.department}
+            team={data.team}
+            reporter={data.reporter}
+            reportDate={reportDate}
             repoStartTime={repoStartTime}
             repoEndTime={repoEndTime}
             reportStatus="결재 상태"
-            onStartDateChange={setRepoStartTime}   // 시작일자 핸들러 전달
-            onEndDateChange={setRepoEndTime}       // 종료일자 핸들러 전달
+            onStartDateChange={setRepoStartTime}
+            onEndDateChange={setRepoEndTime}
           />
           <ApprovalLineTable handleApprLineModal={handleApprLineModal} />
         </div>
