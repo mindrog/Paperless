@@ -19,79 +19,70 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.ss.paperless.employee.LoginFilter;
 import com.ss.paperless.JWTFilter;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-		private final AuthenticationConfiguration authenticationConfiguration;
-		//JWTUtil 주입
-		private final JWTUtil jwtUtil;
+	private final AuthenticationConfiguration authenticationConfiguration;
+	// JWTUtil 주입
+	private final JWTUtil jwtUtil;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
+	public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
 
-        this.authenticationConfiguration = authenticationConfiguration;
-				this.jwtUtil = jwtUtil;
-    }
+		this.authenticationConfiguration = authenticationConfiguration;
+		this.jwtUtil = jwtUtil;
+	}
 
-		@Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
 
-        return configuration.getAuthenticationManager();
-    }
+		return configuration.getAuthenticationManager();
+	}
 
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+	@Bean
+	public BCryptPasswordEncoder bCryptPasswordEncoder() {
 
-        return new BCryptPasswordEncoder();
-    }
+		return new BCryptPasswordEncoder();
+	}
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    	 http
-         		.cors((cors) -> cors.configurationSource(new CorsConfigurationSource() {
-					
-					@Override
-					public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-						CorsConfiguration configuration = new CorsConfiguration();
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.cors((cors) -> cors.configurationSource(new CorsConfigurationSource() {
 
-	                    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-	                    configuration.setAllowedMethods(Collections.singletonList("*"));
-	                    configuration.setAllowCredentials(true);
-	                    configuration.setAllowedHeaders(Collections.singletonList("*"));
-	                    configuration.setMaxAge(3600L);
+			@Override
+			public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+				CorsConfiguration configuration = new CorsConfiguration();
 
-											configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+				configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+				configuration.setAllowedMethods(Collections.singletonList("*"));
+				configuration.setAllowCredentials(true);
+				configuration.setAllowedHeaders(Collections.singletonList("*"));
+				configuration.setMaxAge(3600L);
 
-	                    return configuration;
-					}
-				})
-         				);
+				configuration.setExposedHeaders(Collections.singletonList("Authorization"));
 
-        http
-                .csrf((auth) -> auth.disable());
+				return configuration;
+			}
+		}));
 
-        http
-                .formLogin((auth) -> auth.disable());
+		http.csrf((auth) -> auth.disable());
 
-        http
-                .httpBasic((auth) -> auth.disable());
+		http.formLogin((auth) -> auth.disable());
 
-        http
-        .authorizeHttpRequests((auth) -> auth
-            .mvcMatchers("/login", "/", "/join", "/api/login","/api/name","/api/userifo","/api/inquirysend","/api/requestsend","/api/getMenuList").permitAll()
-                .mvcMatchers("/api/updateEmp/{id}").hasRole("admin")
-            .anyRequest().authenticated()
-        );
 
-		
-        http.addFilterBefore(new JWTFilter(jwtUtil),LoginFilter.class);
-        http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
-        http
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		http.authorizeHttpRequests((auth) -> auth
+				.mvcMatchers("/login", "/", "/join", "/api/login", "/api/name", "/api/userifo", "/api/inquirysend",
+						"/api/requestsend", "/api/getMenuList")
+				.permitAll().mvcMatchers("/api/updateEmp/{id}").hasRole("admin").mvcMatchers("/api/emails/send").authenticated().anyRequest().authenticated());
 
-        return http.build();
-    }  
+		http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+		http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil),
+				UsernamePasswordAuthenticationFilter.class);
+
+		http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+		return http.build();
+	}
 }
