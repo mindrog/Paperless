@@ -37,4 +37,24 @@
 		SET column_name = new_value
 		WHERE id = #{id}
 	</update>
+	<select id="getEmpCompNo" parameterType="String" resultType="int">
+		select emp_comp_no
+		from employee
+		where emp_code = #{emp_code}
+
+	</select>
+	<!-- 조직도 조회 -->
+	<select id="getEmpMenuList" parameterType="int" resultType="com.ss.paperless.employee.EmployeeDTO">
+		SELECT * FROM paperless.employee
+		         WHERE emp_comp_no = #{emp_comp_no}
+		         AND emp_role != 'super'
+	</select>
+	<select id="getEmpDepartMenuList" parameterType="int" resultType="com.ss.paperless.employee.EmployeeDTO">
+		SELECT e.emp_code , e.emp_name, e.emp_dept_no, d.dept_name, d.dept_team_name
+		FROM paperless.employee e
+		LEFT JOIN paperless.department d ON e.emp_dept_no = d.dept_no
+		WHERE emp_comp_no = #{emp_comp_no}
+		AND emp_role != 'super'
+	</select>
+
 </mapper>
