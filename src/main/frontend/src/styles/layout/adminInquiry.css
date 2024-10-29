@@ -1,0 +1,33 @@
+.adminInquiryPage{
+    width: 100%;
+    height: 100%;
+    padding-left: 20%;
+    padding-top: 5%;
+   
+}
+.tableContainer{
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+}
+.inquiryTable{
+    width: 100%;
+    padding: 1%;
+    border: 1px solid black;
+    border-radius: 10px;
+    margin-right: 1%;
+
+}
+.RuqestTable{
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 1%;
+    margin-left: 3%;
+}
+.inquirytitle{
+    font-size: 2rem;
+    margin-bottom: 5%;
+}

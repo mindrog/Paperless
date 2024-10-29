@@ -3,6 +3,7 @@ package com.ss.paperless.inquiry;
 import java.security.Timestamp;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -24,5 +25,7 @@ public class RequestDTO {
 	private String requ_email;
 	@JsonProperty("requ_contents")
 	private String requ_contents;
-	private Timestamp requ_enroll;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@JsonProperty("requ_enroll")
+	private LocalDateTime requ_enroll;
 }
