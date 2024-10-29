@@ -38,7 +38,7 @@ import CompanyUserCalender from './pages/company_user/CompanyUserCalender';
 import Menubar from './pages/layout/menubar';
 import GraphChart from './pages/layout/GraphChart';
 import ApprovalLine from './pages/layout/ApprovalLine';
-// import PageNav from './pages/layout/PageNav';
+import TextEditor from './ckEditor/TextEditor';
 import './App.css';
 import './styles/style.css';
 
@@ -209,22 +209,5 @@ function ApprovalLineToggle() {
         </>
     );
 }
-
-// 페이징네이션
-// function PaginationToggle() {
-//     const location = useLocation();
-//     const allowedPaths = ['/company/user/stock', '/company/admin/member'];
-
-//     return (
-//         <>
-//             {allowedPaths.includes(location.pathname) && (
-//                 <div className='PageNav'>
-//                     <PageNav />
-//                 </div>
-//             )}
-//         </>
-//     );
-// }
-
 
 export default App;

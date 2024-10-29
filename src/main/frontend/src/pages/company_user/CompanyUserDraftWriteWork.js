@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
-import { Table, Button, Form, Modal, Alert } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Button, Form, Table } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import styles from '../../styles/company/company_draft_write_work.module.css';
+import DraftTitleInput from '../company_user/draftWriteComponent/DraftTitleInput';
+import DraftDocInfoTable from '../company_user/draftWriteComponent/DraftDocInfoTable';
+import ApprovalLineTable from '../company_user/draftWriteComponent/ApprovalLineTable';
+import ContentEditor from '../company_user/draftWriteComponent/ContentEditor';
+import FileUploader from '../company_user/draftWriteComponent/FileUploader';
+import SaveModals from '../company_user/draftWriteComponent/SaveModals';
 import ApprovalLine from '../layout/ApprovalLine';
+import axios from 'axios';
 
 const CompanyUserDraftWriteWork = () => {
+  const [data, setData] = useState([]);
+
   const [reportTitle, setReportTitle] = useState('');
-  const [reporter, setReporter] = useState('');
-  const [reportDate, setReportDate] = useState('');
-  const [department, setDepartment] = useState('');
   const [reportContent, setReportContent] = useState('');
-  const [approvals, setApprovals] = useState([{ name: '', position: '' }]);
+  const [reportDate, setReportDate] = useState('');
+  const [repoStartTime, setRepoStartTime] = useState('');
+  const [repoEndTime, setRepoEndTime] = useState('');
+
   const [showModal, setShowModal] = useState(false); // 결재선 모달 상태
   const [showCancelModal, setShowCancelModal] = useState(false); // 취소 버튼 모달 상태
   const [showSaveModal, setShowSaveModal] = useState(false); // 임시 저장 확인 모달 상태
@@ -20,48 +29,45 @@ const CompanyUserDraftWriteWork = () => {
   const [formErrors, setFormErrors] = useState({});
   const [files, setFiles] = useState([]); // 첨부된 파일들을 저장할 상태
 
+
+  
+  // 기안날짜 (현재 날짜 불러오기)
+  useEffect(() => {
+    setReportDate(new Date().toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }));
+  }, []);
+
+
   const navigate = useNavigate();
 
-  // 모달을 열고 닫는 함수
+  // 모달을 열고 닫는 함수`
   const handleShowCancelModal = () => setShowCancelModal(true);
   const handleCloseCancelModal = () => setShowCancelModal(false);
 
-  const handleShowSaveModal = () => setShowSaveModal(true); // 임시 저장 모달 표시
-  const handleCloseSaveModal = () => setShowSaveModal(false); // 임시 저장 모달 닫기
+  const handleApprLineModal = () => setShowModal(true); // 결재선 모달 열기
+  const handleModalClose = () => setShowModal(false); // 결재선 모달 닫기
 
-  // 결재선 모달 열기
-  const handleApprLineModal = () => {
-    setShowModal(true);
-  };
-
-  // 결재선 모달 닫기
-  const handleModalClose = () => {
-    setShowModal(false);
-  };
-
-  // 취소 버튼 클릭 시 모달 띄우기
-  const handleCancelClick = () => {
-    setShowCancelModal(true);
-  };
-
-  // 취소 확인 모달에서 "임시 저장"을 선택했을 때 동작
   const handleSaveAsDraftAndRedirect = () => {
     setIsSaved(true);
-    setSaveDate(new Date().toLocaleDateString('ko-KR')); // 현재 날짜 저장
+    setSaveDate(new Date().toLocaleDateString('ko-KR'));
     setShowCancelModal(false);
-    handleShowSaveModal(); // "임시 저장되었습니다" 모달을 띄움
+    setShowSaveModal(true);
   };
 
-  // 임시 저장 모달에서 "확인"을 누르면 리다이렉트
   const handleRedirectAfterSave = () => {
-    handleCloseSaveModal();
+    setShowSaveModal(false);
     navigate('/company/user/draft/doc/draft');
   };
 
-  // 임시 저장 버튼 클릭 시 처리
   const handleSaveAsDraftClick = () => {
     setIsSaved(true);
-    setSaveDate(new Date().toLocaleDateString('ko-KR')); // 현재 날짜 저장
+    setSaveDate(new Date().toLocaleDateString('ko-KR'));
     setShowAlert(true);
 
     setTimeout(() => {
@@ -69,13 +75,6 @@ const CompanyUserDraftWriteWork = () => {
     }, 5000); // 5초 후 알림 창 자동 닫기
   };
 
-  // 임시 저장 모달에서 "예" 버튼 클릭 시 호출되는 함수
-  const handleConfirmSaveClick = () => {
-    handleSaveAsDraftClick(); // 임시 저장 처리
-    handleCloseCancelModal(); // 모달 닫기
-  };
-
-  // 결재 상신 버튼 클릭 시 처리
   const handleSubmitClick = () => {
     const errors = {};
     if (!reportTitle) errors.reportTitle = true;
@@ -86,171 +85,97 @@ const CompanyUserDraftWriteWork = () => {
       return;
     }
 
-    console.log('결재 상신 버튼 클릭됨');
     navigate('/company/user/draft/form/work');
   };
 
-  // 파일 드래그
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const droppedFiles = Array.from(e.dataTransfer.files); // 드래그한 파일들 받아오기
-    setFiles((prevFiles) => [...prevFiles, ...droppedFiles]); // 파일 목록에 추가
-  };
+  // 통신
+  const token = localStorage.getItem('jwt');
 
-  // 드래그 앤 드롭 관련 함수들
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
+  useEffect(() => {
+    const fetchMenuList = async () => {
+      if (token) {
+        try {
+          const response = await axios.get('/api/report/getUserInfo', {}, {
+            headers: { 'Authorization': token }
+          });
+          const data = response.data;
 
-  // 첨부된 파일 목록 삭제하는 함수
-  const handleRemoveFile = (index) => {
-    setFiles(files.filter((_, i) => i !== index));
-  };
+          console.log('Fetched menu data:', data); // 데이터 구조 확인
+          setData(data);
+        } catch (error) {
+          console.error('Error fetching menu list:', error);
+          setData([]);
+        }
+      } else {
+        console.log('토큰이 없습니다.');
+      }
+    };
+
+    fetchMenuList();
+  }, [token]);
 
   return (
     <div className="container">
       <h2 className={styles.pageTitle}>업무 보고 기안</h2>
-
       <Form>
-        <Table bordered className={styles.docTitleHeader}>
-          <thead>
-            <tr className={styles.docTitleBox}>
-              <th className={styles.docTitle}>기안 제목</th>
-              <th colSpan={3}>
-                <Form.Control
-                  type="text"
-                  value={reportTitle}
-                  onChange={(e) => setReportTitle(e.target.value)}
-                  className={`${styles.inputForm} ${formErrors.reportTitle ? styles.errorInput : ''}`} // 오류가 있으면 테두리 색상 변경
-                  placeholder="기안 제목을 입력하세요"
-                />
-                {formErrors.reportTitle && <span className={styles.errorMessage}>기안 제목을 입력해주세요</span>}
-              </th>
-            </tr>
-          </thead>
-        </Table>
-
+        <DraftTitleInput reportTitle={reportTitle} setReportTitle={setReportTitle} />
         <div className={styles.docHeader}>
-          <Table bordered size="sm" className={styles.docInfo}>
-            <tbody>
-              <tr>
-                <th className={styles.docKey}>문서번호</th>
-                <td className={styles.docValue}>-</td>
-              </tr>
-              <tr>
-                <td className={styles.docKey}>본&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;부</td>
-                <td className={styles.docValue}>{department || 'Mark'}</td>
-              </tr>
-              <tr>
-                <td className={styles.docKey}>부&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;서</td>
-                <td className={styles.docValue}>{reporter || 'Jacob'}</td>
-              </tr>
-              <tr>
-                <td className={styles.docKey}>기안일</td>
-                <td className={styles.docValue}>{reportDate || '2024-10-16(수)'}</td>
-              </tr>
-              <tr>
-                <td className={styles.docKey}>기안자</td>
-                <td className={styles.docValue}>배수지</td>
-              </tr>
-              <tr>
-                <td className={styles.docKey}>시행일자</td>
-                <td className={styles.docValue}>2024-10-19(금)</td>
-              </tr>
-              <tr>
-                <td className={styles.docKey}>결재 상태</td>
-                <td className={styles.docValue}>신청</td>
-              </tr>
-            </tbody>
-          </Table>
-          <Table bordered size="sm" className={styles.apprLineBox}>
-          <tbody className={styles.apprLineTbody}>
-            <tr className={styles.apprLinedocTr}>
-              <td className={styles.docKey}>상신</td>
-              <td className={styles.docKey}>결재</td>
-            </tr>
+          <DraftDocInfoTable
+            department={data.department}
+            team={data.team}
+            reporter={data.reporter}
+            reportDate={reportDate}
+            repoStartTime={repoStartTime}
+            repoEndTime={repoEndTime}
+            reportStatus="결재 상태"
+            onStartDateChange={setRepoStartTime}
+            onEndDateChange={setRepoEndTime}
+          />
+          <ApprovalLineTable handleApprLineModal={handleApprLineModal} />
+        </div>
+        <Table bordered className={styles.docContent}>
+          <tbody>
             <tr>
-              <td className={styles.docKey}>배수지</td>
-              <td>
-                <Button className={styles.apprLineBtn} onClick={handleApprLineModal}>결재선</Button>
-              </td>
-            </tr>
-            <tr>
-              <td className={styles.docValue_date}>2024/10/21</td>
-              <td>-</td>
+              <td className={styles.docKey}>참 &nbsp;&nbsp;&nbsp; 조</td>
+              <td></td>
+              <td className={styles.docKey}>수 &nbsp;&nbsp;&nbsp; 신</td>
+              <td></td>
             </tr>
           </tbody>
         </Table>
-        </div>
+        <ContentEditor reportContent={reportContent} setReportContent={setReportContent} />
 
         <Table bordered className={styles.docContent}>
           <tbody>
             <tr>
-              <td className={styles.docKey}>수 &nbsp;&nbsp;&nbsp; 신</td>
-              <td></td>
-              <td className={styles.docKey}>참 &nbsp;&nbsp;&nbsp; 조</td>
-              <td></td>
+              <td colSpan="2" className={`${styles.docKeyFile} ${styles.centerText}`}>첨부 파일</td>
             </tr>
             <tr>
-              <td className={styles.docKey}>제 &nbsp;&nbsp;&nbsp; 목</td>
-              <td colSpan={3}>
-                <Form.Control
-                  type="text"
-                  value={reportTitle}
-                  onChange={(e) => setReportTitle(e.target.value)}
-                  className={`${styles.inputForm} ${formErrors.reportTitle ? styles.errorInput : ''}`}
-                  placeholder="문서 제목을 입력하세요"
-                />
-                {formErrors.reportTitle && <span className={styles.errorMessage}>문서 제목을 입력해주세요</span>}
-              </td>
-            </tr>
-            <tr>
-              <td colSpan={4}>
-                <Form.Control
-                  as="textarea"
-                  rows={5}
-                  value={reportContent}
-                  onChange={(e) => setReportContent(e.target.value)}
-                  className={`${styles.inputForm} ${formErrors.reportContent ? styles.errorInput : ''}`}
-                  placeholder="내용을 입력하세요"
-                />
-                {formErrors.reportContent && <span className={styles.errorMessage}>내용을 입력해주세요</span>}
-              </td>
-            </tr>
-            <tr>
-              <td colSpan={4} className={styles.docKey}>첨부자료</td>
-            </tr>
-            <tr>
-              <td className={styles.docKey}>첨부자료</td>
-              <td 
-                colSpan={5} 
-                className={styles.dropZone}
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-              >
-                파일을 여기에 드롭하거나 클릭하여 추가하세요
-                <ul>
-                  {files.map((file, index) => (
-                    <li key={index}>
-                      {file.name}
-                      <Button variant="danger" size="sm" onClick={() => handleRemoveFile(index)}>삭제</Button>
-                    </li>
-                  ))}
-                </ul>
+              <td colSpan="2" className={styles.centerContent}>
+                <FileUploader files={files} setFiles={setFiles} />
               </td>
             </tr>
           </tbody>
         </Table>
+
       </Form>
 
-      {showAlert && (
-        <Alert variant="success" onClose={() => setShowAlert(false)} dismissible className={styles.customAlert}>
-          임시 저장되었습니다. 현재 날짜: {saveDate}
-        </Alert>
-      )}
+      <SaveModals
+        showCancelModal={showCancelModal}
+        handleCloseCancelModal={handleCloseCancelModal}
+        handleSaveAsDraftAndRedirect={handleSaveAsDraftAndRedirect}
+        showSaveModal={showSaveModal}
+        handleRedirectAfterSave={handleRedirectAfterSave}
+        showAlert={showAlert}
+        saveDate={saveDate}
+        setShowAlert={setShowAlert}
+      />
+
+      {/* 결재선 지정 모달 */}
+      <ApprovalLine showModal={showModal} handleModalClose={handleModalClose} />
 
       <div className={styles.btnBox}>
-        <Button className={styles.cancelBtn} onClick={handleCancelClick}>
+        <Button className={styles.cancelBtn} onClick={handleShowCancelModal}>
           취소
         </Button>
         <Button className={styles.saveAsBtn} onClick={handleSaveAsDraftClick}>
@@ -260,36 +185,6 @@ const CompanyUserDraftWriteWork = () => {
           결재 상신
         </Button>
       </div>
-
-      {/* 결재선 지정 모달 */}
-      <ApprovalLine showModal={showModal} handleModalClose={handleModalClose} />
-
-      {/* 취소 버튼 모달 */}
-      <Modal show={showCancelModal} onHide={handleCloseCancelModal} centered className={styles.cancelModal}>
-        <Modal.Body className={styles.cancelModalBody}>작성된 내용을 임시 저장하시겠습니까?</Modal.Body>
-        <Modal.Footer className={styles.cancelModalFooter}>
-          <Button variant="primary" onClick={handleSaveAsDraftAndRedirect} className={styles.modalSaveBtn}>
-            예
-          </Button>
-          <Button variant="secondary" onClick={handleCloseCancelModal} className={styles.modalcancelBtn}>
-            아니오
-          </Button>
-
-        </Modal.Footer>
-      </Modal>
-
-      {/* 임시 저장 후 모달 */}
-      <Modal show={showSaveModal} onHide={handleRedirectAfterSave} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>임시 저장</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>임시 저장되었습니다.</Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={handleRedirectAfterSave} className={styles.modalSaveBtn}>
-            확인
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 };
