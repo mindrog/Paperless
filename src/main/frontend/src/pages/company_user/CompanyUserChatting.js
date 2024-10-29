@@ -32,14 +32,14 @@ function Chatting() {
     // ** 더미 데이터 ** //
     // 직원
     const empList = [
-        { emp_no: 2, emp_name: '배수지', emp_email: 'suzy@digitalsolution.com', emp_phone: '010-1234-5678', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 4 },
-        { emp_no: 3, emp_name: '강동원', emp_email: 'dongwon@digitalsolution.com', emp_phone: '010-8765-4321', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 6 },
-        { emp_no: 4, emp_name: '김태리', emp_email: 'taeri@digitalsolution.com', emp_phone: '010-2345-6789', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 500, emp_posi_no: 3 },
-        { emp_no: 5, emp_name: '이준호', emp_email: 'junho@digitalsolution.com', emp_phone: '010-3456-7890', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 110, emp_posi_no: 4 },
-        { emp_no: 6, emp_name: '박서준', emp_email: 'seojun@digitalsolution.com', emp_phone: '010-5555-1234', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 200, emp_posi_no: 3 },
-        { emp_no: 7, emp_name: '이서진', emp_email: 'seojin@digitalsolution.com', emp_phone: '010-1010-2020', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 200, emp_posi_no: 4 },
-        { emp_no: 8, emp_name: '유아인', emp_email: 'yooain@digitalsolution.com', emp_phone: '010-3030-4040', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 210, emp_posi_no: 5 },
-        { emp_no: 9, emp_name: '공효진', emp_email: 'gonghj@digitalsolution.com', emp_phone: '010-5050-6060', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 2 },
+        { emp_no: 3, emp_name: '배수지', emp_email: 'suzy@digitalsolution.com', emp_phone: '010-1234-5678', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 4 },
+        { emp_no: 4, emp_name: '강동원', emp_email: 'dongwon@digitalsolution.com', emp_phone: '010-8765-4321', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 6 },
+        { emp_no: 5, emp_name: '김태리', emp_email: 'taeri@digitalsolution.com', emp_phone: '010-2345-6789', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 500, emp_posi_no: 3 },
+        { emp_no: 6, emp_name: '이준호', emp_email: 'junho@digitalsolution.com', emp_phone: '010-3456-7890', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 110, emp_posi_no: 4 },
+        { emp_no: 7, emp_name: '박서준', emp_email: 'seojun@digitalsolution.com', emp_phone: '010-5555-1234', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 200, emp_posi_no: 3 },
+        { emp_no: 8, emp_name: '이서진', emp_email: 'seojin@digitalsolution.com', emp_phone: '010-1010-2020', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 200, emp_posi_no: 4 },
+        { emp_no: 9, emp_name: '유아인', emp_email: 'yooain@digitalsolution.com', emp_phone: '010-3030-4040', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 210, emp_posi_no: 5 },
+        { emp_no: 10, emp_name: '공효진', emp_email: 'gonghj@digitalsolution.com', emp_phone: '010-5050-6060', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 2 },
     ];
 
     // 회사
@@ -52,12 +52,16 @@ function Chatting() {
     const deptList = [
         { dept_no: 100, dept_name: 'IT부서', dept_team_name: '개발팀' },
         { dept_no: 110, dept_name: 'IT부서', dept_team_name: '인프라팀' },
+        { dept_no: 120, dept_name: 'IT부서', dept_team_name: '보안팀' },
         { dept_no: 200, dept_name: '마케팅부서', dept_team_name: '디지털마케팅팀' },
         { dept_no: 210, dept_name: '마케팅부서', dept_team_name: '브랜드팀' },
+        { dept_no: 220, dept_name: '마케팅부서', dept_team_name: '시장조사팀' },
         { dept_no: 300, dept_name: '영업부서', dept_team_name: '국내영업팀' },
         { dept_no: 310, dept_name: '영업부서', dept_team_name: '해외영업팀' },
+        { dept_no: 320, dept_name: '영업부서', dept_team_name: '영업기획팀' },
         { dept_no: 400, dept_name: 'HR부서', dept_team_name: '채용팀' },
         { dept_no: 410, dept_name: 'HR부서', dept_team_name: '인사관리팀' },
+        { dept_no: 420, dept_name: 'HR부서', dept_team_name: '교육팀' },
         { dept_no: 500, dept_name: '구매부서', dept_team_name: '구매팀' },
         { dept_no: 510, dept_name: '구매부서', dept_team_name: '자재관리팀' },
     ];
@@ -67,13 +71,14 @@ function Chatting() {
         { posi_no: 1, posi_name: '사원' },
         { posi_no: 2, posi_name: '주임' },
         { posi_no: 3, posi_name: '대리' },
-        { posi_no: 4, posi_name: '차장' },
-        { posi_no: 5, posi_name: '과장' },
-        { posi_no: 6, posi_name: '차장' },
+        { posi_no: 4, posi_name: '과장' },
+        { posi_no: 5, posi_name: '차장' },
+        { posi_no: 6, posi_name: '부장' },
         { posi_no: 7, posi_name: '이사' },
         { posi_no: 8, posi_name: '상무' },
         { posi_no: 9, posi_name: '전무' },
         { posi_no: 10, posi_name: '부사장' },
+        { posi_no: 11, posi_name: '사장' },
     ];
 
     // 직원 목록을 각 회사 정보와 함께 저장할 배열
@@ -211,7 +216,7 @@ function Chatting() {
 
                 // REST API를 통해 메시지 저장
                 await api.sendMessage(newMessage);
-                
+
                 // 메시지 리스트 업데이트
                 setMessageList((prev) => [...prev, newMessage]);
                 setMessage('');
