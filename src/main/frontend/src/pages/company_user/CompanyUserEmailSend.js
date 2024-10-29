@@ -1,12 +1,12 @@
 import React, { useState, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import styles from '../../styles/company/company_email_send.module.css';
 import '../../styles/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Modal, Button } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 
 function CompanyUserEmailSend() {
     const [dragOver, setDragOver] = useState(false);
@@ -14,28 +14,24 @@ function CompanyUserEmailSend() {
     const [isOpen, setIsOpen] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const fileInputRef = useRef(null);
+    const navigate = useNavigate(); // useNavigate 훅 사용
 
     const location = useLocation();
-    // 먼저 location에서 데이터를 가져옵니다.
     const initialReceiverEmail = location.state?.receiverEmail || '';
 
-    // 이메일 입력 상태 추가
     const [receiverEmail, setReceiverEmail] = useState(initialReceiverEmail);
     const [ccEmail, setCcEmail] = useState('');
     const [title, setTitle] = useState('');
     const [emailContent, setEmailContent] = useState('');
 
-    const employee = useSelector((state) => state.user.data); 
-
+    const employee = useSelector((state) => state.user.data);
     const email = employee ? employee.emp_email : null;
 
     console.log(email);
 
-    // 파일 업로드 제한 설정
     const MAX_FILES = 10;
     const MAX_TOTAL_SIZE = 25 * 1024 * 1024; // 25MB 
 
-    // 드래그 앤 드롭 이벤트 핸들러
     const handleDragEnter = (e) => {
         e.preventDefault();
         setDragOver(true);
@@ -86,7 +82,6 @@ function CompanyUserEmailSend() {
         }
 
         setFiles(updatedFiles);
-        // 파일이 추가되면 자동으로 파일 리스트를 열기
         setIsOpen(true);
     };
 
@@ -104,7 +99,6 @@ function CompanyUserEmailSend() {
         fileInputRef.current.click();
     };
 
-    // 미리보기 모달 핸들러
     const handlePreview = () => {
         setShowModal(true);
     };
@@ -113,46 +107,51 @@ function CompanyUserEmailSend() {
         setShowModal(false);
     };
 
-    // 보내기 함수
     const handleSend = () => {
         alert('이메일이 전송되었습니다!');
         setShowModal(false);
     };
 
-    // 이메일 작성 폼에서 보내기 버튼 클릭 시
     const handleFormSend = async (e) => {
         e.preventDefault();
 
-        // FormData 객체 생성
+        if (!email) {
+            alert('보낸 사람 이메일이 설정되지 않았습니다.');
+            return;
+        }
+
         const formData = new FormData();
-        formData.append('senderEmail')
-        formData.append('receiverEmail', receiverEmail);
+        formData.append('senderEmail', email);
+        formData.append('recipientEmail', receiverEmail);
         formData.append('ccEmail', ccEmail);
         formData.append('title', title);
-        formData.append('emailContent', emailContent);
+        formData.append('content', emailContent);
+
+        files.forEach((file) => {
+            formData.append('files', file); // 'files' 필드명은 백엔드와 일치해야 함
+        });
+
+        // JWT 토큰 가져오기 
+        const token = localStorage.getItem('jwt');
+
+        console.log('JWT Token:', token);
 
         try {
-            const response = await fetch('/api/emails/send', {
+            const response = await fetch('http://localhost:8080/api/emails/send', {
                 method: 'POST',
                 headers: {
-                    // 파일 업로드가 없으므로 JSON 형식으로 보냅니다.
-                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`,
+
                 },
-                body: JSON.stringify({
-                    receiverEmail,
-                    ccEmail,
-                    title,
-                    emailContent,
-                }),
+                body: formData,
             });
 
             if (response.ok) {
                 alert('이메일이 성공적으로 전송되었습니다.');
-
-                navigator('/Company/user/email');
+                navigate('/Company/user/email');
             } else {
-                // 에러 처리
-                alert('이메일 전송에 실패했습니다.');
+                const errorData = await response.json();
+                alert(`이메일 전송에 실패했습니다: ${errorData.message || '알 수 없는 오류'}`);
             }
         } catch (error) {
             console.error('Error sending email:', error);
@@ -160,18 +159,15 @@ function CompanyUserEmailSend() {
         }
     };
 
-    // 첨부파일 총 크기 계산 함수
     const calculateTotalFileSize = () => {
         const totalSize = files.reduce((acc, file) => acc + file.size, 0);
         return formatBytes(totalSize);
     };
 
-    // 바이트를 읽기 쉬운 형식으로 변환하는 함수
     const formatBytes = (bytes) => {
-        // if (bytes < 1024) {
-        //     return `${bytes} bytes`;
-        // } else 
         if (bytes === 0) {
+                    
+
             return `0 KB`;
         } else if (bytes < 1024 * 1024) {
             return `${(bytes / 1024).toFixed(1)} KB`;
@@ -184,7 +180,7 @@ function CompanyUserEmailSend() {
         <div className="container-xl conbox1">
             <div className="emilFormContainer">
                 <div className={styles.Container}>
-                    <form>
+                    <form onSubmit={handleFormSend}>
                         <div className={styles['form-group']}>
                             <label htmlFor="receiverEmail" className={styles['form-label']}>받는 사람</label>
                             <div className={styles['input-container']}>
@@ -195,6 +191,7 @@ function CompanyUserEmailSend() {
                                     placeholder="이메일 주소를 입력하세요"
                                     value={receiverEmail}
                                     onChange={(e) => setReceiverEmail(e.target.value)}
+                                    required
                                 />
                                 <span className={styles.underline}></span>
                             </div>
@@ -223,6 +220,7 @@ function CompanyUserEmailSend() {
                                     placeholder="제목을 입력하세요"
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
+                                    required
                                 />
                                 <span className={styles.underline}></span>
                             </div>
@@ -296,6 +294,7 @@ function CompanyUserEmailSend() {
                                     placeholder="이메일 내용을 입력하세요"
                                     value={emailContent}
                                     onChange={(e) => setEmailContent(e.target.value)}
+                                    required
                                 ></textarea>
                                 <span className={styles.underline}></span>
                             </div>
@@ -303,7 +302,7 @@ function CompanyUserEmailSend() {
 
                         {/* 버튼 영역 */}
                         <div className={styles['form-actions']}>
-                            <button type="button" className={styles['btn-send']} onClick={handleFormSend}>
+                            <button type="submit" className={styles['btn-send']}>
                                 보내기
                             </button>
                             <button type="button" className={styles['btn-preview']} onClick={handlePreview}>
@@ -321,15 +320,12 @@ function CompanyUserEmailSend() {
                 </Modal.Header>
                 <Modal.Body>
                     <div className={styles['email-preview']}>
-
                         <h3 className={styles['email-title']}>{title}</h3>
-
-                        <p><strong>보낸 사람:</strong> me@paperless.com</p>
+                        <p><strong>보낸 사람:</strong> {email}</p>
                         <p><strong>받는 사람:</strong> {receiverEmail}</p>
                         <p><strong>참조:</strong> {ccEmail}</p>
 
                         <div className={styles['attachment-section']}>
-
                             <hr className={styles['attachment-divider']} />
                             <p>첨부파일:
                                 {files.length === 0 ? (
@@ -337,14 +333,11 @@ function CompanyUserEmailSend() {
                                 ) : files.length === 1 ? (
                                     ` ${files[0].name} (${formatBytes(files[0].size)})`
                                 ) : (
-
                                     ` 첨부파일 ${files.length}개 (${calculateTotalFileSize()})`
-
                                 )}
                             </p>
                             <hr className={styles['attachment-divider']} />
                         </div>
-                        {/* 내용 */}
                         <div className={styles['email-content']}>
                             <div style={{ whiteSpace: 'pre-wrap' }}>{emailContent}</div>
                         </div>
@@ -363,6 +356,7 @@ function CompanyUserEmailSend() {
             </Modal>
         </div>
     );
+
 }
 
 export default CompanyUserEmailSend;
