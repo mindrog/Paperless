@@ -122,6 +122,7 @@
 
 
 .email-table {
+    table-layout: fixed;
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
@@ -132,6 +133,9 @@
     padding: 10px;
     border-bottom: 1px solid #ddd;
     text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .email-table th {
@@ -152,25 +156,25 @@
     background-color: #d0e1ff;
 }
 
-/* footer를 flex 컨테이너로 설정 */
+
 .footer {
     display: flex;
-    justify-content: center; /* 기본적으로 가운데 정렬 */
+    justify-content: center;
     align-items: center;
     margin-top: 8px;
-    position: relative;
+    
   }
   
-  /* Pagination을 flex 아이템으로 설정 */
+  
   .pagination {
-    flex: 1; /* 가능한 공간을 차지하도록 설정 */
+    flex: 1; 
     display: flex;
-    justify-content: center; /* 페이지네이션 버튼을 가운데 정렬 */
+    justify-content: center; 
   }
   
-  /* ComposeButton의 위치 조정 */
+  
   .composeButton {
-    position: relative; /* 문서 흐름에 따름 */
-    margin-left: auto; /* 오른쪽으로 밀어냄 */
+    position: relative; 
+    margin-left: auto; 
    
   }
