@@ -25,9 +25,13 @@
 		SELECT 1
 		FROM `User`
 		WHERE `username` = '입력할_사용자이름'
-		) AS user_exists;
+		) AS user_exists
 	</select>
-
+	<select id="GetAdminUsers" 
+		resultType="com.ss.paperless.employee.AdminEmpGetVo">
+		select e.emp_no,e.emp_code,e.emp_name,e.emp_enroll_date,c.comp_name,c.comp_email,c.comp_phone,c.comp_headcount
+		from employee e join company c on e.emp_comp_no = c.comp_no where e.emp_role = 'admin'
+	</select>
 	<update id="updateEmp" parameterType="Long">
 		UPDATE Employee
 		SET column_name = new_value
@@ -45,4 +49,12 @@
 		         WHERE emp_comp_no = #{emp_comp_no}
 		         AND emp_role != 'super'
 	</select>
+	<select id="getEmpDepartMenuList" parameterType="int" resultType="com.ss.paperless.employee.EmployeeDTO">
+		SELECT e.emp_code , e.emp_name, e.emp_dept_no, d.dept_name, d.dept_team_name
+		FROM paperless.employee e
+		LEFT JOIN paperless.department d ON e.emp_dept_no = d.dept_no
+		WHERE emp_comp_no = #{emp_comp_no}
+		AND emp_role != 'super'
+	</select>
+
 </mapper>
