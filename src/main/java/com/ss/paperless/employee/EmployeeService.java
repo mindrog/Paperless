@@ -66,4 +66,9 @@ public class EmployeeService implements UserDetailsService {
 	public EmployeeEntity findByEmpCode(String empCode) {
 		return employeeRepository.findByEmpCode(empCode);
 	}
+
+	public List<AdminEmpGetVo> GetAdminUsers() {
+		
+		return mapper.GetAdminUsers();
+	}
 }
