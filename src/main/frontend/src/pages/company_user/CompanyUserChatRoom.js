@@ -92,6 +92,12 @@ function CompanyUserChatRoom() {
         };
     });
 
+    // 조직도 검색 키워드 상태 변수
+    const [searchTerm, setSearchTerm] = useState('');
+
+    // 검색한 User를 넘기기 위한 상태 변수
+    const [selectedUser, setSelectedUser] = useState(null);
+
     // 채팅방 목록 상태 변수 (초기에는 빈 배열)
     const [chatRoomList, setChatRoomList] = useState([]);
 
@@ -130,6 +136,33 @@ function CompanyUserChatRoom() {
             return format(date, 'yyyy-M-d');
         }
     }
+
+    // 검색 입력할 때마다 상태를 업데이트
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+        // 필터 함수 호출
+        filterOrgChart(event.target.value);
+    };
+
+    // 검색 필터링 (조직도 데이터를 필터링)
+    const filterOrgChart = (searchTerm) => {
+        if (!searchTerm) {
+            // 선택된 사용자 초기화
+            setSelectedUser(null);
+            return;
+        }
+
+        const lowercasedTerm = searchTerm.toLowerCase();
+
+        // 직원 리스트에서 성명, 직급, 부서명으로 필터링
+        const result = processedEmpList.filter(emp =>
+            emp.emp_name.toLowerCase().includes(lowercasedTerm) ||
+            emp.emp_posi_name.toLowerCase().includes(lowercasedTerm) ||
+            emp.emp_dept_name.toLowerCase().includes(lowercasedTerm)
+        );
+
+        setSelectedUser(result.length > 0 ? result[0] : null);
+    };
 
     // 채팅 목록의 프로필 클릭할 때 메서드
     const clickProfile = (emp_no) => {
@@ -345,6 +378,47 @@ function CompanyUserChatRoom() {
         return <div>Loading...</div>;
     }
 
+    // OrgChart에서 사람 클릭 시 호출 함수
+    const handleMemberClick = async (member) => {
+        try {
+            console.log('member:', member);
+            // 선택한 멤버의 emp_no
+            const selectedEmpNo = member.emp_no;
+            console.log('selectedEmpNo:', selectedEmpNo);
+
+            // 현재 채팅방 목록에서 해당 참여자들로 이루어진 채팅방을 찾기
+            let existingChatRoom = chatRoomList.find(room => room.participantNos.includes(user.emp_no) && room.participantNos.includes(selectedEmpNo));
+
+            // 존재하거나 새로 생성한 채팅방으로 이동
+            if (existingChatRoom) {
+                chatting(existingChatRoom.room_no);
+                return;
+            }
+
+            // 채팅방이 없다면 새로운 채팅방 생성
+            if (!existingChatRoom) {
+                // 채팅방이 존재하지 않는 경우 새로운 채팅방을 생성
+                const roomDate = format(new Date(), 'yyyy-MM-dd HH:mm');
+                const newRoomData = {
+                    room_date: roomDate,
+                    room_participants: [user.emp_no, selectedEmpNo],
+                };
+
+                // PUT 요청으로 새로운 채팅방 생성
+                const response = await api.createChatRoom(newRoomData); 
+
+                if (response && response.data) {
+                    // 새로 생성된 채팅방으로 연결
+                    chatting(response.data.room_no);
+                    return;
+                }
+            }
+            console.log('existingChatRoom:', existingChatRoom);
+        } catch (error) {
+            console.error("Error handling member click: ", error);
+        }
+    };
+
     return (
         <div className="container-xl">
             <div className={styles.chatContainer}>
@@ -355,13 +429,13 @@ function CompanyUserChatRoom() {
                         </div>
                         <div className={styles.orgChart_content}>
                             <div className={styles.selectOrgChart}>
-                                <input type='text' placeholder='성명, 직급, 부서명 검색'></input>
-                                <button><i className="material-icons">search</i></button>
+                                <input type='text' placeholder='성명, 직급, 부서명 검색' value={searchTerm} onChange={handleSearchChange} onKeyDown={(e) => { if (e.key === 'Enter') filterOrgChart(searchTerm); }}></input>
+                                <button onClick={() => filterOrgChart(searchTerm)}><i className="material-icons">search</i></button>
                             </div>
                             <hr>
                             </hr>
                             <div className={styles.orgChartUI}>
-                                <OrgChart />
+                                <OrgChart selectedUser={selectedUser} onMemberClick={handleMemberClick} />
                             </div>
                         </div>
                     </div>

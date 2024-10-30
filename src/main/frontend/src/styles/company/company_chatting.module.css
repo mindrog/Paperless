@@ -150,6 +150,14 @@
     color: #2e3d86;
     background-color: transparent;
     border: none;
+    padding: 0;
+}
+
+.clearSearchButton i {
+    display: flex;
+    align-items: center;
+    position: relative;
+    right: 30px;
 }
 
 .clearSearchButton:hover {
