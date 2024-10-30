@@ -2,6 +2,7 @@ package com.ss.paperless.employee;
 
 import java.util.List;
 
+import com.ss.paperless.employee.entity.EmployeeEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -55,14 +56,17 @@ public class EmployeeService implements UserDetailsService {
 		return mapper.getEmpDepartMenuList(compNo);
 	}
 
+//	public List<EmployeeDTO> getEmpInfoList(int empCompNo) {
+//		return mapper.getEmpInfoList(empCompNo);
+//	}
+
 	public EmployeeEntity findByEmail(String email) {
 		return employeeRepository.findByEmpEmail(email);
 	}
 
-	public EmployeeEntity findByEmpNo(Integer empNo) {
-		return employeeRepository.findById(empNo).orElse(null);
-	}
-
+	 public EmployeeEntity findByEmpNo(Long empNo) {
+	        return employeeRepository.findByEmpNo(empNo);
+	    }
 	public EmployeeEntity findByEmpCode(String empCode) {
 		return employeeRepository.findByEmpCode(empCode);
 	}
@@ -70,5 +74,10 @@ public class EmployeeService implements UserDetailsService {
 	public List<AdminEmpGetVo> GetAdminUsers() {
 		
 		return mapper.GetAdminUsers();
+	}
+
+
+	public EmployeeDTO getUserInfo(String emp_code) {
+		return mapper.getUserInfo(emp_code);
 	}
 }

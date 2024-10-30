@@ -42,6 +42,16 @@ public class EmployeeController {
         return ResponseEntity.ok("Employee with ID " + id + " updated successfully.");
     }
 
+    @PostMapping("/infolist")
+    public EmployeeDTO getInfoList() {
+        String emp_code =  SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("emp_code : " + emp_code);
+
+        EmployeeDTO InfoList = employeeService.getUserInfo(emp_code);
+        System.out.println("InfoList : " + InfoList);
+        return InfoList;
+    }
+
     @PostMapping("/getMenuList")
     public Map<Object, List<EmployeeDTO>> getMenuList() {
         String emp_code =  SecurityContextHolder.getContext().getAuthentication().getName();
@@ -56,15 +66,13 @@ public class EmployeeController {
         System.out.println("departmentGroupedMenu : " + departmentGroupedMenu);
 
         for (EmployeeDTO emp : menulist) {
+            Long empNo = emp.getEmp_no();
             Long departNo = emp.getEmp_dept_no();       // 부서코드
             String departName = emp.getDept_name();     // 부서 이름
             String team = emp.getDept_team_name();      // 팀 이름
-
-            System.out.println("departNo : " + departNo);
-            System.out.println("departName : " + departName);
-            System.out.println("team : " + team);
         }
 
+        System.out.println("departmentGroupedMenu : " + departmentGroupedMenu);
         return departmentGroupedMenu;
     }
 

@@ -37,24 +37,39 @@
 		SET column_name = new_value
 		WHERE id = #{id}
 	</update>
+
+	<!-- 조직도 조회 -->
 	<select id="getEmpCompNo" parameterType="String" resultType="int">
 		select emp_comp_no
 		from employee
 		where emp_code = #{emp_code}
-
 	</select>
-	<!-- 조직도 조회 -->
+
 	<select id="getEmpMenuList" parameterType="int" resultType="com.ss.paperless.employee.EmployeeDTO">
 		SELECT * FROM paperless.employee
 		         WHERE emp_comp_no = #{emp_comp_no}
 		         AND emp_role != 'super'
 	</select>
 	<select id="getEmpDepartMenuList" parameterType="int" resultType="com.ss.paperless.employee.EmployeeDTO">
-		SELECT e.emp_code , e.emp_name, e.emp_dept_no, d.dept_name, d.dept_team_name
-		FROM paperless.employee e
-		LEFT JOIN paperless.department d ON e.emp_dept_no = d.dept_no
+		SELECT emp.emp_no, emp.emp_code , emp.emp_name, emp.emp_dept_no, dep.dept_name, dep.dept_team_name, pos.posi_name,
+			   emp.emp_phone, emp.emp_email, emp.emp_profile, com.comp_name
+		FROM paperless.employee emp
+				 LEFT JOIN paperless.department dep ON emp.emp_dept_no = dep.dept_no
+				 LEFT JOIN paperless.position pos ON emp.emp_posi_no = pos.posi_no
+				 LEFT JOIN paperless.company com ON emp.emp_comp_no = com.comp_no
 		WHERE emp_comp_no = #{emp_comp_no}
 		AND emp_role != 'super'
+	</select>
+
+	<!-- 보고서 user Info 조회-->
+	<select id="getUserInfo" parameterType="String" resultType="com.ss.paperless.employee.EmployeeDTO">
+		SELECT emp.emp_no, emp.emp_code , emp.emp_name, emp.emp_dept_no, dep.dept_name, dep.dept_team_name, pos.posi_name,
+			   emp.emp_phone, emp.emp_email, emp.emp_profile, com.comp_name
+		FROM paperless.employee emp
+				 LEFT JOIN paperless.department dep ON emp.emp_dept_no = dep.dept_no
+				 LEFT JOIN paperless.position pos ON emp.emp_posi_no = pos.posi_no
+				 LEFT JOIN paperless.company com ON emp.emp_comp_no = com.comp_no
+		WHERE emp_code = #{emp_code}
 	</select>
 
 </mapper>

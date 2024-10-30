@@ -23,10 +23,12 @@ public class EmployeeDTO {
     private String emp_sign;
     private String emp_profile;
     private Long emp_comp_no;
+    private String comp_name;
     private Long emp_dept_no;
     private String dept_name;
     private String dept_team_name;
     private Long emp_posi_no;
+    private String posi_name;
     private Timestamp emp_enroll_date;
     private Timestamp emp_join_date;
     private String emp_lastmsg;
