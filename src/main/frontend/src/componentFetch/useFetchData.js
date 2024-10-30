@@ -5,12 +5,19 @@ import axios from 'axios';
 const useFetchData = (token) => {
   const [userData, setUserData] = useState(null);
 
+  console.log("useFetchData 실행!!!");
+  console.log("useFetchData 실행!!! token : " + token);
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (token) {
+
+        console.log("useFetchData if문 실행!!!");
+        console.log("token : " + token);
+
         try {
-          const response = await axios.post('/api/infolist', {}, {
-            headers: { Authorization: token }
+          const response = await axios.get('/api/infolist', {
+            headers: { Authorization: `${token}` }
           });
 
           console.log("Response received:", response); // 응답 객체 전체 출력
@@ -19,11 +26,18 @@ const useFetchData = (token) => {
 
           setUserData(data); // 데이터 설정
         } catch (error) {
-          console.error('Error fetching employee data:', error);
+          console.error('Error fetching employee data:', error.message);
+          if (error.response) {
+            console.error('Error response data:', error.response.data);
+            console.error('Error response status:', error.response.status);
+          }
           setUserData(null);
         }
       } else {
         console.log('Token is missing.');
+
+        console.log("useFetchData else 실행!!!");
+        console.log("token : " + token);
       }
     };
     fetchUserData();

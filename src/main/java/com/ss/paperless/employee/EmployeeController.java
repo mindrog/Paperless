@@ -42,7 +42,7 @@ public class EmployeeController {
         return ResponseEntity.ok("Employee with ID " + id + " updated successfully.");
     }
 
-    @PostMapping("/infolist")
+    @GetMapping("/infolist")
     public EmployeeDTO getInfoList() {
         String emp_code =  SecurityContextHolder.getContext().getAuthentication().getName();
         System.out.println("emp_code : " + emp_code);
