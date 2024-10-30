@@ -1,9 +1,7 @@
 package com.ss.paperless.email;
 
-import com.ss.paperless.employee.EmployeeEntity;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 
 public class EmailSpecification {

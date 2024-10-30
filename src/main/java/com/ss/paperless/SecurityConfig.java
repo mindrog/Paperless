@@ -74,8 +74,8 @@ public class SecurityConfig {
 
 		http.authorizeHttpRequests((auth) -> auth
 				.mvcMatchers("/login", "/", "/join", "/api/login", "/api/name", "/api/userifo", "/api/inquirysend",
-						"/api/requestsend", "/api/getMenuList","/api/getinquiry","/api/getrequest")
-				.permitAll().mvcMatchers("/api/updateEmp/{id}").hasRole("admin")
+						"/api/requestsend", "/api/getMenuList","/api/infolist","/api/getinquiry","/api/getrequest")
+				.permitAll().mvcMatchers("/api/updateEmp").hasRole("admin")
 				.mvcMatchers("/api/emails/send").authenticated().anyRequest().authenticated());
 
 		http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
