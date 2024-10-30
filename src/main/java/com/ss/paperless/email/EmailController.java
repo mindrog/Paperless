@@ -4,8 +4,9 @@ import com.ss.paperless.company.CompanyEntity;
 import com.ss.paperless.company.CompanyService;
 import com.ss.paperless.company.DepartmentEntity;
 import com.ss.paperless.company.DepartmentService;
-import com.ss.paperless.employee.EmployeeEntity;
+
 import com.ss.paperless.employee.EmployeeService;
+import com.ss.paperless.employee.entity.EmployeeEntity;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;

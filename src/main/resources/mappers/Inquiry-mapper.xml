@@ -32,4 +32,7 @@
 	<select id="GetAdminRequest" resultType="com.ss.paperless.inquiry.RequestDTO">
 		select requ_no,requ_title,requ_writer,requ_email,requ_enroll from Request
 	</select>
+	<select id="checkCmp" resultType="int">
+	select count(*) from company where comp_name = #{inqu_compName}
+	</select>
 </mapper>
