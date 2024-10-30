@@ -15,4 +15,6 @@ public interface InquiryMapper {
 
 	public List<InquiryDTO> GetAdminRequest();
 
+	public int checkCmp(String inqu_compName);
+
 }

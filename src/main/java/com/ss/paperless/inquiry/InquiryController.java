@@ -40,4 +40,15 @@ public class InquiryController {
 		System.out.println("GetAdminRequest located");
 		return service.GetAdminRequest();
 	}
+	@GetMapping("/approveinquiry")
+	public int GetInquiryApprove(@RequestBody InquiryDTO inquiry) {
+		if (service.checkCmp(inquiry.getInqu_compName()) == 0) {
+			System.out.println("GetInquiryApprove started result ==" + service.checkCmp(inquiry.getInqu_compName()));
+			return 0;
+		}
+		else {
+			System.out.println("GetInquiryApprove ended");
+			return 1;
+		}
+	}
 }

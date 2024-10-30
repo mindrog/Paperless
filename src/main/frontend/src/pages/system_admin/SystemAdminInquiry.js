@@ -3,15 +3,16 @@ import { Table, Button, Form, Row, Col } from 'react-bootstrap';
 import Menubar from '../layout/menubar';
 import axios from 'axios';
 import '../../styles/layout/adminInquiry.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 function SystemAdminInquiry() {
     const [adminInquiry, setAdminInquiry] = useState([]);
     const [adminRequest, setAdminRequest] = useState([]);
-
+    const token = localStorage.getItem('jwt');
     useEffect(() => {
         const fetchAdminInquiry = async () => {
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('jwt');
                 if (!token) {
 
                     console.error("토큰이 없습니다.");
@@ -32,11 +33,22 @@ function SystemAdminInquiry() {
         console.log()
         fetchAdminInquiry(adminInquiry);
     }, []);
-
+    const sendInquiryByIndex = async (inquiry, index, token) => {
+        try {
+            const response = await axios.post('http://localhost:8080/api/approveinquiry', inquiry, {
+                headers: {
+                    'Authorization': token
+                }
+            });
+            console.log(`Index ${index}에 대한 응답:`, response.data);
+        } catch (error) {
+            console.error(`Index ${index} 호출 실패:`, error);
+        }
+    };
     useEffect(() => {
         const fetchAdminRequest = async () => {
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('jwt');
                 if (!token) {
 
                     console.error("토큰이 없습니다.");
@@ -49,7 +61,7 @@ function SystemAdminInquiry() {
                 });
 
                 setAdminRequest(adminRequestResponse.data);
-                console.log(adminRequestResponse.data);
+                console.log("data : " + adminRequestResponse.data);
             } catch (error) {
                 console.error('호출이 실패 했습니다 :', error);
             }
@@ -89,6 +101,7 @@ function SystemAdminInquiry() {
                             <th>업종</th>
                             <th>인원수</th>
                             <th>등록일</th>
+                            <th>승인</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -107,6 +120,7 @@ function SystemAdminInquiry() {
                                     minute: '2-digit',
                                     second: '2-digit'
                                 })}</td>
+                                <td><button type='button' onClick={() => sendInquiryByIndex(inquiry, index, token)}>승인</button></td>
                             </tr>
                         ))}
                     </tbody>
