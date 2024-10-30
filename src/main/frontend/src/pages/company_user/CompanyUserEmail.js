@@ -455,7 +455,7 @@ function CompanyUserEmail() {
                                     <FontAwesomeIcon icon={faEnvelopeOpen} />
                                 )}
                             </td>
-                            <td onClick={() => handleEmailClick(email)}>{email.writerEmail}</td>
+                            <td onClick={() => handleEmailClick(email)}>{email.writerDisplayInfo}</td>
                             <td onClick={() => handleEmailClick(email)}>{email.title}</td>
                             <td onClick={() => handleEmailClick(email)}>{email.sendDate.replace('T', ' ')}</td>
                         </tr>
