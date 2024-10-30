@@ -24,13 +24,11 @@ public class ReportController {
     @GetMapping("/getUserInfo")
     public ResponseEntity<EmployeeDTO> getUserInfo() {
         String emp_code =  SecurityContextHolder.getContext().getAuthentication().getName();
-//        int emp_no = SecurityContextHolder.getContext().getAuthentication().get;
         System.out.println("emp_code : " + emp_code);
 
         EmployeeEntity userInfo = reportService.getUserInfo(emp_code);
 
         EmployeeDTO employeeDTO = new EmployeeDTO();
-
         employeeDTO.setEmp_code(userInfo.getEmpCode());
         employeeDTO.setEmp_name(userInfo.getEmpName());
         employeeDTO.setEmp_dept_no(userInfo.getEmpDeptNo());

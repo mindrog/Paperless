@@ -106,9 +106,16 @@ CREATE TABLE `AttendanceReport` (
 
 -- PurchaseReport 테이블 생성
 CREATE TABLE `PurchaseReport` (
+    `product_no` BIGINT NOT NULL AUTO_INCREMENT,
     `purch_repo_no` BIGINT NOT NULL,
-    `product_name` VARCHAR(255) NOT NULL,
-    PRIMARY KEY (`purch_repo_no`),
+    `category` VARCHAR(500) NOT NULL,
+    `product_name` VARCHAR(500) NOT NULL,
+    `product_size` VARCHAR(500) NOT NULL,
+    `product_count` BIGINT NOT NULL,
+    `product_price` BIGINT NOT NULL,
+    `productPrices` BIGINT NOT NULL,
+    `productEtc` VARCHAR(500) NULL,
+    PRIMARY KEY (`product_no`),
     FOREIGN KEY (`purch_repo_no`) REFERENCES `Report` (`repo_no`)
 );
 

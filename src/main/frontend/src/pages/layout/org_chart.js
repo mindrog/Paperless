@@ -7,7 +7,6 @@ const OrgChart = forwardRef((props, ref) => {
 
     const token = localStorage.getItem('jwt');
     
-
     const { selectedUser, onMemberClick = () => { } } = props;
     const menuList = useFetchUserInfo(token);
     
@@ -72,14 +71,14 @@ const OrgChart = forwardRef((props, ref) => {
     const renderMenu = (menu) => {
         return (
             <li key={menu.deptName} style={{ listStyle: 'none', marginBottom: '10px' }}>
-                <button onClick={() => toggleDropdown(menu.deptName)}>
+                <button draggable onClick={() => toggleDropdown(menu.deptName)}>
                     {isDropdown[menu.deptName] ? '📂' : '📁'} {menu.deptName}
                 </button>
                 {isDropdown[menu.deptName] && (
                     <ul style={{ marginLeft: '20px' }}>
                         {Object.entries(menu.teams).map(([teamName, members]) => (
                             <li key={teamName} style={{ marginLeft: '20px', listStyle: 'none' }}>
-                                <button onClick={() => toggleDropdown(teamName)}>
+                                <button draggable onClick={() => toggleDropdown(teamName)}>
                                     {isDropdown[teamName] ? '📂' : '📁'} {teamName}
                                 </button>
                                 {isDropdown[teamName] && Array.isArray(members) && (
