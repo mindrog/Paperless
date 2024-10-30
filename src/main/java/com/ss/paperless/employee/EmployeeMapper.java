@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.ss.paperless.company.CompanyDTO;
+
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +24,7 @@ public interface EmployeeMapper {
 	public int updateEmp(Long id);
 
 
-	public List<AdminEmpGetVo> GetAdminUsers();
+	public List<CompanyDTO> GetAdminUsers();
 
 	List<EmployeeDTO> getEmpDepartMenuList(int compNo);
 

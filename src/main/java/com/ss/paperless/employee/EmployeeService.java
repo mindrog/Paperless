@@ -2,6 +2,7 @@ package com.ss.paperless.employee;
 
 import java.util.List;
 
+import com.ss.paperless.company.CompanyDTO;
 import com.ss.paperless.employee.entity.EmployeeEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -71,7 +72,7 @@ public class EmployeeService implements UserDetailsService {
 		return employeeRepository.findByEmpCode(empCode);
 	}
 
-	public List<AdminEmpGetVo> GetAdminUsers() {
+	public List<CompanyDTO> GetAdminUsers() {
 		
 		return mapper.GetAdminUsers();
 	}
