@@ -8,7 +8,7 @@ const OrgChart = forwardRef((props, ref) => {
     const token = localStorage.getItem('jwt');
 
     // selectedUser prop 받기 (CompanyUserChatRoom)
-    const { selectedUser, onMemberClick } = props;
+    const { selectedUser, onMemberClick = () => { } } = props;
 
     useEffect(() => {
         const fetchMenuList = async () => {
