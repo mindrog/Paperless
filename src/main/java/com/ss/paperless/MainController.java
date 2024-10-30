@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ss.paperless.company.CompanyDTO;
 import com.ss.paperless.employee.AdminEmpGetVo;
 import com.ss.paperless.employee.EmployeeDTO;
 import com.ss.paperless.employee.EmployeeService;
@@ -62,8 +63,8 @@ public class MainController {
 		return emp_row_posi;
 	} 
 	@GetMapping("/getadminusers")
-	public List<AdminEmpGetVo> GetAdminUsers() {
-		List<AdminEmpGetVo> adminMembers = empService.GetAdminUsers();
+	public List<CompanyDTO> GetAdminUsers() {
+		List<CompanyDTO> adminMembers = empService.GetAdminUsers();
 		System.out.println("admin : " + adminMembers);
 		return adminMembers;
 	}

@@ -22,7 +22,7 @@
     #{requ_title},
     #{requ_writer},
     #{requ_phone},
-    #{requ_email},
+    #{requ_email},             
     #{requ_contents},
     SYSDATE()
 )</insert>
@@ -35,4 +35,20 @@
 	<select id="checkCmp" resultType="int">
 	select count(*) from company where comp_name = #{inqu_compName}
 	</select>
+	<select id="getCompNo" resultType="Long">
+	select comp_no from company where comp_name = #{comp_name}
+	</select>
+	<insert id="insertNewAdmin" parameterType="com.ss.paperless.employee.EmployeeDTO">
+		insert into employee (emp_code,emp_pw,emp_name,emp_email,emp_phone,emp_sign,emp_profile,emp_comp_no,emp_dept_no,emp_posi_no,emp_enroll_date,emp_join_date,emp_role)
+		values (#{emp_code},#{emp_pw},#{emp_name},#{emp_email},#{emp_phone},#{emp_sign},#{emp_profile},#{emp_comp_no},#{emp_dept_no},#{emp_posi_no},sysdate(),sysdate(),#{emp_role})
+	</insert>
+
+	<insert id="isnertAdminComp" parameterType="com.ss.paperless.company.CompanyDTO">
+	insert into company (comp_name,comp_industry,comp_requester,comp_email,comp_phone,comp_headcount) values 
+	(#{comp_name},#{comp_industry},#{comp_requester},#{comp_email},#{comp_phone},#{comp_headcount})
+	</insert>
+	
+	<update id="updateInquiry" parameterType="int">
+	update inquiry set inqu_approve_YN = 'Y' where inqu_no = #{inqu_no}
+	</update>
 </mapper>

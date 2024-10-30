@@ -9,7 +9,7 @@ function SystemAdminMember () {
     useEffect(() => {
         const fetchAdminMember = async () => {
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('jwt');
                 if (!token) {
                     
                     console.error("토큰이 없습니다.");
@@ -61,26 +61,24 @@ function SystemAdminMember () {
                 <thead>
                     <tr>
                         <th>번호</th>
-                        <th>ID</th>
                         <th>회사명</th>
-                        <th>이름</th>
+                        <th>업종</th>
+                        <th>담당자</th>
                         <th>이메일</th>
                         <th>연락처</th>
-                        <th>등록일</th>
                         <th>인원수</th>
                     </tr>
                 </thead>
                 <tbody>
-                {adminMember.map((member, index) => (
-                        <tr key={member.emp_no}>
+                {adminMember.map((company, index) => (
+                        <tr key={company.comp_no}>
                             <td>{index + 1}</td>
-                            <td>{member.emp_code}</td>
-                            <td>{member.comp_name}</td>
-                            <td>{member.emp_name}</td>
-                            <td>{member.comp_email}</td>
-                            <td>{member.comp_phone}</td>
-                            <td>{member.emp_enroll_date}</td>
-                            <td>{member.comp_headcount}</td>
+                            <td>{company.comp_name}</td>
+                            <td>{company.comp_industry}</td>
+                            <td>{company.comp_requester}</td>
+                            <td>{company.comp_email}</td>
+                            <td>{company.comp_phone}</td>
+                            <td>{company.comp_headcount}</td>
                         </tr>
                     ))}
                 </tbody>

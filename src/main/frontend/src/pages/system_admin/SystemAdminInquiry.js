@@ -41,6 +41,7 @@ function SystemAdminInquiry() {
                 }
             });
             console.log(`Index ${index}에 대한 응답:`, response.data);
+            window.location.reload();
         } catch (error) {
             console.error(`Index ${index} 호출 실패:`, error);
         }
