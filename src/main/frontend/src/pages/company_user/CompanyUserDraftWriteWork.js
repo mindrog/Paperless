@@ -30,7 +30,10 @@ const CompanyUserDraftWriteWork = () => {
 
   // 통신
   const token = localStorage.getItem('jwt');
+  console.log("token : " + token);
+
   const userData = useFetchData(token);
+  console.log("userData : " + userData);
 
   useEffect(() => {
     if (userData === null) {
@@ -123,7 +126,9 @@ const CompanyUserDraftWriteWork = () => {
           ) : (
             <p>Loading user information...</p> // 로딩 중 표시
           )}
-          <ApprovalLineTable handleApprLineModal={handleApprLineModal} reporter={userData.emp_name} />
+          {userData ? (<ApprovalLineTable handleApprLineModal={handleApprLineModal} reporter={userData.emp_name} />): (
+            <p>Loading user information...</p> // 로딩 중 표시
+          )}
         </div>
         <Table bordered className={styles.docContent}>
           <tbody>
