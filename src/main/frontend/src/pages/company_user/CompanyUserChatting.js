@@ -12,10 +12,7 @@ import { useSelector } from 'react-redux';
 // .env 파일
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
-function Chatting({ updateRecentMessages }) {
-    // 연결 상태를 추적하기 위한 상태 변수
-    const [connectionAlert, setConnectionAlert] = useState('');
-
+function Chatting() {
     // Redux에서 사용자 정보 가져오기
     const userData = useSelector((state) => state.user.data);
 
@@ -107,6 +104,9 @@ function Chatting({ updateRecentMessages }) {
     // 로컬 스토리지에 저장된 emp 데이터 저장하는 변수 (더미 이용한 변수)
     // 대화 상대 (로그인한 사람과 채팅할 대상)
     const [emp, setEmp] = useState(null);
+
+    // emp가 준비된 후에 WebSocket URL을 설정
+    const [socketUrl, setSocketUrl] = useState(null);
 
     // 돋보기 토글 상태
     const [showSelectInput, setShowSelectInput] = useState(false);
@@ -211,47 +211,42 @@ function Chatting({ updateRecentMessages }) {
     //  서버에서 메시지가 올 때마다 업데이트
     // readyState: WebSocket의 연결 상태를 나타내는 함수
     //  총 4가지로 0: 연결 시도 중, 1: 연결, 2: 연결 종료 시도 중, 3: 연결 종료
-    const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(WEBSOCKET_URL, {
+    const { sendMessage, lastMessage, readyState } = useWebSocket(WEBSOCKET_URL, {
         shouldReconnect: () => true,
         onOpen: () => {
             console.log('WebSocket 연결 성공!');
-            setConnectionAlert('연결 성공');
         },
         onClose: () => {
             console.log('WebSocket 연결 해제됨');
-            setConnectionAlert('연결 해제');
         },
         onError: (event) => {
             console.error('WebSocket 에러:', event);
-            setConnectionAlert('연결 오류');
         },
+        // socketUrl이 설정된 경우에만 연결 시도
+        filter: () => socketUrl !== null,
     });
 
     // WebSocket 연결 상태 확인 및 경고 메시지 표시
-    useEffect(() => {
-        console.log('readyState:', readyState);
-        switch (readyState) {
-            case ReadyState.CONNECTING:
-                setConnectionAlert('연결 시도 중...');
-                break;
-            case ReadyState.OPEN:
-                setConnectionAlert('WebSocket 연결됨');
-                break;
-            case ReadyState.CLOSING:
-                setConnectionAlert('연결 종료 시도 중...');
-                break;
-            case ReadyState.CLOSED:
-                setConnectionAlert('연결 종료됨');
-                break;
-            default:
-                setConnectionAlert('알 수 없는 연결 상태');
-        }
-    }, [readyState]);
+    // emp가 설정되었을 때 sendMessage 호출
+    // useEffect(() => {
+    //     console.log('emp:', emp);
+    //     console.log('readyState:', readyState);
+    //     if (emp && readyState === ReadyState.OPEN) {
+    //         sendMessage(JSON.stringify({
+    //             chat_room_no: emp.chat_room_no,
+    //         }));
+    //         console.log('WebSocket 연결 후 chat_room_no 전송:', emp.chat_room_no);
+    //     }
+    // }, [emp, readyState]);
 
-    // 페이지 접근 시 WebSocket 연결
     useEffect(() => {
-        getWebSocket();
-    }, [getWebSocket]);
+        console.log('emp:', emp);
+        if (emp) {
+            const url = `${WEBSOCKET_URL}?chat_room_no=${emp.chat_room_no}`;
+            console.log('emp.chat_room_no:', emp.chat_room_no);
+            setSocketUrl(url);
+        }
+    }, [emp]);
 
     // 돋보기 토글 상태 변환 메서드
     const selectToggle = () => {
@@ -320,6 +315,7 @@ function Chatting({ updateRecentMessages }) {
 
     // 날짜 파싱 메서드
     const parseChatDate = (dateString) => {
+        console.log('dateString:', dateString);
         // chat_date 형식이 "YYYY-MM-DD HH:mm"이므로 이에 맞는 파싱을 수행
         const date = parse(dateString, 'yyyy-MM-dd HH:mm', new Date());
         return isValid(date) ? date : null;
@@ -335,6 +331,7 @@ function Chatting({ updateRecentMessages }) {
         // messageList에서 가장 큰 chat_no를 찾고, 없으면 0을 기본값으로 설정
         const lastChatNo = messageList.length > 0 ? Math.max(...messageList.map(msg => msg.chat_no)) : -1; // 메시지가 없다면 -1을 기본값으로
         const currentTime = format(new Date(), 'yyyy-MM-dd HH:mm');
+        console.log('currentTime:', currentTime);
         const chatRecipientNo = emp.emp_no;
         const chatRecipientNos = emp.participants.filter(p => p.emp_no !== empNo).map(p => p.emp_no);
         if (chatRecipientNos.length === 0) {
@@ -342,6 +339,7 @@ function Chatting({ updateRecentMessages }) {
             return;
         }
         const newMessage = {
+            action: 'sendMessage',
             chat_room_no: chatRoomNo,
             chat_no: lastChatNo + 1,
             chat_sender: empNo,
@@ -351,6 +349,7 @@ function Chatting({ updateRecentMessages }) {
             chat_type: 'text',
             chat_date: currentTime,
         };
+        console.log('Sending newMessage:', newMessage);
         try {
             // WebSocket을 통해 메시지 전송
             if (readyState === ReadyState.OPEN) {
@@ -366,7 +365,7 @@ function Chatting({ updateRecentMessages }) {
                 // // 부모 컴포넌트의 updateRecentMessages 함수를 호출하여 최신 메시지 업데이트
                 // updateRecentMessages(chatRoomNo, newMessage);
             } else {
-                console.warn('WebSocket이 아직 연결되지 않았습니다.');
+                console.warn('WebSocket 연결이 열려 있지 않음:', readyState);
             }
         } catch (error) {
             console.error('메시지 전송 중 오류 발생:', error);
@@ -390,7 +389,19 @@ function Chatting({ updateRecentMessages }) {
     // WebSocket에서 마지막 메시지 수신 시 처리
     useEffect(() => {
         if (lastMessage !== null) {
-            console.log('서버로부터 받은 메시지:', lastMessage);
+            try {
+                // 수신된 메시지를 파싱
+                const receivedMessage = JSON.parse(lastMessage.data);
+                console.log('Received message:', receivedMessage);
+                if (!receivedMessage.chat_date) {
+                    console.warn('Received message is missing chat_date:', receivedMessage);
+                } else {
+                    // messageList 상태에 수신된 메시지를 추가
+                    setMessageList((prev) => [...prev, receivedMessage]);
+                }
+            } catch (error) {
+                console.error('Error parsing received message:', error);
+            }
         }
     }, [lastMessage]);
 
