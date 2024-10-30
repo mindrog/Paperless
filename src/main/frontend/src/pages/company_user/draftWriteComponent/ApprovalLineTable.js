@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Button } from 'react-bootstrap';
 import styles from '../../../styles/company/company_draft_write_work.module.css';
 
-const ApprovalLineTable = ({ handleApprLineModal }) => (
+const ApprovalLineTable = ({ handleApprLineModal, reporter }) => (
   <Table bordered size="sm" className={styles.apprLineBox}>
     <tbody className={styles.apprLineTbody}>
       <tr className={styles.apprLinedocTr}>
@@ -10,7 +10,7 @@ const ApprovalLineTable = ({ handleApprLineModal }) => (
         <td className={styles.docKey}>결재</td>
       </tr>
       <tr>
-        <td className={styles.docKey}>배수지</td>
+        <td className={styles.docKey}>{reporter}</td>
         <td>
           <Button className={styles.apprLineBtn} onClick={handleApprLineModal}>결재선</Button>
         </td>
