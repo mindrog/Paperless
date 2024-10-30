@@ -28,7 +28,15 @@ const CompanyUserDraftWriteWork = () => {
   const [formErrors, setFormErrors] = useState({});
   const [files, setFiles] = useState([]); // 첨부된 파일들을 저장할 상태
 
+  // 통신
+  const token = localStorage.getItem('jwt');
+  const userData = useFetchData(token);
 
+  useEffect(() => {
+    if (userData === null) {
+      console.log("Warning: userData is null. Please check the API response.");
+    }
+  }, [userData]);
 
   // 기안날짜 (현재 날짜 불러오기)
   useEffect(() => {
@@ -65,7 +73,13 @@ const CompanyUserDraftWriteWork = () => {
 
   const handleSaveAsDraftClick = () => {
     setIsSaved(true);
-    setSaveDate(new Date().toLocaleDateString('ko-KR'));
+    setSaveDate(new Date().toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }));
     setShowAlert(true);
 
     setTimeout(() => {
@@ -86,15 +100,7 @@ const CompanyUserDraftWriteWork = () => {
     navigate('/company/user/draft/form/work');
   };
 
-  // 통신
-  const token = localStorage.getItem('jwt');
-  const userData = useFetchData(token);
 
-  useEffect(() => {
-    if (userData === null) {
-      console.log("Warning: userData is null. Please check the API response.");
-    }
-  }, [userData]);
 
   return (
     <div className="container">
@@ -117,7 +123,7 @@ const CompanyUserDraftWriteWork = () => {
           ) : (
             <p>Loading user information...</p> // 로딩 중 표시
           )}
-          <ApprovalLineTable handleApprLineModal={handleApprLineModal} />
+          <ApprovalLineTable handleApprLineModal={handleApprLineModal} reporter={userData.emp_name} />
         </div>
         <Table bordered className={styles.docContent}>
           <tbody>
