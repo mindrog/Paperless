@@ -50,7 +50,7 @@ public class EmployeeEntity {
 
     @ManyToOne
     @JoinColumn(name = "emp_dept_no", insertable = false, updatable = false)
-    private DepartmentEntity department;
+    private Department department;
 
     @ManyToOne
     @JoinColumn(name = "emp_posi_no", insertable = false, updatable = false)
