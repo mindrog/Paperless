@@ -1,8 +1,7 @@
 package com.ss.paperless.employee;
 
+import com.ss.paperless.employee.entity.EmployeeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Integer>{
 	Boolean existsByEmpCode(String empCode); // emp_code에 맞게 수정
