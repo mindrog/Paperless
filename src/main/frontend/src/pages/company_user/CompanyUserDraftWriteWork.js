@@ -9,16 +9,15 @@ import ContentEditor from '../company_user/draftWriteComponent/ContentEditor';
 import FileUploader from '../company_user/draftWriteComponent/FileUploader';
 import SaveModals from '../company_user/draftWriteComponent/SaveModals';
 import ApprovalLine from '../layout/ApprovalLine';
-import axios from 'axios';
+import useFetchData from '../../componentFetch/useFetchData';
 
 const CompanyUserDraftWriteWork = () => {
-  const [data, setData] = useState([]);
-
   const [reportTitle, setReportTitle] = useState('');
   const [reportContent, setReportContent] = useState('');
   const [reportDate, setReportDate] = useState('');
   const [repoStartTime, setRepoStartTime] = useState('');
   const [repoEndTime, setRepoEndTime] = useState('');
+  const [reportStatus, setReportStatus] = useState('작성 중');
 
   const [showModal, setShowModal] = useState(false); // 결재선 모달 상태
   const [showCancelModal, setShowCancelModal] = useState(false); // 취소 버튼 모달 상태
@@ -30,7 +29,7 @@ const CompanyUserDraftWriteWork = () => {
   const [files, setFiles] = useState([]); // 첨부된 파일들을 저장할 상태
 
 
-  
+
   // 기안날짜 (현재 날짜 불러오기)
   useEffect(() => {
     setReportDate(new Date().toLocaleString('ko-KR', {
@@ -39,14 +38,13 @@ const CompanyUserDraftWriteWork = () => {
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit',
     }));
   }, []);
 
 
   const navigate = useNavigate();
 
-  // 모달을 열고 닫는 함수`
+  // 모달을 열고 닫는 함수
   const handleShowCancelModal = () => setShowCancelModal(true);
   const handleCloseCancelModal = () => setShowCancelModal(false);
 
@@ -90,29 +88,13 @@ const CompanyUserDraftWriteWork = () => {
 
   // 통신
   const token = localStorage.getItem('jwt');
+  const userData = useFetchData(token);
 
   useEffect(() => {
-    const fetchMenuList = async () => {
-      if (token) {
-        try {
-          const response = await axios.get('/api/report/getUserInfo', {}, {
-            headers: { 'Authorization': token }
-          });
-          const data = response.data;
-
-          console.log('Fetched menu data:', data); // 데이터 구조 확인
-          setData(data);
-        } catch (error) {
-          console.error('Error fetching menu list:', error);
-          setData([]);
-        }
-      } else {
-        console.log('토큰이 없습니다.');
-      }
-    };
-
-    fetchMenuList();
-  }, [token]);
+    if (userData === null) {
+      console.log("Warning: userData is null. Please check the API response.");
+    }
+  }, [userData]);
 
   return (
     <div className="container">
@@ -120,17 +102,21 @@ const CompanyUserDraftWriteWork = () => {
       <Form>
         <DraftTitleInput reportTitle={reportTitle} setReportTitle={setReportTitle} />
         <div className={styles.docHeader}>
-          <DraftDocInfoTable
-            department={data.department}
-            team={data.team}
-            reporter={data.reporter}
-            reportDate={reportDate}
-            repoStartTime={repoStartTime}
-            repoEndTime={repoEndTime}
-            reportStatus="결재 상태"
-            onStartDateChange={setRepoStartTime}
-            onEndDateChange={setRepoEndTime}
-          />
+          {userData ? (
+            <DraftDocInfoTable
+              department={userData.dept_name}
+              team={userData.dept_team_name}
+              reporter={userData.emp_name}
+              reportDate={reportDate}
+              repoStartTime={repoStartTime}
+              repoEndTime={repoEndTime}
+              reportStatus={reportStatus}
+              onStartDateChange={setRepoStartTime}
+              onEndDateChange={setRepoEndTime}
+            />
+          ) : (
+            <p>Loading user information...</p> // 로딩 중 표시
+          )}
           <ApprovalLineTable handleApprLineModal={handleApprLineModal} />
         </div>
         <Table bordered className={styles.docContent}>
