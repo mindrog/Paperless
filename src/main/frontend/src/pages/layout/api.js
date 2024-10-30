@@ -27,17 +27,17 @@ api.getChatRoomsByParticipant = (emp_no) => {
   });
 };
 
-// 2. 채팅방 생성 (POST 요청)
+// 2. 채팅방 생성 (PUT 요청)
 api.createChatRoom = (data) => {
   // 새로운 채팅방을 생성함 (데이터에는 채팅방의 정보가 포함됨)
-  return api.post('/chatroom', data);
+  return api.put('/chatroom', data);
 };
 
-// 3. 채팅방 정보 수정 (PUT 요청)
+// 3. 채팅방 정보 수정 (POST 요청)
 api.updateChatRoom = (room_no, data) => {
   // 특정 채팅방의 정보를 업데이트함
   // room_no는 업데이트하려는 채팅방의 번호, data는 수정할 정보
-  return api.put(`/chatroom/${room_no}`, data);
+  return api.post(`/chatroom/${room_no}`, data);
 };
 
 // 4. 채팅방 삭제 (DELETE 요청)
