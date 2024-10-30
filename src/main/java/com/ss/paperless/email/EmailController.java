@@ -1,5 +1,9 @@
 package com.ss.paperless.email;
 
+import com.ss.paperless.company.CompanyEntity;
+import com.ss.paperless.company.CompanyService;
+import com.ss.paperless.company.DepartmentEntity;
+import com.ss.paperless.company.DepartmentService;
 import com.ss.paperless.employee.EmployeeEntity;
 import com.ss.paperless.employee.EmployeeService;
 
@@ -24,14 +28,20 @@ public class EmailController {
     private final EmailmessageRepository emailmessageRepository;
     private final EmployeeService employeeService;
     private final EmailService emailService;
+    private final CompanyService companyService;
+    private final DepartmentService departmentService;
 
     @Autowired
     public EmailController(EmailmessageRepository emailmessageRepository,
                            EmployeeService employeeService,
-                           EmailService emailService) {
+                           EmailService emailService,
+                           CompanyService companyService,
+                           DepartmentService departmentService) {
         this.emailmessageRepository = emailmessageRepository;
         this.employeeService = employeeService;
         this.emailService = emailService;
+        this.companyService = companyService;
+        this.departmentService = departmentService;
     }
 
     /**
@@ -93,23 +103,6 @@ public class EmailController {
         }
     }
 
-    /**
-     * 이메일 목록 조회 API (페이징 및 필터링 지원)
-     *
-     * @param recipientId    수신자의 empNo
-     * @param sender         작성자 이메일 검색어 (옵션)
-     * @param recipientParam 수신자 이메일 검색어 (옵션)
-     * @param subject        이메일 제목 검색어 (옵션)
-     * @param content        이메일 내용 검색어 (옵션)
-     * @param startDateStr   이메일 발송 시작 날짜 (YYYY-MM-DD, 옵션)
-     * @param endDateStr     이메일 발송 종료 날짜 (YYYY-MM-DD, 옵션)
-     * @param hasAttachment  첨부파일 유무 (기본값: false)
-     * @param page           페이지 번호 (0부터 시작, 기본값: 0)
-     * @param size           페이지당 이메일 개수 (기본값: 10)
-     * @param sortBy         정렬 기준 필드 (기본값: sendDate)
-     * @param sortDir        정렬 방향 (asc 또는 desc, 기본값: desc)
-     * @return 필터링된 이메일 페이지
-     */
     @GetMapping("/list/{recipientId}")
     public ResponseEntity<?> getEmailList(
             @PathVariable Long recipientId,
@@ -126,7 +119,7 @@ public class EmailController {
             @RequestParam(value = "sortDir", defaultValue = "desc") String sortDir
     ) {
         try {
-            // 날짜 문자열을 LocalDateTime으로 변환
+            // 날짜 문자열을 LocalDateTime으로 변환 (기존 코드 유지)
             LocalDateTime startDate = null;
             LocalDateTime endDate = null;
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -137,11 +130,24 @@ public class EmailController {
                 endDate = LocalDate.parse(endDateStr, formatter).atTime(23, 59, 59);
             }
 
-            // 정렬 설정
+            // 정렬 설정 (기존 코드 유지)
             Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
-            // 페이징 객체 생성
+            // 페이징 객체 생성 (기존 코드 유지)
             PageRequest pageRequest = PageRequest.of(page, size, sort);
+
+            // 수신자 정보 가져오기
+            EmployeeEntity recipient = employeeService.findByEmpNo(recipientId);
+            if (recipient == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("수신자를 찾을 수 없습니다.");
+            }
+
+            // 수신자의 회사 번호 가져오기
+            Long recipientCompanyNo = recipient.getEmpCompNo();
+            CompanyEntity recipientCompany = companyService.findByCompNo(recipientCompanyNo);
+            if (recipientCompany == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("수신자의 회사를 찾을 수 없습니다.");
+            }
 
             // 서비스 호출하여 이메일 목록 조회
             Page<Emailmessage> emailPage = emailService.getEmailsByRecipientWithFilters(
@@ -165,9 +171,52 @@ public class EmailController {
                 dto.setStatus(email.getStatus());
                 dto.setSendDate(email.getSendDate().toString());
 
-                // 연관된 엔티티의 필요한 정보만 설정
-                dto.setWriterEmail(email.getWriter().getEmpEmail());
-                dto.setRecipientEmail(email.getRecipient().getEmpEmail());
+                // 발신자와 수신자 정보 가져오기
+                EmployeeEntity senderEntity = email.getWriter();
+                EmployeeEntity emailRecipient = email.getRecipient();
+
+                // 발신자 정보 설정
+                dto.setWriterEmail(senderEntity.getEmpEmail());
+                dto.setWriterName(senderEntity.getEmpName());
+
+                // 발신자의 회사 번호와 부서 번호 가져오기
+                Long senderCompanyNo = senderEntity.getEmpCompNo();
+                Long senderDeptNo = senderEntity.getEmpDeptNo();
+
+                // 발신자의 회사명과 부서명 가져오기
+                String senderCompanyName = "";
+                String senderDeptName = "";
+
+                CompanyEntity senderCompany = companyService.findByCompNo(senderCompanyNo);
+                if (senderCompany != null) {
+                    senderCompanyName = senderCompany.getCompName();
+                }
+
+                DepartmentEntity senderDepartment = departmentService.findByDeptNo(senderDeptNo);
+                if (senderDepartment != null) {
+                    senderDeptName = senderDepartment.getDeptName();
+                }
+
+                // 표시할 정보 설정
+                String writerDisplayInfo;
+
+                if (senderCompanyNo != null && recipientCompanyNo != null) {
+                    if (senderCompanyNo.equals(recipientCompanyNo)) {
+                        // 같은 회사인 경우 부서명 표시
+                        writerDisplayInfo = "[" + senderDeptName + "] " + senderEntity.getEmpName();
+                    } else {
+                        // 다른 회사인 경우 회사명 표시
+                        writerDisplayInfo = "[" + senderCompanyName + "] " + senderEntity.getEmpName();
+                    }
+                } else {
+                    // 회사 정보가 없는 경우 그냥 이름만 표시
+                    writerDisplayInfo = senderEntity.getEmpName();
+                }
+
+                dto.setWriterDisplayInfo(writerDisplayInfo);
+
+                // 수신자와 참조자 이메일 설정 (기존 코드 유지)
+                dto.setRecipientEmail(emailRecipient.getEmpEmail());
                 if (email.getCc() != null) {
                     dto.setCcEmail(email.getCc().getEmpEmail());
                 }
@@ -175,7 +224,7 @@ public class EmailController {
                 return dto;
             }).collect(Collectors.toList());
 
-            // 페이지 정보를 별도로 추출하여 응답 생성
+            // 페이지 정보를 별도로 추출하여 응답 생성 (기존 코드 유지)
             Map<String, Object> response = new HashMap<>();
             response.put("content", emailDtoList);
             response.put("currentPage", emailPage.getNumber());
