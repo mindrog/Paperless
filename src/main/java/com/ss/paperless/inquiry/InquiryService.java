@@ -25,5 +25,9 @@ public class InquiryService {
 		// TODO Auto-generated method stub
 		return mapper.GetAdminRequest();
 	}
+	public int checkCmp(String inqu_compName) {
+		// TODO Auto-generated method stub
+		return mapper.checkCmp(inqu_compName);
+	}
 
 }
