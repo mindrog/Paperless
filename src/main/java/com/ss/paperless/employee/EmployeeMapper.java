@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface EmployeeMapper {
@@ -26,5 +27,7 @@ public interface EmployeeMapper {
 	List<EmployeeDTO> getEmpDepartMenuList(int compNo);
 
 	int getEmpCompNo(String empCode);
+
+	EmployeeDTO getUserInfo(String empCode);
 
 }
