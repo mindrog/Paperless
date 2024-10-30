@@ -64,10 +64,9 @@ public class EmployeeService implements UserDetailsService {
 		return employeeRepository.findByEmpEmail(email);
 	}
 
-	public EmployeeEntity findByEmpNo(Integer empNo) {
-		return employeeRepository.findById(empNo).orElse(null);
-	}
-
+	 public EmployeeEntity findByEmpNo(Long empNo) {
+	        return employeeRepository.findByEmpNo(empNo);
+	    }
 	public EmployeeEntity findByEmpCode(String empCode) {
 		return employeeRepository.findByEmpCode(empCode);
 	}

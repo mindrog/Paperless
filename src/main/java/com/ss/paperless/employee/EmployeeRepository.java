@@ -9,4 +9,6 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Intege
 	//찬양 email에서 employee 정보 가져오기
 	EmployeeEntity findByEmpEmail(String empEmail);
     EmployeeEntity findByEmpCode(String empCode);
+    
+    EmployeeEntity findByEmpNo(Long empNo);
 }
