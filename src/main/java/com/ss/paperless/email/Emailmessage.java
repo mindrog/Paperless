@@ -1,7 +1,7 @@
 package com.ss.paperless.email;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ss.paperless.employee.EmployeeEntity;
+import com.ss.paperless.employee.entity.EmployeeEntity;
 import lombok.*;
 
 import javax.persistence.*;

@@ -1,58 +1,16 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import styles from '../../styles/layout/org_chart.module.css';
-import axios from 'axios';
+import useFetchUserInfo from '../../componentFetch/useFetchUserInfo';
 
 const OrgChart = forwardRef((props, ref) => {
     const [isDropdown, setIsDropdown] = useState({});
-    const [menuList, setMenuList] = useState({});
+
     const token = localStorage.getItem('jwt');
+    
 
-    // selectedUser prop 받기 (CompanyUserChatRoom)
-    const { selectedUser, onMemberClick } = props;
-
-    useEffect(() => {
-        const fetchMenuList = async () => {
-            if (token) {
-                try {
-                    const response = await axios.post('/api/getMenuList', {}, {
-                        headers: { 'Authorization': token }
-                    });
-                    const data = response.data;
-
-                    console.log('Fetched menu data:', data); // 데이터 구조 확인
-
-                    if (data && typeof data === 'object') {
-                        const groupedData = Object.entries(data).map(([deptName, employees]) => ({
-                            deptName,
-                            teams: employees.reduce((teams, employee) => {
-                                const teamName = employee.dept_team_name || '팀 없음';
-                                if (!teams[teamName]) {
-                                    teams[teamName] = [];
-                                }
-                                teams[teamName].push(employee);
-                                return teams;
-                            }, {})
-                        }));
-
-                        setMenuList(groupedData);
-                        console.log('Grouped menu list:', groupedData);
-                    } else {
-                        console.error("Data is not a valid object:", data);
-                        setMenuList([]); // 빈 배열 설정
-                    }
-                } catch (error) {
-                    console.error('Error fetching menu list:', error);
-                    setMenuList([]);
-                }
-            } else {
-                console.log('토큰이 없습니다.');
-            }
-        };
-
-        fetchMenuList();
-    }, [token]);
-
-
+    const { selectedUser, onMemberClick = () => { } } = props;
+    const menuList = useFetchUserInfo(token);
+    
     useImperativeHandle(ref, () => ({
         closeAllDropdowns,
     }));
