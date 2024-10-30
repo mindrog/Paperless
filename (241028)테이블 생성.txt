@@ -185,6 +185,15 @@ CREATE TABLE `EmailAttachment` (
     FOREIGN KEY (`atta_no`) REFERENCES `Attachment` (`atta_no`)
 );
 
+-- ReportAttachment 테이블 (보고서과 첨부파일의 관계)
+CREATE TABLE `ReportAttachment` (
+    `repo_no` BIGINT NOT NULL,
+    `atta_no` BIGINT NOT NULL,
+    PRIMARY KEY (`repo_no`, `atta_no`),
+    FOREIGN KEY (`repo_no`) REFERENCES `Report` (`repo_no`),
+    FOREIGN KEY (`atta_no`) REFERENCES `Attachment` (`atta_no`)
+);
+
 -- ChatAttachment 테이블 (채팅 첨부파일)
 CREATE TABLE `ChatAttachment` (
     `chat_atta_no` BIGINT NOT NULL,
