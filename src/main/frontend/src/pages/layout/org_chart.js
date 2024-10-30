@@ -1,19 +1,30 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useDrag } from 'react-dnd';
 import styles from '../../styles/layout/org_chart.module.css';
 import useFetchUserInfo from '../../componentFetch/useFetchUserInfo';
 
+const ITEM_TYPE = 'ITEM'; // 드래그 항목의 타입을 지정
+
 const OrgChart = forwardRef((props, ref) => {
     const [isDropdown, setIsDropdown] = useState({});
-
+    const { showModal, selectedUser, onMemberClick = () => {} } = props;
+    
     const token = localStorage.getItem('jwt');
-    
-    const { selectedUser, onMemberClick = () => { } } = props;
     const menuList = useFetchUserInfo(token);
-    
+
+    // 모달이 닫힐 때 상태 초기화
+    useEffect(() => {
+        if (!showModal) {
+            setIsDropdown({}); // 상태 초기화
+        }
+    }, [showModal]);
+
+    // 외부에서 전체 드롭다운을 닫는 메서드를 사용할 수 있도록 설정
     useImperativeHandle(ref, () => ({
         closeAllDropdowns,
     }));
 
+    // 드롭다운을 토글하는 함수
     const toggleDropdown = (key) => {
         setIsDropdown((prev) => ({
             ...prev,
@@ -21,44 +32,37 @@ const OrgChart = forwardRef((props, ref) => {
         }));
     };
 
+    // 전체 드롭다운을 닫는 함수
     const closeAllDropdowns = () => {
         setIsDropdown({});
     };
 
-    const handleDragStart = (e, employee) => {
-        e.dataTransfer.setData('employee', JSON.stringify(employee));
-        console.log('Dragging:', employee);
-    };
-
-    // 선택된 사용자 드롭다운 열기 및 강조 표시 
+    // 선택된 사용자 드롭다운 열기 및 강조 표시
     useEffect(() => {
-        console.log('selectedUser:', selectedUser);
         if (selectedUser) {
             // selectedUser의 부서와 팀 이름 찾기
             const { emp_dept_name } = selectedUser;
-            // "구매부서 - 구매팀" 분리해서 저장
+            // "구매부서 - 구매팀" 형태를 분리하여 저장
             const deptAndTeam = emp_dept_name.split(' - ');
 
             // 부서와 팀 이름을 기준으로 드롭다운 열기
             setIsDropdown((prev) => {
                 const newDropdownState = { ...prev };
-                // 부서 이름 기준으로 열기
-                newDropdownState[deptAndTeam[0]] = true;
+                newDropdownState[deptAndTeam[0]] = true; // 부서 이름 기준으로 열기
                 if (deptAndTeam[1]) {
-                    // 팀 이름 기준으로 열기
-                    newDropdownState[deptAndTeam[1]] = true;
+                    newDropdownState[deptAndTeam[1]] = true; // 팀 이름 기준으로 열기
                 }
                 return newDropdownState;
             });
 
-            // 강조 표시
+            // 사용자 강조 표시
             highlightUser(selectedUser);
         } else {
             setIsDropdown({});
         }
     }, [selectedUser]);
 
-    // 강조 표시 메서드
+    // 특정 사용자를 강조 표시하는 함수
     const highlightUser = (user) => {
         const userElement = document.getElementById(`user-${user.emp_no}`);
         if (userElement) {
@@ -68,39 +72,62 @@ const OrgChart = forwardRef((props, ref) => {
         }
     };
 
-    const renderMenu = (menu) => {
-        return (
-            <li key={menu.deptName} style={{ listStyle: 'none', marginBottom: '10px' }}>
-                <button draggable onClick={() => toggleDropdown(menu.deptName)}>
-                    {isDropdown[menu.deptName] ? '📂' : '📁'} {menu.deptName}
-                </button>
-                {isDropdown[menu.deptName] && (
-                    <ul style={{ marginLeft: '20px' }}>
-                        {Object.entries(menu.teams).map(([teamName, members]) => (
-                            <li key={teamName} style={{ marginLeft: '20px', listStyle: 'none' }}>
-                                <button draggable onClick={() => toggleDropdown(teamName)}>
-                                    {isDropdown[teamName] ? '📂' : '📁'} {teamName}
-                                </button>
-                                {isDropdown[teamName] && Array.isArray(members) && (
-                                    <ul style={{ marginLeft: '20px' }}>
-                                        {members.map((member) => (
-                                            <li key={member.emp_code} style={{ listStyle: 'none' }} id={`user-${member.emp_no}`}>
-                                                <button draggable onClick={() => onMemberClick(member)} onDragStart={(e) => handleDragStart(e, member)}>
-                                                    🧑‍💼 {member.emp_name}
-                                                </button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </li>
-                        ))}
+    // 드래그 가능한 항목을 생성하는 컴포넌트
+    const DraggableItem = ({ data, type, children }) => {
+        const [{ isDragging }, drag] = useDrag({
+            type: ITEM_TYPE, // 드래그 항목의 타입 설정
+            item: { data, type }, // 드래그 시 전달할 데이터와 타입 설정
+            collect: (monitor) => ({
+                isDragging: monitor.isDragging(),
+            }),
+        });
 
-                    </ul>
-                )}
-            </li>
+        return (
+            <div ref={drag} style={{ opacity: isDragging ? 0.5 : 1, display: 'inline-block' }}>
+                {children}
+            </div>
         );
     };
 
+    // 조직도에서 각 메뉴 항목을 렌더링하는 함수
+    const renderMenu = (menu) => (
+        <li key={menu.deptName} style={{ listStyle: 'none', marginBottom: '10px' }}>
+            {/* 부서 드래그 가능 */}
+            <DraggableItem data={menu} type="department">
+                <button onClick={() => toggleDropdown(menu.deptName)}>
+                    {isDropdown[menu.deptName] ? '📂' : '📁'} {menu.deptName}
+                </button>
+            </DraggableItem>
+            {isDropdown[menu.deptName] && (
+                <ul style={{ marginLeft: '20px' }}>
+                    {Object.entries(menu.teams).map(([teamName, members]) => (
+                        <li key={teamName} style={{ marginLeft: '20px', listStyle: 'none' }}>
+                            {/* 팀 드래그 가능 */}
+                            <DraggableItem data={{ teamName, deptName: menu.deptName }} type="team">
+                                <button onClick={() => toggleDropdown(teamName)}>
+                                    {isDropdown[teamName] ? '📂' : '📁'} {teamName}
+                                </button>
+                            </DraggableItem>
+                            {isDropdown[teamName] && Array.isArray(members) && (
+                                <ul style={{ marginLeft: '20px' }}>
+                                    {members.map((member) => (
+                                        <li key={member.emp_code} style={{ listStyle: 'none' }} id={`user-${member.emp_no}`}>
+                                            {/* 직원 드래그 가능 */}
+                                            <DraggableItem data={member} type="employee">
+                                                <button onClick={() => onMemberClick(member)}>
+                                                    🧑‍💼 {member.emp_name}
+                                                </button>
+                                            </DraggableItem>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </li>
+    );
 
     return (
         <div className={styles.container_orgChart}>
@@ -113,7 +140,6 @@ const OrgChart = forwardRef((props, ref) => {
             </ul>
         </div>
     );
-
 });
 
 export default OrgChart;
