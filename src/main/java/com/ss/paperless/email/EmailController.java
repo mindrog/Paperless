@@ -4,7 +4,11 @@ import com.ss.paperless.company.CompanyEntity;
 import com.ss.paperless.company.CompanyService;
 import com.ss.paperless.company.DepartmentEntity;
 import com.ss.paperless.company.DepartmentService;
+<<<<<<< Updated upstream
 
+=======
+import com.ss.paperless.employee.entity.EmployeeEntity;
+>>>>>>> Stashed changes
 import com.ss.paperless.employee.EmployeeService;
 import com.ss.paperless.employee.entity.EmployeeEntity;
 
