@@ -1,21 +1,13 @@
-package com.ss.paperless.employee;
+package com.ss.paperless.employee.entity;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Data
@@ -55,6 +47,14 @@ public class EmployeeEntity {
 
     @Column(name = "emp_dept_no", nullable = false)
     private Long empDeptNo;
+
+    @ManyToOne
+    @JoinColumn(name = "emp_dept_no", insertable = false, updatable = false)
+    private DepartmentEntity department;
+
+    @ManyToOne
+    @JoinColumn(name = "emp_posi_no", insertable = false, updatable = false)
+    private PositionEntity position;
 
     @Column(name = "emp_posi_no", nullable = false)
     private Long empPosiNo;
