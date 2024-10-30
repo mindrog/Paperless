@@ -25,7 +25,7 @@ public class InquiryDTO {
 	@JsonProperty("inqu_phone")
     private String inqu_phone;
 	@JsonProperty("inqu_numberOfPeople")
-    private String inqu_numberOfPeople;
+    private int inqu_numberOfPeople;
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	@JsonProperty("inqu_enroll")
 	private LocalDateTime inqu_enroll; //등록일

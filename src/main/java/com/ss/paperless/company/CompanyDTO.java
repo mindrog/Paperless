@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class CompanyDTO {
 	private int comp_no; //회사 번호
-	private int comp_name; //회사명
+	private String comp_name; //회사명
 	private String comp_industry; //업종
 	private String comp_requester; //신청자
 	private String comp_email; //이메일

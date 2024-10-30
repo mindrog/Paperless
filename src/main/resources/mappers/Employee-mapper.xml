@@ -28,9 +28,9 @@
 		) AS user_exists
 	</select>
 	<select id="GetAdminUsers" 
-		resultType="com.ss.paperless.employee.AdminEmpGetVo">
-		select e.emp_no,e.emp_code,e.emp_name,e.emp_enroll_date,c.comp_name,c.comp_email,c.comp_phone,c.comp_headcount
-		from employee e join company c on e.emp_comp_no = c.comp_no where e.emp_role = 'admin'
+		resultType="com.ss.paperless.company.CompanyDTO">
+		select *
+		from company
 	</select>
 	<update id="updateEmp" parameterType="Long">
 		UPDATE Employee
