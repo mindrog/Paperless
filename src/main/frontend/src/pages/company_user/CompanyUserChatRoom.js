@@ -435,7 +435,7 @@ function CompanyUserChatRoom() {
                             <hr>
                             </hr>
                             <div className={styles.orgChartUI}>
-                                <OrgChart selectedUser={selectedUser} onMemberClick={handleMemberClick} />
+                                <OrgChart selectedUser={selectedUser} onMemberClick={handleMemberClick} enableDrag={false} />
                             </div>
                         </div>
                     </div>
