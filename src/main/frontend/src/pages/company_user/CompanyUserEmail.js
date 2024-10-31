@@ -142,7 +142,8 @@ function CompanyUserEmail() {
 
     // 이메일 클릭 시 상세 페이지로 이동
     const handleEmailClick = (email) => {
-        navigate('/Company/user/email/detail', { state: { email } });
+        navigate('/Company/user/email/detail', {state: { emailNo: email.emailNo }});
+        console.log(email.emailNo);
     };
 
     // 삭제 버튼 클릭 (백엔드 API 호출 필요)
