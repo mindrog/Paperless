@@ -8,6 +8,7 @@ import { ko } from 'date-fns/locale';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import api from '../layout/api';
 import { useSelector } from 'react-redux';
+import DOMPurify from 'dompurify';
 
 // .env 파일
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
@@ -211,29 +212,42 @@ function Chatting() {
     //  서버에서 메시지가 올 때마다 업데이트
     // readyState: WebSocket의 연결 상태를 나타내는 함수
     //  총 4가지로 0: 연결 시도 중, 1: 연결, 2: 연결 종료 시도 중, 3: 연결 종료
-    const { sendMessage, lastMessage, readyState } = useWebSocket(WEBSOCKET_URL, {
-        shouldReconnect: () => true,
+    // WebSocket 연결 설정
+    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+        shouldReconnect: (closeEvent) => {
+            // 연결 해제 이벤트를 처리하고, 특정 조건에서만 재연결 허용
+            if (closeEvent.code !== 1000) { // 정상적인 종료 코드(1000)가 아닐 때만 재연결 시도
+                console.warn('WebSocket 비정상 종료, 재연결 시도...');
+                return true;
+            }
+            console.log('WebSocket 연결이 정상적으로 종료되었습니다.');
+            return false;
+        },
         onOpen: () => {
             console.log('WebSocket 연결 성공!');
         },
-        onClose: () => {
-            console.log('WebSocket 연결 해제됨');
+        onClose: (event) => {
+            console.warn('WebSocket 연결 해제됨:', event.code, event.reason);
         },
         onError: (event) => {
             console.error('WebSocket 에러:', event);
         },
-        // socketUrl이 설정된 경우에만 연결 시도
-        filter: () => socketUrl !== null,
-    });
+    }, socketUrl !== null); // 마지막 인자로 socketUrl이 null이 아닌 경우에만 WebSocket을 시도
 
+    // emp 데이터가 준비되었을 때 WebSocket URL 설정
     useEffect(() => {
         console.log('emp:', emp);
-        if (emp) {
+        if (emp && emp.chat_room_no) {
             const url = `${WEBSOCKET_URL}?chat_room_no=${emp.chat_room_no}`;
-            console.log('emp.chat_room_no:', emp.chat_room_no);
-            setSocketUrl(url);
+            if (url !== socketUrl) {
+                console.log('emp.chat_room_no:', emp.chat_room_no);
+                console.log('WebSocket URL 설정:', url);
+                setSocketUrl(url);
+            }
+        } else {
+            console.warn('emp 객체가 없거나 chat_room_no가 설정되지 않았습니다.');
         }
-    }, [emp]);
+    }, [emp, socketUrl]);
 
     // 돋보기 토글 상태 변환 메서드
     const selectToggle = () => {
@@ -383,14 +397,36 @@ function Chatting() {
                 if (!receivedMessage.chat_date) {
                     console.warn('Received message is missing chat_date:', receivedMessage);
                 } else {
-                    // messageList 상태에 수신된 메시지를 추가
-                    setMessageList((prev) => [...prev, receivedMessage]);
+                    // 현재 메시지 리스트에 이미 존재하는지 확인
+                    const isMessageExist = messageList.some(
+                        (msg) => msg.chat_no === receivedMessage.chat_no && msg.chat_room_no === receivedMessage.chat_room_no
+                    );
+
+                    // 중복된 메시지가 아닐 경우에만 리스트에 추가
+                    if (!isMessageExist) {
+                        // 전송자 정보를 empList에서 검색
+                        const senderInfo = processedEmpList.find(emp => emp.emp_no === receivedMessage.chat_sender);
+
+                        // 수신자 정보를 empList에서 검색
+                        const recipientInfo = processedEmpList.find(emp => emp.emp_no === receivedMessage.chat_recipient);
+
+                        // senderName과 recipientName을 추가한 메시지 리스트 업데이트
+                        const updatedMessage = {
+                            ...receivedMessage,
+                            senderName: senderInfo ? senderInfo.emp_name : 'Unknown',
+                            recipientName: recipientInfo ? recipientInfo.emp_name : 'Unknown',
+                            senderProfile: senderInfo ? senderInfo.emp_profile : 'https://via.placeholder.com/60'
+                        };
+
+                        // messageList 상태에 수신된 메시지를 추가
+                        setMessageList((prev) => [...prev, updatedMessage]);
+                    }
                 }
             } catch (error) {
                 console.error('Error parsing received message:', error);
             }
         }
-    }, [lastMessage]);
+    }, [lastMessage, processedEmpList, messageList]);
 
     // 특정 영역 외 클릭을 감지하여 searchRef 상태 업데이트
     useEffect(() => {
@@ -536,6 +572,7 @@ function Chatting() {
                                 const checkMessage = index === 0 || messageList[index - 1].chat_sender !== message.chat_sender;
 
                                 const highlightedContent = highlightKeyword(message.chat_content, searchTerm);
+                                const safeHTML = DOMPurify.sanitize(highlightedContent);
 
                                 return (
                                     <React.Fragment key={index}>
@@ -553,7 +590,7 @@ function Chatting() {
                                                     </div>
                                                 )}
                                                 <div className={styles.messageBox}>
-                                                    <div className={styles.message_content} dangerouslySetInnerHTML={{ __html: highlightedContent }}>
+                                                    <div className={styles.message_content} dangerouslySetInnerHTML={{ __html: safeHTML }}>
 
                                                     </div>
                                                     <div className={styles.message_state_and_sendTime}>

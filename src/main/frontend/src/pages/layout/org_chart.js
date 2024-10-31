@@ -9,8 +9,8 @@ const ITEM_TYPE = 'ITEM'; // 드래그 항목의 타입을 지정
 
 const OrgChart = forwardRef((props, ref) => {
     const [isDropdown, setIsDropdown] = useState({});
-    const { showModal, selectedUser, onMemberClick = () => {}, enableDrag = false } = props;
-    
+    const { showModal, selectedUser, onMemberClick = () => { }, enableDrag = false } = props;
+
     const token = localStorage.getItem('jwt');
     const menuList = useFetchUserInfo(token);
 
@@ -41,28 +41,40 @@ const OrgChart = forwardRef((props, ref) => {
 
     // 선택된 사용자 드롭다운 열기 및 강조 표시
     useEffect(() => {
+        console.log('selectedUser:', selectedUser);
         if (selectedUser) {
             // selectedUser의 부서와 팀 이름 찾기
-            const { emp_dept_name } = selectedUser;
-            // "구매부서 - 구매팀" 형태를 분리하여 저장
-            const deptAndTeam = emp_dept_name.split(' - ');
+            const { dept_name, dept_team_name } = selectedUser;
 
             // 부서와 팀 이름을 기준으로 드롭다운 열기
             setIsDropdown((prev) => {
                 const newDropdownState = { ...prev };
-                newDropdownState[deptAndTeam[0]] = true; // 부서 이름 기준으로 열기
-                if (deptAndTeam[1]) {
-                    newDropdownState[deptAndTeam[1]] = true; // 팀 이름 기준으로 열기
+                newDropdownState[dept_name] = true; // 부서 이름 기준으로 열기
+                if (dept_team_name) {
+                    newDropdownState[dept_team_name] = true; // 팀 이름 기준으로 열기
                 }
                 return newDropdownState;
             });
-
-            // 사용자 강조 표시
-            highlightUser(selectedUser);
         } else {
             setIsDropdown({});
         }
     }, [selectedUser]);
+
+    // 드롭다운이 열렸을 때 사용자 강조 표시
+    useEffect(() => {
+        if (selectedUser) {
+            const { dept_name, dept_team_name } = selectedUser;
+
+            // 부서와 팀 드롭다운이 열렸는지 확인
+            const isDeptOpen = isDropdown[dept_name];
+            const isTeamOpen = dept_team_name ? isDropdown[dept_team_name] : true;
+
+            if (isDeptOpen && isTeamOpen) {
+                // DOM이 업데이트된 후에 실행
+                highlightUser(selectedUser);
+            }
+        }
+    }, [isDropdown, selectedUser]);
 
     // 특정 사용자를 강조 표시하는 함수
     const highlightUser = (user) => {
