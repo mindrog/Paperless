@@ -30,99 +30,9 @@ const Menubar = ({ isMenuOpen }) => {
         setIsFormDropdownOpen(false); // 기안 양식 드롭다운 닫기
         navigate(itemName); // 해당 경로로 이동
     };
-
-    // 채팅 아이콘 클릭
-    const handleChatItemClick = async (url) => {
-        try {
-            console.log("url:", url);
-            console.log("emp_no:", emp_no);
-
-            if (emp_no) {
-                if (openChatRoom && !openChatRoom.closed) {
-                    // 열려있는 창이 있으면 focus
-                    openChatRoom.window.focus();
-                } else {
-                    // 새 창 띄우기
-                    const newChat = window.open(
-                        `${url}?emp_no=${emp_no}`, "chatWindow",
-                        `width=920, height=780, top=50, left=180, scrollbars=yes, resizable=no`
-                    );
-
-                    if (newChat) {
-                        // 새 창 데이터 추가
-                        setOpenChatRoom(newChat);
-                    } else {
-                        console.error("Failed to open the chat window. Please allow pop-ups.");
-                    }
-                }
-            } else {
-                console.warn(`No chatRoom page fount with emp_no: ${emp_no}`);
-            }
-        } catch (error) {
-            console.error("Error opening chat: ", error);
-        }
-    };
-
-    // 기안 관리 하위 메뉴 클릭
-    const handleDraftSectionClick = (itemName) => {
-        const isAdminPath = location.pathname.toLowerCase().startsWith('/company/admin');
-
-        if (isAdminPath && itemName === '/company/user/draft/doc/approval') {
-            setActiveItem('/company/admin/approval'); // 관리자는 '/company/admin/approval' 경로로 설정
-            navigate('/company/admin/approval');
-        } else {
-            setActiveItem(itemName); // 일반 사용자는 기존 경로로 설정
-            navigate(itemName);
-        }
-    };
-
-    // 경로에 따라 프로필 이름 변경
-    const profileName = location.pathname.toLowerCase().startsWith('/company/admin')
-        ? '강동원'
-        : location.pathname.toLowerCase().startsWith('/company/user')
-            ? '배수지'
-            : '사용자';
-
-    // 경로에 따른 직급 설정
-    const getUserGrade = () => {
-        if (location.pathname.toLowerCase().startsWith('/company/admin')) {
-            return '부장'; // 회사 관리자
-        } else if (location.pathname.toLowerCase().startsWith('/company/user')) {
-            return '대리'; // 회사 사용자
-        }
-        return '사용자'; // 기본 값
-    };
-
-    const handlerCompanyMain = () => {
-        if (getUserGrade() === '부장') {
-            navigate('/company/admin');
-        } else {
-            navigate('/company/user');
-        }
-    }
-
-    const showEmployeeNotificationModal = () => {
-        setNotificationModal(true);
-    };
-
-    const closeEmployeeNotificationModal = () => {
-        setNotificationModal(false);
-    };
-
-    const toggleDropdown = () => {
-        setIsDropdownOpen(!isDropdownOpen);
-    };
-
-    const toggleDocDropdown = () => {
-        setIsDocDropdownOpen(!isDocDropdownOpen);
-    };
-
-    const toggleFormDropdown = () => {
-        setIsFormDropdownOpen(!isFormDropdownOpen);
-    };
-
-    return (
-        <nav className={`${styles.menubar} ${isMenuOpen ? styles.showMenu : ''}`}>
+    const MenubarSuper= () =>{
+        
+        return(
             <div className={styles.menubar}>
                 <div className={styles.profil}>
                     <div className={styles.profilbox}>
@@ -130,7 +40,6 @@ const Menubar = ({ isMenuOpen }) => {
                             <p></p>
                             <div className={styles.titlename}>
                                 <div className={styles.userName}>{userData.emp_name}</div>
-                                <div className={styles.userGrade}>{userPosi}</div>
                             </div>
                         </div>
                         <div className={styles.iconbox}>
@@ -140,22 +49,77 @@ const Menubar = ({ isMenuOpen }) => {
                         </div>
                     </div>
                 </div>
+        <ul className={styles.menuList}>
+                    <li className={`${styles.dropdown} ${activeItem === '/system/admin/member' ? styles.active : ''}`} onClick={() => handleItemClick('/company/user/mypage')} >
+                        <button className={styles.sublist_mypage}>
+                            🧑 도입 업체
+                        </button>
+                    </li>
 
-                <Modal show={notificationModal} onHide={closeEmployeeNotificationModal} centered>
-                    <Modal.Header closeButton>
-                        <Modal.Title>알림 목록</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <p>알림 리스트</p>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="primary" onClick={closeEmployeeNotificationModal}>
-                            닫기
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
 
-                <ul className={styles.menuList}>
+                    <li className={`${styles.dropdown} ${activeItem === '/system/admin/inquiry' ? styles.active : ''}`}
+                        onClick={() => handleItemClick('/company/admin/member')} >
+                        <button className={styles.sublist_member}>
+                            ⚙️ 문의 관리
+                        </button>
+                    </li>
+                </ul>
+                </div>);
+    };
+    const MenubarAdmin= () =>{
+        return(
+            <div className={styles.menubar}>
+                <div className={styles.profil}>
+                    <div className={styles.profilbox}>
+                        <div className={styles.profiltitle} onClick={handlerCompanyMain}>
+                            <p></p>
+                            <div className={styles.titlename}>
+                                <div className={styles.userName}>{userData.emp_name}</div>
+                            </div>
+                        </div>
+                        <div className={styles.iconbox}>
+                            <button onClick={showEmployeeNotificationModal}><i className="material-icons notifications">notifications</i></button>
+                            <button onClick={() => handleItemClick('/company/user/email')}><i className="material-icons mail">mail</i></button>
+                            <button onClick={() => handleChatItemClick('/chatroom')}><i className="material-icons chat_bubble">chat_bubble</i></button>
+                        </div>
+                    </div>
+                </div>
+        <ul className={styles.menuList}>
+                    <li className={`${styles.dropdown} ${activeItem === '/company/user/mypage' ? styles.active : ''}`} onClick={() => handleItemClick('/company/user/mypage')} >
+                        <button className={styles.sublist_mypage}>
+                            🧑 회사 관리
+                        </button>
+                    </li>
+
+                    <li className={`${styles.dropdown} ${activeItem === '/company/admin/member' ? styles.active : ''}`}
+                        onClick={() => handleItemClick('/company/admin/member')} >
+                        <button className={styles.sublist_member}>
+                            ⚙️ 직원 관리
+                        </button>
+                    </li>
+                </ul>
+                </div>);
+    };
+    const MenubarUser= () =>{
+        return(
+            <div className={styles.menubar}>
+            <div className={styles.profil}>
+                <div className={styles.profilbox}>
+                    <div className={styles.profiltitle} onClick={handlerCompanyMain}>
+                        <p></p>
+                        <div className={styles.titlename}>
+                            <div className={styles.userName}>{userData.emp_name}</div>
+                            <div className={styles.userGrade}>{userPosi}</div>
+                        </div>
+                    </div>
+                    <div className={styles.iconbox}>
+                        <button onClick={showEmployeeNotificationModal}><i className="material-icons notifications">notifications</i></button>
+                        <button onClick={() => handleItemClick('/company/user/email')}><i className="material-icons mail">mail</i></button>
+                        <button onClick={() => handleChatItemClick('/chatroom')}><i className="material-icons chat_bubble">chat_bubble</i></button>
+                    </div>
+                </div>
+            </div>
+        <ul className={styles.menuList}>
                     <li className={`${styles.dropdown} ${activeItem === '/company/user/mypage' ? styles.active : ''}`} onClick={() => handleItemClick('/company/user/mypage')} >
                         <button className={styles.sublist_mypage}>
                             🧑 마이페이지
@@ -261,7 +225,123 @@ const Menubar = ({ isMenuOpen }) => {
                         </button>
                     </li>
                 </ul>
-            </div>
+                </div>);
+    };
+    const renderMenu = (userData) => {
+        if (userData.emp_role === 'super') {
+            return <MenubarSuper />;
+        } else if (userData.emp_role === 'admin') {
+            return <MenubarAdmin />;
+        } else {
+            return <MenubarUser />;
+        }
+    };
+    // 채팅 아이콘 클릭
+    const handleChatItemClick = async (url) => {
+        try {
+            console.log("url:", url);
+            console.log("emp_no:", emp_no);
+
+            if (emp_no) {
+                if (openChatRoom && !openChatRoom.closed) {
+                    // 열려있는 창이 있으면 focus
+                    openChatRoom.window.focus();
+                } else {
+                    // 새 창 띄우기
+                    const newChat = window.open(
+                        `${url}?emp_no=${emp_no}`, "chatWindow",
+                        `width=920, height=780, top=50, left=180, scrollbars=yes, resizable=no`
+                    );
+
+                    if (newChat) {
+                        // 새 창 데이터 추가
+                        setOpenChatRoom(newChat);
+                    } else {
+                        console.error("Failed to open the chat window. Please allow pop-ups.");
+                    }
+                }
+            } else {
+                console.warn(`No chatRoom page fount with emp_no: ${emp_no}`);
+            }
+        } catch (error) {
+            console.error("Error opening chat: ", error);
+        }
+    };
+
+    // 기안 관리 하위 메뉴 클릭
+    const handleDraftSectionClick = (itemName) => {
+        const isAdminPath = location.pathname.toLowerCase().startsWith('/company/admin');
+
+        if (isAdminPath && itemName === '/company/user/draft/doc/approval') {
+            setActiveItem('/company/admin/approval'); // 관리자는 '/company/admin/approval' 경로로 설정
+            navigate('/company/admin/approval');
+        } else {
+            setActiveItem(itemName); // 일반 사용자는 기존 경로로 설정
+            navigate(itemName);
+        }
+    };
+
+    // 경로에 따라 프로필 이름 변경
+    const profileName = location.pathname.toLowerCase().startsWith('/company/admin')
+        ? '강동원'
+        : location.pathname.toLowerCase().startsWith('/company/user')
+            ? '배수지'
+            : '사용자';
+
+    // 경로에 따른 직급 설정
+    const getUserGrade = () => {
+        if (location.pathname.toLowerCase().startsWith('/company/admin')) {
+            return '부장'; // 회사 관리자
+        } else if (location.pathname.toLowerCase().startsWith('/company/user')) {
+            return '대리'; // 회사 사용자
+        }
+        return '사용자'; // 기본 값
+    };
+
+    const handlerCompanyMain = () => {
+        if (getUserGrade() === '부장') {
+            navigate('/company/admin');
+        } else {
+            navigate('/company/user');
+        }
+    }
+
+    const showEmployeeNotificationModal = () => {
+        setNotificationModal(true);
+    };
+
+    const closeEmployeeNotificationModal = () => {
+        setNotificationModal(false);
+    };
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
+    };
+
+    const toggleDocDropdown = () => {
+        setIsDocDropdownOpen(!isDocDropdownOpen);
+    };
+
+    const toggleFormDropdown = () => {
+        setIsFormDropdownOpen(!isFormDropdownOpen);
+    };
+
+    return (
+        <nav className={`${styles.menubar} ${isMenuOpen ? styles.showMenu : ''}`}>
+            {renderMenu(userData)}
+                <Modal show={notificationModal} onHide={closeEmployeeNotificationModal} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>알림 목록</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <p>알림 리스트</p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={closeEmployeeNotificationModal}>
+                            닫기
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
         </nav>
     );
 };

@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import '../../styles/layout/layout.css'
+import '../../styles/layout/layout.css';
 import logo from '../../img/logo-img.png'; // 로고 이미지 경로
 import { setUserData } from '../../store/userSlice';
+
 const HeaderOne = ({ logoSize, toggleMenu }) => (
-    
     <header className='header-one'>
         <div className='logo_Img_start'>
-            {/* 햄버거 아이콘이 중간 화면에서만 보이도록 className 적용 */}
             <i className="material-symbols-outlined hamburger" onClick={toggleMenu}>menu</i>
             <Link to="/" className="link-logo">
-    <img 
-        src={logo} 
-        className='Header-logo-start' 
-        alt='Logo One' 
-        style={{ transform: `scale(${logoSize})` }} 
-    />
-    </Link>
+                <img 
+                    src={logo} 
+                    className='Header-logo-start' 
+                    alt='Logo One' 
+                    style={{ transform: `scale(${logoSize})` }} 
+                />
+            </Link>
         </div>
     </header>
 );
@@ -25,34 +24,33 @@ const HeaderOne = ({ logoSize, toggleMenu }) => (
 const HeaderTwo = ({ toggleMenu }) => (
     <header className='header-two'>
         <div className='logo_Img'>
-        <Link to='/'>
-            <img src={logo} className='Header-logo' alt='Logo Two' />
+            <Link to='/'>
+                <img src={logo} className='Header-logo' alt='Logo Two' />
             </Link> 
         </div>
-        <div className='menu_Container'>
-
-        </div>
+        <div className='menu_Container'></div>
         <div className='btn_Container'>
             <Link to='/inquiry/Write'>
-            <button type='button' className='header_btn'>문의하기</button>
-            </Link><Link to='/inquiry'>
-            <button type='button' className='header_btn'>신청하기</button>
-            </Link><Link to='/login'>
-            <button type='button' className='header_btn'>로그인</button>
+                <button type='button' className='header_btn'>문의하기</button>
+            </Link>
+            <Link to='/inquiry'>
+                <button type='button' className='header_btn'>신청하기</button>
+            </Link>
+            <Link to='/login'>
+                <button type='button' className='header_btn'>로그인</button>
             </Link>
         </div>
     </header>
 );
+
 const HeaderThree = ({ toggleMenu, userData, handleLogout }) => (
     <header className='header-two'>
         <div className='logo_Img'>
-            <Link to='/'>
+            <Link to='/system/admin/inquiry'>
                 <img src={logo} className='Header-logo' alt='Logo Two' />
             </Link>
         </div>
-        <div className='menu_Container'>
-            {/* 메뉴 항목 추가 */}
-        </div>
+        <div className='menu_Container'></div>
         <div className='btn_Container'>
             <p className='header_emp_name'>{userData.emp_name} 님 </p>
             <button type='button' className='header_btn' onClick={handleLogout}>
@@ -68,11 +66,12 @@ const Header = ({ toggleMenu }) => {
     const [logoSize, setLogoSize] = useState(1);
     const userData = useSelector((state) => state.user.data);
     const dispatch = useDispatch();
+    const navigate = useNavigate(); // useNavigate 훅 추가
     
     useEffect(() => {
         const token = localStorage.getItem('jwt');
         if (token) {
-            
+            // 필요한 경우 토큰으로 추가 작업 수행
         }
     }, []);
 
@@ -100,7 +99,7 @@ const Header = ({ toggleMenu }) => {
     const handleLogout = () => {
         localStorage.removeItem('jwt'); // 로컬 스토리지에서 토큰 제거
         dispatch(setUserData(null)); // Redux 스토어에서 유저 데이터 제거
-        // 필요한 경우 navigate('/login') 추가
+        navigate('/'); // 리다이렉트
     };
 
     return (
