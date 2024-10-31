@@ -65,7 +65,7 @@ public class InquiryController {
 			newAdmin.setEmp_code(newComp.getComp_name());
 			String encodedPassword = passwordEncoder.encode("qwer1234");
 			newAdmin.setEmp_pw(encodedPassword);
-			newAdmin.setEmp_name(newComp.getComp_name() + "관리자");
+			newAdmin.setEmp_name(newComp.getComp_name());
 			newAdmin.setEmp_email(inquiry.getInqu_email());
 			newAdmin.setEmp_phone(inquiry.getInqu_phone());
 			newAdmin.setEmp_sign(newComp.getComp_name()+"관리자");
