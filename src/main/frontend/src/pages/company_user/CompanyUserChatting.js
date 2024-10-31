@@ -226,19 +226,6 @@ function Chatting() {
         filter: () => socketUrl !== null,
     });
 
-    // WebSocket 연결 상태 확인 및 경고 메시지 표시
-    // emp가 설정되었을 때 sendMessage 호출
-    // useEffect(() => {
-    //     console.log('emp:', emp);
-    //     console.log('readyState:', readyState);
-    //     if (emp && readyState === ReadyState.OPEN) {
-    //         sendMessage(JSON.stringify({
-    //             chat_room_no: emp.chat_room_no,
-    //         }));
-    //         console.log('WebSocket 연결 후 chat_room_no 전송:', emp.chat_room_no);
-    //     }
-    // }, [emp, readyState]);
-
     useEffect(() => {
         console.log('emp:', emp);
         if (emp) {
