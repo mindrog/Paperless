@@ -1,4 +1,4 @@
--- # 1031 SQL Script #
+-- # 1101 SQL Script #
 DROP database paperless;
 CREATE DATABASE IF NOT EXISTS paperless;
 USE paperless;
@@ -71,13 +71,13 @@ CREATE TABLE `Employee` (
     FOREIGN KEY (`emp_posi_no`) REFERENCES `Position` (`posi_no`)
 );
 
--- Report 테이블 생성
+-- Report 테이블 생성 (수정)
 CREATE TABLE `Report` (
     `repo_no` BIGINT NOT NULL AUTO_INCREMENT,
     `repo_emp_no` BIGINT NOT NULL,
     `repo_title` VARCHAR(300) NOT NULL,
     `repo_content` TEXT NOT NULL,
-    `repo_status` VARCHAR(100) NOT NULL DEFAULT 'pending',
+    `repo_status` ENUM('saved', 'submitted', 'approved', 'pending', 'canceled') NOT NULL DEFAULT 'pending',
     `repo_type` VARCHAR(100) NOT NULL,
     `submission_date` TIMESTAMP NULL,
     `cancel_date` TIMESTAMP NULL,

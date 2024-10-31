@@ -34,7 +34,8 @@ const DraggableRow = ({ person, index, moveRow, handleRemovePerson, handleSelect
       <td>{index + 1}</td>
       <td>{person.dept_name || person.deptName}</td>
       <td>{person.dept_team_name || person.teamName}</td>
-      <td>{person.emp_name || ""}</td>
+      <td>{person.posi_name || "-"}</td> 
+      <td>{person.emp_name || "-"}</td>
       <td>
         <Form.Select aria-label="Default select example" value={person.approvalType || ''}
           onChange={(e) => handleSelectChange(index, e.target.value)}>
@@ -54,29 +55,44 @@ const DraggableRow = ({ person, index, moveRow, handleRemovePerson, handleSelect
 };
 
 // --------------------------------------------------------------------------
-const ApprovalLine = ({ showModal, handleModalClose }) => {
+const ApprovalLine = ({ showModal, handleModalClose, selectedApprovers,
+  setSelectedApprovers,
+  selectedReferences,
+  setSelectedReferences,
+  selectedReceivers,
+  setSelectedReceivers }) => {
   const [activeTab, setActiveTab] = useState('approver');
-  const [selectedApprovers, setSelectedApprovers] = useState([]);
-  const [selectedReferences, setSelectedReferences] = useState([]);
-  const [selectedReceivers, setSelectedReceivers] = useState([]);
-
-  // 모달 닫을 때 내용 초기화
-  // useEffect(() => {
-  //   if (!showModal) {
-  //     setSelectedApprovers([]);
-  //     setSelectedReferences([]);
-  //     setSelectedReceivers([]);
-  //   }
-  // }, [showModal]);
 
   const handleTabSelect = (tab) => setActiveTab(tab);
 
   const updateList = (prevList, data) => {
-    const isDuplicate = prevList.some(
-      (entry) =>
-        entry.emp_name === data.emp_name
-    );
-    return isDuplicate ? prevList : [...prevList, data];
+    // 중복 검사 로직 세분화
+    const isDuplicate = prevList.some((entry) => {
+      if (data.emp_name) {
+        // 개별 직원 추가 시, 같은 이름의 직원만 추가 방지
+        return entry.emp_name === data.emp_name;
+      } else if (data.team_name) {
+        // 팀 추가 시, 같은 팀명만 추가 방지
+        return entry.team_name === data.team_name;
+      } else if (data.dept_name) {
+        // 부서 추가 시, 같은 부서명만 추가 방지
+        return entry.dept_name === data.dept_name;
+      }
+      return false;
+    });
+  
+    // 중복이 아닌 경우에만 데이터 추가
+    if (!isDuplicate) {
+      const newItem = {
+        ...data,
+        type: data.emp_name ? 'person' : data.team_name ? 'team' : 'department',
+        team_name: data.team_name || '', // 팀 추가 시 team_name 설정
+        dept_name: data.dept_name || '', // 부서 추가 시 dept_name 설정
+      };
+  
+      return [...prevList, newItem];
+    }
+    return prevList;
   };
 
   // 결재자 탭의 드롭 설정
@@ -146,13 +162,14 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
     }
   };
 
-  const renderTable = (selectedPeople, type) => (
+  const renderTable = (selectedPeople = [], type) => (
     <Table className={styles.selectedPeopleTable} bordered striped>
       <thead>
         <tr>
           <th>No</th>
           <th>부서 명</th>
           <th>팀 명</th>
+          <th>직 급</th>
           <th>직원 명</th>
           <th>결재 유형</th>
           <th>작업</th>
@@ -173,6 +190,7 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
       </tbody>
     </Table>
   );
+  
 
   return (
     <Modal show={showModal} onHide={handleModalClose} size="lg" centered>
@@ -227,11 +245,11 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
       </Modal.Body>
       <Modal.Footer>
       <Button variant="primary" onClick={() => handleModalClose(false)}>
-  확인
-</Button>
-<Button variant="secondary" onClick={() => handleModalClose(true)}>
-  취소
-</Button>
+        확인
+      </Button>
+      <Button variant="secondary" onClick={() => handleModalClose(true)}>
+        취소
+      </Button>
       </Modal.Footer>
     </Modal>
   );
