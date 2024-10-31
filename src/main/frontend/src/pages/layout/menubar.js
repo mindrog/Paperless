@@ -50,7 +50,7 @@ const Menubar = ({ isMenuOpen }) => {
                     </div>
                 </div>
         <ul className={styles.menuList}>
-                    <li className={`${styles.dropdown} ${activeItem === '/system/admin/member' ? styles.active : ''}`} onClick={() => handleItemClick('/company/user/mypage')} >
+                    <li className={`${styles.dropdown} ${activeItem === '/system/admin/member' ? styles.active : ''}`} onClick={() => handleItemClick('/system/admin/member')} >
                         <button className={styles.sublist_mypage}>
                             🧑 도입 업체
                         </button>
@@ -58,7 +58,7 @@ const Menubar = ({ isMenuOpen }) => {
 
 
                     <li className={`${styles.dropdown} ${activeItem === '/system/admin/inquiry' ? styles.active : ''}`}
-                        onClick={() => handleItemClick('/company/admin/member')} >
+                        onClick={() => handleItemClick('/system/admin/member')} >
                         <button className={styles.sublist_member}>
                             ⚙️ 문의 관리
                         </button>
