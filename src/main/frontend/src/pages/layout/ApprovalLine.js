@@ -76,27 +76,27 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
 
     // activeTab에 따라 선택된 리스트에 드래그된 항목 추가
     if (type === 'employee') {
-        if (activeTab === 'approver') {
-            setSelectedApprovers((prev) => [...prev, { ...data, approvalType: '' }]);
-        } else if (activeTab === 'reference') {
-            setSelectedReferences((prev) => [...prev, { ...data, approvalType: '' }]);
-        } else if (activeTab === 'receiver') {
-            setSelectedReceivers((prev) => [...prev, { ...data, approvalType: '' }]);
-        }
+      if (activeTab === 'approver') {
+        setSelectedApprovers((prev) => [...prev, { ...data, approvalType: '' }]);
+      } else if (activeTab === 'reference') {
+        setSelectedReferences((prev) => [...prev, { ...data, approvalType: '' }]);
+      } else if (activeTab === 'receiver') {
+        setSelectedReceivers((prev) => [...prev, { ...data, approvalType: '' }]);
+      }
     }
     // 부서나 팀의 전체 직원 추가 로직이 있는 경우도 조건을 제거하고 무조건 추가하게 합니다.
     else if (type === 'department') {
-        const departmentMembers = data.teams.flatMap((team) =>
-            team.members.map((member) => ({ ...member, dept_name: data.deptName, approvalType: '' }))
-        );
+      const departmentMembers = data.teams.flatMap((team) =>
+        team.members.map((member) => ({ ...member, dept_name: data.deptName, approvalType: '' }))
+      );
 
-        if (activeTab === 'approver') {
-            setSelectedApprovers((prev) => [...prev, ...departmentMembers]);
-        } else if (activeTab === 'reference') {
-            setSelectedReferences((prev) => [...prev, ...departmentMembers]);
-        } else if (activeTab === 'receiver') {
-            setSelectedReceivers((prev) => [...prev, ...departmentMembers]);
-        }
+      if (activeTab === 'approver') {
+        setSelectedApprovers((prev) => [...prev, ...departmentMembers]);
+      } else if (activeTab === 'reference') {
+        setSelectedReferences((prev) => [...prev, ...departmentMembers]);
+      } else if (activeTab === 'receiver') {
+        setSelectedReceivers((prev) => [...prev, ...departmentMembers]);
+      }
     }
   };
 
@@ -185,7 +185,7 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
               <Tab eventKey="approver" title="결재자" className={styles.apprTab}>
                 <div className={styles.orgChartContainer}>
                   <div className={styles.orgChartList}>
-                    <OrgChart showModal={showModal} />
+                    <OrgChart showModal={showModal} enableDrag={true} />
                   </div>
                   <div className={styles.apprTableContainer}>
                     {renderTable(selectedApprovers, 'approver')}
@@ -195,7 +195,7 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
               <Tab eventKey="reference" title="참조자" className={styles.apprTab}>
                 <div className={styles.orgChartContainer}>
                   <div className={styles.orgChartList}>
-                    <OrgChart showModal={showModal} />
+                    <OrgChart showModal={showModal} enableDrag={true} />
                   </div>
                   <div className={styles.apprTableContainer}>
                     {renderTable(selectedReferences, 'reference')}
@@ -205,7 +205,7 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
               <Tab eventKey="receiver" title="수신자" className={styles.apprTab}>
                 <div className={styles.orgChartContainer}>
                   <div className={styles.orgChartList}>
-                    <OrgChart showModal={showModal} />
+                    <OrgChart showModal={showModal} enableDrag={true} />
                   </div>
                   <div className={styles.apprTableContainer}>
                     {renderTable(selectedReceivers, 'receiver')}

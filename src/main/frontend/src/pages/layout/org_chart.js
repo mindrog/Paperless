@@ -2,12 +2,14 @@ import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'rea
 import { useDrag } from 'react-dnd';
 import styles from '../../styles/layout/org_chart.module.css';
 import useFetchUserInfo from '../../componentFetch/useFetchUserInfo';
+import DraggableItem from './DraggableItem';
+import NonDraggableItem from './NonDraggableItem';
 
 const ITEM_TYPE = 'ITEM'; // 드래그 항목의 타입을 지정
 
 const OrgChart = forwardRef((props, ref) => {
     const [isDropdown, setIsDropdown] = useState({});
-    const { showModal, selectedUser, onMemberClick = () => {} } = props;
+    const { showModal, selectedUser, onMemberClick = () => {}, enableDrag = false } = props;
     
     const token = localStorage.getItem('jwt');
     const menuList = useFetchUserInfo(token);
@@ -72,52 +74,38 @@ const OrgChart = forwardRef((props, ref) => {
         }
     };
 
-    // 드래그 가능한 항목을 생성하는 컴포넌트
-    const DraggableItem = ({ data, type, children }) => {
-        const [{ isDragging }, drag] = useDrag({
-            type: ITEM_TYPE, // 드래그 항목의 타입 설정
-            item: { data, type }, // 드래그 시 전달할 데이터와 타입 설정
-            collect: (monitor) => ({
-                isDragging: monitor.isDragging(),
-            }),
-        });
-
-        return (
-            <div ref={drag} style={{ opacity: isDragging ? 0.5 : 1, display: 'inline-block' }}>
-                {children}
-            </div>
-        );
-    };
+    // enableDrag 통해 드래그 기능 사용 여부 확인
+    const ItemComponent = enableDrag ? DraggableItem : NonDraggableItem;
 
     // 조직도에서 각 메뉴 항목을 렌더링하는 함수
     const renderMenu = (menu) => (
         <li key={menu.deptName} style={{ listStyle: 'none', marginBottom: '10px' }}>
             {/* 부서 드래그 가능 */}
-            <DraggableItem data={menu} type="department">
+            <ItemComponent data={menu} type="department">
                 <button onClick={() => toggleDropdown(menu.deptName)}>
                     {isDropdown[menu.deptName] ? '📂' : '📁'} {menu.deptName}
                 </button>
-            </DraggableItem>
+            </ItemComponent>
             {isDropdown[menu.deptName] && (
                 <ul style={{ marginLeft: '20px' }}>
                     {Object.entries(menu.teams).map(([teamName, members]) => (
                         <li key={teamName} style={{ marginLeft: '20px', listStyle: 'none' }}>
                             {/* 팀 드래그 가능 */}
-                            <DraggableItem data={{ teamName, deptName: menu.deptName }} type="team">
+                            <ItemComponent data={{ teamName, deptName: menu.deptName }} type="team">
                                 <button onClick={() => toggleDropdown(teamName)}>
                                     {isDropdown[teamName] ? '📂' : '📁'} {teamName}
                                 </button>
-                            </DraggableItem>
+                            </ItemComponent>
                             {isDropdown[teamName] && Array.isArray(members) && (
                                 <ul style={{ marginLeft: '20px' }}>
                                     {members.map((member) => (
                                         <li key={member.emp_code} style={{ listStyle: 'none' }} id={`user-${member.emp_no}`}>
                                             {/* 직원 드래그 가능 */}
-                                            <DraggableItem data={member} type="employee">
+                                            <ItemComponent data={member} type="employee">
                                                 <button onClick={() => onMemberClick(member)}>
                                                     🧑‍💼 {member.emp_name}
                                                 </button>
-                                            </DraggableItem>
+                                            </ItemComponent>
                                         </li>
                                     ))}
                                 </ul>
