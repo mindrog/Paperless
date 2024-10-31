@@ -225,8 +225,6 @@ public class EmailController {
 					.body(Collections.singletonMap("message", "이메일 목록을 불러오는 중 오류가 발생했습니다: " + e.getMessage()));
 		}
 	}
-<<<<<<< HEAD
-=======
 
 	@GetMapping("/{emailId}")
 	public ResponseEntity<?> getEmailById(@PathVariable Long emailId, Principal principal) {
@@ -319,5 +317,4 @@ public class EmailController {
 					.body(Collections.singletonMap("message", "이메일을 불러오는 중 오류가 발생했습니다: " + e.getMessage()));
 		}
 	}
->>>>>>> ocy
 }

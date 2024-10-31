@@ -1,4 +1,4 @@
--- # 1028 SQL Script #
+-- # 1031 SQL Script #
 DROP database paperless;
 CREATE DATABASE IF NOT EXISTS paperless;
 USE paperless;
@@ -233,7 +233,7 @@ CREATE TABLE `Inquiry` (
     `inqu_phone` VARCHAR(100) NOT NULL,
     `inqu_numberOfPeople` VARCHAR(100) NOT NULL,
     `inqu_enroll` timestamp NOT NULL,
-    
+    `inqu_approve_YN` varchar(2) check (inqu_approve_YN = 'Y' or inqu_approve_YN = 'N') default 'N',
     PRIMARY KEY (`inqu_no`)
 );
 
@@ -266,6 +266,9 @@ VALUES
 -- department/부서
 INSERT INTO Department (dept_no, dept_name, dept_team_name)
 VALUES 
+    -- 관리자 부여
+    (1,'관리자','관리자'),
+
     -- IT 부서
     (100, 'IT부서', '개발팀'),
     (110, 'IT부서', '인프라팀'),
@@ -311,6 +314,7 @@ VALUES
 -- position/직급
 INSERT INTO `Position` (`posi_name`)
 VALUES
+    ('관리자'),
     ('사원'),
     ('주임'),
     ('대리'),
@@ -394,7 +398,7 @@ VALUES
 INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
 VALUES
 -- (Paperless 대표)
-('PL1000', 'password123', '이범상', 'beom@paperless.com', '010-1357-2468', '이범상 서명', 'https://via.placeholder.com/60', 5, 410, 10, '2019-03-10', 'admin'),
+('PL1000', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이범상', 'beom@paperless.com', '010-1357-2468', '이범상 서명', 'https://via.placeholder.com/60', 5, 410, 10, '2019-03-10', 'admin'),
 
 -- IT부서 - 개발팀
 ('PL1001', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김다미', 'dami@paperless.com', '010-1234-5678', '김다미 서명', 'https://via.placeholder.com/60', 5, 100, 3, '2021-05-12', 'user'),

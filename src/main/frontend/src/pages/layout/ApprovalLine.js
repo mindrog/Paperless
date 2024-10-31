@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Modal, Button, Tabs, Tab, Table, Form } from 'react-bootstrap';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useDrag, useDrop } from 'react-dnd';
 import styles from '../../styles/layout/ApprovalLine.module.css';
 import OrgChart from '../layout/org_chart';
 
-const ITEM_TYPE = 'row';
+const ITEM_TYPE = 'ITEM';
 
-const DraggableRow = ({ person, index, moveRow, handleRemovePerson, handleSelectChange }) => {
+const DraggableRow = ({ person, index, moveRow, handleRemovePerson, handleSelectChange, rowClass }) => {
   const [{ isDragging }, drag] = useDrag({
     type: ITEM_TYPE,
     item: { data: person, index },
@@ -18,7 +17,7 @@ const DraggableRow = ({ person, index, moveRow, handleRemovePerson, handleSelect
 
   const [, drop] = useDrop({
     accept: ITEM_TYPE,
-    hover: (draggedItem) => {
+    drop: (draggedItem) => {
       if (draggedItem.index !== index) {
         moveRow(draggedItem.index, index);
         draggedItem.index = index;
@@ -26,11 +25,12 @@ const DraggableRow = ({ person, index, moveRow, handleRemovePerson, handleSelect
     },
   });
 
+  // Ref 연결: drag와 drop을 하나의 ref에 연결
   const dragDropRef = React.useRef(null);
   drag(drop(dragDropRef));
 
   return (
-    <tr ref={dragDropRef} style={{ opacity: isDragging ? 0.5 : 1 }}>
+    <tr ref={dragDropRef} className={rowClass} style={{ opacity: isDragging ? 0.5 : 1 }}>
       <td>{index + 1}</td>
       <td>{person.dept_name || person.deptName}</td>
       <td>{person.dept_team_name || person.teamName}</td>
@@ -53,52 +53,58 @@ const DraggableRow = ({ person, index, moveRow, handleRemovePerson, handleSelect
   );
 };
 
+// --------------------------------------------------------------------------
 const ApprovalLine = ({ showModal, handleModalClose }) => {
   const [activeTab, setActiveTab] = useState('approver');
   const [selectedApprovers, setSelectedApprovers] = useState([]);
   const [selectedReferences, setSelectedReferences] = useState([]);
   const [selectedReceivers, setSelectedReceivers] = useState([]);
 
-  useEffect(() => {
-    if (!showModal) {
-      setSelectedApprovers([]);
-      setSelectedReferences([]);
-      setSelectedReceivers([]);
-    }
-  }, [showModal]);
+  // 모달 닫을 때 내용 초기화
+  // useEffect(() => {
+  //   if (!showModal) {
+  //     setSelectedApprovers([]);
+  //     setSelectedReferences([]);
+  //     setSelectedReceivers([]);
+  //   }
+  // }, [showModal]);
 
   const handleTabSelect = (tab) => setActiveTab(tab);
 
-  const handleDrop = (item) => {
-    console.log("handleDrop 호출!!");
-
-    const { data, type } = item;
-
-    // activeTab에 따라 선택된 리스트에 드래그된 항목 추가
-    if (type === 'employee') {
-      if (activeTab === 'approver') {
-        setSelectedApprovers((prev) => [...prev, { ...data, approvalType: '' }]);
-      } else if (activeTab === 'reference') {
-        setSelectedReferences((prev) => [...prev, { ...data, approvalType: '' }]);
-      } else if (activeTab === 'receiver') {
-        setSelectedReceivers((prev) => [...prev, { ...data, approvalType: '' }]);
-      }
-    }
-    // 부서나 팀의 전체 직원 추가 로직이 있는 경우도 조건을 제거하고 무조건 추가하게 합니다.
-    else if (type === 'department') {
-      const departmentMembers = data.teams.flatMap((team) =>
-        team.members.map((member) => ({ ...member, dept_name: data.deptName, approvalType: '' }))
-      );
-
-      if (activeTab === 'approver') {
-        setSelectedApprovers((prev) => [...prev, ...departmentMembers]);
-      } else if (activeTab === 'reference') {
-        setSelectedReferences((prev) => [...prev, ...departmentMembers]);
-      } else if (activeTab === 'receiver') {
-        setSelectedReceivers((prev) => [...prev, ...departmentMembers]);
-      }
-    }
+  const updateList = (prevList, data) => {
+    const isDuplicate = prevList.some(
+      (entry) =>
+        entry.emp_name === data.emp_name
+    );
+    return isDuplicate ? prevList : [...prevList, data];
   };
+
+  // 결재자 탭의 드롭 설정
+  const [{ isOverApprover }, dropApprover] = useDrop({
+    accept: ITEM_TYPE,
+    drop: (item) => setSelectedApprovers((prev) => updateList(prev, item.data)),
+    collect: (monitor) => ({
+      isOverApprover: monitor.isOver(),
+    }),
+  });
+
+  // 참조자 탭의 드롭 설정
+  const [{ isOverReference }, dropReference] = useDrop({
+    accept: ITEM_TYPE,
+    drop: (item) => setSelectedReferences((prev) => updateList(prev, item.data)),
+    collect: (monitor) => ({
+      isOverReference: monitor.isOver(),
+    }),
+  });
+
+  // 수신자 탭의 드롭 설정
+  const [{ isOverReceiver }, dropReceiver] = useDrop({
+    accept: ITEM_TYPE,
+    drop: (item) => setSelectedReceivers((prev) => updateList(prev, item.data)),
+    collect: (monitor) => ({
+      isOverReceiver: monitor.isOver(),
+    }),
+  });
 
   const handleRemovePerson = (index, type) => {
     if (type === 'approver') {
@@ -141,7 +147,7 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
   };
 
   const renderTable = (selectedPeople, type) => (
-    <Table bordered striped className={styles.selectedPeopleTable}>
+    <Table className={styles.selectedPeopleTable} bordered striped>
       <thead>
         <tr>
           <th>No</th>
@@ -161,6 +167,7 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
             moveRow={(dragIndex, hoverIndex) => moveRow(dragIndex, hoverIndex, type)}
             handleRemovePerson={() => handleRemovePerson(index, type)}
             handleSelectChange={(idx, value) => handleSelectChange(idx, value, type)}
+            rowClass={styles.selectedRow}
           />
         ))}
       </tbody>
@@ -168,63 +175,65 @@ const ApprovalLine = ({ showModal, handleModalClose }) => {
   );
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <Modal
-        className={styles.apprModal}
-        show={showModal}
-        onHide={handleModalClose}
-        size="lg"
-        centered
-      >
-        <Modal.Header className={styles.apprModalHeader}>
-          <Modal.Title className={styles.apprModalTitle}>결재선 등록</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className={styles.apprModalBody}>
-          <div className={styles.orgChatList}>
-            <Tabs activeKey={activeTab} onSelect={handleTabSelect} className={styles.apprTabs}>
-              <Tab eventKey="approver" title="결재자" className={styles.apprTab}>
-                <div className={styles.orgChartContainer}>
-                  <div className={styles.orgChartList}>
-                    <OrgChart showModal={showModal} enableDrag={true} />
-                  </div>
-                  <div className={styles.apprTableContainer}>
-                    {renderTable(selectedApprovers, 'approver')}
-                  </div>
-                </div>
-              </Tab>
-              <Tab eventKey="reference" title="참조자" className={styles.apprTab}>
-                <div className={styles.orgChartContainer}>
-                  <div className={styles.orgChartList}>
-                    <OrgChart showModal={showModal} enableDrag={true} />
-                  </div>
-                  <div className={styles.apprTableContainer}>
-                    {renderTable(selectedReferences, 'reference')}
-                  </div>
-                </div>
-              </Tab>
-              <Tab eventKey="receiver" title="수신자" className={styles.apprTab}>
-                <div className={styles.orgChartContainer}>
-                  <div className={styles.orgChartList}>
-                    <OrgChart showModal={showModal} enableDrag={true} />
-                  </div>
-                  <div className={styles.apprTableContainer}>
-                    {renderTable(selectedReceivers, 'receiver')}
-                  </div>
-                </div>
-              </Tab>
-            </Tabs>
-          </div>
-        </Modal.Body>
-        <Modal.Footer className={styles.apprModalFooter}>
-          <Button variant="primary" onClick={handleModalClose} className={styles.modalSaveBtn}>
-            확인
-          </Button>
-          <Button variant="secondary" onClick={handleModalClose} className={styles.modalCancelBtn}>
-            취소
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </DndProvider>
+    <Modal show={showModal} onHide={handleModalClose} size="lg" centered>
+      <Modal.Header className={styles.apprModalHeader}>
+        <Modal.Title>결재선 등록</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Tabs activeKey={activeTab} onSelect={handleTabSelect} className={styles.apprTabs}>
+          <Tab eventKey="approver" title="결재자">
+            <div className={styles.orgChartContainer}>
+              <div className={styles.orgChartList}>
+                <OrgChart enableDrag={true} />
+              </div>
+              <div
+                ref={dropApprover}
+                className={`${styles.apprTableContainer} ${isOverApprover ? styles.highlight : ''}`}
+              >
+                {renderTable(selectedApprovers, 'approver')}
+                {isOverApprover && <p>추가하기</p>}
+              </div>
+            </div>
+          </Tab>
+          <Tab eventKey="reference" title="참조자">
+            <div className={styles.orgChartContainer}>
+              <div className={styles.orgChartList}>
+                <OrgChart enableDrag={true} />
+              </div>
+              <div
+                ref={dropReference}
+                className={`${styles.apprTableContainer} ${isOverReference ? styles.highlight : ''}`}
+              >
+                {renderTable(selectedReferences, 'reference')}
+                {isOverReference && <p>추가하기</p>}
+              </div>
+            </div>
+          </Tab>
+          <Tab eventKey="receiver" title="수신자">
+            <div className={styles.orgChartContainer}>
+              <div className={styles.orgChartList}>
+                <OrgChart enableDrag={true} />
+              </div>
+              <div
+                ref={dropReceiver}
+                className={`${styles.apprTableContainer} ${isOverReceiver ? styles.highlight : ''}`}
+              >
+                {renderTable(selectedReceivers, 'receiver')}
+                {isOverReceiver && <p>추가하기</p>}
+              </div>
+            </div>
+          </Tab>
+        </Tabs>
+      </Modal.Body>
+      <Modal.Footer>
+      <Button variant="primary" onClick={() => handleModalClose(false)}>
+  확인
+</Button>
+<Button variant="secondary" onClick={() => handleModalClose(true)}>
+  취소
+</Button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 

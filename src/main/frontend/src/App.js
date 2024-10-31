@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import axios from 'axios';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import Header from './pages/layout/header';
 import Footer from './pages/layout/footer';
 import Home from './pages/layout/home';
@@ -38,7 +40,7 @@ import CompanyUserCalender from './pages/company_user/CompanyUserCalender';
 import Menubar from './pages/layout/menubar';
 import GraphChart from './pages/layout/GraphChart';
 import ApprovalLine from './pages/layout/ApprovalLine';
-import TextEditor from './ckEditor/TextEditor';
+import ErrorBoundary from './pages/layout/ErrorBoundary';
 import './App.css';
 import './styles/style.css';
 
@@ -63,6 +65,7 @@ function App() {
     };
 
     return (
+        <DndProvider backend={HTML5Backend}>
         <Router>
             <div className='App'>
                 <HeaderToggle />
@@ -126,6 +129,7 @@ function App() {
                 <FooterToggle />
             </div>
         </Router>
+    </DndProvider>
     );
 }
 
@@ -202,9 +206,11 @@ function ApprovalLineToggle() {
     return (
         <>
             {allowedPaths.includes(location.pathname) && (
+            <ErrorBoundary>
                 <div className='ApprovalLine'>
                     <ApprovalLine />
                 </div>
+            </ErrorBoundary>
             )}
         </>
     );
