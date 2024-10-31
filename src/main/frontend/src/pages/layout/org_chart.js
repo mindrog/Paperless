@@ -110,7 +110,7 @@ const OrgChart = forwardRef((props, ref) => {
         <li key={menu.deptName} style={{ listStyle: 'none', marginBottom: '10px' }}>
             <DraggableWrapper data={menu}>
                 <button onClick={() => toggleDropdown(menu.deptName)}>
-                    {isDropdown[menu.deptName] ? '📂' : '📁'} {menu.deptName}
+                    {isDropdown[menu.deptName] ? '🗂️' : '🗂️'} {menu.deptName}
                 </button>
             </DraggableWrapper>
             {isDropdown[menu.deptName] && (
@@ -128,7 +128,7 @@ const OrgChart = forwardRef((props, ref) => {
                                         <li key={member.emp_code} style={{ listStyle: 'none' }} id={`user-${member.emp_no}`}>
                                             <DraggableWrapper data={member}>
                                                 <button onClick={() => onMemberClick(member)}>
-                                                    🧑‍💼 {member.emp_name}
+                                                    🧑‍💼 {member.posi_name} {member.emp_name}
                                                 </button>
                                             </DraggableWrapper>
                                         </li>
