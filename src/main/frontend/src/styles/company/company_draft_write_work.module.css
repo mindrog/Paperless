@@ -32,6 +32,9 @@ body {
 .docKeyFile {
   height: 30px;
   text-align: center;
+  background-color: #F1F2F6 !important;
+  color: #7E7E7F !important;
+  padding: 8px;
 }
 
 .centerText {
@@ -54,13 +57,18 @@ body {
 }
 
 .apprLineBox {
-  width: 250px;
+  margin-left: auto;
+  width: auto;
   height: 200px;
+  border:1px solid #dee2e6;
 }
 
 .docTitle {
   width: 300px;
   font-size: 20px;
+  background-color: #F1F2F6 !important;
+  color: #7E7E7F !important;
+  padding: 8px;
 }
 
 .apprLineTbody {
@@ -69,16 +77,38 @@ body {
 
 .docKey {
   font-weight: bold;
-  width: 100px;
+  width: 200px;
+  background-color: #F1F2F6 !important;
+  color: #7E7E7F !important;
+  padding: 8px;
 }
 
 .docValue {
   font-weight: 100;
+  width: 250px;
 }
 
 .docValue_date {
   font-weight: 100;
   font-size: 13px;
+  height: 40px;
+}
+
+.docKeyAppr {
+  font-weight: bold;
+  width: 120px !important;
+  background-color: #F1F2F6 !important;
+  color: #7E7E7F !important;
+  padding: 8px;
+}
+
+.docValueAppr {
+  font-weight: bold;
+  width: 100px !important;
+}
+
+.docValueRen {
+  width: 450px;
 }
 
 .inputForm:active, .inputForm:focus {
@@ -100,7 +130,7 @@ body {
 }
 
 .inputFormDate {
-  margin-left: 8px;
+  margin-left: 15px;
   width: auto;
 }
 
