@@ -397,28 +397,36 @@ function Chatting() {
                 if (!receivedMessage.chat_date) {
                     console.warn('Received message is missing chat_date:', receivedMessage);
                 } else {
-                    // 전송자 정보를 empList에서 검색
-                    const senderInfo = processedEmpList.find(emp => emp.emp_no === receivedMessage.chat_sender);
+                    // 현재 메시지 리스트에 이미 존재하는지 확인
+                    const isMessageExist = messageList.some(
+                        (msg) => msg.chat_no === receivedMessage.chat_no && msg.chat_room_no === receivedMessage.chat_room_no
+                    );
 
-                    // 수신자 정보를 empList에서 검색
-                    const recipientInfo = processedEmpList.find(emp => emp.emp_no === receivedMessage.chat_recipient);
+                    // 중복된 메시지가 아닐 경우에만 리스트에 추가
+                    if (!isMessageExist) {
+                        // 전송자 정보를 empList에서 검색
+                        const senderInfo = processedEmpList.find(emp => emp.emp_no === receivedMessage.chat_sender);
 
-                    // senderName과 recipientName을 추가한 메시지 리스트 업데이트
-                    const updatedMessage = {
-                        ...receivedMessage,
-                        senderName: senderInfo ? senderInfo.emp_name : 'Unknown',
-                        recipientName: recipientInfo ? recipientInfo.emp_name : 'Unknown',
-                        senderProfile: senderInfo ? senderInfo.emp_profile : 'https://via.placeholder.com/60'
-                    };
+                        // 수신자 정보를 empList에서 검색
+                        const recipientInfo = processedEmpList.find(emp => emp.emp_no === receivedMessage.chat_recipient);
 
-                    // messageList 상태에 수신된 메시지를 추가
-                    setMessageList((prev) => [...prev, receivedMessage]);
+                        // senderName과 recipientName을 추가한 메시지 리스트 업데이트
+                        const updatedMessage = {
+                            ...receivedMessage,
+                            senderName: senderInfo ? senderInfo.emp_name : 'Unknown',
+                            recipientName: recipientInfo ? recipientInfo.emp_name : 'Unknown',
+                            senderProfile: senderInfo ? senderInfo.emp_profile : 'https://via.placeholder.com/60'
+                        };
+
+                        // messageList 상태에 수신된 메시지를 추가
+                        setMessageList((prev) => [...prev, updatedMessage]);
+                    }
                 }
             } catch (error) {
                 console.error('Error parsing received message:', error);
             }
         }
-    }, [lastMessage, processedEmpList]);
+    }, [lastMessage, processedEmpList, messageList]);
 
     // 특정 영역 외 클릭을 감지하여 searchRef 상태 업데이트
     useEffect(() => {
