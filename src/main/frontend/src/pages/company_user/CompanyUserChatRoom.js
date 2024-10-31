@@ -5,92 +5,20 @@ import OrgChart from '../layout/org_chart';
 import { Button, Modal } from 'react-bootstrap';
 import { format, isToday, isYesterday } from 'date-fns';
 import { useSelector } from 'react-redux';
+import useFetchUserInfo from '../../componentFetch/useFetchUserInfo';
 
 function CompanyUserChatRoom() {
     // Redux에서 사용자 정보 가져오기
     const userData = useSelector((state) => state.user.data);
-    // const userPosi = useSelector((state) => state.user.userPosi);
-
-    const empNo = userData.emp_no;
 
     // Redux에서 사용자 정보 가져온 후 저장할 상태 변수
     const [user, setUser] = useState(null);
 
-    // 직원 정보 저장 로직
-    useEffect(() => {
-        console.log("userData:", userData);
-        // empList에서 empNo와 일치하는 직원 찾기
-        const foundUser = empList.find(emp => emp.emp_no === empNo);
-        if (foundUser) {
-            setUser(foundUser);
-        }
-    }, []);
+    // 토큰 가져오기
+    const token = localStorage.getItem('jwt');
 
-    // ** 더미 데이터 ** //
-    // 직원
-    const empList = [
-        { emp_no: 3, emp_name: '배수지', emp_email: 'suzy@digitalsolution.com', emp_phone: '010-1234-5678', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 4 },
-        { emp_no: 4, emp_name: '강동원', emp_email: 'dongwon@digitalsolution.com', emp_phone: '010-8765-4321', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 6 },
-        { emp_no: 5, emp_name: '김태리', emp_email: 'taeri@digitalsolution.com', emp_phone: '010-2345-6789', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 500, emp_posi_no: 3 },
-        { emp_no: 6, emp_name: '이준호', emp_email: 'junho@digitalsolution.com', emp_phone: '010-3456-7890', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 110, emp_posi_no: 4 },
-        { emp_no: 7, emp_name: '박서준', emp_email: 'seojun@digitalsolution.com', emp_phone: '010-5555-1234', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 200, emp_posi_no: 3 },
-        { emp_no: 8, emp_name: '이서진', emp_email: 'seojin@digitalsolution.com', emp_phone: '010-1010-2020', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 200, emp_posi_no: 4 },
-        { emp_no: 9, emp_name: '김수현', emp_email: 'yooain@digitalsolution.com', emp_phone: '010-3030-4040', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 210, emp_posi_no: 5 },
-        { emp_no: 10, emp_name: '공효진', emp_email: 'gonghj@digitalsolution.com', emp_phone: '010-5050-6060', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 2 },
-    ];
-
-    // 회사
-    const compList = [
-        { comp_no: 1, comp_name: 'Digitalsolution' },
-        { comp_no: 2, comp_name: 'Nextware' },
-    ];
-
-    // 부서
-    const deptList = [
-        { dept_no: 100, dept_name: 'IT부서', dept_team_name: '개발팀' },
-        { dept_no: 110, dept_name: 'IT부서', dept_team_name: '인프라팀' },
-        { dept_no: 120, dept_name: 'IT부서', dept_team_name: '보안팀' },
-        { dept_no: 200, dept_name: '마케팅부서', dept_team_name: '디지털마케팅팀' },
-        { dept_no: 210, dept_name: '마케팅부서', dept_team_name: '브랜드팀' },
-        { dept_no: 220, dept_name: '마케팅부서', dept_team_name: '시장조사팀' },
-        { dept_no: 300, dept_name: '영업부서', dept_team_name: '국내영업팀' },
-        { dept_no: 310, dept_name: '영업부서', dept_team_name: '해외영업팀' },
-        { dept_no: 320, dept_name: '영업부서', dept_team_name: '영업기획팀' },
-        { dept_no: 400, dept_name: 'HR부서', dept_team_name: '채용팀' },
-        { dept_no: 410, dept_name: 'HR부서', dept_team_name: '인사관리팀' },
-        { dept_no: 420, dept_name: 'HR부서', dept_team_name: '교육팀' },
-        { dept_no: 500, dept_name: '구매부서', dept_team_name: '구매팀' },
-        { dept_no: 510, dept_name: '구매부서', dept_team_name: '자재관리팀' },
-    ];
-
-    // 직급
-    const posiList = [
-        { posi_no: 1, posi_name: '사원' },
-        { posi_no: 2, posi_name: '주임' },
-        { posi_no: 3, posi_name: '대리' },
-        { posi_no: 4, posi_name: '과장' },
-        { posi_no: 5, posi_name: '차장' },
-        { posi_no: 6, posi_name: '부장' },
-        { posi_no: 7, posi_name: '이사' },
-        { posi_no: 8, posi_name: '상무' },
-        { posi_no: 9, posi_name: '전무' },
-        { posi_no: 10, posi_name: '부사장' },
-        { posi_no: 11, posi_name: '사장' },
-    ];
-
-    // 직원 목록을 각 회사 정보와 함께 저장할 배열
-    const processedEmpList = empList.map(emp => {
-        const company = compList.find(comp => comp.comp_no === emp.emp_comp_no); // emp_comp_no와 일치하는 회사 정보 찾기
-        const department = deptList.find(dept => dept.dept_no === emp.emp_dept_no); // 해당 부서 정보 찾기
-        const position = posiList.find(posi => posi.posi_no === emp.emp_posi_no); // 해당 직급 정보 찾기
-
-        return {
-            ...emp,
-            emp_comp_name: company ? company.comp_name : 'Unknown', // 회사 이름 동적 참조
-            emp_dept_name: department ? `${department.dept_name}${department.dept_team_name ? ' - ' + department.dept_team_name : ''}` : 'Unknown', // 부서, 팀 이름 동적 참조
-            emp_posi_name: position ? position.posi_name : 'Unknown' // 직급 이름 동적 참조
-        };
-    });
+    // 조직도 데이터를 가져오기
+    const orgChartData = useFetchUserInfo(token);
 
     // 조직도 검색 키워드 상태 변수
     const [searchTerm, setSearchTerm] = useState('');
@@ -144,6 +72,39 @@ function CompanyUserChatRoom() {
         filterOrgChart(event.target.value);
     };
 
+    // 조직도에서 모든 직원 추출하는 함수
+    const getAllEmployees = (data) => {
+        const employees = [];
+        data.forEach((dept) => {
+            Object.values(dept.teams).forEach((team) => {
+                employees.push(...team);
+            });
+        });
+        console.log('employees:', employees);
+        return employees;
+    };
+
+    // 로그인한 사용자 찾기
+    useEffect(() => {
+        if (userData && orgChartData.length > 0) {
+            const foundUser = findUserInOrgChart(userData.emp_no, orgChartData);
+            console.log('foundUser:', foundUser);
+            if (foundUser) {
+                setUser(foundUser);
+            } else {
+                console.error('Logged-in user not found in org chart data.');
+            }
+        }
+    }, [userData, orgChartData]);
+
+    // 조직도에서 사용자 찾는 함수
+    const findUserInOrgChart = (emp_no, data) => {
+        console.log('findUserInOrgChart의 emp_no:', emp_no);
+        console.log('findUserInOrgChart의 data:', data);
+        const allEmployees = getAllEmployees(data);
+        return allEmployees.find((emp) => emp.emp_no === emp_no) || null;
+    };
+
     // 검색 필터링 (조직도 데이터를 필터링)
     const filterOrgChart = (searchTerm) => {
         if (!searchTerm) {
@@ -155,20 +116,24 @@ function CompanyUserChatRoom() {
         const lowercasedTerm = searchTerm.toLowerCase();
 
         // 직원 리스트에서 성명, 직급, 부서명으로 필터링
-        const result = processedEmpList.filter(emp =>
-            emp.emp_name.toLowerCase().includes(lowercasedTerm) ||
-            emp.emp_posi_name.toLowerCase().includes(lowercasedTerm) ||
-            emp.emp_dept_name.toLowerCase().includes(lowercasedTerm)
+        const allEmployees = getAllEmployees(orgChartData);
+
+        const matchingEmployees = allEmployees.filter(
+            (emp) =>
+                emp.emp_name.toLowerCase().includes(lowercasedTerm) ||
+                emp.emp_posi_name?.toLowerCase().includes(lowercasedTerm) ||
+                emp.emp_dept_name?.toLowerCase().includes(lowercasedTerm)
         );
 
-        setSelectedUser(result.length > 0 ? result[0] : null);
+        setSelectedUser(matchingEmployees.length > 0 ? matchingEmployees[0] : null);
     };
 
     // 채팅 목록의 프로필 클릭할 때 메서드
     const clickProfile = (emp_no) => {
         if (emp_no) {
             // 전달된 emp_no를 통해 사용자 정보를 찾고 업데이트
-            const selectedProfile = processedEmpList.find(emp => emp.emp_no === emp_no);
+            const selectedProfile = findUserInOrgChart(emp_no, orgChartData);
+            console.log('selectedProfile:', selectedProfile);
             if (selectedProfile) {
                 setProfileInfo(selectedProfile);
             } else {
@@ -198,7 +163,8 @@ function CompanyUserChatRoom() {
                 openChatRoom.window.focus();
             } else {
                 // 로그인한 사용자의 정보 찾기
-                const currentUser = processedEmpList.find(emp => emp.emp_no === user.emp_no);
+                const currentUser = user;
+                console.log('currentUser:', currentUser);
 
                 // 채팅창으로 넘길 객체
                 const chatData = {
@@ -206,17 +172,7 @@ function CompanyUserChatRoom() {
                     participantNos: room.participantNos || [],
                     participants: room.participantNames || '',
                     messages: chatMessages[room_no] || [],
-                    currentUser: currentUser ? {
-                        emp_no: currentUser.emp_no,
-                        emp_name: currentUser.emp_name,
-                        emp_email: currentUser.emp_email,
-                        emp_phone: currentUser.emp_phone,
-                        emp_comp_name: currentUser.emp_comp_name,
-                        emp_dept_name: currentUser.emp_dept_name,
-                        emp_team_name: currentUser.emp_team_name,
-                        emp_posi_name: currentUser.emp_posi_name,
-                        emp_profile: currentUser.emp_profile,
-                    } : {} // currentUser가 없을 경우 빈 객체로 처리
+                    currentUser: currentUser || {}, // currentUser가 없을 경우 빈 객체로 처리
                 };
 
                 // 위치 조정
@@ -249,6 +205,8 @@ function CompanyUserChatRoom() {
         }
     };
 
+
+
     // 페이지가 로드될 때 모든 채팅방 목록을 불러오는 메서드
     useEffect(() => {
         const fetchChatRooms = async () => {
@@ -267,13 +225,16 @@ function CompanyUserChatRoom() {
 
                 // 서버 응답이 배열인지 확인하고, 배열이 아니면 응답의 특정 키에서 배열을 추출
                 if (Array.isArray(chatRooms)) {
+                    // 조직도에서 모든 직원 리스트 추출
+                    const allEmployees = getAllEmployees(orgChartData);
+
                     // 각 채팅방의 room_participants를 processedEmpList 메서드로 처리하여 참가자의 숫자형 데이터를 이름인 문자열로 생성
                     const processedChatRooms = chatRooms.map(room => {
                         // 로그인 사용자를 제외한 다른 참가자들만 각 채팅방 목록 이름에 저장
                         // filter로 사용자를 제외하고 남은 participant를 find 한다
                         const otherParticipants = room.room_participants.filter(participant => String(participant) !== String(user.emp_no)).map(participant => {
                             // paricipant를 processedEmpList 메서드로 문자열 생성
-                            const emp = processedEmpList.find(e => e.emp_no === Number(participant));
+                            const emp = allEmployees.find(e => e.emp_no === Number(participant));
                             // 해당 내용이 있다면 저장하고 없으면 ''로 저장
                             return emp ? { emp_no: emp.emp_no, emp_name: emp.emp_name } : { emp_no: participant, emp_name: '' };
                         });
@@ -374,10 +335,6 @@ function CompanyUserChatRoom() {
         console.log("Updated chatRoomList:", chatRoomList);
     }, [chatRoomList]);
 
-    if (!user) {
-        return <div>Loading...</div>;
-    }
-
     // OrgChart에서 사람 클릭 시 호출 함수
     const handleMemberClick = async (member) => {
         try {
@@ -405,7 +362,7 @@ function CompanyUserChatRoom() {
                 };
 
                 // PUT 요청으로 새로운 채팅방 생성
-                const response = await api.createChatRoom(newRoomData); 
+                const response = await api.createChatRoom(newRoomData);
 
                 if (response && response.data) {
                     // 새로 생성된 채팅방으로 연결
@@ -418,6 +375,10 @@ function CompanyUserChatRoom() {
             console.error("Error handling member click: ", error);
         }
     };
+
+    if (!user) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="container-xl">
