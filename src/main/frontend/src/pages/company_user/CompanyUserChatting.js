@@ -17,84 +17,8 @@ function Chatting() {
     // Redux에서 사용자 정보 가져오기
     const userData = useSelector((state) => state.user.data);
 
-    const empNo = userData.emp_no;
-
     // 상태 변수로 사용자 정보를 초기화
     const [user, setUser] = useState(null);
-
-    // 사용자 정보 저장 로직
-    useEffect(() => {
-        // empList에서 empNo와 일치하는 직원 찾기
-        const foundUser = empList.find(emp => emp.emp_no === empNo);
-        console.log("foundUser:", foundUser);
-        if (foundUser) setUser(foundUser);
-    }, [empNo]);
-
-    // ** 더미 데이터 ** //
-    // 직원
-    const empList = [
-        { emp_no: 3, emp_name: '배수지', emp_email: 'suzy@digitalsolution.com', emp_phone: '010-1234-5678', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 4 },
-        { emp_no: 4, emp_name: '강동원', emp_email: 'dongwon@digitalsolution.com', emp_phone: '010-8765-4321', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 6 },
-        { emp_no: 5, emp_name: '김태리', emp_email: 'taeri@digitalsolution.com', emp_phone: '010-2345-6789', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 500, emp_posi_no: 3 },
-        { emp_no: 6, emp_name: '이준호', emp_email: 'junho@digitalsolution.com', emp_phone: '010-3456-7890', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 110, emp_posi_no: 4 },
-        { emp_no: 7, emp_name: '박서준', emp_email: 'seojun@digitalsolution.com', emp_phone: '010-5555-1234', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 200, emp_posi_no: 3 },
-        { emp_no: 8, emp_name: '이서진', emp_email: 'seojin@digitalsolution.com', emp_phone: '010-1010-2020', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 200, emp_posi_no: 4 },
-        { emp_no: 9, emp_name: '김수현', emp_email: 'yooain@digitalsolution.com', emp_phone: '010-3030-4040', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 210, emp_posi_no: 5 },
-        { emp_no: 10, emp_name: '공효진', emp_email: 'gonghj@digitalsolution.com', emp_phone: '010-5050-6060', emp_profile: 'https://via.placeholder.com/60', emp_comp_no: 1, emp_dept_no: 100, emp_posi_no: 2 },
-    ];
-
-    // 회사
-    const compList = [
-        { comp_no: 1, comp_name: 'Digitalsolution' },
-        { comp_no: 2, comp_name: 'Nextware' },
-    ];
-
-    // 부서
-    const deptList = [
-        { dept_no: 100, dept_name: 'IT부서', dept_team_name: '개발팀' },
-        { dept_no: 110, dept_name: 'IT부서', dept_team_name: '인프라팀' },
-        { dept_no: 120, dept_name: 'IT부서', dept_team_name: '보안팀' },
-        { dept_no: 200, dept_name: '마케팅부서', dept_team_name: '디지털마케팅팀' },
-        { dept_no: 210, dept_name: '마케팅부서', dept_team_name: '브랜드팀' },
-        { dept_no: 220, dept_name: '마케팅부서', dept_team_name: '시장조사팀' },
-        { dept_no: 300, dept_name: '영업부서', dept_team_name: '국내영업팀' },
-        { dept_no: 310, dept_name: '영업부서', dept_team_name: '해외영업팀' },
-        { dept_no: 320, dept_name: '영업부서', dept_team_name: '영업기획팀' },
-        { dept_no: 400, dept_name: 'HR부서', dept_team_name: '채용팀' },
-        { dept_no: 410, dept_name: 'HR부서', dept_team_name: '인사관리팀' },
-        { dept_no: 420, dept_name: 'HR부서', dept_team_name: '교육팀' },
-        { dept_no: 500, dept_name: '구매부서', dept_team_name: '구매팀' },
-        { dept_no: 510, dept_name: '구매부서', dept_team_name: '자재관리팀' },
-    ];
-
-    // 직급
-    const posiList = [
-        { posi_no: 1, posi_name: '사원' },
-        { posi_no: 2, posi_name: '주임' },
-        { posi_no: 3, posi_name: '대리' },
-        { posi_no: 4, posi_name: '과장' },
-        { posi_no: 5, posi_name: '차장' },
-        { posi_no: 6, posi_name: '부장' },
-        { posi_no: 7, posi_name: '이사' },
-        { posi_no: 8, posi_name: '상무' },
-        { posi_no: 9, posi_name: '전무' },
-        { posi_no: 10, posi_name: '부사장' },
-        { posi_no: 11, posi_name: '사장' },
-    ];
-
-    // 직원 목록을 각 회사 정보와 함께 저장할 배열
-    const processedEmpList = empList.map(emp => {
-        const company = compList.find(comp => comp.comp_no === emp.emp_comp_no); // emp_comp_no와 일치하는 회사 정보 찾기
-        const department = deptList.find(dept => dept.dept_no === emp.emp_dept_no); // 해당 부서 정보 찾기
-        const position = posiList.find(posi => posi.posi_no === emp.emp_posi_no); // 해당 직급 정보 찾기
-
-        return {
-            ...emp,
-            emp_comp_name: company ? company.comp_name : 'Unknown', // 회사 이름 동적 참조
-            emp_dept_name: department ? `${department.dept_name}${department.dept_team_name ? ' - ' + department.dept_team_name : ''}` : 'Unknown', // 부서, 팀 이름 동적 참조
-            emp_posi_name: position ? position.posi_name : 'Unknown' // 직급 이름 동적 참조
-        };
-    });
 
     // 메시지 목록 상태 변수
     const [messageList, setMessageList] = useState([]);
@@ -316,7 +240,6 @@ function Chatting() {
 
     // 날짜 파싱 메서드
     const parseChatDate = (dateString) => {
-        console.log('dateString:', dateString);
         // chat_date 형식이 "YYYY-MM-DD HH:mm"이므로 이에 맞는 파싱을 수행
         const date = parse(dateString, 'yyyy-MM-dd HH:mm', new Date());
         return isValid(date) ? date : null;
@@ -332,9 +255,8 @@ function Chatting() {
         // messageList에서 가장 큰 chat_no를 찾고, 없으면 0을 기본값으로 설정
         const lastChatNo = messageList.length > 0 ? Math.max(...messageList.map(msg => msg.chat_no)) : -1; // 메시지가 없다면 -1을 기본값으로
         const currentTime = format(new Date(), 'yyyy-MM-dd HH:mm');
-        console.log('currentTime:', currentTime);
         const chatRecipientNo = emp.emp_no;
-        const chatRecipientNos = emp.participants.filter(p => p.emp_no !== empNo).map(p => p.emp_no);
+        const chatRecipientNos = emp.participants.filter(p => p.emp_no !== user.emp_no).map(p => p.emp_no);
         if (chatRecipientNos.length === 0) {
             console.warn('그룹 채팅입니다.');
             return;
@@ -343,12 +265,12 @@ function Chatting() {
             action: 'sendMessage',
             chat_room_no: chatRoomNo,
             chat_no: lastChatNo + 1,
-            chat_sender: empNo,
+            chat_sender: user.emp_no,
             chat_recipient: chatRecipientNo,
             chat_content: message,
             chat_count: chatRecipientNos.length,
             chat_type: 'text',
-            chat_date: currentTime,
+            chat_date: currentTime
         };
         console.log('Sending newMessage:', newMessage);
         try {
@@ -356,15 +278,14 @@ function Chatting() {
             if (readyState === ReadyState.OPEN) {
                 sendMessage(JSON.stringify(newMessage));
                 console.log('메시지 전송 중:', newMessage);
+
                 // REST API를 통해 메시지 저장
                 await api.sendMessage(newMessage);
+                console.log('메시지 서버 저장 완료:', newMessage);
 
                 // 메시지 리스트 업데이트
                 setMessageList((prev) => [...prev, newMessage]);
                 setMessage('');
-
-                // // 부모 컴포넌트의 updateRecentMessages 함수를 호출하여 최신 메시지 업데이트
-                // updateRecentMessages(chatRoomNo, newMessage);
             } else {
                 console.warn('WebSocket 연결이 열려 있지 않음:', readyState);
             }
@@ -394,39 +315,30 @@ function Chatting() {
                 // 수신된 메시지를 파싱
                 const receivedMessage = JSON.parse(lastMessage.data);
                 console.log('Received message:', receivedMessage);
+
+                // 서버로부터 내가 보낸 메시지를 화면에 띄우지 않도록 설정
+                if (receivedMessage.chat_sender === user.emp_no) {
+                    console.log('내가 보낸 메시지');
+                    return;
+                }
+
                 if (!receivedMessage.chat_date) {
                     console.warn('Received message is missing chat_date:', receivedMessage);
                 } else {
-                    // 현재 메시지 리스트에 이미 존재하는지 확인
-                    const isMessageExist = messageList.some(
-                        (msg) => msg.chat_no === receivedMessage.chat_no && msg.chat_room_no === receivedMessage.chat_room_no
-                    );
+                    setMessageList((prevMessageList) => {
+                        // 현재 메시지 리스트에 이미 존재하는지 확인
+                        const isMessageExist = prevMessageList.some(
+                            (msg) => msg.chat_no === receivedMessage.chat_no && msg.chat_room_no === receivedMessage.chat_room_no
+                        );
 
-                    // 중복된 메시지가 아닐 경우에만 리스트에 추가
-                    if (!isMessageExist) {
-                        // 전송자 정보를 empList에서 검색
-                        const senderInfo = processedEmpList.find(emp => emp.emp_no === receivedMessage.chat_sender);
-
-                        // 수신자 정보를 empList에서 검색
-                        const recipientInfo = processedEmpList.find(emp => emp.emp_no === receivedMessage.chat_recipient);
-
-                        // senderName과 recipientName을 추가한 메시지 리스트 업데이트
-                        const updatedMessage = {
-                            ...receivedMessage,
-                            senderName: senderInfo ? senderInfo.emp_name : 'Unknown',
-                            recipientName: recipientInfo ? recipientInfo.emp_name : 'Unknown',
-                            senderProfile: senderInfo ? senderInfo.emp_profile : 'https://via.placeholder.com/60'
-                        };
-
-                        // messageList 상태에 수신된 메시지를 추가
-                        setMessageList((prev) => [...prev, updatedMessage]);
-                    }
+                        return isMessageExist ? prevMessageList : [...prevMessageList, receivedMessage];
+                    });
                 }
             } catch (error) {
                 console.error('Error parsing received message:', error);
             }
         }
-    }, [lastMessage, processedEmpList, messageList]);
+    }, [lastMessage]);
 
     // 특정 영역 외 클릭을 감지하여 searchRef 상태 업데이트
     useEffect(() => {
@@ -464,14 +376,38 @@ function Chatting() {
                 console.log('Decoded chatData:', chatData);
                 console.log('chatData.messages:', chatData.messages);
 
-                // 메시지 리스트 설정 시, 정보를 processedEmpList에서 찾아 추가
+                // 로그인 사용자 정보를 user 상태에 설정
+                if (chatData.currentUser) {
+                    setUser(chatData.currentUser);
+                    console.log('Logged-in user:', chatData.currentUser);
+                }
+
+                // 참가자 정보를 추가하여 emp 상태에 설정
+                const participants = chatData.participants.map(participant => ({
+                    emp_no: participant.emp_no,
+                    emp_name: participant.emp_name,
+                    emp_profile: participant.emp_profile || 'https://via.placeholder.com/60',
+                    emp_dept_name: participant.emp_dept_name || '',
+                    dept_team_name: participant.dept_team_name || '',
+                    emp_posi_name: participant.emp_posi_name || ''
+                }));
+
+                // 첫 번째 참가자 정보로 emp를 설정
+                if (participants.length == 1) {
+                    setEmp({ ...participants[0], chat_room_no: chatData.room_no });
+                } else if (participants.length > 1) {
+                    console.log("그룹 채팅입니다.");
+                } else {
+                    console.warn("참가자가 없습니다.");
+                }
+
+                // 메시지 리스트를 chatData에서 직접 설정
                 const processedMessages = chatData.messages.map((message) => {
-                    // 전송자 찾기
-                    const senderInfo = processedEmpList.find(emp => emp.emp_no === message.chat_sender);
+                    const sender = participants.find(participant => participant.emp_no === message.chat_sender);
                     return {
                         ...message,
-                        senderName: senderInfo ? senderInfo.emp_name : 'Unknown',
-                        senderProfile: senderInfo ? senderInfo.emp_profile : 'https://via.placeholder.com/60'
+                        senderName: sender ? sender.emp_name : 'Unknown',
+                        senderProfile: sender ? sender.emp_profile : 'https://via.placeholder.com/60',
                     };
                 });
 
@@ -483,21 +419,6 @@ function Chatting() {
                 } else {
                     console.warn('Invalid messageList:', processedMessages);
                 }
-
-                // participantNos 배열의 첫 번째 참가자를 기반으로 emp 정보 설정
-                const empFromData = processedEmpList.find(emp => emp.emp_no === chatData.participantNos[0]);
-                console.log('chatData.participantNos[0]:', chatData.participantNos[0]);
-                console.log('empFromData:', empFromData);
-
-                // participants 배열 확인 및 초기화
-                const participants = Array.isArray(chatData.participants) ? chatData.participants : Array.isArray(chatData.participantNos) ? chatData.participantNos : [];
-
-                // emp 객체에 participants 정보 추가
-                if (empFromData) {
-                    setEmp({ ...empFromData, participants: participants.map(no => ({ emp_no: no })), chat_room_no: chatData.room_no });
-                } else {
-                    console.warn("empFromData가 설정되지 않았습니다.");
-                }
             } else {
                 console.error("URL에 인코딩된 데이터가 없습니다.");
             }
@@ -505,6 +426,50 @@ function Chatting() {
             console.error("URL에서 채팅 데이터를 파싱하는 중 오류 발생:", error);
         }
     }, []);
+
+    // mainContainerRef가 특정 위치 도달 시 수신 확인 처리
+    useEffect(() => {
+        const handleScroll = () => {
+            if (mainContainerRef.current) {
+                const { scrollTop, scrollHeight, clientHeight } = mainContainerRef.current;
+                const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
+
+                // 스크롤이 아래에 도달한 경우, 수신 확인 API 호출
+                if (isAtBottom && messageList.length > 0) {
+                    const lastReadChatNo = messageList[messageList.length - 1].chat_no;
+                    console.log('markMessagesAsRead 실행!');
+                    // 수신 확인 API 호출
+                    markMessagesAsRead(lastReadChatNo);
+                    console.log('markMessagesAsRead 실행 완료!');
+                }
+            }
+        };
+
+        if (mainContainerRef.current) {
+            mainContainerRef.current.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (mainContainerRef.current) {
+                mainContainerRef.current.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, [messageList]);
+
+    // 메시지 수신 확인 처리 함수
+    const markMessagesAsRead = async (lastReadChatNo) => {
+        console.log('markMessagesAsRead 실행 중, lastReadChatNo:', lastReadChatNo);
+
+        try {
+            // 서버에 메시지 수신 확인 API 요청
+            await api.markMessagesAsRead(emp.chat_room_no, userData.emp_no, lastReadChatNo);
+
+            // 로컬 상태 업데이트 (서버 업데이트 후 최신 정보 받기)
+            setMessageList(prev => prev.map(msg => msg.chat_no <= lastReadChatNo ? { ...msg, is_read: true } : msg));
+        } catch (error) {
+            console.error('Failed to mark messages as read:', error);
+        }
+    };
 
     return (
         <>
@@ -522,7 +487,7 @@ function Chatting() {
                             <div className={styles.header_profile_container}>
                                 <div className={styles.header_profile_info}>
                                     <div className={styles.header_profile_dept}>
-                                        <p>{emp?.emp_dept_name}</p>
+                                        <p>{emp?.emp_dept_name} {emp?.dept_team_name}</p>
                                     </div>
                                     <div className={styles.header_profile_name}>
                                         <p>{emp?.emp_name} {emp?.emp_posi_name}</p>

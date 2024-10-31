@@ -153,6 +153,7 @@ function CompanyUserChatRoom() {
 
             // 해당 room_no의 채팅방 정보 찾기
             const room = chatRoomList.find(room => room.room_no === room_no);
+            console.log('room:', room);
 
             if (!room) return;
 
@@ -166,11 +167,39 @@ function CompanyUserChatRoom() {
                 const currentUser = user;
                 console.log('currentUser:', currentUser);
 
+                console.log("orgChartData:", orgChartData);
+
+                // orgChartData에서 emp_no에 맞는 직원 정보를 찾는 함수
+                const findParticipantByEmpNo = (emp_no) => {
+                    for (const dept of orgChartData) {
+                        for (const teamKey in dept.teams) {
+                            const team = dept.teams[teamKey];
+                            const participant = team.find(emp => emp.emp_no === emp_no);
+                            if (participant) return {
+                                emp_no: participant.emp_no,
+                                emp_name: participant.emp_name,
+                                emp_profile: participant.emp_profile || 'https://via.placeholder.com/60',
+                                emp_dept_name: dept.deptName,
+                                dept_team_name: teamKey,
+                                emp_posi_name: participant.posi_name || ''
+                            };
+                        }
+                    }
+                    return null; // 해당 emp_no를 찾지 못한 경우
+                };
+
+                // 참가자의 상세 정보를 얻기 위해 orgChartData에서 매핑
+                const detailedParticipants = room.participantNos.map(emp_no => {
+                    const participant = findParticipantByEmpNo(emp_no);
+                    console.log('participant:', participant);
+                    return participant || { emp_no, emp_name: 'Unknown', emp_profile: 'https://via.placeholder.com/60', emp_dept_name: '', dept_team_name: '', emp_posi_name: '' };
+                });
+                console.log('detailedParticipants:', detailedParticipants);
+
                 // 채팅창으로 넘길 객체
                 const chatData = {
                     room_no,
-                    participantNos: room.participantNos || [],
-                    participants: room.participantNames || '',
+                    participants: detailedParticipants, // 상세 정보가 포함된 참가자 목록
                     messages: chatMessages[room_no] || [],
                     currentUser: currentUser || {}, // currentUser가 없을 경우 빈 객체로 처리
                 };
@@ -228,15 +257,25 @@ function CompanyUserChatRoom() {
                     // 조직도에서 모든 직원 리스트 추출
                     const allEmployees = getAllEmployees(orgChartData);
 
-                    // 각 채팅방의 room_participants를 processedEmpList 메서드로 처리하여 참가자의 숫자형 데이터를 이름인 문자열로 생성
                     const processedChatRooms = chatRooms.map(room => {
                         // 로그인 사용자를 제외한 다른 참가자들만 각 채팅방 목록 이름에 저장
                         // filter로 사용자를 제외하고 남은 participant를 find 한다
                         const otherParticipants = room.room_participants.filter(participant => String(participant) !== String(user.emp_no)).map(participant => {
-                            // paricipant를 processedEmpList 메서드로 문자열 생성
                             const emp = allEmployees.find(e => e.emp_no === Number(participant));
-                            // 해당 내용이 있다면 저장하고 없으면 ''로 저장
-                            return emp ? { emp_no: emp.emp_no, emp_name: emp.emp_name } : { emp_no: participant, emp_name: '' };
+                            // 필요한 정보가 있는지 확인하고 추가
+                            return emp ? {
+                                emp_no: emp.emp_no,
+                                emp_name: emp.emp_name,
+                                emp_dept_name: emp.dept_name || '',
+                                dept_team_name: emp.dept_team_name || '',
+                                emp_posi_name: emp.posi_name || ''
+                            } : {
+                                emp_no: participant,
+                                emp_name: '',
+                                emp_dept_name: '',
+                                dept_team_name: '',
+                                emp_posi_name: ''
+                            };
                         });
 
                         // 참가자 emp_no만 추출하여 배열로 저장
@@ -249,7 +288,8 @@ function CompanyUserChatRoom() {
                         return {
                             ...room,
                             participantNos,     // 참가자 emp_no 배열
-                            participantNames    // 참가자 이름 문자열
+                            participantNames,    // 참가자 이름 문자열
+                            participantsInfo: otherParticipants
                         };
                     });
                     console.log("processedChatRooms:", processedChatRooms);
@@ -306,7 +346,17 @@ function CompanyUserChatRoom() {
                         // 따라서 채팅 날짜가 없다면 채팅 목록에서 가장 아래로 정렬된다
                         const dateA = a.chat_date_recent ? new Date(a.chat_date_recent) : new Date(0);
                         const dateB = b.chat_date_recent ? new Date(b.chat_date_recent) : new Date(0);
-                        return dateB - dateA;
+
+
+                        // 날짜가 다르면 chat_date_recent로 비교
+                        if (dateA.getTime() !== dateB.getTime()) {
+                            return dateB - dateA;
+                        }
+
+                        // 날짜가 같다면 chat_no로 내림차순 정렬
+                        const chatNoA = a.chat_no || 0;  // chat_no가 없을 경우 기본값으로 0을 설정
+                        const chatNoB = b.chat_no || 0;
+                        return chatNoB - chatNoA;
                     })
 
                     // 정렬된 목록으로 업데이트
