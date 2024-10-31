@@ -225,4 +225,99 @@ public class EmailController {
 					.body(Collections.singletonMap("message", "이메일 목록을 불러오는 중 오류가 발생했습니다: " + e.getMessage()));
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	@GetMapping("/{emailId}")
+	public ResponseEntity<?> getEmailById(@PathVariable Long emailId, Principal principal) {
+		try {
+			// 현재 로그인한 사용자 확인 
+			String currentUserEmpCode = principal.getName();
+			EmployeeEntity currentUser = employeeService.findByEmpCode(currentUserEmpCode);
+			if (currentUser == null) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 정보를 찾을 수 없습니다.");
+			}
+
+			// 이메일 조회
+			Optional<Emailmessage> optionalEmail = emailmessageRepository.findById(emailId);
+			if (!optionalEmail.isPresent()) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("이메일을 찾을 수 없습니다.");
+			}
+
+			Emailmessage email = optionalEmail.get();
+
+			// 권한 체크: 수신자나 참조자, 발신자인 경우에만 접근 가능
+			boolean isAuthorized = email.getRecipient().getEmpNo().equals(currentUser.getEmpNo())
+					|| (email.getCc() != null && email.getCc().getEmpNo().equals(currentUser.getEmpNo()))
+					|| email.getWriter().getEmpNo().equals(currentUser.getEmpNo());
+
+			if (!isAuthorized) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이메일에 접근할 권한이 없습니다.");
+			}
+
+			// Emailmessage 엔티티를 EmailDTO로 변환
+			EmailDTO dto = new EmailDTO();
+			dto.setEmailNo(email.getEmailNo());
+			dto.setTitle(email.getTitle());
+			dto.setContent(email.getContent());
+			dto.setStatus(email.getStatus());
+			dto.setSendDate(email.getSendDate().toString());
+
+			// 발신자 정보 설정 
+			EmployeeEntity senderEntity = email.getWriter();
+			dto.setWriterEmail(senderEntity.getEmpEmail());
+			dto.setWriterName(senderEntity.getEmpName());
+
+			Long senderCompanyNo = senderEntity.getEmpCompNo();
+			Long senderDeptNo = senderEntity.getEmpDeptNo();
+
+			String senderCompanyName = "";
+			String senderDeptName = "";
+
+			CompanyEntity senderCompany = companyService.findByCompNo(senderCompanyNo);
+			if (senderCompany != null) {
+				senderCompanyName = senderCompany.getCompName();
+			}
+
+			DepartmentEntity senderDepartment = departmentService.findByDeptNo(senderDeptNo);
+			if (senderDepartment != null) {
+				senderDeptName = senderDepartment.getDeptName();
+			}
+
+			// 표시할 정보 설정
+			String writerDisplayInfo;
+
+			Long recipientCompanyNo = currentUser.getEmpCompNo();
+
+			if (senderCompanyNo != null && recipientCompanyNo != null) {
+				if (senderCompanyNo.equals(recipientCompanyNo)) {
+					// 같은 회사인 경우 부서명 표시
+					writerDisplayInfo = "[" + senderDeptName + "] " + senderEntity.getEmpName();
+				} else {
+					// 다른 회사인 경우 회사명 표시
+					writerDisplayInfo = "[" + senderCompanyName + "] " + senderEntity.getEmpName();
+				}
+			} else {
+				// 회사 정보가 없는 경우 그냥 이름만 표시
+				writerDisplayInfo = senderEntity.getEmpName();
+			}
+
+			dto.setWriterDisplayInfo(writerDisplayInfo);
+
+			// 수신자와 참조자 이메일 설정
+			dto.setRecipientEmail(email.getRecipient().getEmpEmail());
+			if (email.getCc() != null) {
+				dto.setCcEmail(email.getCc().getEmpEmail());
+			}
+
+			
+
+			return ResponseEntity.ok(dto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(Collections.singletonMap("message", "이메일을 불러오는 중 오류가 발생했습니다: " + e.getMessage()));
+		}
+	}
+>>>>>>> ocy
 }
