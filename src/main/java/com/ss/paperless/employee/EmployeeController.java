@@ -64,15 +64,14 @@ public class EmployeeController {
         Map<Object, List<EmployeeDTO>> departmentGroupedMenu = menulist.stream()
                 .collect(Collectors.groupingBy(EmployeeDTO::getDept_name));
         System.out.println("departmentGroupedMenu : " + departmentGroupedMenu);
-
-        for (EmployeeDTO emp : menulist) {
-            Long empNo = emp.getEmp_no();
-            Long departNo = emp.getEmp_dept_no();       // 부서코드
-            String departName = emp.getDept_name();     // 부서 이름
-            String team = emp.getDept_team_name();      // 팀 이름
+        
+        // 데이터 확인
+        if(departmentGroupedMenu != null) {
+            System.out.println("departmentGroupedMenu : " + departmentGroupedMenu);
+        } else {
+            System.out.println("departmentGroupedMenu : null");
         }
 
-        System.out.println("departmentGroupedMenu : " + departmentGroupedMenu);
         return departmentGroupedMenu;
     }
 
