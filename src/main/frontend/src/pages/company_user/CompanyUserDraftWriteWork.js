@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Table } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+
 import styles from '../../styles/company/company_draft_write_work.module.css';
 import DraftTitleInput from '../company_user/draftWriteComponent/DraftTitleInput';
 import DraftDocInfoTable from '../company_user/draftWriteComponent/DraftDocInfoTable';
@@ -34,6 +37,7 @@ const CompanyUserDraftWriteWork = () => {
 
   const userData = useFetchData(token);
   console.log("userData : " + userData);
+  console.log("userData:", JSON.stringify(userData, null, 2));
 
   useEffect(() => {
     if (userData === null) {
@@ -60,7 +64,10 @@ const CompanyUserDraftWriteWork = () => {
   const handleCloseCancelModal = () => setShowCancelModal(false);
 
   const handleApprLineModal = () => setShowModal(true); // 결재선 모달 열기
-  const handleModalClose = () => setShowModal(false); // 결재선 모달 닫기
+  const handleModalClose = () => {
+    setShowModal(false); // 결재선 모달 닫기
+    console.log("CompanyUserDraftWriteWork - handleModalClose");
+  }
 
   const handleSaveAsDraftAndRedirect = () => {
     setIsSaved(true);
@@ -126,7 +133,9 @@ const CompanyUserDraftWriteWork = () => {
           ) : (
             <p>Loading user information...</p> // 로딩 중 표시
           )}
-          {userData ? (<ApprovalLineTable handleApprLineModal={handleApprLineModal} reporter={userData.emp_name} />): (
+          {userData ? (
+            <ApprovalLineTable handleApprLineModal={handleApprLineModal} reporter={userData.emp_name} />
+          ) : (
             <p>Loading user information...</p> // 로딩 중 표시
           )}
         </div>
@@ -148,7 +157,7 @@ const CompanyUserDraftWriteWork = () => {
               <td colSpan="2" className={`${styles.docKeyFile} ${styles.centerText}`}>첨부 파일</td>
             </tr>
             <tr>
-              <td colSpan="2" className={styles.centerContent}>
+              <td colSpan={5} className={styles.centerContent}>
                 <FileUploader files={files} setFiles={setFiles} />
               </td>
             </tr>
@@ -169,7 +178,9 @@ const CompanyUserDraftWriteWork = () => {
       />
 
       {/* 결재선 지정 모달 */}
-      <ApprovalLine showModal={showModal} handleModalClose={handleModalClose} />
+      {showModal && (
+        <ApprovalLine showModal={showModal} handleModalClose={handleModalClose} />
+      )}
 
       <div className={styles.btnBox}>
         <Button className={styles.cancelBtn} onClick={handleShowCancelModal}>

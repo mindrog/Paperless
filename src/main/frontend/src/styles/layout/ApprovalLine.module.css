@@ -52,6 +52,16 @@
 
 .selectedPeopleTable {
   text-align: center;
+  height: auto;
+  width: 100%;
+  background-color: #7289CF;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.selectedPeopleTable tbody tr {
+  height: 40px; /* 각 행의 높이를 40px로 고정 */
+  vertical-align: middle;
 }
 
 .headquarters
@@ -70,8 +80,16 @@
 }
 
 .apprTableContainer {
-  /* background-color:aquamarine ; */
+  background-color:#dfe7ff ;
+  text-align: center;
   width: 500px;
   height: 300px;
   margin-left: 15px;
+  overflow-y: auto;
+}
+
+.selectedRow {
+  height: 30px;
+  width: 100%;
+  text-align: center;
 }
