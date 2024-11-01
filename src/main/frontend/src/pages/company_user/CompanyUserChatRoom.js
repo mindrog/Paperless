@@ -6,6 +6,9 @@ import { Button, Modal } from 'react-bootstrap';
 import { format, isToday, isYesterday } from 'date-fns';
 import { useSelector } from 'react-redux';
 import useFetchUserInfo from '../../componentFetch/useFetchUserInfo';
+import useWebSocket from 'react-use-websocket';
+
+const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
 function CompanyUserChatRoom() {
     // Redux에서 사용자 정보 가져오기
@@ -496,7 +499,7 @@ function CompanyUserChatRoom() {
                                                         <td><p className={styles.infoTitle}>소속 부서</p></td>
                                                     </tr>
                                                     <tr>
-                                                        <td><p className={styles.infoValue}>{profileInfo.emp_dept_name} {profileInfo.emp_team_name}</p></td>
+                                                        <td><p className={styles.infoValue}>{profileInfo.dept_name} {profileInfo.dept_team_name}</p></td>
                                                     </tr>
                                                     <tr>
                                                         <td><p className={styles.infoTitle}>내선 번호</p></td>
