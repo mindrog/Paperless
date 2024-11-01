@@ -344,7 +344,12 @@ function CompanyUserChatRoom() {
                             // chatDataArray 배열의 첫 번째 요소로 latest가 설정되어 순회 중인 message 값과 비교한다
                             // 따라서 reduce 함수의 콜백은 첫 번째 요소와 두 번쨰 요소를 비교하면서 시작되고, 최신의 메시지가 latest가 된다.
                             const mostRecentMessage = chatDataArray.reduce((latest, message) => {
-                                return new Date(message.chat_date) > new Date(latest.chat_date) ? message : latest;
+                                if (new Date(message.chat_date) > new Date(latest.chat_date)) {
+                                    return message;
+                                } else if (new Date(message.chat_date).getTime() === new Date(latest.chat_date).getTime()) {
+                                    return message.chat_no > latest.chat_no ? message : latest;
+                                }
+                                return latest;
                             }, chatDataArray[0] || {});
 
                             // mostRecentMessage를 사용하여 필요한 정보 저장
@@ -352,6 +357,7 @@ function CompanyUserChatRoom() {
                                 room_no: room.room_no,
                                 chat_content_recent: mostRecentMessage.chat_content || '',
                                 chat_date_recent: mostRecentMessage.chat_date || '',
+                                chat_no: mostRecentMessage.chat_no || 0,
                                 unread: mostRecentMessage.chat_count || 0
                             };
                         })
@@ -367,6 +373,7 @@ function CompanyUserChatRoom() {
                         acc[roomData.room_no] = {
                             chat_content_recent: roomData.chat_content_recent,
                             chat_date_recent: roomData.chat_date_recent,
+                            chat_no: roomData.chat_no,
                             unread: roomData.unread
                         };
                         return acc;
@@ -374,7 +381,7 @@ function CompanyUserChatRoom() {
 
                     console.log('8');
 
-                    // 채팅방 목록을 최근 메시지 전송 시간 기준으로 정렬 (최신 메시지가 위로 오도록 내림차순)
+                    // 채팅방 목록을 chat_date_recent 기준으로 정렬하고, 날짜가 같다면 chat_no로 내림차순 정렬
                     const sortedChatRooms = processedChatRooms.map(room => {
                         return {
                             ...room,
@@ -392,7 +399,7 @@ function CompanyUserChatRoom() {
                         }
 
                         // 날짜가 같다면 chat_no로 내림차순 정렬
-                        const chatNoA = a.chat_no || 0;  // chat_no가 없을 경우 기본값으로 0을 설정
+                        const chatNoA = a.chat_no || 0;
                         const chatNoB = b.chat_no || 0;
                         return chatNoB - chatNoA;
                     })
