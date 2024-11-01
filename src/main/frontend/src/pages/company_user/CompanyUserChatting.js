@@ -37,6 +37,7 @@ function Chatting({ chatData, onSendMessage }) {
 
     // 이모지 토글 상태
     const [isEmojiToggle, setIsEmojiToggle] = useState(false);
+    
 
     // emojiRef 참조 변수
     const emojiRef = useRef(null);
