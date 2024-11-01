@@ -5,15 +5,14 @@ import { Button } from 'react-bootstrap';
 import EmojiPicker from 'emoji-picker-react';
 import { format, isSameDay, isValid, parse } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
 import api from '../layout/api';
 import { useSelector } from 'react-redux';
 import DOMPurify from 'dompurify';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
-// .env 파일
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
-function Chatting() {
+function Chatting({ chatData, onSendMessage }) {
     // Redux에서 사용자 정보 가져오기
     const userData = useSelector((state) => state.user.data);
 
@@ -56,6 +55,9 @@ function Chatting() {
 
     // 현재 검색 결과의 인덱스
     const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
+
+    // WebSocket hook
+    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
 
     // 검색 초기화 버튼
     const clearSearchTerm = () => {
@@ -129,34 +131,6 @@ function Chatting() {
         return message.trim() === '';
     }, [message]);
 
-    // 보낸 메시지 관리
-    // sendMessage: WebSocket 서버로 메시지를 보내는 함수
-    //  클라이언트가 서버에 데이터를 전송할 때 사용
-    // lastMessage: 서버에서 마지막으로 수신한 메시지
-    //  서버에서 메시지가 올 때마다 업데이트
-    // readyState: WebSocket의 연결 상태를 나타내는 함수
-    //  총 4가지로 0: 연결 시도 중, 1: 연결, 2: 연결 종료 시도 중, 3: 연결 종료
-    // WebSocket 연결 설정
-    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
-        shouldReconnect: (closeEvent) => {
-            // 연결 해제 이벤트를 처리하고, 특정 조건에서만 재연결 허용
-            if (closeEvent.code !== 1000) { // 정상적인 종료 코드(1000)가 아닐 때만 재연결 시도
-                console.warn('WebSocket 비정상 종료, 재연결 시도...');
-                return true;
-            }
-            console.log('WebSocket 연결이 정상적으로 종료되었습니다.');
-            return false;
-        },
-        onOpen: () => {
-            console.log('WebSocket 연결 성공!');
-        },
-        onClose: (event) => {
-            console.warn('WebSocket 연결 해제됨:', event.code, event.reason);
-        },
-        onError: (event) => {
-            console.error('WebSocket 에러:', event);
-        },
-    }, socketUrl !== null); // 마지막 인자로 socketUrl이 null이 아닌 경우에만 WebSocket을 시도
 
     // emp 데이터가 준비되었을 때 WebSocket URL 설정
     useEffect(() => {
@@ -247,8 +221,8 @@ function Chatting() {
 
     // 메시지 전송 버튼 메서드
     const handlerSendMessage = async () => {
-        console.log('message:', message);
-        console.log('emp:', emp);
+        console.log('Sending message:', message);
+        console.log('Recipient:', emp);
         if (!message.trim() || !emp) {
             console.warn('메시지 전송 조건이 충족되지 않았습니다.');
             return;
@@ -260,7 +234,9 @@ function Chatting() {
         console.log('currentTime:', currentTime);
         const chatRecipientNo = emp.emp_no;
         const chatRecipientCount = Array.isArray(emp) ? emp.length : 1;
-        console.log('chatRecipientCount:', chatRecipientCount);
+        console.log('Last Chat Number:', lastChatNo);
+        console.log('Current Time:', currentTime);
+        console.log('Recipient Count:', chatRecipientCount);
         if (Array.isArray(emp)) {
             console.warn('그룹 채팅입니다.');
             return;
@@ -324,12 +300,12 @@ function Chatting() {
                 console.log('messageList:', messageList);
                 console.log('receivedMessage.chat_sender:', receivedMessage.chat_sender);
                 console.log('receivedMessage.chat_date:', receivedMessage.chat_date);
-                
+
                 if (receivedMessage.action !== 'sendMessage') {
                     console.log('receivedMessage의 action 필드가 sendMessage가 아니다!');
                     return;
                 }
-                
+
                 // 서버로부터 내가 보낸 메시지를 화면에 띄우지 않도록 설정
                 if (receivedMessage.chat_sender === user.emp_no) {
                     console.log('내가 보낸 메시지');
