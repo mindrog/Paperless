@@ -17,4 +17,8 @@ public class ReportService {
     public EmployeeEntity getUserInfo(String empCode) {
         return employeeRepository.findByEmpCode(empCode);
     }
+
+    public int AddSaveAsDraftReportData(ReportDTO report) {
+        return reportMapper.AddSaveAsDraftReportData(report);
+    }
 }
