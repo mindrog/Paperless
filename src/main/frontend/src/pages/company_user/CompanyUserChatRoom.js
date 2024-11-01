@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import useFetchUserInfo from '../../componentFetch/useFetchUserInfo';
 import useWebSocket from 'react-use-websocket';
 
+// .env 파일
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
 function CompanyUserChatRoom() {
@@ -50,6 +51,47 @@ function CompanyUserChatRoom() {
     // 새 창이 열릴 때마다 위치 조정해주는 변수
     const [offsetDown, setOffsetDown] = useState(0);
     const [offsetRight, setOffsetRight] = useState(0);
+
+    // 보낸 메시지 관리
+    // sendMessage: WebSocket 서버로 메시지를 보내는 함수
+    //  클라이언트가 서버에 데이터를 전송할 때 사용
+    // lastMessage: 서버에서 마지막으로 수신한 메시지
+    //  서버에서 메시지가 올 때마다 업데이트
+    // readyState: WebSocket의 연결 상태를 나타내는 함수
+    //  총 4가지로 0: 연결 시도 중, 1: 연결, 2: 연결 종료 시도 중, 3: 연결 종료
+    // WebSocket 연결 설정
+    const { sendMessage, lastMessage, readyState } = useWebSocket(WEBSOCKET_URL, {
+        shouldReconnect: (closeEvent) => {
+            // 연결 해제 이벤트를 처리하고, 특정 조건에서만 재연결 허용
+            if (closeEvent.code !== 1000) { // 정상적인 종료 코드(1000)가 아닐 때만 재연결 시도
+                console.warn('WebSocket 비정상 종료, 재연결 시도...');
+                return true;
+            }
+            console.log('WebSocket 연결이 정상적으로 종료되었습니다.');
+            return false;
+        },
+        onOpen: () => {
+            console.log('WebSocket 연결 성공!');
+        },
+        onClose: (event) => {
+            console.warn('WebSocket 연결 해제됨:', event.code, event.reason);
+        },
+        onError: (event) => {
+            console.error('WebSocket 에러:', event);
+        },
+    });
+
+    useEffect(() => {
+        if (lastMessage && lastMessage.data) {
+            const receivedMessage = JSON.parse(lastMessage.data);
+            const { chat_room_no, chat_content, chat_date, chat_count } = receivedMessage;
+            setRecentMessages(prevMessages => ({
+                ...prevMessages,
+                [chat_room_no]: { chat_content_recent: chat_content, chat_date_recent: chat_date, unread: chat_count }
+            }));
+        }
+    }, [lastMessage]);
+
 
     // 모달창 상태 메서드 (Close)
     const closeProfileModal = () => {
@@ -237,8 +279,6 @@ function CompanyUserChatRoom() {
         }
     };
 
-
-
     // 페이지가 로드될 때 모든 채팅방 목록을 불러오는 메서드
     useEffect(() => {
         const fetchChatRooms = async () => {
@@ -257,45 +297,22 @@ function CompanyUserChatRoom() {
 
                 // 서버 응답이 배열인지 확인하고, 배열이 아니면 응답의 특정 키에서 배열을 추출
                 if (Array.isArray(chatRooms)) {
-                    // 조직도에서 모든 직원 리스트 추출
-                    const allEmployees = getAllEmployees(orgChartData);
-
                     const processedChatRooms = chatRooms.map(room => {
                         // 로그인 사용자를 제외한 다른 참가자들만 각 채팅방 목록 이름에 저장
                         // filter로 사용자를 제외하고 남은 participant를 find 한다
-                        const otherParticipants = room.room_participants.filter(participant => String(participant) !== String(user.emp_no)).map(participant => {
-                            const emp = allEmployees.find(e => e.emp_no === Number(participant));
-                            // 필요한 정보가 있는지 확인하고 추가
+                        const otherParticipants = room.room_participants.filter(participant => participant !== user.emp_no).map(participant => {
+                            const emp = findUserInOrgChart(participant, orgChartData);
                             return emp ? {
                                 emp_no: emp.emp_no,
                                 emp_name: emp.emp_name,
                                 emp_dept_name: emp.dept_name || '',
                                 dept_team_name: emp.dept_team_name || '',
                                 emp_posi_name: emp.posi_name || ''
-                            } : {
-                                emp_no: participant,
-                                emp_name: '',
-                                emp_dept_name: '',
-                                dept_team_name: '',
-                                emp_posi_name: ''
-                            };
+                            } : { emp_no: participant, emp_name: '', emp_dept_name: '', dept_team_name: '', emp_posi_name: '' };
                         });
-
-                        // 참가자 emp_no만 추출하여 배열로 저장
-                        const participantNos = otherParticipants.map(part => part.emp_no);
-
-                        // 참가자 이름만 추출하여 ,로 연결
                         const participantNames = otherParticipants.map(part => part.emp_name).join(', ');
-
-                        // 각 room에 participantNames와 participantNos 추가
-                        return {
-                            ...room,
-                            participantNos,     // 참가자 emp_no 배열
-                            participantNames,    // 참가자 이름 문자열
-                            participantsInfo: otherParticipants
-                        };
+                        return { ...room, participantNames, participantNos: otherParticipants.map(part => part.emp_no) };
                     });
-                    console.log("processedChatRooms:", processedChatRooms);
 
                     // 2. 불러온 채팅방 목록인 processedChatRooms를 room_no로 각 채팅방의 모든 메시지들을 불러와 저장
                     const chatMessages = {};
@@ -350,7 +367,6 @@ function CompanyUserChatRoom() {
                         const dateA = a.chat_date_recent ? new Date(a.chat_date_recent) : new Date(0);
                         const dateB = b.chat_date_recent ? new Date(b.chat_date_recent) : new Date(0);
 
-
                         // 날짜가 다르면 chat_date_recent로 비교
                         if (dateA.getTime() !== dateB.getTime()) {
                             return dateB - dateA;
@@ -384,9 +400,9 @@ function CompanyUserChatRoom() {
     }, [user]);
 
     // 상태 변경 후의 값을 추적하는 useEffect
-    useEffect(() => {
-        console.log("Updated chatRoomList:", chatRoomList);
-    }, [chatRoomList]);
+    // useEffect(() => {
+    //     console.log("Updated chatRoomList:", chatRoomList);
+    // }, [chatRoomList]);
 
     // OrgChart에서 사람 클릭 시 호출 함수
     const handleMemberClick = async (member) => {
