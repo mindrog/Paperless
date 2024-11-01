@@ -283,20 +283,28 @@ function CompanyUserChatRoom() {
     useEffect(() => {
         const fetchChatRooms = async () => {
             try {
+                console.log('1');
                 // user가 null인 경우 API 요청을 중지
                 if (!user || !user.emp_no) {
                     console.error("User is not set yet or emp_no is missing.");
                     return;
                 }
+                console.log('2');
 
                 // 1. 사용자 emp_no로 모든 채팅방 목록 가져오기 (사용자가 참여하고 있는 채팅방 목록)
                 const chatRoomResponse = await api.getChatRoomsByParticipant(user.emp_no);
+                console.log('3');
+
                 console.log('chatRoomResponse:', chatRoomResponse);
                 // 서버에서 받아온 채팅방 데이터
                 const chatRooms = chatRoomResponse.data;
+                console.log('4');
+
 
                 // 서버 응답이 배열인지 확인하고, 배열이 아니면 응답의 특정 키에서 배열을 추출
                 if (Array.isArray(chatRooms)) {
+                    console.log('5');
+
                     const processedChatRooms = chatRooms.map(room => {
                         // 로그인 사용자를 제외한 다른 참가자들만 각 채팅방 목록 이름에 저장
                         // filter로 사용자를 제외하고 남은 participant를 find 한다
@@ -313,13 +321,20 @@ function CompanyUserChatRoom() {
                         const participantNames = otherParticipants.map(part => part.emp_name).join(', ');
                         return { ...room, participantNames, participantNos: otherParticipants.map(part => part.emp_no) };
                     });
+                    console.log('processedChatRooms:', processedChatRooms);
+                    console.log('6');
+
 
                     // 2. 불러온 채팅방 목록인 processedChatRooms를 room_no로 각 채팅방의 모든 메시지들을 불러와 저장
                     const chatMessages = {};
                     const allRecentMessages = await Promise.all(
                         processedChatRooms.map(async (room) => {
                             // room_no 마다 각 채팅방의 모든 메시지를 가져오기
+                            console.log('room.room_no:', room.room_no);
                             const chatResponse = await api.getMostRecentMessageByRoomNo(room.room_no);
+                            console.log('chatResponse:', chatResponse);
+                            console.log('chatResponse.data:', chatResponse.data);
+
                             const chatDataArray = chatResponse.data || [];
 
                             // 각 채팅방들에 대한 메시지를 모두 저장
@@ -341,6 +356,8 @@ function CompanyUserChatRoom() {
                             };
                         })
                     );
+                    console.log('7');
+
 
                     // 3. 가장 최근 메시지 정보들을 recentMessages 객체로 저장
                     // allRecentMessages 배열에 각각의 room_no가 저장되어있으므로 room_no를 키로 하여 저장
@@ -354,6 +371,8 @@ function CompanyUserChatRoom() {
                         };
                         return acc;
                     }, {});
+
+                    console.log('8');
 
                     // 채팅방 목록을 최근 메시지 전송 시간 기준으로 정렬 (최신 메시지가 위로 오도록 내림차순)
                     const sortedChatRooms = processedChatRooms.map(room => {
@@ -377,12 +396,16 @@ function CompanyUserChatRoom() {
                         const chatNoB = b.chat_no || 0;
                         return chatNoB - chatNoA;
                     })
+                    console.log('9');
+
 
                     // 정렬된 목록으로 업데이트
                     setChatRoomList(sortedChatRooms);
+                    console.log('10');
 
                     // 각 채팅방들에 대한 메시지 업데이트
                     setChatMessages(chatMessages);
+                    console.log('11');
 
                     // 최근 메시지 업데이트
                     // recentMessages에는 room_no로 구분되며 가장 최근 메시지(chat_content_recent), 가장 최근 전송 시간(chat_date_recent), 읽지 않은 수(unread)의 데이터를 가지고 있다
