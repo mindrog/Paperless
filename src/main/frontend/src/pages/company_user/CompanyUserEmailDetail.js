@@ -169,12 +169,14 @@ function CompanyUserEmailDetail() {
           <div className={styles['attachment-section']}>
             <p>
               <strong>첨부파일:</strong>{' '}
-              <span
-                className={styles['attachment-link']}
-                // onClick={handleAttachmentClick}
-              >
-                {email.attachmentName}
-              </span>
+              {email.attachments.map((attachment, index) => (
+                <span key={index}>
+                  <a href={attachment.fileUrl} target="_blank" rel="noopener noreferrer">
+                    {attachment.fileName}
+                  </a>
+                  {index < email.attachments.length - 1 && ', '}
+                </span>
+              ))}
             </p>
             <hr />
           </div>
