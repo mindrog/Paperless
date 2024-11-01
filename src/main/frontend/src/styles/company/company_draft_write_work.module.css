@@ -111,6 +111,21 @@ body {
   width: 450px;
 }
 
+.apprType {
+  font-weight: 100;
+  color: #7E7E7F !important;
+  font-size: 13px;
+  position: absolute; /* 특정 위치 고정을 위해 절대 위치 지정 */
+  top: 30; /* 상단에 위치할 경우 top을 0으로 설정 */
+  right: 37.5px; /* 오른쪽 여백 설정 */
+}
+
+.apprTypePosi {
+  font-weight: 100;
+  color: #7E7E7F !important;
+  font-size: small;
+}
+
 .inputForm:active, .inputForm:focus {
   outline: none !important;
   box-shadow: none;

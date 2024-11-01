@@ -8,4 +8,5 @@ import java.util.Map;
 @Mapper
 public interface ReportMapper {
 
+    int AddSaveAsDraftReportData(ReportDTO report);
 }
