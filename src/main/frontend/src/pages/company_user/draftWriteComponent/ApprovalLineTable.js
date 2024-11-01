@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Button } from 'react-bootstrap';
 import styles from '../../../styles/company/company_draft_write_work.module.css';
 
-const ApprovalLineTable = ({ handleApprLineModal, reporter, approvers }) => {
+const ApprovalLineTable = ({ handleApprLineModal, reporter, approvers, posiName }) => {
   // approvers 데이터 콘솔 출력
   console.log("Approvers Data:", approvers);
 
@@ -20,17 +20,23 @@ const ApprovalLineTable = ({ handleApprLineModal, reporter, approvers }) => {
 
         {/* 상신자 및 결재자 정보 */}
         <tr>
-          <td className={styles.docValueAppr}>{reporter}</td>
+          <td className={styles.docValueAppr}>
+            <div>
+            {posiName && <div className={styles.apprTypePosi}>{posiName}</div>}
+            {reporter}
+            </div>
+          </td>
           {approvers.map((approver, index) => (
             <td key={index} className={styles.docValueAppr}>
-              <div>
+              <div style={{ position: 'relative' }}>
+                {approver.posi_name && <div className={styles.apprTypePosi}>{approver.posi_name}</div>}
                 {approver.type === 'person' && approver.emp_name}
                 {approver.type === 'department' && (
                   <>
                     {approver.teamName || approver.deptName}
                   </>
                 )}
-                {approver.approvalType && <div>({approver.approvalType})</div>}
+                {approver.approvalType && <div className={styles.apprType}>({approver.approvalType})</div>}
               </div>
             </td>
           ))}
