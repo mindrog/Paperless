@@ -6,8 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Pagination from '../component/Pagination';
 import ComposeButton from '../component/ComposeButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import { faEnvelopeOpen } from '@fortawesome/free-regular-svg-icons';
+import { faEnvelope, faEnvelopeOpen, faPaperclip } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 
 function CompanyUserEmail() {
@@ -22,8 +21,11 @@ function CompanyUserEmail() {
     const emailsPerPage = 10;
     const [totalPages, setTotalPages] = useState(1);
 
-    // 검색 상태 및 핸들러 추가
+    // 검색 입력 상태
+    const [searchInput, setSearchInput] = useState('');
+    // 실제 검색에 사용되는 기본 검색 상태
     const [searchTerm, setSearchTerm] = useState('');
+
     const [showDetailSearch, setShowDetailSearch] = useState(false);
 
     const location = useLocation();
@@ -32,7 +34,17 @@ function CompanyUserEmail() {
         console.log('Current pathname:', location.pathname);
     }, [location.pathname]);
 
-    // 상세 검색 상태
+    // 상세 검색 입력 상태
+    const [detailSearchInput, setDetailSearchInput] = useState({
+        sender: '',
+        recipient: '',
+        content: '',
+        periodOption: '전체 기간',
+        startDate: '',
+        endDate: '',
+        hasAttachment: false,
+    });
+    // 실제 검색에 사용되는 상세 검색 상태
     const [detailSearch, setDetailSearch] = useState({
         sender: '',
         recipient: '',
@@ -64,10 +76,12 @@ function CompanyUserEmail() {
 
         const queryParams = new URLSearchParams();
 
+        // 기본 검색어가 있을 경우 추가
         if (searchTerm) {
             queryParams.append('subject', searchTerm);
         }
 
+        // 상세 검색 필터가 있을 경우 추가
         if (detailSearch.sender) {
             queryParams.append('sender', detailSearch.sender);
         }
@@ -112,13 +126,22 @@ function CompanyUserEmail() {
                 console.error('이메일 데이터를 가져오는 중 오류 발생:', error);
                 alert('이메일 데이터를 가져오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
             });
-    }, [currentPage, searchTerm, detailSearch, recipientId]);
+    }, [currentPage, searchTerm, detailSearch, recipientId, navigate]);
 
-    // 검색 버튼 클릭 핸들러
-    const handleSearch = () => {
+    // 기본 검색 버튼 클릭 핸들러
+    const handleBasicSearch = () => {
         setCurrentPage(1);
         setSelectAll(false);
         setSelectedEmails([]);
+        setSearchTerm(searchInput); // 기본 검색어 설정
+    };
+
+    // 상세 검색 버튼 클릭 핸들러
+    const handleDetailSearch = () => {
+        setCurrentPage(1);
+        setSelectAll(false);
+        setSelectedEmails([]);
+        setDetailSearch(detailSearchInput); // 상세 검색 필터 설정
     };
 
     // 개별 이메일 선택/해제
@@ -142,7 +165,7 @@ function CompanyUserEmail() {
 
     // 이메일 클릭 시 상세 페이지로 이동
     const handleEmailClick = (email) => {
-        navigate('/Company/user/email/detail', {state: { emailNo: email.emailNo }});
+        navigate('/Company/user/email/detail', { state: { emailNo: email.emailNo } });
         console.log(email.emailNo);
     };
 
@@ -164,6 +187,9 @@ function CompanyUserEmail() {
                     setSelectedEmails([]);
                     setSelectAll(false);
                     setCurrentPage(1);
+                    // 기본 검색과 상세 검색을 모두 적용하여 재조회
+                    // 선택적으로 handleBasicSearch()와 handleDetailSearch()를 호출할 수 있습니다.
+                    // 여기서는 현재 설정된 searchTerm과 detailSearch를 그대로 사용
                 } else {
                     console.error('이메일 삭제 중 오류 발생');
                 }
@@ -202,7 +228,7 @@ function CompanyUserEmail() {
     // 상세 검색 입력 핸들러
     const handleDetailInputChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setDetailSearch((prev) => ({
+        setDetailSearchInput((prev) => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value,
         }));
@@ -211,7 +237,7 @@ function CompanyUserEmail() {
     // 기간 옵션 변경 핸들러
     const handlePeriodOptionChange = (e) => {
         const value = e.target.value;
-        setDetailSearch((prev) => ({
+        setDetailSearchInput((prev) => ({
             ...prev,
             periodOption: value,
         }));
@@ -243,13 +269,13 @@ function CompanyUserEmail() {
         }
 
         if (value !== '전체 기간' && value !== '직접입력') {
-            setDetailSearch((prev) => ({
+            setDetailSearchInput((prev) => ({
                 ...prev,
                 startDate: startDate.toISOString().split('T')[0],
                 endDate: endDate.toISOString().split('T')[0],
             }));
         } else {
-            setDetailSearch((prev) => ({
+            setDetailSearchInput((prev) => ({
                 ...prev,
                 startDate: '',
                 endDate: '',
@@ -260,7 +286,7 @@ function CompanyUserEmail() {
     // 날짜 입력 변경 시 기간 옵션을 '직접입력'으로 변경
     const handleDateInputChange = (e) => {
         const { name, value } = e.target;
-        setDetailSearch((prev) => ({
+        setDetailSearchInput((prev) => ({
             ...prev,
             [name]: value,
             periodOption: '직접입력',
@@ -314,19 +340,28 @@ function CompanyUserEmail() {
                 </div>
                 {/* 검색 바 및 버튼 추가 */}
                 <div className={styles['search-bar']}>
+                    {/* 기본 검색 입력 필드 */}
                     <input
                         type="text"
                         placeholder="검색"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
                         className={styles['search-input']}
                     />
-                    <button className={styles['search-button']} onClick={handleSearch}>
+                    {/* 기본 검색 버튼 */}
+                    <button className={styles['search-button']} onClick={handleBasicSearch}>
                         검색
                     </button>
+                    {/* 상세 검색 토글 버튼 */}
                     <button className={styles['detail-button']} onClick={toggleDetailSearch}>
                         상세
                     </button>
+                    {/* 상세 검색 적용 버튼 */}
+                    {/* {showDetailSearch && (
+                        <button className={styles['search-button']} onClick={handleDetailSearch}>
+                            상세 검색
+                        </button>
+                    )} */}
                 </div>
             </div>
             {/* 상세 검색 영역 */}
@@ -337,43 +372,36 @@ function CompanyUserEmail() {
                 >
                     <div className={styles['detail-field']}>
                         <label>보낸 사람</label>
-
                         <input
                             type="text"
                             name="sender"
-                            value={detailSearch.sender}
+                            value={detailSearchInput.sender}
                             onChange={handleDetailInputChange}
                         />
-
                     </div>
                     <div className={styles['detail-field']}>
                         <label>받는 사람</label>
-
                         <input
                             type="text"
                             name="recipient"
-                            value={detailSearch.recipient}
+                            value={detailSearchInput.recipient}
                             onChange={handleDetailInputChange}
                         />
-
                     </div>
                     <div className={styles['detail-field']}>
                         <label>내용</label>
-
                         <input
                             type="text"
                             name="content"
-                            value={detailSearch.content}
+                            value={detailSearchInput.content}
                             onChange={handleDetailInputChange}
                         />
-
                     </div>
                     <div className={styles['detail-field']}>
                         <label>기간</label>
-
                         <select
                             name="periodOption"
-                            value={detailSearch.periodOption}
+                            value={detailSearchInput.periodOption}
                             onChange={handlePeriodOptionChange}
                         >
                             <option value="전체 기간">전체 기간</option>
@@ -388,7 +416,7 @@ function CompanyUserEmail() {
                             style={{ width: '110px', margin: '0' }}
                             type="date"
                             name="startDate"
-                            value={detailSearch.startDate}
+                            value={detailSearchInput.startDate}
                             onChange={handleDateInputChange}
                         />
                         ~
@@ -396,25 +424,25 @@ function CompanyUserEmail() {
                             style={{ width: '110px' }}
                             type="date"
                             name="endDate"
-                            value={detailSearch.endDate}
+                            value={detailSearchInput.endDate}
                             onChange={handleDateInputChange}
                         />
-
                     </div>
                     <div className={styles['detail-field']}>
                         <label style={{ width: '120px' }}>
                             <input
                                 type="checkbox"
                                 name="hasAttachment"
-                                checked={detailSearch.hasAttachment}
+                                checked={detailSearchInput.hasAttachment}
                                 onChange={handleDetailInputChange}
                             />
                             첨부파일 있음
                         </label>
                     </div>
                     <div className={styles['detail-actions']}>
-                        <button className={styles['search-button']} onClick={handleSearch}>
-                            검색
+                        {/* 상세 검색 적용 버튼 */}
+                        <button className={styles['search-button']} onClick={handleDetailSearch}>
+                            상세 검색
                         </button>
                     </div>
                 </div>
@@ -429,7 +457,8 @@ function CompanyUserEmail() {
                                 onChange={handleSelectAllChange}
                             />
                         </th>
-                        <th style={{ width: '10%' }}></th>
+                        <th style={{ width: '5%' }}></th>
+                        <th style={{ width: '5%' }}></th>
                         <th style={{ width: '20%' }}>보낸 사람</th>
                         <th style={{ width: '30%' }}>제목</th>
                         <th style={{ width: '30%' }}>받은 시간</th>
@@ -453,7 +482,12 @@ function CompanyUserEmail() {
                                 {email.status === 'unread' ? (
                                     <FontAwesomeIcon icon={faEnvelope} style={{ color: 'skyblue' }} />
                                 ) : (
-                                    <FontAwesomeIcon icon={faEnvelopeOpen} />
+                                    <FontAwesomeIcon icon={faEnvelopeOpen} style={{ color: 'skyblue' }}/>
+                                )}
+                            </td>
+                            <td>
+                                {email.hasAttachment && (
+                                    <FontAwesomeIcon icon={faPaperclip} style={{ color: 'skyblue' }}/>
                                 )}
                             </td>
                             <td onClick={() => handleEmailClick(email)}>{email.writerDisplayInfo}</td>
