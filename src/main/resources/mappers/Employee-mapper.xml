@@ -71,5 +71,11 @@
 				 LEFT JOIN paperless.company com ON emp.emp_comp_no = com.comp_no
 		WHERE emp_code = #{emp_code}
 	</select>
-
+	<select id="GetDeptNamelist" resultType="String">
+		select distinct dept_name from department limit 2, 100
+	</select>
+	
+	<select id="GetTeamNameList" resultType="String">
+		select dept_team_name from department where dept_name = #{dept_name}
+	</select>
 </mapper>

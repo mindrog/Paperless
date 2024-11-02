@@ -128,7 +128,7 @@ function CompanyUserEmailSend() {
         formData.append('content', emailContent);
 
         files.forEach((file) => {
-            formData.append('files', file); // 'files' 필드명은 백엔드와 일치해야 함
+            formData.append('attachments', file);
         });
 
         // JWT 토큰 가져오기 
@@ -166,7 +166,7 @@ function CompanyUserEmailSend() {
 
     const formatBytes = (bytes) => {
         if (bytes === 0) {
-                    
+
 
             return `0 KB`;
         } else if (bytes < 1024 * 1024) {
