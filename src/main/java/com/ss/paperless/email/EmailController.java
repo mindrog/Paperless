@@ -225,10 +225,6 @@ public class EmailController {
 				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이메일에 접근할 권한이 없습니다.");
 			}
 
-<<<<<<< HEAD
-
-=======
->>>>>>> e16fedb (ocy)
 			if ("unread".equalsIgnoreCase(email.getStatus())) {
 				emailService.updateEmailStatus(emailId, "read");
 				email.setStatus("read"); // 로컬 객체의 상태를 변경하여 DTO에 반영
