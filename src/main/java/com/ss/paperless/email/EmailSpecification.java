@@ -1,8 +1,10 @@
 package com.ss.paperless.email;
 
 import org.springframework.data.jpa.domain.Specification;
-
 import java.time.LocalDateTime;
+
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 public class EmailSpecification {
 
@@ -11,7 +13,14 @@ public class EmailSpecification {
             if (sender == null || sender.isEmpty()) {
                 return builder.conjunction();
             }
-            return builder.like(builder.lower(root.join("writer").get("email")), "%" + sender.toLowerCase() + "%");
+
+            // 보낸 사람(writer)의 email 또는 name을 기준으로 필터링
+            query.distinct(true); // 중복 제거
+
+            return builder.or(
+                builder.like(builder.lower(root.join("writer").get("empEmail")), "%" + sender.toLowerCase() + "%"),
+                builder.like(builder.lower(root.join("writer").get("empName")), "%" + sender.toLowerCase() + "%")
+            );
         };
     }
 
@@ -20,7 +29,14 @@ public class EmailSpecification {
             if (recipient == null || recipient.isEmpty()) {
                 return builder.conjunction();
             }
-            return builder.like(builder.lower(root.join("recipient").get("email")), "%" + recipient.toLowerCase() + "%");
+
+            // 수신자(recipient)의 email 또는 name을 기준으로 필터링
+            query.distinct(true); // 중복 제거
+
+            return builder.or(
+                builder.like(builder.lower(root.join("recipient").get("empEmail")), "%" + recipient.toLowerCase() + "%"),
+                builder.like(builder.lower(root.join("recipient").get("empName")), "%" + recipient.toLowerCase() + "%")
+            );
         };
     }
 
@@ -62,14 +78,17 @@ public class EmailSpecification {
 
     public static Specification<Emailmessage> hasAttachment(boolean hasAttachment) {
         return (root, query, builder) -> {
-            // 첨부파일 기능이 구현되지 않았으므로, 임시로 항상 true 반환
-            // 추후 첨부파일 관계가 설정되면 해당 조건을 추가할 수 있습니다.
             if (!hasAttachment) {
-                return builder.conjunction();
+                return builder.conjunction(); // 필터를 적용하지 않음
             }
-            // 예시: 첨부파일이 존재하는지 여부를 판단하는 로직 추가
-            // return builder.isNotEmpty(root.get("attachments"));
-            return builder.conjunction(); // 현재는 첨부파일 기능이 없으므로 조건 생략
+
+            // 이메일에 첨부파일이 존재하는지 서브쿼리를 통해 확인
+            Subquery<Long> subquery = query.subquery(Long.class);
+            Root<EmailAttachment> emailAttachmentRoot = subquery.from(EmailAttachment.class);
+            subquery.select(emailAttachmentRoot.get("emailNo"))
+                    .where(builder.equal(emailAttachmentRoot.get("emailNo"), root.get("emailNo")));
+
+            return builder.exists(subquery);
         };
     }
 
