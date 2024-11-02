@@ -5,15 +5,14 @@ import { Button } from 'react-bootstrap';
 import EmojiPicker from 'emoji-picker-react';
 import { format, isSameDay, isValid, parse } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
 import api from '../layout/api';
 import { useSelector } from 'react-redux';
 import DOMPurify from 'dompurify';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
-// .env 파일
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
-function Chatting() {
+function Chatting({ chatData, onSendMessage }) {
     // Redux에서 사용자 정보 가져오기
     const userData = useSelector((state) => state.user.data);
 
@@ -38,7 +37,7 @@ function Chatting() {
 
     // 이모지 토글 상태
     const [isEmojiToggle, setIsEmojiToggle] = useState(false);
-
+    
     // emojiRef 참조 변수
     const emojiRef = useRef(null);
 
@@ -56,6 +55,9 @@ function Chatting() {
 
     // 현재 검색 결과의 인덱스
     const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
+
+    // WebSocket hook
+    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
 
     // 검색 초기화 버튼
     const clearSearchTerm = () => {
@@ -129,34 +131,6 @@ function Chatting() {
         return message.trim() === '';
     }, [message]);
 
-    // 보낸 메시지 관리
-    // sendMessage: WebSocket 서버로 메시지를 보내는 함수
-    //  클라이언트가 서버에 데이터를 전송할 때 사용
-    // lastMessage: 서버에서 마지막으로 수신한 메시지
-    //  서버에서 메시지가 올 때마다 업데이트
-    // readyState: WebSocket의 연결 상태를 나타내는 함수
-    //  총 4가지로 0: 연결 시도 중, 1: 연결, 2: 연결 종료 시도 중, 3: 연결 종료
-    // WebSocket 연결 설정
-    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
-        shouldReconnect: (closeEvent) => {
-            // 연결 해제 이벤트를 처리하고, 특정 조건에서만 재연결 허용
-            if (closeEvent.code !== 1000) { // 정상적인 종료 코드(1000)가 아닐 때만 재연결 시도
-                console.warn('WebSocket 비정상 종료, 재연결 시도...');
-                return true;
-            }
-            console.log('WebSocket 연결이 정상적으로 종료되었습니다.');
-            return false;
-        },
-        onOpen: () => {
-            console.log('WebSocket 연결 성공!');
-        },
-        onClose: (event) => {
-            console.warn('WebSocket 연결 해제됨:', event.code, event.reason);
-        },
-        onError: (event) => {
-            console.error('WebSocket 에러:', event);
-        },
-    }, socketUrl !== null); // 마지막 인자로 socketUrl이 null이 아닌 경우에만 WebSocket을 시도
 
     // emp 데이터가 준비되었을 때 WebSocket URL 설정
     useEffect(() => {
@@ -247,7 +221,9 @@ function Chatting() {
 
     // 메시지 전송 버튼 메서드
     const handlerSendMessage = async () => {
-        if (!message.trim() || !emp || !Array.isArray(emp.participants)) {
+        console.log('Sending message:', message);
+        console.log('Recipient:', emp);
+        if (!message.trim() || !emp) {
             console.warn('메시지 전송 조건이 충족되지 않았습니다.');
             return;
         }
@@ -255,9 +231,13 @@ function Chatting() {
         // messageList에서 가장 큰 chat_no를 찾고, 없으면 0을 기본값으로 설정
         const lastChatNo = messageList.length > 0 ? Math.max(...messageList.map(msg => msg.chat_no)) : -1; // 메시지가 없다면 -1을 기본값으로
         const currentTime = format(new Date(), 'yyyy-MM-dd HH:mm');
+        console.log('currentTime:', currentTime);
         const chatRecipientNo = emp.emp_no;
-        const chatRecipientNos = emp.participants.filter(p => p.emp_no !== user.emp_no).map(p => p.emp_no);
-        if (chatRecipientNos.length === 0) {
+        const chatRecipientCount = Array.isArray(emp) ? emp.length : 1;
+        console.log('Last Chat Number:', lastChatNo);
+        console.log('Current Time:', currentTime);
+        console.log('Recipient Count:', chatRecipientCount);
+        if (Array.isArray(emp)) {
             console.warn('그룹 채팅입니다.');
             return;
         }
@@ -268,7 +248,7 @@ function Chatting() {
             chat_sender: user.emp_no,
             chat_recipient: chatRecipientNo,
             chat_content: message,
-            chat_count: chatRecipientNos.length,
+            chat_count: chatRecipientCount,
             chat_type: 'text',
             chat_date: currentTime
         };
@@ -276,10 +256,11 @@ function Chatting() {
         try {
             // WebSocket을 통해 메시지 전송
             if (readyState === ReadyState.OPEN) {
+                // WebSocket을 통해 실시간 전송
                 sendMessage(JSON.stringify(newMessage));
                 console.log('메시지 전송 중:', newMessage);
 
-                // REST API를 통해 메시지 저장
+                // REST API를 통해 서버에 메시지 저장
                 await api.sendMessage(newMessage);
                 console.log('메시지 서버 저장 완료:', newMessage);
 
@@ -312,15 +293,25 @@ function Chatting() {
     useEffect(() => {
         if (lastMessage !== null) {
             try {
+                console.log('lastMessage:', lastMessage);
                 // 수신된 메시지를 파싱
                 const receivedMessage = JSON.parse(lastMessage.data);
                 console.log('Received message:', receivedMessage);
+                console.log('messageList:', messageList);
+                console.log('receivedMessage.chat_sender:', receivedMessage.chat_sender);
+                console.log('receivedMessage.chat_date:', receivedMessage.chat_date);
+
+                if (receivedMessage.action !== 'sendMessage') {
+                    console.log('receivedMessage의 action 필드가 sendMessage가 아니다!');
+                    return;
+                }
 
                 // 서버로부터 내가 보낸 메시지를 화면에 띄우지 않도록 설정
                 if (receivedMessage.chat_sender === user.emp_no) {
                     console.log('내가 보낸 메시지');
                     return;
                 }
+
 
                 if (!receivedMessage.chat_date) {
                     console.warn('Received message is missing chat_date:', receivedMessage);
@@ -331,7 +322,31 @@ function Chatting() {
                             (msg) => msg.chat_no === receivedMessage.chat_no && msg.chat_room_no === receivedMessage.chat_room_no
                         );
 
-                        return isMessageExist ? prevMessageList : [...prevMessageList, receivedMessage];
+                        if (!isMessageExist) {
+                            let senderName = 'Unknown';
+                            let senderProfile = 'https://via.placeholder.com/60';
+
+                            // emp가 배열일 경우와 객체일 경우에 따른 분기 처리
+                            if (Array.isArray(emp)) {
+                                // emp가 배열일 경우 find를 사용하여 직원 찾기
+                                const sender = emp.find((employee) => employee.emp_no === receivedMessage.chat_sender);
+                                senderName = sender ? sender.emp_name : senderName;
+                                senderProfile = sender ? sender.emp_profile : senderProfile;
+                            } else if (typeof emp === 'object' && emp !== null) {
+                                // emp가 객체일 경우 key로 접근하여 직원 이름 찾기
+                                senderName = emp.emp_no === receivedMessage.chat_sender ? emp.emp_name : senderName;
+                                senderProfile = emp.emp_no === receivedMessage.chat_sender ? emp.emp_profile : senderProfile;
+                            }
+                            console.log('emp:', emp);
+                            console.log('typeof emp:', typeof emp);
+                            console.log('senderName:', senderName);
+                            console.log('senderProfile:', senderProfile);
+
+                            // senderName을 추가하여 메시지 리스트에 저장
+                            return [...prevMessageList, { ...receivedMessage, senderName, senderProfile }];
+                        }
+
+                        return prevMessageList;
                     });
                 }
             } catch (error) {
@@ -339,6 +354,13 @@ function Chatting() {
             }
         }
     }, [lastMessage]);
+
+    // 특정 메시지를 클릭해서 읽음 처리하는 함수
+    const handleReadMessage = (message) => {
+        if (!message.isRead) {
+            markMessagesAsRead(message.chat_no);
+        };
+    }
 
     // 특정 영역 외 클릭을 감지하여 searchRef 상태 업데이트
     useEffect(() => {
@@ -436,33 +458,57 @@ function Chatting() {
 
                 // 스크롤이 아래에 도달한 경우, 수신 확인 API 호출
                 if (isAtBottom && messageList.length > 0) {
-                    const lastReadChatNo = messageList[messageList.length - 1].chat_no;
+                    const lastMessage = messageList[messageList.length - 1];
                     console.log('markMessagesAsRead 실행!');
-                    // 수신 확인 API 호출
-                    markMessagesAsRead(lastReadChatNo);
-                    console.log('markMessagesAsRead 실행 완료!');
+
+                    // 마지막 메시지가 상대방이 보낸 메시지일 경우에만 수신 확인 호출
+                    if (lastMessage.chat_sender !== user.emp_no) { // 'user.emp_no'는 현재 사용자의 ID
+                        const lastReadChatNo = lastMessage.chat_no;
+                        console.log('markMessagesAsRead 실행!');
+                        markMessagesAsRead(lastReadChatNo);
+                        console.log('markMessagesAsRead 실행 완료!');
+                    }
                 }
             }
         };
 
-        if (mainContainerRef.current) {
-            mainContainerRef.current.addEventListener('scroll', handleScroll);
+        // WebSocket이 연결된 상태일 때만 scroll 이벤트 리스너 추가
+        if (readyState === ReadyState.OPEN) {
+            if (mainContainerRef.current) {
+                console.log('addEventListener');
+                mainContainerRef.current.addEventListener('scroll', handleScroll);
+            }
         }
 
         return () => {
+            // 컴포넌트 언마운트 시 또는 WebSocket 상태 변경 시 scroll 이벤트 리스너 제거
             if (mainContainerRef.current) {
+                console.log('removeEventListener');
                 mainContainerRef.current.removeEventListener('scroll', handleScroll);
             }
         };
-    }, [messageList]);
+    }, [messageList, readyState]);
 
     // 메시지 수신 확인 처리 함수
     const markMessagesAsRead = async (lastReadChatNo) => {
         console.log('markMessagesAsRead 실행 중, lastReadChatNo:', lastReadChatNo);
 
+        const readMessage = {
+            action: 'read', // 읽음 처리 작업
+            chat_room_no: emp.chat_room_no,
+            emp_no: userData.emp_no,
+            last_read_chat_no: lastReadChatNo
+        };
+        console.log('readMessage:', readMessage);
+
         try {
-            // 서버에 메시지 수신 확인 API 요청
-            await api.markMessagesAsRead(emp.chat_room_no, userData.emp_no, lastReadChatNo);
+            // WebSocket 연결 상태 확인 후 전송
+            if (readyState === ReadyState.OPEN) {
+                sendMessage(JSON.stringify(readMessage));
+                console.log('읽음 처리 메시지 전송:', readMessage);
+            } else {
+                console.warn('WebSocket 연결이 열려 있지 않음 readyState:', readyState);
+            }
 
             // 로컬 상태 업데이트 (서버 업데이트 후 최신 정보 받기)
             setMessageList(prev => prev.map(msg => msg.chat_no <= lastReadChatNo ? { ...msg, is_read: true } : msg));
