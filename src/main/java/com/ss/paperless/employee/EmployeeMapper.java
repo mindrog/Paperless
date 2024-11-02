@@ -31,5 +31,8 @@ public interface EmployeeMapper {
 	int getEmpCompNo(String empCode);
 
 	EmployeeDTO getUserInfo(String empCode);
+	public List<String> GetDeptNamelist();
+
+	public List<String> GetTeamNameList(String dept_name);
 
 }
