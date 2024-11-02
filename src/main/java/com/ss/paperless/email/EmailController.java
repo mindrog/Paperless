@@ -174,67 +174,8 @@ public class EmailController {
 			Page<Emailmessage> emailPage = emailService.getEmailsByRecipientWithFilters(recipientId, sender,
 					recipientParam, subject, content, startDate, endDate, hasAttachment, pageRequest);
 
-			// Emailmessage 엔티티를 EmailDTO로 변환
-			List<EmailDTO> emailDtoList = emailPage.getContent().stream().map(email -> {
-				EmailDTO dto = new EmailDTO();
-				dto.setEmailNo(email.getEmailNo());
-				dto.setTitle(email.getTitle());
-				dto.setContent(email.getContent());
-				dto.setStatus(email.getStatus());
-				dto.setSendDate(email.getSendDate().toString());
-
-				// 발신자와 수신자 정보 가져오기
-				EmployeeEntity senderEntity = email.getWriter();
-				EmployeeEntity emailRecipient = email.getRecipient();
-
-				// 발신자 정보 설정
-				dto.setWriterEmail(senderEntity.getEmpEmail());
-				dto.setWriterName(senderEntity.getEmpName());
-
-				// 발신자의 회사 번호와 부서 번호 가져오기
-				Long senderCompanyNo = senderEntity.getEmpCompNo();
-				Long senderDeptNo = senderEntity.getEmpDeptNo();
-
-				// 발신자의 회사명과 부서명 가져오기
-				String senderCompanyName = "";
-				String senderDeptName = "";
-
-				CompanyEntity senderCompany = companyService.findByCompNo(senderCompanyNo);
-				if (senderCompany != null) {
-					senderCompanyName = senderCompany.getCompName();
-				}
-
-				DepartmentEntity senderDepartment = departmentService.findByDeptNo(senderDeptNo);
-				if (senderDepartment != null) {
-					senderDeptName = senderDepartment.getDeptName();
-				}
-
-				// 표시할 정보 설정
-				String writerDisplayInfo;
-
-				if (senderCompanyNo != null && recipientCompanyNo != null) {
-					if (senderCompanyNo.equals(recipientCompanyNo)) {
-						// 같은 회사인 경우 부서명 표시
-						writerDisplayInfo = "[" + senderDeptName + "] " + senderEntity.getEmpName();
-					} else {
-						// 다른 회사인 경우 회사명 표시
-						writerDisplayInfo = "[" + senderCompanyName + "] " + senderEntity.getEmpName();
-					}
-				} else {
-					// 회사 정보가 없는 경우 그냥 이름만 표시
-					writerDisplayInfo = senderEntity.getEmpName();
-				}
-
-				dto.setWriterDisplayInfo(writerDisplayInfo);
-
-				// 수신자와 참조자 이메일 설정
-				dto.setRecipientEmail(emailRecipient.getEmpEmail());
-				if (email.getCc() != null) {
-					dto.setCcEmail(email.getCc().getEmpEmail());
-				}
-
-				return dto;
-			}).collect(Collectors.toList());
+			List<EmailDTO> emailDtoList = emailPage.getContent().stream().map(this::convertToDTO)
+					.collect(Collectors.toList());
 
 			// 페이지 정보를 별도로 추출하여 응답 생성
 			Map<String, Object> response = new HashMap<>();
@@ -244,7 +185,9 @@ public class EmailController {
 			response.put("totalPages", emailPage.getTotalPages());
 
 			return ResponseEntity.ok(response);
-		} catch (DateTimeParseException e) {
+		} catch (
+
+		DateTimeParseException e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(Collections.singletonMap("message", "날짜 형식이 올바르지 않습니다. (YYYY-MM-DD)"));
@@ -282,74 +225,12 @@ public class EmailController {
 				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이메일에 접근할 권한이 없습니다.");
 			}
 
-			// Emailmessage 엔티티를 EmailDTO로 변환
-			EmailDTO dto = new EmailDTO();
-			dto.setEmailNo(email.getEmailNo());
-			dto.setTitle(email.getTitle());
-			dto.setContent(email.getContent());
-			dto.setStatus(email.getStatus());
-			dto.setSendDate(email.getSendDate().toString());
-
-			// 발신자 정보 설정
-			EmployeeEntity senderEntity = email.getWriter();
-			dto.setWriterEmail(senderEntity.getEmpEmail());
-			dto.setWriterName(senderEntity.getEmpName());
-
-			Long senderCompanyNo = senderEntity.getEmpCompNo();
-			Long senderDeptNo = senderEntity.getEmpDeptNo();
-
-			String senderCompanyName = "";
-			String senderDeptName = "";
-
-			CompanyEntity senderCompany = companyService.findByCompNo(senderCompanyNo);
-			if (senderCompany != null) {
-				senderCompanyName = senderCompany.getCompName();
+			if ("unread".equalsIgnoreCase(email.getStatus())) {
+				emailService.updateEmailStatus(emailId, "read");
+				email.setStatus("read"); // 로컬 객체의 상태를 변경하여 DTO에 반영
 			}
 
-			DepartmentEntity senderDepartment = departmentService.findByDeptNo(senderDeptNo);
-			if (senderDepartment != null) {
-				senderDeptName = senderDepartment.getDeptName();
-			}
-
-			// 표시할 정보 설정
-			String writerDisplayInfo;
-
-			Long recipientCompanyNo = currentUser.getEmpCompNo();
-
-			if (senderCompanyNo != null && recipientCompanyNo != null) {
-				if (senderCompanyNo.equals(recipientCompanyNo)) {
-					// 같은 회사인 경우 부서명 표시
-					writerDisplayInfo = "[" + senderDeptName + "] " + senderEntity.getEmpName();
-				} else {
-					// 다른 회사인 경우 회사명 표시
-					writerDisplayInfo = "[" + senderCompanyName + "] " + senderEntity.getEmpName();
-				}
-			} else {
-				// 회사 정보가 없는 경우 그냥 이름만 표시
-				writerDisplayInfo = senderEntity.getEmpName();
-			}
-
-			dto.setWriterDisplayInfo(writerDisplayInfo);
-
-			// 수신자와 참조자 이메일 설정
-			dto.setRecipientEmail(email.getRecipient().getEmpEmail());
-			if (email.getCc() != null) {
-				dto.setCcEmail(email.getCc().getEmpEmail());
-			}
-
-			// 첨부파일 정보 설정
-			List<EmailAttachment> emailAttachments = emailAttachmentRepository.findByEmailNo(emailId);
-			if (emailAttachments != null && !emailAttachments.isEmpty()) {
-				dto.setHasAttachment(true);
-				List<AttachmentDTO> attachmentDTOs = emailAttachments.stream().map(emailAttachment -> {
-					Attachment attachment = emailAttachment.getAttachment();
-					return new AttachmentDTO(attachment.getAttaOriginalName(), attachment.getAttaUrl());
-				}).collect(Collectors.toList());
-				dto.setAttachments(attachmentDTOs);
-			} else {
-				dto.setHasAttachment(false);
-				dto.setAttachments(null);
-			}
+			EmailDTO dto = convertToDTO(email);
 
 			return ResponseEntity.ok(dto);
 		} catch (Exception e) {
@@ -357,5 +238,77 @@ public class EmailController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(Collections.singletonMap("message", "이메일을 불러오는 중 오류가 발생했습니다: " + e.getMessage()));
 		}
+	}
+
+	private EmailDTO convertToDTO(Emailmessage email) {
+		EmailDTO dto = new EmailDTO();
+		dto.setEmailNo(email.getEmailNo());
+		dto.setTitle(email.getTitle());
+		dto.setContent(email.getContent());
+		dto.setStatus(email.getStatus());
+		dto.setSendDate(email.getSendDate().toString());
+
+		// 발신자 정보 설정
+		EmployeeEntity senderEntity = email.getWriter();
+		dto.setWriterEmail(senderEntity.getEmpEmail());
+		dto.setWriterName(senderEntity.getEmpName());
+
+		Long senderCompanyNo = senderEntity.getEmpCompNo();
+		Long senderDeptNo = senderEntity.getEmpDeptNo();
+
+		String senderCompanyName = "";
+		String senderDeptName = "";
+
+		CompanyEntity senderCompany = companyService.findByCompNo(senderCompanyNo);
+		if (senderCompany != null) {
+			senderCompanyName = senderCompany.getCompName();
+		}
+
+		DepartmentEntity senderDepartment = departmentService.findByDeptNo(senderDeptNo);
+		if (senderDepartment != null) {
+			senderDeptName = senderDepartment.getDeptName();
+		}
+
+		// 표시할 정보 설정
+		String writerDisplayInfo;
+
+		Long recipientCompanyNo = email.getRecipient().getEmpCompNo();
+
+		if (senderCompanyNo != null && recipientCompanyNo != null) {
+			if (senderCompanyNo.equals(recipientCompanyNo)) {
+				// 같은 회사인 경우 부서명 표시
+				writerDisplayInfo = "[" + senderDeptName + "] " + senderEntity.getEmpName();
+			} else {
+				// 다른 회사인 경우 회사명 표시
+				writerDisplayInfo = "[" + senderCompanyName + "] " + senderEntity.getEmpName();
+			}
+		} else {
+			// 회사 정보가 없는 경우 그냥 이름만 표시
+			writerDisplayInfo = senderEntity.getEmpName();
+		}
+
+		dto.setWriterDisplayInfo(writerDisplayInfo);
+
+		// 수신자와 참조자 이메일 설정
+		dto.setRecipientEmail(email.getRecipient().getEmpEmail());
+		if (email.getCc() != null) {
+			dto.setCcEmail(email.getCc().getEmpEmail());
+		}
+
+		// 첨부파일 정보 설정
+		List<EmailAttachment> emailAttachments = emailAttachmentRepository.findByEmailNo(email.getEmailNo());
+		if (emailAttachments != null && !emailAttachments.isEmpty()) {
+			dto.setHasAttachment(true);
+			List<AttachmentDTO> attachmentDTOs = emailAttachments.stream().map(emailAttachment -> {
+				Attachment attachment = emailAttachment.getAttachment();
+				return new AttachmentDTO(attachment.getAttaOriginalName(), attachment.getAttaUrl());
+			}).collect(Collectors.toList());
+			dto.setAttachments(attachmentDTOs);
+		} else {
+			dto.setHasAttachment(false);
+			dto.setAttachments(Collections.emptyList());
+		}
+
+		return dto;
 	}
 }
