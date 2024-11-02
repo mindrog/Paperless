@@ -74,5 +74,16 @@ public class EmployeeController {
 
         return departmentGroupedMenu;
     }
+    @GetMapping("/getdeptnamelist")
+    public List<String> GetDeptNamelist(){
+    	
+    	return employeeService.GetDeptNamelist();
+    	
+    }
+    @GetMapping("/getteamname")
+    public List<String> GetTeamNameList(@RequestParam String dept_name){
+    	return employeeService.GetTeamNameList(dept_name);
+    }
+
 
 }

@@ -81,4 +81,14 @@ public class EmployeeService implements UserDetailsService {
 	public EmployeeDTO getUserInfo(String emp_code) {
 		return mapper.getUserInfo(emp_code);
 	}
+public List<String> GetDeptNamelist() {
+		
+		return mapper.GetDeptNamelist();
+	}
+
+	public List<String> GetTeamNameList(String dept_name) {
+		// TODO Auto-generated method stub
+		return mapper.GetTeamNameList(dept_name);
+	}
+
 }
