@@ -78,11 +78,16 @@ api.getChatCountByRoomNo = (room_no) => {
 };
 
 // 8. 채팅 메시지 전송 (PUT 요청)
-api.sendMessage = (data) => {
-  // 데이터 확인
-  console.log('Sending message data:', data);
-  // 새로운 메시지를 전송함 (데이터에는 메시지 내용이 포함됨)
-  return api.put('/chat', data);
+api.sendMessage = async (data) => {
+  // 서버에 메시지 저장 요청
+  try {
+    const response = await api.put('/chat', data);
+    console.log('메시지 서버 저장 완료:', response.data);
+    return response;
+  } catch (error) {
+    console.error('메시지 전송 중 오류 발생:', error);
+    throw error;
+  }
 };
 
 // 9. 채팅 메시지 삭제 (DELETE 요청)
@@ -90,16 +95,6 @@ api.deleteChatMessage = (chat_room_no, chat_no) => {
   // 특정 채팅 메시지를 삭제함
   // chat_room_no는 채팅방 번호, chat_no는 삭제할 메시지의 번호
   return api.delete(`/chat/${chat_room_no}/${chat_no}`);
-};
-
-// 10. 메시지 수신 확인 처리 (POST 요청)
-api.markMessagesAsRead = (chat_room_no, emp_no, last_read_chat_no) => {
-  return api.post('/chat', {
-    action: 'read', // 읽음 처리 작업
-    chat_room_no,
-    emp_no,
-    last_read_chat_no
-  });
 };
 
 export default api;
