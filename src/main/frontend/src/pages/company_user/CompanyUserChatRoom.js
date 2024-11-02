@@ -300,7 +300,6 @@ function CompanyUserChatRoom() {
                 const chatRooms = chatRoomResponse.data;
                 console.log('4');
 
-
                 // 서버 응답이 배열인지 확인하고, 배열이 아니면 응답의 특정 키에서 배열을 추출
                 if (Array.isArray(chatRooms)) {
                     console.log('5');
@@ -323,7 +322,6 @@ function CompanyUserChatRoom() {
                     });
                     console.log('processedChatRooms:', processedChatRooms);
                     console.log('6');
-
 
                     // 2. 불러온 채팅방 목록인 processedChatRooms를 room_no로 각 채팅방의 모든 메시지들을 불러와 저장
                     const chatMessages = {};
@@ -363,7 +361,6 @@ function CompanyUserChatRoom() {
                         })
                     );
                     console.log('7');
-
 
                     // 3. 가장 최근 메시지 정보들을 recentMessages 객체로 저장
                     // allRecentMessages 배열에 각각의 room_no가 저장되어있으므로 room_no를 키로 하여 저장
@@ -405,7 +402,6 @@ function CompanyUserChatRoom() {
                     })
                     console.log('9');
 
-
                     // 정렬된 목록으로 업데이트
                     setChatRoomList(sortedChatRooms);
                     console.log('10');
@@ -428,11 +424,6 @@ function CompanyUserChatRoom() {
             fetchChatRooms();
         }
     }, [user]);
-
-    // 상태 변경 후의 값을 추적하는 useEffect
-    // useEffect(() => {
-    //     console.log("Updated chatRoomList:", chatRoomList);
-    // }, [chatRoomList]);
 
     // OrgChart에서 사람 클릭 시 호출 함수
     const handleMemberClick = async (member) => {
