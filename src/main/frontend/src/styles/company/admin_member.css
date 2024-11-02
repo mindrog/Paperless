@@ -1,0 +1,67 @@
+@font-face {
+    font-family: 'ONE-Mobile-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'ONE-Mobile-Title';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-Title.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+.addEmpModal {
+    font-family:  'ONE-Mobile-Regular';
+    top : 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    
+    transform: translate(50%, 15%); 
+    width: 50%;
+    height: auto;
+    
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid #b9b8b8;
+}
+.addEmpFormModal{
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+}
+.addEmpForm{
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: baseline   ;
+}
+.passwordinput{
+    font-family: 'NanumSquare';
+}
+.addEmpModal input,select,option{
+    
+    width: 15vw;
+    height: 4vh;
+    border: 1px solid #b9b8b8; /* 기본 테두리 색상 */
+    border-radius: 10px;
+    padding: 0 10px; /* 입력 여백 추가 */
+    outline: none; /* 기본 아웃라인 제거 */
+    font-size: 1rem;
+}
+
+.addEmpModal input:focus,select:focus{
+    border: 3px solid #2e3d86;
+}
+.addEmpModal label {
+    font-family:  'ONE-Mobile-Regular';
+    width: 5vw;
+}
+.inputarea{
+    width: 20vw;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 2vh;
+}
