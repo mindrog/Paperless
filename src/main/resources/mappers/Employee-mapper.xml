@@ -171,4 +171,17 @@ join
 	<delete id="DeleteEmp" parameterType="Long">
 		delete from employee where emp_no = #{emp_no}
 	</delete>
+	<!-- emp_no: emp_no,
+            emp_code: id,
+            emp_name: name,
+            emp_pw: password,
+            emp_dept_no: departmentNumber,
+            emp_posi_no: position,
+            emp_email: email,
+            emp_phone: contact -->
+	<update id="userEdit" parameterType="com.ss.paperless.employee.EmployeeDTO">
+		update employee set emp_code =#{emp_code},emp_name =#{emp_name},emp_pw =#{emp_pw}
+		,emp_dept_no =#{emp_dept_no},emp_posi_no =#{emp_posi_no},
+		emp_email =#{emp_email},emp_phone =#{emp_phone} where emp_no =#{emp_no}
+	</update>
 </mapper>

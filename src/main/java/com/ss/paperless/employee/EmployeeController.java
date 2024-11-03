@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -17,7 +18,8 @@ import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:3000")
 public class EmployeeController {
-
+	@Autowired
+	private PasswordEncoder passwordEncoder;
     @Autowired
     private EmployeeService employeeService;
 
@@ -107,6 +109,12 @@ public class EmployeeController {
     	emp.setDept_team_name(employeeService.GetDeptTeamName(emp.getEmp_dept_no()));
     	System.out.println(emp);
     	return employeeService.userInsert(emp);
+    }
+    @PostMapping("useredit")
+    public int userEdit(@RequestBody EmployeeDTO emp) {
+    	System.out.println("edit emp : " + emp);
+    	
+    	return employeeService.userEdit(emp);
     }
     @GetMapping("/getemps")
     public List<EmployeeDTO> getEmps(@RequestParam Long emp_comp_no){
