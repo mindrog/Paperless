@@ -31,5 +31,36 @@ public interface EmployeeMapper {
 	int getEmpCompNo(String empCode);
 
 	EmployeeDTO getUserInfo(String empCode);
+	public List<String> GetDeptNamelist();
+
+	public List<String> GetTeamNameList(String dept_name);
+
+	public int GetDeptNo(String dept_name, String dept_team_name);
+
+	public List<PositionDTO> GetPosition();
+
+	public int userInsert(EmployeeDTO emp);
+
+	public List<EmployeeDTO> getEmps(Long emp_comp_no);
+
+	public List<String> GetDeptData(int dept_no);
+
+	public String GetDeptName(Long emp_dept_no);
+
+	public String GetPosiName(Long emp_posi_no);
+
+	public String GetDeptTeamName(Long emp_dept_no);
+
+	public int DeleteEmp(Long emp_no);
+
+	public List<EmployeeDTO> empNameSearch(String query);
+
+	public List<EmployeeDTO> empEmailSearch(String query);
+
+	public List<EmployeeDTO> empDeptSearch(String query);
+
+	public List<EmployeeDTO> empPosiSearch(String query);
+
+	public int userEdit(EmployeeDTO emp);
 
 }

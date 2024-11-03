@@ -50,6 +50,11 @@ function CompanyUserEmailDetail() {
       .then((data) => {
         setEmail(data);
         setLoading(false);
+
+        // 이메일 상태가 'unread'인 경우 'read'로 업데이트
+        if (data.status === 'unread') {
+          updateEmailStatus(emailNo, 'read');
+        }
       })
       .catch((error) => {
         console.error('이메일 데이터를 가져오는 중 오류 발생:', error);
@@ -57,6 +62,33 @@ function CompanyUserEmailDetail() {
         setLoading(false);
       });
   }, [emailNo, navigate]);
+
+  /**
+   * 이메일 상태 업데이트 함수
+   * @param {number} emailNo - 이메일 번호
+   * @param {string} status - 새로운 상태 ('read' 또는 'unread')
+   */
+  const updateEmailStatus = (emailNo, status) => {
+    fetch(`/api/emails/${emailNo}/status`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `${getToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`상태 업데이트 실패: ${response.status}`);
+        }
+        // 상태가 성공적으로 업데이트되면, 필요시 추가 로직을 구현할 수 있습니다.
+        console.log(`이메일 ${emailNo} 상태가 '${status}'로 업데이트되었습니다.`);
+      })
+      .catch((error) => {
+        console.error('이메일 상태 업데이트 중 오류 발생:', error);
+        // 상태 업데이트 실패 시 사용자에게 알리거나, 다른 처리를 할 수 있습니다.
+      });
+  };
 
   // 삭제 버튼 핸들러
   const handleDelete = () => {
@@ -169,12 +201,14 @@ function CompanyUserEmailDetail() {
           <div className={styles['attachment-section']}>
             <p>
               <strong>첨부파일:</strong>{' '}
-              <span
-                className={styles['attachment-link']}
-                // onClick={handleAttachmentClick}
-              >
-                {email.attachmentName}
-              </span>
+              {email.attachments.map((attachment, index) => (
+                <span key={index}>
+                  <a href={attachment.fileUrl} target="_blank" rel="noopener noreferrer">
+                    {attachment.fileName}
+                  </a>
+                  {index < email.attachments.length - 1 && ', '}
+                </span>
+              ))}
             </p>
             <hr />
           </div>
