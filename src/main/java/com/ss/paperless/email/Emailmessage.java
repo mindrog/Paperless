@@ -46,5 +46,8 @@ public class Emailmessage {
 
     @Column(name = "email_title", nullable = false, length = 255)
     private String title;
-
+    
+    
+    @Column(name = "email_deleted_date")
+    private LocalDateTime deletedAt;
 }
