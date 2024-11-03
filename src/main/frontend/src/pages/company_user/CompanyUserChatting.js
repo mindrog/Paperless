@@ -37,7 +37,7 @@ function Chatting({ chatData, onSendMessage }) {
 
     // 이모지 토글 상태
     const [isEmojiToggle, setIsEmojiToggle] = useState(false);
-    
+
     // emojiRef 참조 변수
     const emojiRef = useRef(null);
 
@@ -231,9 +231,9 @@ function Chatting({ chatData, onSendMessage }) {
         // messageList에서 가장 큰 chat_no를 찾고, 없으면 0을 기본값으로 설정
         const lastChatNo = messageList.length > 0 ? Math.max(...messageList.map(msg => msg.chat_no)) : -1; // 메시지가 없다면 -1을 기본값으로
         const currentTime = format(new Date(), 'yyyy-MM-dd HH:mm');
-        console.log('currentTime:', currentTime);
         const chatRecipientNo = emp.emp_no;
         const chatRecipientCount = Array.isArray(emp) ? emp.length : 1;
+        console.log('currentTime:', currentTime);
         console.log('Last Chat Number:', lastChatNo);
         console.log('Current Time:', currentTime);
         console.log('Recipient Count:', chatRecipientCount);
@@ -300,22 +300,16 @@ function Chatting({ chatData, onSendMessage }) {
                 console.log('messageList:', messageList);
                 console.log('receivedMessage.chat_sender:', receivedMessage.chat_sender);
                 console.log('receivedMessage.chat_date:', receivedMessage.chat_date);
+                console.log('확인! receivedMessage.action:', receivedMessage.action);
 
-                if (receivedMessage.action !== 'sendMessage') {
-                    console.log('receivedMessage의 action 필드가 sendMessage가 아니다!');
-                    return;
-                }
-
-                // 서버로부터 내가 보낸 메시지를 화면에 띄우지 않도록 설정
-                if (receivedMessage.chat_sender === user.emp_no) {
-                    console.log('내가 보낸 메시지');
-                    return;
-                }
-
-
-                if (!receivedMessage.chat_date) {
-                    console.warn('Received message is missing chat_date:', receivedMessage);
-                } else {
+                // 메시지가 전송된 메시지인 경우
+                if (receivedMessage.action === 'sendMessage') {
+                    // 서버로부터 내가 보낸 메시지를 화면에 띄우지 않도록 설정
+                    if (receivedMessage.chat_sender === user.emp_no) {
+                        console.log('내가 보낸 메시지');
+                        return;
+                    }
+                    // 기존 메시지 리스트에 이미 존재하는지 확인
                     setMessageList((prevMessageList) => {
                         // 현재 메시지 리스트에 이미 존재하는지 확인
                         const isMessageExist = prevMessageList.some(
@@ -348,6 +342,17 @@ function Chatting({ chatData, onSendMessage }) {
 
                         return prevMessageList;
                     });
+                } else if (receivedMessage.action === 'update') {
+                    const { chat_room_no, chat_no, updated_data } = receivedMessage;
+
+                    // `is_read` 및 `chat_count` 업데이트
+                    setMessageList((prevMessageList) =>
+                        prevMessageList.map((message) =>
+                            message.chat_room_no === chat_room_no && message.chat_no <= chat_no
+                                ? { ...message, is_read: true, chat_count: updated_data.chat_count }
+                                : message
+                        )
+                    );
                 }
             } catch (error) {
                 console.error('Error parsing received message:', error);
