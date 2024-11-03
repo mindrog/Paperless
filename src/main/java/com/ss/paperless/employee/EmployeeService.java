@@ -91,7 +91,7 @@ public List<String> GetDeptNamelist() {
 		return mapper.GetTeamNameList(dept_name);
 	}
 
-<<<<<<< HEAD
+
 	public int GetDeptNo(String dept_name, String dept_team_name) {
 		// TODO Auto-generated method stub
 		return mapper.GetDeptNo(dept_name,dept_team_name);
@@ -163,6 +163,5 @@ public List<String> GetDeptNamelist() {
 		return mapper.userEdit(emp);
 	}
 
-=======
->>>>>>> bs
+
 }
