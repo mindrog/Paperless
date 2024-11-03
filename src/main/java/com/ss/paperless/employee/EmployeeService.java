@@ -157,4 +157,9 @@ public List<String> GetDeptNamelist() {
 		return mapper.empPosiSearch(query);
 	}
 
+	public int userEdit(EmployeeDTO emp) {
+		// TODO Auto-generated method stub
+		return mapper.userEdit(emp);
+	}
+
 }

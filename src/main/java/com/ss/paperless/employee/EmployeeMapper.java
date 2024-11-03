@@ -61,4 +61,6 @@ public interface EmployeeMapper {
 
 	public List<EmployeeDTO> empPosiSearch(String query);
 
+	public int userEdit(EmployeeDTO emp);
+
 }
