@@ -34,6 +34,7 @@ public interface EmployeeMapper {
 	public List<String> GetDeptNamelist();
 
 	public List<String> GetTeamNameList(String dept_name);
+<<<<<<< HEAD
 
 	public int GetDeptNo(String dept_name, String dept_team_name);
 
@@ -62,5 +63,7 @@ public interface EmployeeMapper {
 	public List<EmployeeDTO> empPosiSearch(String query);
 
 	public int userEdit(EmployeeDTO emp);
+=======
+>>>>>>> bs
 
 }
