@@ -65,7 +65,7 @@ function CompanyUserEmail() {
     const [folder, setFolder] = useState("inbox");
 
     // 백엔드 서버 주소 설정
-    const backendUrl = 'http://localhost:8080'; // 실제 백엔드 서버 주소로 변경
+    const backendUrl = 'http://localhost:8080'; 
 
     // 이메일 데이터 가져오기 함수 정의
     const fetchEmails = () => {
@@ -109,12 +109,12 @@ function CompanyUserEmail() {
         queryParams.append('page', currentPage - 1);
         queryParams.append('size', emailsPerPage);
 
-        console.log('Fetching emails with params:', queryParams.toString()); // 디버깅용 로그
+        console.log('emails params:', queryParams.toString()); 
 
         fetch(`${backendUrl}/api/emails/list/${recipientId}?${queryParams.toString()}`, {
             method: 'GET',
             headers: {
-                'Authorization': getToken(), // 'Bearer ' 접두사가 이미 포함된 토큰
+                'Authorization': getToken(), 
                 'Content-Type': 'application/json',
             },
         })
