@@ -18,26 +18,31 @@ const HandleSaveAsDraft = forwardRef(({
 }, ref) => {
   const saveDraftToDB = async () => {
     try {
-      const payload = {
-        reportTitle,
-        reportContent,
-        reportDate,
-        repoStartTime,
-        repoEndTime,
-        reportStatus,
-        selectedApprovers,
-        selectedReferences,
-        selectedReceivers,
-        files,
-      };
+      // FormData를 사용하여 파일과 데이터를 함께 전송
+      const formData = new FormData();
+
+      // JSON 데이터 추가
+      formData.append('reportTitle', reportTitle);
+      formData.append('reportContent', reportContent);
+      formData.append('reportDate', reportDate);
+      formData.append('repoStartTime', repoStartTime);
+      formData.append('repoEndTime', repoEndTime);
+      formData.append('reportStatus', reportStatus);
+      formData.append('selectedApprovers', JSON.stringify(selectedApprovers));
+      formData.append('selectedReferences', JSON.stringify(selectedReferences));
+      formData.append('selectedReceivers', JSON.stringify(selectedReceivers));
+
+      // 파일 배열 추가
+      files.forEach((file, index) => {
+        formData.append('files', file); // `files` 키로 여러 파일을 전송할 수 있음
+      });
 
       const response = await fetch('/api/saveasdraft', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `${token}`,
         },
-        body: JSON.stringify(payload),
+        body: formData,
       });
 
       if (!response.ok) throw new Error('Failed to save draft');
