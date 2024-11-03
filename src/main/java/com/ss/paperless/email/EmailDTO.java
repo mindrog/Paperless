@@ -1,5 +1,6 @@
 package com.ss.paperless.email;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.ss.paperless.attachment.AttachmentDTO;
@@ -26,4 +27,6 @@ public class EmailDTO {
     
     private boolean hasAttachment;
     private List<AttachmentDTO> attachments;
+    
+    private LocalDateTime deletedAt;
 }
