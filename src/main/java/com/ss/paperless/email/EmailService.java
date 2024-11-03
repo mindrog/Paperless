@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+import javax.transaction.Transactional;
+
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Service
@@ -41,5 +43,13 @@ public class EmailService {
                         .and(EmailSpecification.hasAttachment(hasAttachment)),
                 pageable
         );
+    }
+    
+    @Transactional
+    public void updateEmailStatus(Long emailNo, String status) {
+        Emailmessage email = emailmessageRepository.findById(emailNo)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일 번호입니다: " + emailNo));
+        email.setStatus(status);
+        emailmessageRepository.save(email);
     }
 }
