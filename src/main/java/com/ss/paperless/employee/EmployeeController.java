@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/api")
+
 @CrossOrigin(origins = "http://localhost:3000")
 public class EmployeeController {
 
@@ -84,6 +85,91 @@ public class EmployeeController {
     public List<String> GetTeamNameList(@RequestParam String dept_name){
     	return employeeService.GetTeamNameList(dept_name);
     }
-
-
+    @GetMapping("/getdeptno")
+    public int GetDeptNo(@RequestParam String dept_name, @RequestParam String dept_team_name) {
+    	
+    	return employeeService.GetDeptNo(dept_name,dept_team_name);
+    }
+    @GetMapping("/getposi")
+    public List<PositionDTO> GetPosition(){
+    	return employeeService.GetPosition();
+    }
+   
+    @PostMapping("/userinsert")
+    public int userInsert(@RequestBody EmployeeDTO emp) {
+    	System.out.println("userinsert located...");
+    	System.out.println(emp);
+    	emp.setEmp_role("user");
+    	emp.setEmp_sign(emp.getEmp_name()+" 서명");
+    	emp.setEmp_profile("https://via.placeholder.com/60");
+    	emp.setDept_name(employeeService.GetDeptName(emp.getEmp_dept_no()));
+    	emp.setPosi_name(employeeService.GetPosiName(emp.getEmp_posi_no()));
+    	emp.setDept_team_name(employeeService.GetDeptTeamName(emp.getEmp_dept_no()));
+    	System.out.println(emp);
+    	return employeeService.userInsert(emp);
+    }
+    @GetMapping("/getemps")
+    public List<EmployeeDTO> getEmps(@RequestParam Long emp_comp_no){
+    	List<EmployeeDTO> returnList = employeeService.getEmps(emp_comp_no);
+    	for(int i = 0 ; i < returnList.size() ; i++) {
+    		returnList.get(i).setDept_name(employeeService.GetDeptName(returnList.get(i).getEmp_dept_no()));
+    		returnList.get(i).setPosi_name(employeeService.GetPosiName(returnList.get(i).getEmp_posi_no()));
+    		returnList.get(i).setDept_team_name(employeeService.GetDeptTeamName(returnList.get(i).getEmp_dept_no()));
+    	}
+		return returnList;
+    	
+    }
+    @GetMapping("/getdeptdata")
+    public List<String> GetDeptData(@RequestParam int dept_no){
+    	return employeeService.GetDeptData(dept_no);
+    }
+    @PostMapping("/deleteemployees")
+    public int DeleteEmp(@RequestBody List<Long> emp_no) {
+    	for(int i = 0 ; i < emp_no.size() ; i++) {
+    		employeeService.DeleteEmp(emp_no.get(i));
+    	}
+    	return 1;
+    }
+    @GetMapping("/empsearch")
+    public List<EmployeeDTO> EmpSearch(@RequestParam String category,@RequestParam String query){
+    	switch (category) {
+        case "name":
+        	List<EmployeeDTO> returnList = employeeService.empNameSearch(query);
+        	for(int i = 0 ; i < returnList.size() ; i++) {
+        		returnList.get(i).setDept_name(employeeService.GetDeptName(returnList.get(i).getEmp_dept_no()));
+        		returnList.get(i).setPosi_name(employeeService.GetPosiName(returnList.get(i).getEmp_posi_no()));
+        		returnList.get(i).setDept_team_name(employeeService.GetDeptTeamName(returnList.get(i).getEmp_dept_no()));
+        	}
+            return returnList;
+        case "email":
+        	List<EmployeeDTO> returnEmailList = employeeService.empEmailSearch(query);
+        	for(int i = 0 ; i < returnEmailList.size() ; i++) {
+        		returnEmailList.get(i).setDept_name(employeeService.GetDeptName(returnEmailList.get(i).getEmp_dept_no()));
+        		returnEmailList.get(i).setPosi_name(employeeService.GetPosiName(returnEmailList.get(i).getEmp_posi_no()));
+        		returnEmailList.get(i).setDept_team_name(employeeService.GetDeptTeamName(returnEmailList.get(i).getEmp_dept_no()));
+        	}
+        	return returnEmailList;
+        case "department":
+        	List<EmployeeDTO> returnDeptList = employeeService.empDeptSearch(query);
+        	for(int i = 0 ; i < returnDeptList.size() ; i++) {
+        		returnDeptList.get(i).setDept_name(employeeService.GetDeptName(returnDeptList.get(i).getEmp_dept_no()));
+        		returnDeptList.get(i).setPosi_name(employeeService.GetPosiName(returnDeptList.get(i).getEmp_posi_no()));
+        		returnDeptList.get(i).setDept_team_name(employeeService.GetDeptTeamName(returnDeptList.get(i).getEmp_dept_no()));
+        	}
+        	return returnDeptList;
+            
+        case "position":
+        	List<EmployeeDTO> returnPosiList = employeeService.empPosiSearch(query);
+        	for(int i = 0 ; i < returnPosiList.size() ; i++) {
+        		returnPosiList.get(i).setDept_name(employeeService.GetDeptName(returnPosiList.get(i).getEmp_dept_no()));
+        		returnPosiList.get(i).setPosi_name(employeeService.GetPosiName(returnPosiList.get(i).getEmp_posi_no()));
+        		returnPosiList.get(i).setDept_team_name(employeeService.GetDeptTeamName(returnPosiList.get(i).getEmp_dept_no()));
+        	}
+        	return returnPosiList;
+            
+        default:
+            return null;
+    }
+    	
+    }
 }
