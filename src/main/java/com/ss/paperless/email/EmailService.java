@@ -14,14 +14,14 @@ import static org.springframework.data.jpa.domain.Specification.where;
 @Service
 public class EmailService {
 
-    private final EmailmessageRepository emailmessageRepository;
+	private final EmailmessageRepository emailmessageRepository;
 
-    @Autowired
-    public EmailService(EmailmessageRepository emailmessageRepository) {
-        this.emailmessageRepository = emailmessageRepository;
-    }
+	@Autowired
+	public EmailService(EmailmessageRepository emailmessageRepository) {
+		this.emailmessageRepository = emailmessageRepository;
+	}
 
-    public Page<Emailmessage> getEmailsByRecipientWithFilters(
+	public Page<Emailmessage> getEmailsByRecipientWithFilters(
             Long recipientId,
             String senderEmail,
             String recipientEmail,
@@ -30,6 +30,7 @@ public class EmailService {
             LocalDateTime startDate,
             LocalDateTime endDate,
             boolean hasAttachment,
+            String folder,
             Pageable pageable
     ) {
         return emailmessageRepository.findAll(
@@ -40,16 +41,17 @@ public class EmailService {
                         .and(EmailSpecification.contentContains(content))
                         .and(EmailSpecification.sentAfter(startDate))
                         .and(EmailSpecification.sentBefore(endDate))
-                        .and(EmailSpecification.hasAttachment(hasAttachment)),
+                        .and(EmailSpecification.hasAttachment(hasAttachment))
+                        .and(EmailSpecification.folderEquals(folder)),
                 pageable
         );
     }
-    
-    @Transactional
-    public void updateEmailStatus(Long emailNo, String status) {
-        Emailmessage email = emailmessageRepository.findById(emailNo)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일 번호입니다: " + emailNo));
-        email.setStatus(status);
-        emailmessageRepository.save(email);
-    }
+
+	@Transactional
+	public void updateEmailStatus(Long emailNo, String status) {
+		Emailmessage email = emailmessageRepository.findById(emailNo)
+				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일 번호입니다: " + emailNo));
+		email.setStatus(status);
+		emailmessageRepository.save(email);
+	}
 }
