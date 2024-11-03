@@ -91,4 +91,75 @@ public List<String> GetDeptNamelist() {
 		return mapper.GetTeamNameList(dept_name);
 	}
 
+	public int GetDeptNo(String dept_name, String dept_team_name) {
+		// TODO Auto-generated method stub
+		return mapper.GetDeptNo(dept_name,dept_team_name);
+	}
+
+	public List<PositionDTO> GetPosition() {
+		// TODO Auto-generated method stub
+		return mapper.GetPosition();
+	}
+
+	public int userInsert(EmployeeDTO emp) {
+		return mapper.userInsert(emp);
+		
+	}
+
+	public List<EmployeeDTO> getEmps(Long emp_comp_no) {
+		// TODO Auto-generated method stub
+		return mapper.getEmps(emp_comp_no);
+	}
+
+	public List<String> GetDeptData(int dept_no) {
+		// TODO Auto-generated method stub
+		return mapper.GetDeptData(dept_no);
+	}
+
+	public String GetDeptName(Long emp_dept_no) {
+		// TODO Auto-generated method stub
+		return mapper.GetDeptName(emp_dept_no);
+	}
+
+	public String GetPosiName(Long emp_posi_no) {
+		// TODO Auto-generated method stub
+		return mapper.GetPosiName(emp_posi_no);
+	}
+
+	public String GetDeptTeamName(Long emp_dept_no) {
+		// TODO Auto-generated method stub
+		return mapper.GetDeptTeamName(emp_dept_no);
+	}
+
+	public int DeleteEmp(Long emp_no) {
+		
+		return mapper.DeleteEmp(emp_no);
+		
+	}
+
+	public List<EmployeeDTO> empNameSearch(String query) {
+		// TODO Auto-generated method stub
+		return mapper.empNameSearch(query);
+	}
+
+	public List<EmployeeDTO> empEmailSearch(String query) {
+		// TODO Auto-generated method stub
+		return mapper.empEmailSearch(query);
+	}
+
+	public List<EmployeeDTO> empDeptSearch(String query) {
+		// TODO Auto-generated method stub
+		return mapper.empDeptSearch(query);
+	}
+
+	public List<EmployeeDTO> empPosiSearch(String query) {
+		// TODO Auto-generated method stub
+		return mapper.empPosiSearch(query);
+	}
+
+	public int userEdit(EmployeeDTO emp) {
+		// TODO Auto-generated method stub
+		return mapper.userEdit(emp);
+	}
+
 }

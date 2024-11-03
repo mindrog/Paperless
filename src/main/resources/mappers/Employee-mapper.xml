@@ -78,4 +78,110 @@
 	<select id="GetTeamNameList" resultType="String">
 		select dept_team_name from department where dept_name = #{dept_name}
 	</select>
+	<select id="GetDeptNo" resultType="int">
+		select dept_no from department where dept_name = #{dept_name} and dept_team_name =#{dept_team_name}
+	</select>
+	
+	<select id="GetPosition" resultType="com.ss.paperless.employee.PositionDTO">
+		select * from position limit 2, 50
+	</select>
+	<select id="getEmps" parameterType="long" resultType="com.ss.paperless.employee.EmployeeDTO">
+	select * from employee where emp_comp_no = #{emp_comp_no}
+	</select>
+	<insert id="userInsert" parameterType="com.ss.paperless.employee.EmployeeDTO">
+	insert into employee (emp_code,emp_pw,emp_name,emp_email,emp_phone,emp_sign,emp_profile,emp_comp_no,emp_dept_no,emp_posi_no,emp_enroll_date,emp_join_date,emp_role)
+		values (#{emp_code},#{emp_pw},#{emp_name},#{emp_email},#{emp_phone},#{emp_sign},#{emp_profile},#{emp_comp_no},#{emp_dept_no},#{emp_posi_no},sysdate(),sysdate(),#{emp_role})
+	</insert>
+	<!-- public String GetDeptName(Long emp_dept_no);
+
+	public String GetPosiName(Long emp_posi_no);
+
+	public String GetDeptTeamName(Long emp_dept_no); --> 
+	
+	<select id="GetDeptName" parameterType="Long" resultType="String">
+		select dept_name from department where dept_no = #{emp_dept_no}
+	</select>
+	<select id="GetPosiName" parameterType="Long" resultType="String">
+		select posi_name from position where posi_no = #{emp_posi_no}
+	</select>
+	<select id="GetDeptTeamName" parameterType="Long" resultType="String">
+		select dept_team_name from department where dept_no = #{emp_dept_no}
+	</select>
+	<select id="empNameSearch" resultType="com.ss.paperless.employee.EmployeeDTO">
+		select * from employee where emp_name like CONCAT('%', #{searchQuery}, '%')
+	</select>
+	<select id="empEmailSearch" resultType="com.ss.paperless.employee.EmployeeDTO">
+		select * from employee where emp_email like CONCAT('%', #{searchQuery}, '%')
+	</select>
+	<select id="empDeptSearch" resultType="com.ss.paperless.employee.EmployeeDTO">
+		SELECT 
+   emp_no, 
+   emp_code,
+   emp_pw,
+   emp_name,
+   emp_email,
+   emp_phone,
+   emp_sign,
+   emp_profile,
+   emp_comp_no,
+   emp_dept_no,
+   emp_posi_no,
+   emp_enroll_date, 
+   emp_join_date,
+   emp_role,
+   dept_name, 
+   dept_team_name, 
+   posi_name
+   
+from 
+    Employee e
+join 
+    Department d ON e.emp_dept_no = d.dept_no
+join
+	Position p on e.emp_posi_no = p.posi_no where dept_name like CONCAT('%', #{searchQuery}, '%') or dept_team_name like CONCAT('%', #{searchQuery}, '%')
+	</select>
+	<select id="empPosiSearch" resultType="com.ss.paperless.employee.EmployeeDTO">
+		SELECT 
+   emp_no, 
+   emp_code,
+   emp_pw,
+   emp_name,
+   emp_email,
+   emp_phone,
+   emp_sign,
+   emp_profile,
+   emp_comp_no,
+   emp_dept_no,
+   emp_posi_no,
+   emp_enroll_date, 
+   emp_join_date,
+   emp_role,
+   dept_name, 
+   dept_team_name, 
+   posi_name
+   
+from 
+    Employee e
+join 
+    Department d ON e.emp_dept_no = d.dept_no
+join
+	Position p on e.emp_posi_no = p.posi_no where posi_name like CONCAT('%', #{searchQuery}, '%')
+	</select>
+	
+	<delete id="DeleteEmp" parameterType="Long">
+		delete from employee where emp_no = #{emp_no}
+	</delete>
+	<!-- emp_no: emp_no,
+            emp_code: id,
+            emp_name: name,
+            emp_pw: password,
+            emp_dept_no: departmentNumber,
+            emp_posi_no: position,
+            emp_email: email,
+            emp_phone: contact -->
+	<update id="userEdit" parameterType="com.ss.paperless.employee.EmployeeDTO">
+		update employee set emp_code =#{emp_code},emp_name =#{emp_name},emp_pw =#{emp_pw}
+		,emp_dept_no =#{emp_dept_no},emp_posi_no =#{emp_posi_no},
+		emp_email =#{emp_email},emp_phone =#{emp_phone} where emp_no =#{emp_no}
+	</update>
 </mapper>

@@ -14,7 +14,7 @@ target/
 .sts4-cache
 application-API-KEY.properties
 
-application-API-KEY.properties
+application-KEY.properties
 
 ### IntelliJ IDEA ###
 .idea
@@ -24,6 +24,7 @@ application-API-KEY.properties
 
 
 application-API-KEY.properties
+application-KEY.properties
 
 ### NetBeans ###
 /nbproject/private/
