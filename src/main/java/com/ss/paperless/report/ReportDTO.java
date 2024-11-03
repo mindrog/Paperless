@@ -36,14 +36,12 @@ public class ReportDTO {
 	private String draft_date; 		// 기안일
 
 	@JsonProperty("submission_date")
-
 	private LocalDateTime submission_date; 	// 상신일
 	private LocalDateTime cancel_date;  	// 상신 취소일
 	private String cancel_content;			// 상신 취소 사유
 	private String repo_type;				// 문서 타입
     
 	private String writer; 					// 기안자
-
 	@JsonProperty("selectedApprovers")
 	private List<EmployeeDTO> approver;				// 결재자
 
@@ -68,7 +66,6 @@ public class ReportDTO {
 	@JsonProperty("repoEndTime")
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDate repo_end_time;	// 마감 일자
-
 
 	// 구매
 	private int purch_repo_no;		// 구매 보고서 번호

@@ -89,6 +89,7 @@ const CompanyUserDraftFormWork = () => {
           </div>
           <div>
             <Button className={styles.pdfBtn} onClick={handleDownloadPdf}>pdf 변환</Button>
+
             <Button className={styles.apprSumbitBtn} onClick={handleSaveClick}>결재 상신</Button>
           </div>
         </div>

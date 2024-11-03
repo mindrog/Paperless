@@ -32,29 +32,21 @@ const CompanyUserDraftWriteWork = () => {
   const [selectedReferences, setSelectedReferences] = useState(location.state?.selectedReferences || []);
   const [selectedReceivers, setSelectedReceivers] = useState(location.state?.selectedReceivers || []);
   const [files, setFiles] = useState(location.state?.files || []);
-  const [showModal, setShowModal] = useState(false);
-  const [showCancelModal, setShowCancelModal] = useState(false);
-  const [showSaveModal, setShowSaveModal] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
-  const [saveDate, setSaveDate] = useState('');
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
+
+  const [showModal, setShowModal] = useState(false); // 결재선 모달 상태
+  const [showCancelModal, setShowCancelModal] = useState(false); // 취소 버튼 모달 상태
+  const [showSaveModal, setShowSaveModal] = useState(false); // 임시 저장 확인 모달 상태
+  const [isSaved, setIsSaved] = useState(false); // 임시 저장 여부
+  const [saveDate, setSaveDate] = useState(''); // 임시 저장 날짜
+  const [showAlert, setShowAlert] = useState(false); // 임시 저장 알림 상태
+  const [alertMessage, setAlertMessage] = useState(''); // 알림 메시지 상태 추가
+
   const [formErrors, setFormErrors] = useState({});
   const token = localStorage.getItem('jwt');
   const userData = useFetchData(token);
   const navigate = useNavigate();
-  const saveDraftRef = useRef(null);
 
-  useEffect(() => {
-    setReportDate(new Date().toLocaleString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    }));
-  }, []);
-
+  // 모달을 열고 닫는 함수
   const handleShowCancelModal = () => setShowCancelModal(true);
   const handleCloseCancelModal = () => setShowCancelModal(false);
 
@@ -99,7 +91,6 @@ const CompanyUserDraftWriteWork = () => {
       setAlertMessage("임시 저장에 실패했습니다.");
       setShowAlert(true);
     }
-
     setTimeout(() => setShowAlert(false), 5000);
   };
 
@@ -206,6 +197,7 @@ const CompanyUserDraftWriteWork = () => {
             </tr>
             <tr>
               <td colSpan={5} className={styles.centerContent}>
+                {/* files와 setFiles를 전달하여 FileUploader에서 파일 상태를 관리하도록 합니다 */}
                 <FileUploader files={files} setFiles={setFiles} />
               </td>
             </tr>
@@ -276,6 +268,7 @@ const CompanyUserDraftWriteWork = () => {
         selectedApprovers={selectedApprovers}
         selectedReferences={selectedReferences}
         selectedReceivers={selectedReceivers}
+        files={files} 
         token={token}
         setIsSaved={setIsSaved}
         setSaveDate={setSaveDate}

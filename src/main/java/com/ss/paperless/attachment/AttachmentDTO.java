@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Column;
 
 
+import javax.persistence.Column;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

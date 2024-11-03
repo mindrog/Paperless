@@ -1,4 +1,3 @@
-
 import React, { forwardRef, useImperativeHandle } from 'react';
 
 const HandleSaveDraftWork = forwardRef(({
@@ -15,7 +14,6 @@ const HandleSaveDraftWork = forwardRef(({
   token,
   setIsSaved,
   setSaveDate,
-
   setShowAlert,
   onSaveSuccess
 }, ref) => {

@@ -1,4 +1,3 @@
-// src/componentFetch/useFetchUserInfo.js
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -17,14 +16,10 @@ const useFetchUserInfo = (token) => {
           console.log('Fetched menu data:', data);
 
           if (data && typeof data === 'object') {
-            // const groupedData = Object.entries(data).map(([deptName, deptData]) => ({
-            //   deptName,
-            //   dept_code: deptData.dept_code || null, // dept_code 추출
-            //   teams: Object.values(deptData.employees).reduce((teams, employee) => {
-
-            const groupedData = Object.entries(data).map(([deptName, employees]) => ({
+            const groupedData = Object.entries(data).map(([deptName, deptData]) => ({
               deptName,
-              teams: employees.reduce((teams, employee) => {
+              dept_code: deptData.dept_code || null, // dept_code 추출
+              teams: Object.values(deptData.employees).reduce((teams, employee) => {
                 const teamName = employee.dept_team_name || '팀 없음';
                 if (!teams[teamName]) {
                   teams[teamName] = [];
@@ -35,7 +30,7 @@ const useFetchUserInfo = (token) => {
             }));
 
             setMenuList(groupedData);
-            console.log('Grouped menu list:', groupedData);
+            console.log('Grouped menu list with dept_code:', groupedData);
 
           } else {
             console.error("Data is not a valid object:", data);
@@ -57,4 +52,5 @@ const useFetchUserInfo = (token) => {
 };
 
 export default useFetchUserInfo;
+
 

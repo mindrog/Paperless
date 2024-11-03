@@ -34,7 +34,6 @@ public class EmployeeDTO {
     private String dept_name;
 
     @JsonProperty("dept_team_name")
-
     private String dept_team_name;
     private Long emp_posi_no;
     private String posi_name;
@@ -43,7 +42,7 @@ public class EmployeeDTO {
     private String emp_lastmsg;
     private String emp_lastemailmsg;
     private String emp_role;
-    
+
     // 결재 타입
     private int appr_delegate;
 
@@ -59,5 +58,4 @@ public class EmployeeDTO {
 
     private String deptName;
     private String type;
-
 }

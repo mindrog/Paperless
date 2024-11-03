@@ -66,6 +66,10 @@ const ApprovalLine = ({ showModal, handleModalClose, selectedApprovers,
   setSelectedReceivers }) => {
   const [activeTab, setActiveTab] = useState('approver');
 
+  // 콘솔
+  console.log("Selected References:", selectedReferences); // dept_code 포함 여부 확인
+  console.log("Selected Receivers:", selectedReceivers);   // dept_code 포함 여부 확인
+
   const handleTabSelect = (tab) => setActiveTab(tab);
 
   const updateList = (prevList, data) => {
@@ -149,6 +153,8 @@ const ApprovalLine = ({ showModal, handleModalClose, selectedApprovers,
       setSelectedReceivers((prev) => updateList(prev));
     }
   };
+
+
 
   const renderTable = (selectedPeople = [], type) => (
     <Table className={styles.selectedPeopleTable} bordered striped>

@@ -26,7 +26,6 @@ public class ReportService {
         return employeeRepository.findByEmpCode(empCode);
     }
 
-
     // emp_no 찾기
     public int getUserEmpNo(String empCode) {
         BigInteger empNoBigInt = BigInteger.valueOf(employeeRepository.findEmpNoByEmpCode(empCode));

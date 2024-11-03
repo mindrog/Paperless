@@ -1,10 +1,8 @@
-
 // TextEditor.js
 import React, { useState, useEffect } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import './textEditor.css';
-
 
 const TextEditor = ({ initialData = '', setData }) => {
     // CKEditor의 초기 데이터를 state로 관리
@@ -14,9 +12,6 @@ const TextEditor = ({ initialData = '', setData }) => {
     useEffect(() => {
         setEditorData(initialData);
     }, [initialData]);
-
-const TextEditor = ({ setData }) => {
-    const [editorData, setEditorData] = useState('');
 
     return (
         <div className="text-editor">
@@ -94,6 +89,5 @@ const TextEditor = ({ setData }) => {
         </div>
     );
 };
-}
 
 export default TextEditor;
