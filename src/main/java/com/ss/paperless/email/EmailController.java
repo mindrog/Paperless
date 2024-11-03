@@ -135,6 +135,7 @@ public class EmailController {
 			@RequestParam(value = "startDate", required = false) String startDateStr,
 			@RequestParam(value = "endDate", required = false) String endDateStr,
 			@RequestParam(value = "hasAttachment", defaultValue = "false") boolean hasAttachment,
+			@RequestParam(value = "folder", defaultValue = "inbox") String folder,
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size,
 			@RequestParam(value = "sortBy", defaultValue = "sendDate") String sortBy,
@@ -172,7 +173,7 @@ public class EmailController {
 
 			// 서비스 호출하여 이메일 목록 조회
 			Page<Emailmessage> emailPage = emailService.getEmailsByRecipientWithFilters(recipientId, sender,
-					recipientParam, subject, content, startDate, endDate, hasAttachment, pageRequest);
+					recipientParam, subject, content, startDate, endDate, hasAttachment, folder, pageRequest);
 
 			List<EmailDTO> emailDtoList = emailPage.getContent().stream().map(this::convertToDTO)
 					.collect(Collectors.toList());
@@ -195,6 +196,94 @@ public class EmailController {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(Collections.singletonMap("message", "이메일 목록을 불러오는 중 오류가 발생했습니다: " + e.getMessage()));
+		}
+	}
+
+	@PostMapping("/delete")
+	public ResponseEntity<?> deleteEmails(@RequestBody DeleteEmailsRequest deleteRequest, Principal principal) {
+		try {
+			// 현재 로그인한 사용자 확인
+			String currentUserEmpCode = principal.getName();
+			EmployeeEntity currentUser = employeeService.findByEmpCode(currentUserEmpCode);
+			if (currentUser == null) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 정보를 찾을 수 없습니다.");
+			}
+
+			// 삭제할 이메일 목록 조회
+			List<Long> emailIds = deleteRequest.getEmailIds();
+			List<Emailmessage> emailsToDelete = emailmessageRepository.findAllById(emailIds);
+
+			if (emailsToDelete.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("삭제할 이메일을 찾을 수 없습니다.");
+			}
+
+			for (Emailmessage email : emailsToDelete) {
+				// 권한 체크: 현재 사용자가 해당 이메일의 수신자, 참조자, 발신자인지 확인
+				boolean isAuthorized = email.getRecipient().getEmpNo().equals(currentUser.getEmpNo())
+						|| (email.getCc() != null && email.getCc().getEmpNo().equals(currentUser.getEmpNo()))
+						|| email.getWriter().getEmpNo().equals(currentUser.getEmpNo());
+
+				if (!isAuthorized) {
+					return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이메일에 접근할 권한이 없습니다.");
+				}
+
+				// 휴지통으로 이동 (Soft Delete)
+				email.setDeletedAt(LocalDateTime.now());
+			
+				emailmessageRepository.save(email);
+			}
+
+			return ResponseEntity.ok("선택한 이메일이 휴지통으로 이동되었습니다.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이메일 삭제 중 오류가 발생했습니다.");
+		}
+	}
+
+	/**
+	 * 이메일 영구 삭제 API
+	 *
+	 * @param deleteRequest 삭제할 이메일 ID 목록
+	 * @param principal     인증된 사용자 정보
+	 * @return 응답 메시지
+	 */
+	@PostMapping("/permanent-delete")
+	public ResponseEntity<?> permanentDeleteEmails(@RequestBody DeleteEmailsRequest deleteRequest,
+			Principal principal) {
+		try {
+			// 현재 로그인한 사용자 확인
+			String currentUserEmpCode = principal.getName();
+			EmployeeEntity currentUser = employeeService.findByEmpCode(currentUserEmpCode);
+			if (currentUser == null) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 정보를 찾을 수 없습니다.");
+			}
+
+			// 삭제할 이메일 목록 조회
+			List<Long> emailIds = deleteRequest.getEmailIds();
+			List<Emailmessage> emailsToDelete = emailmessageRepository.findAllById(emailIds);
+
+			if (emailsToDelete.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("삭제할 이메일을 찾을 수 없습니다.");
+			}
+
+			for (Emailmessage email : emailsToDelete) {
+				// 권한 체크: 현재 사용자가 해당 이메일의 수신자, 참조자, 발신자인지 확인
+				boolean isAuthorized = email.getRecipient().getEmpNo().equals(currentUser.getEmpNo())
+						|| (email.getCc() != null && email.getCc().getEmpNo().equals(currentUser.getEmpNo()))
+						|| email.getWriter().getEmpNo().equals(currentUser.getEmpNo());
+
+				if (!isAuthorized) {
+					return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이메일에 접근할 권한이 없습니다.");
+				}
+
+				// 영구 삭제 (Hard Delete)
+				emailmessageRepository.delete(email);
+			}
+
+			return ResponseEntity.ok("선택한 이메일이 영구 삭제되었습니다.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이메일 영구 삭제 중 오류가 발생했습니다.");
 		}
 	}
 
