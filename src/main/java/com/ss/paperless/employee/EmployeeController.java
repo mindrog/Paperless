@@ -87,7 +87,7 @@ public class EmployeeController {
     public List<String> GetTeamNameList(@RequestParam String dept_name){
     	return employeeService.GetTeamNameList(dept_name);
     }
-<<<<<<< HEAD
+
     @GetMapping("/getdeptno")
     public int GetDeptNo(@RequestParam String dept_name, @RequestParam String dept_team_name) {
     	
@@ -181,8 +181,5 @@ public class EmployeeController {
     }
     	
     }
-=======
 
-
->>>>>>> bs
 }
