@@ -1,11 +1,15 @@
 package com.ss.paperless.email;
 
+import com.ss.paperless.attachment.Attachment;
+import com.ss.paperless.attachment.AttachmentDTO;
+import com.ss.paperless.attachment.AttachmentRepository;
 import com.ss.paperless.company.CompanyEntity;
 import com.ss.paperless.company.CompanyService;
 import com.ss.paperless.company.DepartmentEntity;
 import com.ss.paperless.company.DepartmentService;
 import com.ss.paperless.employee.entity.EmployeeEntity;
 import com.ss.paperless.employee.EmployeeService;
+import com.ss.paperless.s3.S3Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
@@ -16,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.*;
@@ -30,15 +35,23 @@ public class EmailController {
 	private final EmailService emailService;
 	private final CompanyService companyService;
 	private final DepartmentService departmentService;
+	private final S3Service s3Service;
+	private final EmailAttachmentRepository emailAttachmentRepository;
+	private final AttachmentRepository attachmentRepository;
 
 	@Autowired
 	public EmailController(EmailmessageRepository emailmessageRepository, EmployeeService employeeService,
-			EmailService emailService, CompanyService companyService, DepartmentService departmentService) {
+			EmailService emailService, CompanyService companyService, DepartmentService departmentService,
+			S3Service s3Service, EmailAttachmentRepository emailAttachmentRepository,
+			AttachmentRepository attachmentRepository) {
 		this.emailmessageRepository = emailmessageRepository;
 		this.employeeService = employeeService;
 		this.emailService = emailService;
 		this.companyService = companyService;
 		this.departmentService = departmentService;
+		this.s3Service = s3Service;
+		this.emailAttachmentRepository = emailAttachmentRepository;
+		this.attachmentRepository = attachmentRepository;
 	}
 
 	/**
@@ -54,7 +67,9 @@ public class EmailController {
 	@PostMapping("/send")
 	public ResponseEntity<?> sendEmail(@RequestParam("recipientEmail") String recipientEmail,
 			@RequestParam(value = "ccEmail", required = false) String ccEmail, @RequestParam("title") String title,
-			@RequestParam("content") String content, Principal principal) {
+			@RequestParam("content") String content,
+			@RequestParam(value = "attachments", required = false) List<MultipartFile> attachments,
+			Principal principal) {
 
 		try {
 			// 현재 로그인한 사용자 정보 가져오기 (발신자)
@@ -67,7 +82,7 @@ public class EmailController {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("수신자를 찾을 수 없습니다.");
 			}
 
-			// 참조자 이메일로 Employee 조회 (선택 사항)
+			// 참조자 이메일로 Employee 조회
 			EmployeeEntity cc = null;
 			if (ccEmail != null && !ccEmail.isEmpty()) {
 				cc = employeeService.findByEmail(ccEmail);
@@ -88,7 +103,21 @@ public class EmailController {
 
 			emailmessageRepository.save(email);
 
-			// TODO: 첨부파일 기능 구현 예정
+			if (attachments != null && !attachments.isEmpty()) {
+				for (MultipartFile file : attachments) {
+					String fileUrl = s3Service.uploadFile(file, email.getEmailNo());
+					// Attachment 엔티티 생성 및 저장
+					Attachment attachment = Attachment.builder()
+							.attaKey("emails/" + email.getEmailNo() + "/" + file.getOriginalFilename()).attaUrl(fileUrl)
+							.attaOriginalName(file.getOriginalFilename()).attaSize(file.getSize()).build();
+					attachmentRepository.save(attachment);
+
+					// EmailAttachment 엔티티 생성 및 저장
+					EmailAttachment emailAttachment = EmailAttachment.builder().emailNo(email.getEmailNo())
+							.attaNo(attachment.getAttaNo()).email(email).attachment(attachment).build();
+					emailAttachmentRepository.save(emailAttachment);
+				}
+			}
 
 			return ResponseEntity.ok("이메일이 성공적으로 전송되었습니다.");
 		} catch (Exception e) {
@@ -111,7 +140,7 @@ public class EmailController {
 			@RequestParam(value = "sortBy", defaultValue = "sendDate") String sortBy,
 			@RequestParam(value = "sortDir", defaultValue = "desc") String sortDir) {
 		try {
-			// 날짜 문자열을 LocalDateTime으로 변환 (기존 코드 유지)
+			// 날짜 문자열을 LocalDateTime으로 변환
 			LocalDateTime startDate = null;
 			LocalDateTime endDate = null;
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -122,10 +151,10 @@ public class EmailController {
 				endDate = LocalDate.parse(endDateStr, formatter).atTime(23, 59, 59);
 			}
 
-			// 정렬 설정 (기존 코드 유지)
+			// 정렬 설정
 			Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
-			// 페이징 객체 생성 (기존 코드 유지)
+			// 페이징 객체 생성
 			PageRequest pageRequest = PageRequest.of(page, size, sort);
 
 			// 수신자 정보 가져오기
@@ -145,69 +174,10 @@ public class EmailController {
 			Page<Emailmessage> emailPage = emailService.getEmailsByRecipientWithFilters(recipientId, sender,
 					recipientParam, subject, content, startDate, endDate, hasAttachment, pageRequest);
 
-			// Emailmessage 엔티티를 EmailDTO로 변환
-			List<EmailDTO> emailDtoList = emailPage.getContent().stream().map(email -> {
-				EmailDTO dto = new EmailDTO();
-				dto.setEmailNo(email.getEmailNo());
-				dto.setTitle(email.getTitle());
-				dto.setContent(email.getContent());
-				dto.setStatus(email.getStatus());
-				dto.setSendDate(email.getSendDate().toString());
+			List<EmailDTO> emailDtoList = emailPage.getContent().stream().map(this::convertToDTO)
+					.collect(Collectors.toList());
 
-				// 발신자와 수신자 정보 가져오기
-				EmployeeEntity senderEntity = email.getWriter();
-				EmployeeEntity emailRecipient = email.getRecipient();
-
-				// 발신자 정보 설정
-				dto.setWriterEmail(senderEntity.getEmpEmail());
-				dto.setWriterName(senderEntity.getEmpName());
-
-				// 발신자의 회사 번호와 부서 번호 가져오기
-				Long senderCompanyNo = senderEntity.getEmpCompNo();
-				Long senderDeptNo = senderEntity.getEmpDeptNo();
-
-				// 발신자의 회사명과 부서명 가져오기
-				String senderCompanyName = "";
-				String senderDeptName = "";
-
-				CompanyEntity senderCompany = companyService.findByCompNo(senderCompanyNo);
-				if (senderCompany != null) {
-					senderCompanyName = senderCompany.getCompName();
-				}
-
-				DepartmentEntity senderDepartment = departmentService.findByDeptNo(senderDeptNo);
-				if (senderDepartment != null) {
-					senderDeptName = senderDepartment.getDeptName();
-				}
-
-				// 표시할 정보 설정
-				String writerDisplayInfo;
-
-				if (senderCompanyNo != null && recipientCompanyNo != null) {
-					if (senderCompanyNo.equals(recipientCompanyNo)) {
-						// 같은 회사인 경우 부서명 표시
-						writerDisplayInfo = "[" + senderDeptName + "] " + senderEntity.getEmpName();
-					} else {
-						// 다른 회사인 경우 회사명 표시
-						writerDisplayInfo = "[" + senderCompanyName + "] " + senderEntity.getEmpName();
-					}
-				} else {
-					// 회사 정보가 없는 경우 그냥 이름만 표시
-					writerDisplayInfo = senderEntity.getEmpName();
-				}
-
-				dto.setWriterDisplayInfo(writerDisplayInfo);
-
-				// 수신자와 참조자 이메일 설정 (기존 코드 유지)
-				dto.setRecipientEmail(emailRecipient.getEmpEmail());
-				if (email.getCc() != null) {
-					dto.setCcEmail(email.getCc().getEmpEmail());
-				}
-
-				return dto;
-			}).collect(Collectors.toList());
-
-			// 페이지 정보를 별도로 추출하여 응답 생성 (기존 코드 유지)
+			// 페이지 정보를 별도로 추출하여 응답 생성
 			Map<String, Object> response = new HashMap<>();
 			response.put("content", emailDtoList);
 			response.put("currentPage", emailPage.getNumber());
@@ -215,7 +185,9 @@ public class EmailController {
 			response.put("totalPages", emailPage.getTotalPages());
 
 			return ResponseEntity.ok(response);
-		} catch (DateTimeParseException e) {
+		} catch (
+
+		DateTimeParseException e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(Collections.singletonMap("message", "날짜 형식이 올바르지 않습니다. (YYYY-MM-DD)"));
@@ -229,7 +201,7 @@ public class EmailController {
 	@GetMapping("/{emailId}")
 	public ResponseEntity<?> getEmailById(@PathVariable Long emailId, Principal principal) {
 		try {
-			// 현재 로그인한 사용자 확인 
+			// 현재 로그인한 사용자 확인
 			String currentUserEmpCode = principal.getName();
 			EmployeeEntity currentUser = employeeService.findByEmpCode(currentUserEmpCode);
 			if (currentUser == null) {
@@ -253,62 +225,12 @@ public class EmailController {
 				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이메일에 접근할 권한이 없습니다.");
 			}
 
-			// Emailmessage 엔티티를 EmailDTO로 변환
-			EmailDTO dto = new EmailDTO();
-			dto.setEmailNo(email.getEmailNo());
-			dto.setTitle(email.getTitle());
-			dto.setContent(email.getContent());
-			dto.setStatus(email.getStatus());
-			dto.setSendDate(email.getSendDate().toString());
-
-			// 발신자 정보 설정 
-			EmployeeEntity senderEntity = email.getWriter();
-			dto.setWriterEmail(senderEntity.getEmpEmail());
-			dto.setWriterName(senderEntity.getEmpName());
-
-			Long senderCompanyNo = senderEntity.getEmpCompNo();
-			Long senderDeptNo = senderEntity.getEmpDeptNo();
-
-			String senderCompanyName = "";
-			String senderDeptName = "";
-
-			CompanyEntity senderCompany = companyService.findByCompNo(senderCompanyNo);
-			if (senderCompany != null) {
-				senderCompanyName = senderCompany.getCompName();
+			if ("unread".equalsIgnoreCase(email.getStatus())) {
+				emailService.updateEmailStatus(emailId, "read");
+				email.setStatus("read"); // 로컬 객체의 상태를 변경하여 DTO에 반영
 			}
 
-			DepartmentEntity senderDepartment = departmentService.findByDeptNo(senderDeptNo);
-			if (senderDepartment != null) {
-				senderDeptName = senderDepartment.getDeptName();
-			}
-
-			// 표시할 정보 설정
-			String writerDisplayInfo;
-
-			Long recipientCompanyNo = currentUser.getEmpCompNo();
-
-			if (senderCompanyNo != null && recipientCompanyNo != null) {
-				if (senderCompanyNo.equals(recipientCompanyNo)) {
-					// 같은 회사인 경우 부서명 표시
-					writerDisplayInfo = "[" + senderDeptName + "] " + senderEntity.getEmpName();
-				} else {
-					// 다른 회사인 경우 회사명 표시
-					writerDisplayInfo = "[" + senderCompanyName + "] " + senderEntity.getEmpName();
-				}
-			} else {
-				// 회사 정보가 없는 경우 그냥 이름만 표시
-				writerDisplayInfo = senderEntity.getEmpName();
-			}
-
-			dto.setWriterDisplayInfo(writerDisplayInfo);
-
-			// 수신자와 참조자 이메일 설정
-			dto.setRecipientEmail(email.getRecipient().getEmpEmail());
-			if (email.getCc() != null) {
-				dto.setCcEmail(email.getCc().getEmpEmail());
-			}
-
-			
+			EmailDTO dto = convertToDTO(email);
 
 			return ResponseEntity.ok(dto);
 		} catch (Exception e) {
@@ -316,5 +238,77 @@ public class EmailController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(Collections.singletonMap("message", "이메일을 불러오는 중 오류가 발생했습니다: " + e.getMessage()));
 		}
+	}
+
+	private EmailDTO convertToDTO(Emailmessage email) {
+		EmailDTO dto = new EmailDTO();
+		dto.setEmailNo(email.getEmailNo());
+		dto.setTitle(email.getTitle());
+		dto.setContent(email.getContent());
+		dto.setStatus(email.getStatus());
+		dto.setSendDate(email.getSendDate().toString());
+
+		// 발신자 정보 설정
+		EmployeeEntity senderEntity = email.getWriter();
+		dto.setWriterEmail(senderEntity.getEmpEmail());
+		dto.setWriterName(senderEntity.getEmpName());
+
+		Long senderCompanyNo = senderEntity.getEmpCompNo();
+		Long senderDeptNo = senderEntity.getEmpDeptNo();
+
+		String senderCompanyName = "";
+		String senderDeptName = "";
+
+		CompanyEntity senderCompany = companyService.findByCompNo(senderCompanyNo);
+		if (senderCompany != null) {
+			senderCompanyName = senderCompany.getCompName();
+		}
+
+		DepartmentEntity senderDepartment = departmentService.findByDeptNo(senderDeptNo);
+		if (senderDepartment != null) {
+			senderDeptName = senderDepartment.getDeptName();
+		}
+
+		// 표시할 정보 설정
+		String writerDisplayInfo;
+
+		Long recipientCompanyNo = email.getRecipient().getEmpCompNo();
+
+		if (senderCompanyNo != null && recipientCompanyNo != null) {
+			if (senderCompanyNo.equals(recipientCompanyNo)) {
+				// 같은 회사인 경우 부서명 표시
+				writerDisplayInfo = "[" + senderDeptName + "] " + senderEntity.getEmpName();
+			} else {
+				// 다른 회사인 경우 회사명 표시
+				writerDisplayInfo = "[" + senderCompanyName + "] " + senderEntity.getEmpName();
+			}
+		} else {
+			// 회사 정보가 없는 경우 그냥 이름만 표시
+			writerDisplayInfo = senderEntity.getEmpName();
+		}
+
+		dto.setWriterDisplayInfo(writerDisplayInfo);
+
+		// 수신자와 참조자 이메일 설정
+		dto.setRecipientEmail(email.getRecipient().getEmpEmail());
+		if (email.getCc() != null) {
+			dto.setCcEmail(email.getCc().getEmpEmail());
+		}
+
+		// 첨부파일 정보 설정
+		List<EmailAttachment> emailAttachments = emailAttachmentRepository.findByEmailNo(email.getEmailNo());
+		if (emailAttachments != null && !emailAttachments.isEmpty()) {
+			dto.setHasAttachment(true);
+			List<AttachmentDTO> attachmentDTOs = emailAttachments.stream().map(emailAttachment -> {
+				Attachment attachment = emailAttachment.getAttachment();
+				return new AttachmentDTO(attachment.getAttaOriginalName(), attachment.getAttaUrl());
+			}).collect(Collectors.toList());
+			dto.setAttachments(attachmentDTOs);
+		} else {
+			dto.setHasAttachment(false);
+			dto.setAttachments(Collections.emptyList());
+		}
+
+		return dto;
 	}
 }
