@@ -1,5 +1,9 @@
 package com.ss.paperless.email;
 
+import java.util.List;
+
+import com.ss.paperless.attachment.AttachmentDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,4 +23,7 @@ public class EmailDTO {
 	
     private String writerName;
     private String writerDisplayInfo;
+    
+    private boolean hasAttachment;
+    private List<AttachmentDTO> attachments;
 }
