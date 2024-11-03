@@ -100,4 +100,14 @@ public class EmailSpecification {
             return builder.equal(root.join("recipient").get("empNo"), recipientId);
         };
     }
+    
+    public static Specification<Emailmessage> folderEquals(String folder) {
+        return (root, query, builder) -> {
+            if ("trash".equalsIgnoreCase(folder)) {
+                return builder.isNotNull(root.get("deletedAt"));
+            } else { 
+                return builder.isNull(root.get("deletedAt"));
+            }
+        };
+    }
 }
