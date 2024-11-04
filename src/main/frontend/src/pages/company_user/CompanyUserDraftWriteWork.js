@@ -19,7 +19,7 @@ const CompanyUserDraftWriteWork = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('jwt');
   const userData = useFetchData(token); // 사용자 정보 가져오기
-  
+
   // 임시 저장 관련 상태 변수
   const [reportId, setReportId] = useState(null); // reportId 저장
   const saveDraftRef = useRef(null); // HandleSaveAsDraft 컴포넌트 접근을 위한 ref
@@ -37,16 +37,15 @@ const CompanyUserDraftWriteWork = () => {
   const [showAlert, setShowAlert] = useState(false); // 알림 상태
   const [alertMessage, setAlertMessage] = useState(''); // 알림 메시지
   const [saveDate, setSaveDate] = useState(''); // 임시 저장 날짜
-  const [isSaved, setIsSaved] = useState(false); // 임시 저장 여부
+  const [showCancelModal, setShowCancelModal] = useState(false); // 취소 버튼 모달 상태
 
   // 결재선 관련 상태 변수
   const [selectedApprovers, setSelectedApprovers] = useState(location.state?.selectedApprovers || []);
   const [selectedReferences, setSelectedReferences] = useState(location.state?.selectedReferences || []);
   const [selectedReceivers, setSelectedReceivers] = useState(location.state?.selectedReceivers || []);
   const [files, setFiles] = useState(location.state?.files || []);
-
-  const [formErrors, setFormErrors] = useState({});
-  const [showCancelModal, setShowCancelModal] = useState(false); // 취소 버튼 모달 상태
+  const [formErrors, setFormErrors] = useState({}); // 폼 오류 상태 추가
+  const [isSaved, setIsSaved] = useState(false); // 임시 저장 상태 추가
 
   // 작성일 자동 설정
   useEffect(() => {
@@ -58,6 +57,10 @@ const CompanyUserDraftWriteWork = () => {
       minute: '2-digit',
     }));
   }, []);
+
+  // 모달 열고 닫는 함수
+  const handleApprLineModal = () => setShowModal(true);
+  const handleModalClose = () => setShowModal(false);
 
   // 임시 저장 버튼 클릭 시 호출
   const handleSaveAsDraftClick = async () => {
@@ -73,7 +76,7 @@ const CompanyUserDraftWriteWork = () => {
     try {
       // 임시 저장 API 호출
       const result = await saveDraftRef.current(); // saveDraftToDB 실행 후 결과 반환
-      
+
       // reportId 업데이트
       if (result && result.reportId) {
         setReportId(result.reportId);
@@ -100,8 +103,7 @@ const CompanyUserDraftWriteWork = () => {
     if (!reportContent) errors.reportContent = true;
 
     if (Object.keys(errors).length > 0) {
-      // 필수 값 누락 시 에러 메시지 표시
-      setFormErrors(errors);
+      setFormErrors(errors); // 폼 오류 설정
       return;
     }
 
@@ -147,7 +149,7 @@ const CompanyUserDraftWriteWork = () => {
             <p>Loading user information...</p> 
           )}
           {userData && (
-            <ApprovalLineTable handleApprLineModal={() => setShowModal(true)} reporter={userData.emp_name} posiName={userData.posi_name} approvers={selectedApprovers} />
+            <ApprovalLineTable handleApprLineModal={handleApprLineModal} reporter={userData.emp_name} posiName={userData.posi_name} approvers={selectedApprovers} />
           )}
         </div>
 
@@ -192,6 +194,20 @@ const CompanyUserDraftWriteWork = () => {
           </tbody>
         </Table>
       </Form>
+
+      {/* 결재선 모달 */}
+      {showModal && (
+        <ApprovalLine
+          showModal={showModal}
+          handleModalClose={handleModalClose} // 모달 닫기 함수 전달
+          selectedApprovers={selectedApprovers}
+          setSelectedApprovers={setSelectedApprovers}
+          selectedReferences={selectedReferences}
+          setSelectedReferences={setSelectedReferences}
+          selectedReceivers={selectedReceivers}
+          setSelectedReceivers={setSelectedReceivers}
+        />
+      )}
 
       {/* 임시 저장 */}
       <HandleSaveAsDraft
