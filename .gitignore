@@ -12,8 +12,6 @@ target/
 .settings
 .springBeans
 .sts4-cache
-application-API-KEY.properties
-
 application-KEY.properties
 
 ### IntelliJ IDEA ###
