@@ -170,6 +170,7 @@ CREATE TABLE `Emailmessage` (
     `email_cc` BIGINT DEFAULT NULL,
     `email_status` VARCHAR(100) NOT NULL DEFAULT 'unread',
     `email_send_date` TIMESTAMP NOT NULL DEFAULT NOW(),
+    `email_deleted_date` TIMESTAMP DEFAULT null,
     PRIMARY KEY (`email_no`),
     FOREIGN KEY (`email_writer`) REFERENCES `Employee` (`emp_no`),
     FOREIGN KEY (`email_recipient`) REFERENCES `Employee` (`emp_no`),
@@ -536,9 +537,9 @@ INSERT INTO `Emailmessage` (
     `email_status`, 
     `email_send_date`
 ) VALUES
-(1, 'test 1', 'test 1', 3, NULL, 'unread', NOW()),
+(1, 'test file 1', 'test file 1', 3, NULL, 'unread', NOW()),
 (1, 'test 2', 'test 2', 3, NULL, 'unread', NOW()),
-(1, 'test 3', 'test 3', 3, NULL, 'unread', NOW()),
+(1, 'test file 3', 'test file 3', 3, NULL, 'unread', NOW()),
 (1, 'test 4', 'test 4', 3, NULL, 'unread', NOW()),
 (1, 'test 5', 'test 5', 3, NULL, 'unread', NOW()),
 (1, 'test 6', 'test 6', 3, NULL, 'unread', NOW()),
@@ -558,9 +559,26 @@ INSERT INTO `Emailmessage` (
 (1, 'test 20', 'test 20', 3, NULL, 'unread', NOW()),
 (1, 'test 21', 'test 21', 3, NULL, 'unread', NOW()),
 (1, 'test 22', 'test 22', 3, NULL, 'unread', NOW()),
-(1, 'test 23', 'test 23', 3, NULL, 'unread', NOW()),
-(1, 'test 24', 'test 24', 3, NULL, 'unread', NOW()),
-(1, 'test 25', 'test 25', 3, NULL, 'unread', NOW());
+(4, 'test 23', 'test 23', 3, NULL, 'unread', NOW()),
+(5, 'test 24', 'test 24', 3, NULL, 'unread', NOW()),
+(6, 'test 25', 'test 25', 3, NULL, 'unread', NOW());
+INSERT INTO `Attachment`(
+	`atta_key`,
+    `atta_url`,
+    `atta_original_name`,
+    `atta_size`) values
+    ('emails/1/KakaoTalk_20241001_133512985.jpg','https://paper--less.s3.ap-northeast-2.amazonaws.com/emails/1/1730618981872_KakaoTalk_20241001_133512985.jpg'
+    ,'KakaoTalk_20241001_133512985.jpg','304554'),
+    ('emails/3/KakaoTalk_20240812_040956718_03.jpg','https://paper--less.s3.ap-northeast-2.amazonaws.com/emails/3/1730618968181_KakaoTalk_20240812_040956718_03.jpg'
+    ,'KakaoTalk_20240812_040956718_03.jpg','421916');
+    
+INSERT INTO `EmailAttachment`(
+	`email_no`,
+    `atta_no`
+) values
+(1,1),
+(3,2);
+
 
 commit;
 
