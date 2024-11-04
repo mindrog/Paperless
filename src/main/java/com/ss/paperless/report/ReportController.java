@@ -5,10 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ss.paperless.employee.EmployeeDTO;
 
@@ -39,5 +36,18 @@ public class ReportController {
 
         return ResponseEntity.ok(employeeDTO);
     }
+
+    @PostMapping("/saveasdraft")
+    public ResponseEntity<EmployeeDTO> saveAsDraftReport (@RequestBody ReportDTO reportDTO) {
+        String emp_code =  SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("saveAsDraftReport - emp_code : " + emp_code);
+        System.out.println("saveAsDraftReport - reportDTO : " + reportDTO);
+
+        int res = reportService.AddSaveAsDraftReportData(reportDTO);
+
+        return ResponseEntity.ok(new EmployeeDTO());
+    }
+
+
 
 }
