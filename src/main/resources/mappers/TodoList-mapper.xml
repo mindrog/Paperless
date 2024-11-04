@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ss.paperless.todolist.TodolistMapper">
+	<select id="getTodoList" parameterType="String"
+		resultType="com.ss.paperless.todolist.TodolistDTO">
+		SELECT
+		t.*
+		FROM
+		todolist t
+		LEFT JOIN
+		employee e ON e.emp_no =
+		t.todo_emp_no
+		WHERE
+		e.emp_code = #{emp_code}
+	</select>
+
+	<update id="updateTodoList"
+		parameterType="com.ss.paperless.todolist.TodolistDTO">
+		UPDATE todolist
+		SET
+		todo_content = #{todo_content},
+		todo_date = CURRENT_TIMESTAMP
+		WHERE
+		todo_no = #{todo_no}
+		AND todo_emp_no = (SELECT emp_no FROM employee WHERE emp_code = #{emp_code})
+	</update>
+</mapper>

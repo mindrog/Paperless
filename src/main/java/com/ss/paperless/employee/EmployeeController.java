@@ -107,6 +107,8 @@ public class EmployeeController {
     public int userInsert(@RequestBody EmployeeDTO emp) {
     	System.out.println("userinsert located...");
     	System.out.println(emp);
+    	String encodedPW = passwordEncoder.encode(emp.getEmp_pw());
+    	emp.setEmp_pw(encodedPW);
     	emp.setEmp_role("user");
     	emp.setEmp_sign(emp.getEmp_name()+" 서명");
     	emp.setEmp_profile("https://via.placeholder.com/60");
@@ -119,7 +121,8 @@ public class EmployeeController {
     @PostMapping("useredit")
     public int userEdit(@RequestBody EmployeeDTO emp) {
     	System.out.println("edit emp : " + emp);
-    	
+    	String encodedPW = passwordEncoder.encode(emp.getEmp_pw());
+    	emp.setEmp_pw(encodedPW);
     	return employeeService.userEdit(emp);
     }
     @GetMapping("/getemps")
