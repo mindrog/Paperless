@@ -421,32 +421,38 @@ function CompanyUserChatRoom() {
             const selectedEmpNo = member.emp_no;
             console.log('selectedEmpNo:', selectedEmpNo);
 
-            // 현재 채팅방 목록에서 해당 참여자들로 이루어진 채팅방을 찾기
-            let existingChatRoom = chatRoomList.find(room => room.participantNos.includes(user.emp_no) && room.participantNos.includes(selectedEmpNo));
+            console.log('chatRoomList:', chatRoomList);
+
+            // 현재 채팅방 목록에서 해당 참여자들로 이루어진 일대일 채팅방을 찾기
+            const existingChatRoom = chatRoomList.find(room => {
+                const participantNos = room.participantNos || [];
+                return participantNos.length === 2 && participantNos[0] === selectedEmpNo && participantNos.includes(user.emp_no);
+            });
+            console.log('existingChatRoom:', existingChatRoom);
 
             // 존재하거나 새로 생성한 채팅방으로 이동
             if (existingChatRoom) {
+                console.log('존재하는 채팅방으로 연결..');
                 chatting(existingChatRoom.room_no);
                 return;
             }
 
             // 채팅방이 없다면 새로운 채팅방 생성
-            if (!existingChatRoom) {
-                // 채팅방이 존재하지 않는 경우 새로운 채팅방을 생성
-                const roomDate = format(new Date(), 'yyyy-MM-dd HH:mm');
-                const newRoomData = {
-                    room_date: roomDate,
-                    room_participants: [user.emp_no, selectedEmpNo],
-                };
+            console.log('새 채팅방으로 연결..');
+            // 채팅방이 존재하지 않는 경우 새로운 채팅방을 생성
+            const roomDate = format(new Date(), 'yyyy-MM-dd HH:mm');
+            const newRoomData = {
+                room_date: roomDate,
+                room_participants: [user.emp_no, selectedEmpNo],
+            };
 
-                // PUT 요청으로 새로운 채팅방 생성
-                const response = await api.createChatRoom(newRoomData);
+            // PUT 요청으로 새로운 채팅방 생성
+            const response = await api.createChatRoom(newRoomData);
 
-                if (response && response.data) {
-                    // 새로 생성된 채팅방으로 연결
-                    chatting(response.data.room_no);
-                    return;
-                }
+            if (response && response.data) {
+                // 새로 생성된 채팅방으로 연결
+                chatting(response.data.room_no);
+                return;
             }
             console.log('existingChatRoom:', existingChatRoom);
         } catch (error) {
