@@ -1,5 +1,6 @@
 package com.ss.paperless.report;
 
+import com.ss.paperless.employee.EmployeeDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

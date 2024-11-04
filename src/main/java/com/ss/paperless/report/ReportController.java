@@ -159,4 +159,17 @@ public class ReportController {
             return ResponseEntity.status(500).body("Failed to save report: " + e.getMessage());
         }
     }
+
+    @PostMapping("/saveasdraft")
+    public ResponseEntity<EmployeeDTO> saveAsDraftReport (@RequestBody ReportDTO reportDTO) {
+        String emp_code =  SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("saveAsDraftReport - emp_code : " + emp_code);
+        System.out.println("saveAsDraftReport - reportDTO : " + reportDTO);
+
+        int res = reportService.AddSaveAsDraftReportData(reportDTO);
+
+        return ResponseEntity.ok(new EmployeeDTO());
+    }
+
+
 }

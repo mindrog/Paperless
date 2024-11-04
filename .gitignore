@@ -14,15 +14,16 @@ target/
 .sts4-cache
 application-KEY.properties
 
+
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
-
-
 application-API-KEY.properties
 application-KEY.properties
+
 
 ### NetBeans ###
 /nbproject/private/

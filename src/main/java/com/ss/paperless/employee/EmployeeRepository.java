@@ -16,4 +16,5 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Intege
 	// 민경 - emp_no만 리턴
 	@Query("SELECT e.empNo FROM EmployeeEntity e WHERE e.empCode = :empCode")
 	int findEmpNoByEmpCode(String empCode);
+
 }

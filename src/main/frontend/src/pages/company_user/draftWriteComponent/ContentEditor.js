@@ -10,4 +10,6 @@ const ContentEditor = ({ reportContent = '', setReportContent, formErrors = {} }
   </div>
 );
 
+
 export default ContentEditor;
+

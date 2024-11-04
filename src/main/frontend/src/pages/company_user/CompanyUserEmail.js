@@ -51,7 +51,7 @@ function CompanyUserEmail() {
 
     // JWT 토큰 가져오기
     const getToken = () => {
-        return localStorage.getItem('jwt'); 
+    return localStorage.getItem('jwt'); 
     };
 
     // Redux에서 사용자 정보 가져오기
@@ -108,13 +108,15 @@ function CompanyUserEmail() {
         // 페이지네이션 파라미터 추가
         queryParams.append('page', currentPage - 1);
         queryParams.append('size', emailsPerPage);
-
         console.log('emails params:', queryParams.toString()); 
+
+
 
         fetch(`${backendUrl}/api/emails/list/${recipientId}?${queryParams.toString()}`, {
             method: 'GET',
             headers: {
                 'Authorization': getToken(), 
+
                 'Content-Type': 'application/json',
             },
         })
@@ -141,7 +143,6 @@ function CompanyUserEmail() {
         setCurrentPage(1);
         setSelectAll(false);
         setSelectedEmails([]);
-        
     };
 
     // useEffect에서 fetchEmails 호출
@@ -244,6 +245,7 @@ function CompanyUserEmail() {
                     setSelectAll(false);
                     setCurrentPage(1);
                     fetchEmails(); 
+
                     alert('선택한 이메일이 영구 삭제되었습니다.');
                 } else {
                     const errorText = await response.text();
@@ -253,6 +255,40 @@ function CompanyUserEmail() {
             .catch(error => {
                 console.error('이메일 영구 삭제 중 오류 발생:', error);
                 alert('이메일을 영구 삭제하는 중 오류가 발생했습니다: ' + error.message);
+            });
+    };
+
+    const handleRestore = () => {
+        if (selectedEmails.length === 0) return;
+
+        if (!window.confirm("선택한 이메일을 복구하시겠습니까?")) {
+            return;
+        }
+
+        fetch(`${backendUrl}/api/emails/restore`, { // 백엔드 API 엔드포인트 확인 필요
+            method: 'POST',
+            headers: {
+                'Authorization': getToken(),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ emailIds: selectedEmails }),
+        })
+            .then(async response => {
+                if (response.ok) {
+                    // 복구 성공 시 이메일 목록 재조회
+                    setSelectedEmails([]);
+                    setSelectAll(false);
+                    setCurrentPage(1);
+                    fetchEmails();
+                    alert('선택한 이메일이 복구되었습니다.');
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText);
+                }
+            })
+            .catch(error => {
+                console.error('이메일 복구 중 오류 발생:', error);
+                alert('이메일을 복구하는 중 오류가 발생했습니다: ' + error.message);
             });
     };
 
@@ -397,15 +433,38 @@ function CompanyUserEmail() {
                             >
                                 전달
                             </button>
+                            <button
+                                className={`${styles['btn']} ${folder === "trash"}`}
+                                onClick={() => handleFolderChange("trash")}
+                                disabled={folder === "trash"}
+                            >
+                                <FontAwesomeIcon icon={faTrashAlt} />
+                            </button>
                         </>
                     ) : (
                         <>
+                            <button
+                                className={styles['btn']}
+
+                                onClick={handleRestore}
+                                disabled={selectedEmails.length === 0}
+                            >
+                                복구
+                            </button>
                             <button
                                 className={styles['btn']}
                                 onClick={handlePermanentDelete}
                                 disabled={selectedEmails.length === 0}
                             >
                                 영구 삭제
+                            </button>
+
+                            <button
+                                className={`${styles['btn']} ${folder === "inbox"}`}
+                                onClick={() => handleFolderChange("inbox")}
+                                disabled={folder === "inbox"}
+                            >
+                                <FontAwesomeIcon icon={faEnvelope} />
                             </button>
                         </>
                     )}
@@ -425,6 +484,7 @@ function CompanyUserEmail() {
                     >
                         <FontAwesomeIcon icon={faTrashAlt} /> 
                     </button>
+
                 </div>
                 {/* 검색 바 및 버튼 추가 */}
                 <div className={styles['search-bar']}>

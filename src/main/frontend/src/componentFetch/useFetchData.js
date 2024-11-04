@@ -13,6 +13,8 @@ const useFetchData = (token) => {
       if (token) {
 
         console.log("useFetchData if문 실행!!!");
+        console.log("token : " + token);
+
 
         try {
           const response = await axios.get('/api/infolist', {

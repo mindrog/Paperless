@@ -33,7 +33,7 @@ const HandleSaveAsDraft = forwardRef(({
       formData.append('selectedReceivers', JSON.stringify(selectedReceivers));
 
       // 파일 배열 추가
-      files.forEach((file, index) => {
+      files.forEach((file) => {
         formData.append('files', file); // `files` 키로 여러 파일을 전송할 수 있음
       });
 

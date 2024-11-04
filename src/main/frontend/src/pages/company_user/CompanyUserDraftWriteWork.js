@@ -33,7 +33,12 @@ const CompanyUserDraftWriteWork = () => {
   const [selectedReceivers, setSelectedReceivers] = useState(location.state?.selectedReceivers || []);
   const [files, setFiles] = useState(location.state?.files || []);
 
+  
+
   const [showModal, setShowModal] = useState(false); // 결재선 모달 상태
+
+  
+
   const [showCancelModal, setShowCancelModal] = useState(false); // 취소 버튼 모달 상태
   const [showSaveModal, setShowSaveModal] = useState(false); // 임시 저장 확인 모달 상태
   const [isSaved, setIsSaved] = useState(false); // 임시 저장 여부
@@ -44,6 +49,17 @@ const CompanyUserDraftWriteWork = () => {
   const [formErrors, setFormErrors] = useState({});
   const token = localStorage.getItem('jwt');
   const userData = useFetchData(token);
+
+  useEffect(() => {
+    setReportDate(new Date().toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }));
+  }, []);
+
   const navigate = useNavigate();
 
   // 모달을 열고 닫는 함수
@@ -116,6 +132,34 @@ const CompanyUserDraftWriteWork = () => {
     });
   };
 
+      // 성공 시 Alert에 성공 메시지 표시
+      setAlertMessage(`임시 저장되었습니다. 현재 날짜: ${currentDate}`);
+      setShowAlert(true);
+    } catch (error) {
+      // 실패 시 Alert에 실패 메시지 표시
+      console.error("Error saving draft:", error);
+      setAlertMessage("임시 저장에 실패했습니다.");
+      setShowAlert(true);
+    }
+
+    // 5초 후 Alert 창 자동 닫기
+    setTimeout(() => setShowAlert(false), 5000);
+  };
+
+
+  const handleSubmitClick = () => {
+    const errors = {};
+    if (!reportTitle) errors.reportTitle = true;
+    if (!reportContent) errors.reportContent = true;
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    navigate('/company/user/draft/form/work');
+  };
+
   return (
     <div className="container">
       <h2 className={styles.pageTitle}>업무 보고 기안</h2>
@@ -173,6 +217,7 @@ const CompanyUserDraftWriteWork = () => {
                       </>
                     )}
                     {index < selectedReceivers.length - 1 && ', '}
+
                   </span>
                 ))}
               </td>
@@ -209,6 +254,19 @@ const CompanyUserDraftWriteWork = () => {
         setShowAlert={setShowAlert}
       />
 
+      <SaveModals
+        showCancelModal={showCancelModal} // 주석 처리한 showCancelModal
+        handleCloseCancelModal={handleCloseCancelModal}
+        handleSaveAsDraftAndRedirect={handleSaveAsDraftAndRedirect}
+        showSaveModal={showSaveModal} // 주석 처리한 showSaveModal
+        alertMessage={alertMessage}
+        handleRedirectAfterSave={handleRedirectAfterSave}
+        showAlert={showAlert}
+        saveDate={saveDate}
+        setShowAlert={setShowAlert}
+      />
+
+      {/* 결재선 지정 모달 */}
       {showModal && (
         <ApprovalLine showModal={showModal} handleModalClose={handleModalClose}
           selectedApprovers={selectedApprovers}
@@ -231,6 +289,8 @@ const CompanyUserDraftWriteWork = () => {
         </Button>
       </div>
 
+
+      {/* 임시 저장 */}
       <HandleSaveAsDraft
         ref={saveDraftRef}
         reportTitle={reportTitle}
@@ -250,6 +310,7 @@ const CompanyUserDraftWriteWork = () => {
         setAlertMessage={setAlertMessage}
       />
 
+      {/* 저장 (미리보기 폼 이동) */}
       <HandleSaveDraft
         reportTitle={reportTitle}
         reportContent={reportContent}
@@ -260,7 +321,6 @@ const CompanyUserDraftWriteWork = () => {
         selectedApprovers={selectedApprovers}
         selectedReferences={selectedReferences}
         selectedReceivers={selectedReceivers}
-        files={files} 
         token={token}
         setIsSaved={setIsSaved}
         setSaveDate={setSaveDate}

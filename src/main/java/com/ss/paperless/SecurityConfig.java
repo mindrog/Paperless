@@ -80,6 +80,7 @@ public class SecurityConfig {
 				.permitAll().mvcMatchers("/api/updateEmp").hasRole("admin")
 				.mvcMatchers("/api/emails/send").authenticated().anyRequest().authenticated());
 
+
 		http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 		http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil),
 				UsernamePasswordAuthenticationFilter.class);
