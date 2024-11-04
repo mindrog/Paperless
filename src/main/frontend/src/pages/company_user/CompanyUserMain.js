@@ -1,41 +1,12 @@
-import React from 'react';
+// CompanyUserMain.js
+
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../../styles/company/company_main.module.css';
 import '../../styles/style.css';
 import Menubar from '../layout/menubar';
 import GraphChart from '../layout/GraphChart';
 import axios from 'axios';
-const mailboxData = [
-    {
-        id: 1,
-        title: "Project Update",
-        writer: "Mark",
-        received_at: "2024-10-16",
-    },
-    {
-        id: 2,
-        title: "Meeting Schedule",
-        writer: "John",
-        received_at: "2024-10-11",
-    },
-    {
-        id: 3,
-        title: "Invoice Submission",
-        writer: "Jane",
-        received_at: "2024-10-11",
-    },
-    {
-        id: 4,
-        title: "Meeting Project",
-        writer: "Mark",
-        received_at: "2024-10-09",
-    },
-    {
-        id: 5,
-        title: "Invoice Submission Update",
-        writer: "Jane",
-        received_at: "2024-10-03",
-    }
-];
 
 const reportData = [
     {
@@ -75,17 +46,68 @@ const reportData = [
     },
 ];
 
+
+
 function CompanyUserMain() {
+    const [mailboxData, setMailboxData] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const token = localStorage.getItem('jwt');
-    
-    axios.get('http://localhost:8080/api/userinfo', {
-        headers: {
-            'Authorization': token // 발급받은 토큰
-        }
-    })
-    .then(response => console.log(response.data))
-    .catch(error => console.error('Error:', error));
-    
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchEmails = async () => {
+            try {
+                // 사용자 정보 가져오기
+                const userInfoResponse = await axios.get('/api/userinfo', {
+                    headers: {
+                        'Authorization': token
+                    }
+                });
+                const userInfo = userInfoResponse.data;
+                const recipientId = userInfo.emp_no;
+
+                // 이메일 목록 가져오기 (가장 최근 5개)
+                const emailsResponse = await axios.get(`/api/emails/list/${recipientId}`, {
+                    headers: {
+                        'Authorization': token
+                    },
+                    params: {
+                        folder: 'inbox',
+                        page: 0,
+                        size: 5,
+                        sortBy: 'sendDate',
+                        sortDir: 'desc'
+                    }
+                });
+
+                const emails = emailsResponse.data.content;
+                setMailboxData(emails);
+                setIsLoading(false);
+            } catch (err) {
+                console.error('이메일 데이터를 가져오는 중 오류 발생:', err);
+                setError('이메일 데이터를 가져오는 중 오류가 발생했습니다.');
+                setIsLoading(false);
+            }
+        };
+
+        fetchEmails();
+    }, [token]);
+
+    const handleEmailClick = (email) => {
+        navigate('/Company/user/email/detail', { state: { emailNo: email.emailNo } });
+        console.log(email.emailNo);
+    };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+
     return (
         <div className="container-xl conbox1">
             <Menubar />
@@ -93,30 +115,44 @@ function CompanyUserMain() {
                 <div className="container text-center">
                     <div className={styles.mainbox}>
                         <div className={styles.gridContainer}>
+                            {/* 메일함 섹션 */}
                             <div className={`${styles.gridItem} ${styles.gridItemMailbox}`}>
                                 <h3 className={styles.colTitle}>메일함</h3>
-                                {/* <hr className={styles.titleBorderBar} /> */}
-                                <table className={styles.table}>
-                                    <thead className={styles.tablehead}>
-                                        <tr>
-                                            <th scope="col" className={styles.col}>no</th>
-                                            <th scope="col" className={styles.col}>메일 제목</th>
-                                            <th scope="col" className={styles.col}>발신자</th>
-                                            <th scope="col" className={styles.col}>수신 일시</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className={styles.tablebody}>
-                                        {mailboxData.map((mail) => (
-                                            <tr key={mail.id}>
-                                                <td>{mail.id}</td>
-                                                <td>{mail.title}</td>
-                                                <td>{mail.writer}</td>
-                                                <td>{mail.received_at}</td>
+                                {/* 로딩 상태 표시 */}
+                                {isLoading ? (
+                                    <p>로딩 중...</p>
+                                ) : error ? (
+                                    <p>{error}</p>
+                                ) : (
+                                    <table className={styles.table}>
+                                        <thead className={styles.tablehead}>
+                                            <tr>
+                                                <th scope="col" className={styles.col}>no</th>
+                                                <th scope="col" className={styles.col}>메일 제목</th>
+                                                <th scope="col" className={styles.col}>발신자</th>
+                                                <th scope="col" className={styles.col}>수신 일시</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody className={styles.tablebody}>
+                                            {mailboxData.map((mail) => (
+                                                <tr
+                                                    key={mail.emailNo}
+                                                    onClick={() => handleEmailClick(mail)}
+                                                    style={{ cursor: 'pointer' }}
+                                                    className={mail.status === 'unread' ? styles.unread : ''}
+                                                >
+                                                    <td>{mail.emailNo}</td>
+                                                    <td>{mail.title}</td>
+                                                    <td>{mail.writerDisplayInfo}</td>
+                                                    <td>{formatDate(mail.sendDate)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
                             </div>
+
+                            {/* 최근 작성 보고서 섹션 */}
                             <div className={`${styles.gridItem} ${styles.gridItemApproval}`}>
                                 <h3 className={styles.colTitle}>최근 작성 보고서</h3>
                                 {/* <hr className={styles.titleBorderBar} /> */}
@@ -143,6 +179,8 @@ function CompanyUserMain() {
                                     </tbody>
                                 </table>
                             </div>
+
+                            {/* 기타 섹션들 */}
                             <div className={`${styles.gridItem} ${styles.gridItemTodoList}`}>
                                 <h3 className={styles.colTitle}>to do list</h3>
                                 <hr className={styles.titleBorderBar} />
@@ -161,9 +199,7 @@ function CompanyUserMain() {
                 </div>
             </div>
         </div>
-        
     );
-    
 }
 
 export default CompanyUserMain;
