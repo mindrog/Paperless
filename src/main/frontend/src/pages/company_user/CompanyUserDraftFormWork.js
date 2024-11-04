@@ -1,4 +1,6 @@
 import React, { useRef, useState } from 'react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import styles from '../../styles/company/draftForm/draft_Form_work.module.css';
 import { Button, Table, Modal } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -11,6 +13,7 @@ const CompanyUserDraftFormWork = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const currentSaveDraftDate = moment().format("YYYY-MM-DD");
+  const printRef = useRef(); // PDF로 변환할 영역을 참조하는 ref
 
   const {
     reportTitle,
@@ -49,6 +52,22 @@ const CompanyUserDraftFormWork = () => {
     }
   };
 
+  // PDF 다운로드 함수
+  const handleDownloadPdf = async () => {
+    const element = printRef.current;
+    const canvas = await html2canvas(element, { scale: 2 });
+    const data = canvas.toDataURL('image/png');
+
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgProperties = pdf.getImageProperties(data);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
+
+    pdf.addImage(data, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(reportTitle+'_기안_미리보기.pdf');
+  };
+
+  // 결재 상신
   const handleSaveSuccess = () => {
     setShowModal(true);
     setTimeout(() => {
@@ -69,7 +88,7 @@ const CompanyUserDraftFormWork = () => {
             <Button className={styles.cancelBtn} onClick={handleCancel}>취소</Button>
           </div>
           <div>
-            <Button className={styles.pdfBtn}>pdf 변환</Button>
+            <Button className={styles.pdfBtn} onClick={handleDownloadPdf}>pdf 변환</Button>
             <Button className={styles.apprSumbitBtn} onClick={handleSaveClick}>결재 상신</Button>
           </div>
         </div>
