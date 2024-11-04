@@ -1,40 +1,35 @@
+// CompanyUserEmail.js
+
 import React, { useState, useEffect, useRef } from 'react';
-import styles from '../../styles/company/company_email.module.css';
-import '../../styles/style.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import styles from '../../styles/company/company_email.module.css'; // CSS 모듈 스타일
+import '../../styles/style.css'; // 글로벌 스타일
+import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap 스타일
 import { useNavigate, useLocation } from 'react-router-dom';
-import Pagination from '../component/Pagination';
-import ComposeButton from '../component/ComposeButton';
+import Pagination from '../component/Pagination'; // 페이지네이션 컴포넌트
+import ComposeButton from '../component/ComposeButton'; // 메일 작성 버튼 컴포넌트
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope, faEnvelopeOpen, faPaperclip } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faEnvelopeOpen, faPaperclip, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 
 function CompanyUserEmail() {
 
-    const [emails, setEmails] = useState([]);
-    const navigate = useNavigate();
-    const [selectedEmails, setSelectedEmails] = useState([]);
-    const [selectAll, setSelectAll] = useState(false);
+    // 상태 관리
+    const [emails, setEmails] = useState([]); // 이메일 목록
+    const navigate = useNavigate(); // 라우팅
+    const [selectedEmails, setSelectedEmails] = useState([]); // 선택된 이메일 ID 목록
+    const [selectAll, setSelectAll] = useState(false); // 전체 선택 여부
 
     // 페이지네이션 상태
-    const [currentPage, setCurrentPage] = useState(1);
-    const emailsPerPage = 10;
-    const [totalPages, setTotalPages] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
+    const emailsPerPage = 10; // 페이지당 이메일 수
+    const [totalPages, setTotalPages] = useState(1); // 총 페이지 수
 
     // 검색 입력 상태
-    const [searchInput, setSearchInput] = useState('');
-    // 실제 검색에 사용되는 기본 검색 상태
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchInput, setSearchInput] = useState(''); // 기본 검색어 입력
+    const [searchTerm, setSearchTerm] = useState(''); // 실제 검색에 사용되는 검색어
 
-    const [showDetailSearch, setShowDetailSearch] = useState(false);
-
-    const location = useLocation();
-
-    useEffect(() => {
-        console.log('Current pathname:', location.pathname);
-    }, [location.pathname]);
-
-    // 상세 검색 입력 상태
+    // 상세 검색 상태
+    const [showDetailSearch, setShowDetailSearch] = useState(false); // 상세 검색 창 표시 여부
     const [detailSearchInput, setDetailSearchInput] = useState({
         sender: '',
         recipient: '',
@@ -44,7 +39,6 @@ function CompanyUserEmail() {
         endDate: '',
         hasAttachment: false,
     });
-    // 실제 검색에 사용되는 상세 검색 상태
     const [detailSearch, setDetailSearch] = useState({
         sender: '',
         recipient: '',
@@ -57,7 +51,7 @@ function CompanyUserEmail() {
 
     // JWT 토큰 가져오기
     const getToken = () => {
-        return localStorage.getItem('jwt');
+        return localStorage.getItem('jwt'); // 'Bearer ' 접두사가 이미 포함된 토큰
     };
 
     // Redux에서 사용자 정보 가져오기
@@ -66,8 +60,15 @@ function CompanyUserEmail() {
 
     // 로그인한 사용자 ID 가져오기
     const recipientId = user ? user.emp_no : null;
-    // 이메일 데이터 가져오기
-    useEffect(() => {
+
+    // 폴더 상태: "inbox" 또는 "trash"
+    const [folder, setFolder] = useState("inbox");
+
+    // 백엔드 서버 주소 설정
+    const backendUrl = 'http://localhost:8080'; // 실제 백엔드 서버 주소로 변경
+
+    // 이메일 데이터 가져오기 함수 정의
+    const fetchEmails = () => {
         if (!recipientId) {
             console.error('로그인 정보가 없습니다.');
             navigate('/login');
@@ -101,13 +102,19 @@ function CompanyUserEmail() {
             queryParams.append('hasAttachment', detailSearch.hasAttachment);
         }
 
+        // 폴더 파라미터 추가
+        queryParams.append('folder', folder);
+
+        // 페이지네이션 파라미터 추가
         queryParams.append('page', currentPage - 1);
         queryParams.append('size', emailsPerPage);
 
-        fetch(`/api/emails/list/${recipientId}?${queryParams.toString()}`, {
+        console.log('Fetching emails with params:', queryParams.toString()); // 디버깅용 로그
+
+        fetch(`${backendUrl}/api/emails/list/${recipientId}?${queryParams.toString()}`, {
             method: 'GET',
             headers: {
-                'Authorization': `${getToken()}`,
+                'Authorization': getToken(), // 'Bearer ' 접두사가 이미 포함된 토큰
                 'Content-Type': 'application/json',
             },
         })
@@ -126,7 +133,21 @@ function CompanyUserEmail() {
                 console.error('이메일 데이터를 가져오는 중 오류 발생:', error);
                 alert('이메일 데이터를 가져오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
             });
-    }, [currentPage, searchTerm, detailSearch, recipientId, navigate]);
+    };
+
+    // 폴더 변경 핸들러
+    const handleFolderChange = (selectedFolder) => {
+        setFolder(selectedFolder);
+        setCurrentPage(1);
+        setSelectAll(false);
+        setSelectedEmails([]);
+        
+    };
+
+    // useEffect에서 fetchEmails 호출
+    useEffect(() => {
+        fetchEmails();
+    }, [currentPage, searchTerm, detailSearch, recipientId, folder, navigate]);
 
     // 기본 검색 버튼 클릭 핸들러
     const handleBasicSearch = () => {
@@ -169,33 +190,69 @@ function CompanyUserEmail() {
         console.log(email.emailNo);
     };
 
-    // 삭제 버튼 클릭 (백엔드 API 호출 필요)
+    // 삭제 버튼 클릭 (휴지통으로 이동)
     const handleDelete = () => {
         if (selectedEmails.length === 0) return;
 
-        fetch(`/api/emails/delete`, {
+        fetch(`${backendUrl}/api/emails/delete`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${getToken()}`,
+                'Authorization': getToken(), // 'Bearer ' 접두사가 이미 포함된 토큰
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ emailIds: selectedEmails }),
         })
-            .then(response => {
+            .then(async response => {
                 if (response.ok) {
                     // 삭제 성공 시 이메일 목록 재조회
                     setSelectedEmails([]);
                     setSelectAll(false);
                     setCurrentPage(1);
-                    // 기본 검색과 상세 검색을 모두 적용하여 재조회
-                    // 선택적으로 handleBasicSearch()와 handleDetailSearch()를 호출할 수 있습니다.
-                    // 여기서는 현재 설정된 searchTerm과 detailSearch를 그대로 사용
+                    fetchEmails(); // 이메일 목록 재조회
+                    alert('선택한 이메일이 휴지통으로 이동되었습니다.');
                 } else {
-                    console.error('이메일 삭제 중 오류 발생');
+                    const errorText = await response.text();
+                    throw new Error(errorText);
                 }
             })
             .catch(error => {
                 console.error('이메일 삭제 중 오류 발생:', error);
+                alert('이메일을 삭제하는 중 오류가 발생했습니다: ' + error.message);
+            });
+    };
+
+    // 영구 삭제 버튼 클릭 (Trash 폴더에서만 활성화)
+    const handlePermanentDelete = () => {
+        if (selectedEmails.length === 0) return;
+
+        if (!window.confirm("선택한 이메일을 영구 삭제하시겠습니까?")) {
+            return;
+        }
+
+        fetch(`${backendUrl}/api/emails/permanent-delete`, {
+            method: 'POST',
+            headers: {
+                'Authorization': getToken(), // 'Bearer ' 접두사가 이미 포함된 토큰
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ emailIds: selectedEmails }),
+        })
+            .then(async response => {
+                if (response.ok) {
+                    // 영구 삭제 성공 시 이메일 목록 재조회
+                    setSelectedEmails([]);
+                    setSelectAll(false);
+                    setCurrentPage(1);
+                    fetchEmails(); // 이메일 목록 재조회
+                    alert('선택한 이메일이 영구 삭제되었습니다.');
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText);
+                }
+            })
+            .catch(error => {
+                console.error('이메일 영구 삭제 중 오류 발생:', error);
+                alert('이메일을 영구 삭제하는 중 오류가 발생했습니다: ' + error.message);
             });
     };
 
@@ -316,26 +373,57 @@ function CompanyUserEmail() {
         <div className={styles.Container}>
             <div className={styles['toolbar']}>
                 <div className={styles['left-buttons']}>
+                    {/* 폴더에 따라 다른 버튼 표시 */}
+                    {folder === "inbox" ? (
+                        <>
+                            <button
+                                className={styles['btn']}
+                                onClick={handleDelete}
+                                disabled={selectedEmails.length === 0}
+                            >
+                                삭제
+                            </button>
+                            <button
+                                className={styles['btn']}
+                                onClick={handleReply}
+                                disabled={selectedEmails.length !== 1}
+                            >
+                                답장
+                            </button>
+                            <button
+                                className={styles['btn']}
+                                onClick={handleForward}
+                                disabled={selectedEmails.length !== 1}
+                            >
+                                전달
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <button
+                                className={styles['btn']}
+                                onClick={handlePermanentDelete}
+                                disabled={selectedEmails.length === 0}
+                            >
+                                영구 삭제
+                            </button>
+                        </>
+                    )}
+
+                    {/* 폴더 선택 버튼 */}
                     <button
-                        className={styles['btn']}
-                        onClick={handleDelete}
-                        disabled={selectedEmails.length === 0}
+                        className={`${styles['btn']} ${folder === "inbox" ? styles.active : ''}`}
+                        onClick={() => handleFolderChange("inbox")}
+                        disabled={folder === "inbox"}
                     >
-                        삭제
+                        <FontAwesomeIcon icon={faEnvelope} /> Inbox
                     </button>
                     <button
-                        className={styles['btn']}
-                        onClick={handleReply}
-                        disabled={selectedEmails.length !== 1}
+                        className={`${styles['btn']} ${folder === "trash" ? styles.active : ''}`}
+                        onClick={() => handleFolderChange("trash")}
+                        disabled={folder === "trash"}
                     >
-                        답장
-                    </button>
-                    <button
-                        className={styles['btn']}
-                        onClick={handleForward}
-                        disabled={selectedEmails.length !== 1}
-                    >
-                        전달
+                        <FontAwesomeIcon icon={faTrashAlt} /> Trash
                     </button>
                 </div>
                 {/* 검색 바 및 버튼 추가 */}
@@ -356,12 +444,6 @@ function CompanyUserEmail() {
                     <button className={styles['detail-button']} onClick={toggleDetailSearch}>
                         상세
                     </button>
-                    {/* 상세 검색 적용 버튼 */}
-                    {/* {showDetailSearch && (
-                        <button className={styles['search-button']} onClick={handleDetailSearch}>
-                            상세 검색
-                        </button>
-                    )} */}
                 </div>
             </div>
             {/* 상세 검색 영역 */}
@@ -447,6 +529,7 @@ function CompanyUserEmail() {
                     </div>
                 </div>
             )}
+            {/* 이메일 목록 테이블 */}
             <table className={styles['email-table']}>
                 <thead>
                     <tr>
@@ -478,7 +561,7 @@ function CompanyUserEmail() {
                                     onChange={() => handleCheckboxChange(email.emailNo)}
                                 />
                             </td>
-                            <td onClick={() => handleEmailClick(email)}>
+                            <td onClick={() => handleEmailClick(email)} style={{ cursor: 'pointer' }}>
                                 {email.status === 'unread' ? (
                                     <FontAwesomeIcon icon={faEnvelope} style={{ color: 'skyblue' }} />
                                 ) : (
@@ -490,13 +573,14 @@ function CompanyUserEmail() {
                                     <FontAwesomeIcon icon={faPaperclip} style={{ color: 'skyblue' }}/>
                                 )}
                             </td>
-                            <td onClick={() => handleEmailClick(email)}>{email.writerDisplayInfo}</td>
-                            <td onClick={() => handleEmailClick(email)}>{email.title}</td>
-                            <td onClick={() => handleEmailClick(email)}>{email.sendDate.replace('T', ' ')}</td>
+                            <td onClick={() => handleEmailClick(email)} style={{ cursor: 'pointer' }}>{email.writerDisplayInfo}</td>
+                            <td onClick={() => handleEmailClick(email)} style={{ cursor: 'pointer' }}>{email.title}</td>
+                            <td onClick={() => handleEmailClick(email)} style={{ cursor: 'pointer' }}>{email.sendDate.replace('T', ' ')}</td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+            {/* 하단 푸터: 페이지네이션 및 메일 작성 버튼 */}
             <div className={styles.footer}>
                 <Pagination
                     currentPage={currentPage}
@@ -509,6 +593,7 @@ function CompanyUserEmail() {
 
         </div>
     );
+
 }
 
 export default CompanyUserEmail;

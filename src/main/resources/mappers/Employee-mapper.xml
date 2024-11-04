@@ -78,6 +78,7 @@
 	<select id="GetTeamNameList" resultType="String">
 		select dept_team_name from department where dept_name = #{dept_name}
 	</select>
+
 	<select id="GetDeptNo" resultType="int">
 		select dept_no from department where dept_name = #{dept_name} and dept_team_name =#{dept_team_name}
 	</select>
