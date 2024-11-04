@@ -118,7 +118,7 @@ function App() {
                         <Route path='/company/user/stock' element={<CompanyUserStock />} />
 
                         {/* 캘린더 */}
-                        <Route path='/company/user/calender' element={<CompanyUserCalender />} />
+                        <Route path='/company/user/calendar' element={<CompanyUserCalender />} />
 
                         {/* 채팅 */}
                         <Route path='/chatroom' element={<CompanyUserChatRoom />} />

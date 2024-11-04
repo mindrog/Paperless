@@ -216,7 +216,7 @@ CREATE TABLE `ReportAttachment` (
 -- Scheduler 테이블 생성
 CREATE TABLE `Scheduler` (
     `sche_no` BIGINT NOT NULL AUTO_INCREMENT,
-    `sche_emp_no` BIGINT NOT NULL,
+    `sche_emp_no` BIGINT,
     `sche_comp_no` BIGINT,
     `sche_dept_no` BIGINT,
     `sche_title` varchar(100) not null,
