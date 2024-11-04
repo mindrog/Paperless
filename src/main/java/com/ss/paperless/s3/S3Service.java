@@ -12,7 +12,7 @@ import java.io.IOException;
 @Service
 public class S3Service {
 	private final AmazonS3 amazonS3;
-	@Value("${AWS_S3_BUCKET}")
+	@Value("${aws.s3Bucket}")
 	private String bucketName;
 
 	public S3Service(AmazonS3 amazonS3) {
