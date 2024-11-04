@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import { useSelector } from 'react-redux';
 import '../../styles/company/company_user_calender.css'
 import ScheduleModal from '../component/CalendarModal'
+import ScheduleEditModal from '../component/CalendarEditModal'
 
 const FullCalendarContainer = styled.div
 `
@@ -101,7 +102,8 @@ const FullCalendarContainer = styled.div
 
 function CompanyUserCalender() {
   const [modalOpen, setModalOpen] = useState(false);
-
+  const [EditModalOpen,setEditModalOpen] =useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
     const handleSave = (scheduleData) => {
         console.log('일정 데이터:', scheduleData);
         // 서버로 전송 로직 추가 가능
@@ -130,8 +132,13 @@ function CompanyUserCalender() {
             console.error('호출이 실패 했습니다 :', error);
         }
     };
+    const handleEventClick = (info) => {
+      setSelectedEvent(info.event); 
+      setModalOpen(true); 
+  };
     console.log()
     getSchedule();
+    
 }, []);
   return (
     <div>
@@ -141,19 +148,27 @@ function CompanyUserCalender() {
       defaultView="dayGridMonth"
       plugins={[dayGridPlugin]}
       headerToolbar={{
-        start: 'today,ScheduleInsertBtn', // custom 버튼을 여기에 추가
+        start: 'today,ScheduleInsertBtn', 
         center: 'title',
         end: 'prev,next'
     }}
     customButtons={{
         ScheduleInsertBtn: {
             text: '일정추가',
-            click: () => setModalOpen(true) // 버튼 클릭 시 실행할 함수 추가
+            click: () => setModalOpen(true) 
         }
         
       }}
 
       events={schedules}
+      eventClick={(info) => {
+         
+        setEditModalOpen(true);
+        if(info.event.start === info.event.end){
+          info.event.end = info.event.start
+        }
+        setSelectedEvent(info.event);   
+    }}
     />
     </FullCalendarContainer>
   </div>
@@ -162,6 +177,12 @@ function CompanyUserCalender() {
                 isOpen={modalOpen}
                 onRequestClose={() => setModalOpen(false)}
                 onSave={handleSave} />
+  </div>
+  <div>
+    <ScheduleEditModal
+    isOpen={EditModalOpen}
+    onRequestClose={() => setEditModalOpen(false)}
+    selectedEvent={selectedEvent} />
   </div>
   </div>
   );
