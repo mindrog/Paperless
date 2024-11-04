@@ -85,9 +85,18 @@
     margin: auto;
 }
 
-/* .tableTodoList {
+.divTodoList {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  color: black;
+  padding-left: 5%;
+  padding-right: 5%;
+}
 
-} */
+.todoContent {
+  white-space: pre-wrap; /* 개행 유지 */
+}
 
 .tablehead {
   border-bottom: 1px solid #5e5e5e;
@@ -111,7 +120,7 @@
 
 .titleBorderBar {
     border: 1.5px solid #2e3d86;
-    width: 80%;
+    width: 90%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 0;
