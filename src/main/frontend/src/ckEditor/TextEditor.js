@@ -1,16 +1,23 @@
-import { useState } from 'react';
+// TextEditor.js
+import React, { useState, useEffect } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import './textEditor.css';
 
-const TextEditor = ({ setData }) => {
-    const [editorData, setEditorData] = useState('');
+const TextEditor = ({ initialData = '', setData }) => {
+    // CKEditor의 초기 데이터를 state로 관리
+    const [editorData, setEditorData] = useState(initialData);
+
+    // initialData가 변경될 때마다 editorData 업데이트
+    useEffect(() => {
+        setEditorData(initialData);
+    }, [initialData]);
 
     return (
         <div className="text-editor">
             <CKEditor
-                editor={ClassicEditor} // editor에 ClassicEditor를 올바르게 전달
-                data={editorData}
+                editor={ClassicEditor}
+                data={editorData} // CKEditor에 초기 데이터를 설정
                 onChange={(event, editor) => {
                     const data = editor.getData();
                     setEditorData(data); // 로컬 상태 업데이트
