@@ -1,6 +1,7 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
 
 const HandleSaveDraftWork = forwardRef(({
+  reportId,
   reportTitle,
   reportContent,
   reportDate,
@@ -11,23 +12,32 @@ const HandleSaveDraftWork = forwardRef(({
   selectedReferences,
   selectedReceivers,
   files,
-  token,
   setIsSaved,
   setSaveDate,
   setShowAlert,
-  onSaveSuccess
+  onSaveSuccess,
+  setReportId, // reportId 상태 업데이트 함수 추가
 }, ref) => {
   const saveDraftToDB = async () => {
+    const token = localStorage.getItem('jwt');
+
+    console.log("HandleSaveAsDraft - Report ID:", reportId);
+
     try {
       // FormData를 사용하여 파일과 데이터를 함께 전송
       const formData = new FormData();
+      if (reportId) {
+        formData.append('reportId', reportId); // reportId가 존재하면 추가
+      }
       formData.append('reportTitle', reportTitle);
       formData.append('reportContent', reportContent);
       formData.append('reportDate', reportDate);
       formData.append('repoStartTime', repoStartTime);
       formData.append('repoEndTime', repoEndTime);
       formData.append('reportStatus', reportStatus);
-      formData.append('saveDraftDate', setSaveDate);
+
+      // saveDraftDate 추가
+      formData.append('saveDraftDate', new Date().toISOString());
       formData.append('selectedApprovers', JSON.stringify(selectedApprovers));
       formData.append('selectedReferences', JSON.stringify(selectedReferences));
       formData.append('selectedReceivers', JSON.stringify(selectedReceivers));
@@ -44,16 +54,15 @@ const HandleSaveDraftWork = forwardRef(({
         body: formData,
       });
 
-      if (response.status === 200) {
-        const result = await response.json();
-        console.log("Save result:", result);
-        setIsSaved(true);
-        setSaveDate(setSaveDate);
-        setShowAlert(true);
-      }
+      if (!response.ok) throw new Error('Failed to submit report');
 
       const result = await response.json();
       console.log("Save result:", result);
+
+      // reportId가 처음 생성될 경우 업데이트
+      if (!reportId && result.reportId) {
+        setReportId(result.reportId);
+      }
 
       // 저장 성공 시 상태 업데이트 및 성공 콜백 호출
       setIsSaved(true);
@@ -65,9 +74,9 @@ const HandleSaveDraftWork = forwardRef(({
         onSaveSuccess();
       }
     } catch (error) {
-      console.error('Error saving draft:', error);
+      console.error('Error submitting report:', error);
       setShowAlert(true);
-      alert('저장에 실패했습니다. 다시 시도해 주세요.');
+      alert('결재 상신에 실패했습니다. 다시 시도해 주세요.');
     }
   };
 

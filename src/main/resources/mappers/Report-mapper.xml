@@ -4,8 +4,8 @@
 
     <!-- Report 테이블에 임시 저장 데이터를 삽입하는 SQL (문서번호 추가) -->
     <insert id="AddReportData" parameterType="map" useGeneratedKeys="true" keyProperty="repo_no">
-        INSERT INTO `Report` (repo_code, repo_emp_no, repo_title, repo_content, repo_status, repo_type, doc_no)
-        VALUES (#{doc_no}, #{repo_emp_no}, #{reportTitle}, #{reportContent}, 'saved', 'work', #{doc_no})
+        INSERT INTO `Report` (repo_code, repo_emp_no, repo_title, repo_content, repo_status, repo_type)
+        VALUES (#{repo_code}, #{repo_emp_no}, #{reportTitle}, #{reportContent}, #{reportStatus}, 'work')
     </insert>
 
     <!-- WorkReport 테이블에 임시 저장 데이터를 삽입하는 SQL -->
@@ -13,6 +13,20 @@
         INSERT INTO `WorkReport` (work_repo_no, repo_start_time, repo_end_time)
         VALUES (#{work_repo_no}, #{repo_start_time}, #{repo_end_time})
     </insert>
+
+    <update id="updateReportStatus">
+        UPDATE Report
+        SET repo_status = #{reportStatus, jdbcType=VARCHAR}
+        WHERE repo_no = #{reportId}
+    </update>
+
+    <select id="getApproversByReportId" resultType="map" parameterType="long">
+        SELECT * FROM Approver WHERE appr_repo_no = #{reportId} ORDER BY appr_order
+    </select>
+
+    <update id="updateApproverStatus" parameterType="map">
+        UPDATE Approver SET appr_status = #{appr_status} WHERE appr_repo_no = #{repo_no} AND appr_emp_no = #{appr_emp_no}
+    </update>
 
     <!-- Approver 테이블에 결재자 데이터를 삽입하는 SQL -->
     <insert id="AddApproversData" parameterType="map">
@@ -80,13 +94,6 @@
         INSERT INTO `ReportAttachment` (repo_no, atta_no)
         VALUES (#{repo_no}, #{atta_no})
     </insert>
-
-    <!-- Report 테이블의 상태를 업데이트하는 SQL -->
-    <update id="UpdateReportStatus" parameterType="map">
-        UPDATE `Report`
-        SET repo_status = #{repo_status}
-        WHERE repo_no = #{repo_no}
-    </update>
 
     <!-- 결재 상신 시 결재자 상태를 업데이트하는 SQL -->
     <update id="UpdateApproverStatusForSubmission" parameterType="long">

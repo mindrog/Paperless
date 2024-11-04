@@ -13,6 +13,7 @@ target/
 .springBeans
 .sts4-cache
 application-KEY.properties
+git-filter-repo.py
 
 
 
@@ -23,6 +24,7 @@ application-KEY.properties
 *.ipr
 application-API-KEY.properties
 application-KEY.properties
+git-filter-repo.py
 
 
 ### NetBeans ###

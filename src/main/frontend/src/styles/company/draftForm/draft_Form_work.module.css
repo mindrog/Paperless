@@ -78,7 +78,7 @@
 }
 
 .innerApprTable{
-    width: 30%;
+    width: 45%;
     height: 50%;
     margin: 0 0 16px 0;
     border: 1px solid #dee2e6;
@@ -98,6 +98,7 @@
 
 .docValue_date{
     height: 40px;
+    font-size: small;
 }
 
 .labelCellCol{

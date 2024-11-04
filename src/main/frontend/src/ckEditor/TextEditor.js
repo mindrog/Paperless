@@ -1,3 +1,4 @@
+
 // TextEditor.js
 import React, { useState, useEffect } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -12,12 +13,11 @@ const TextEditor = ({ initialData = '', setData }) => {
     useEffect(() => {
         setEditorData(initialData);
     }, [initialData]);
-
     return (
         <div className="text-editor">
             <CKEditor
-                editor={ClassicEditor}
-                data={editorData} // CKEditor에 초기 데이터를 설정
+                editor={ClassicEditor} // editor에 ClassicEditor를 올바르게 전달
+                data={editorData}
                 onChange={(event, editor) => {
                     const data = editor.getData();
                     setEditorData(data); // 로컬 상태 업데이트

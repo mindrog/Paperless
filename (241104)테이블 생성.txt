@@ -1,4 +1,4 @@
--- # 1101 SQL Script #
+-- # 1104 SQL Script #
 DROP database paperless;
 CREATE DATABASE IF NOT EXISTS paperless;
 USE paperless;

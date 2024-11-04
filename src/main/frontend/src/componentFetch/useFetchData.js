@@ -14,7 +14,6 @@ const useFetchData = (token) => {
 
         console.log("useFetchData if문 실행!!!");
 
-
         try {
           const response = await axios.get('/api/infolist', {
             headers: { Authorization: `${token}` }

@@ -16,17 +16,21 @@ const useFetchUserInfo = (token) => {
           console.log('Fetched menu data:', data);
 
           if (data && typeof data === 'object') {
+            // teams를 객체가 아닌 배열로 구성
             const groupedData = Object.entries(data).map(([deptName, deptData]) => ({
               deptName,
-              dept_code: deptData.dept_code || null, // dept_code 추출
-              teams: Object.values(deptData.employees).reduce((teams, employee) => {
+              dept_code: deptData.dept_code || null,
+              teams: (Array.isArray(deptData.employees) ? deptData.employees : []).reduce((result, employee) => {
                 const teamName = employee.dept_team_name || '팀 없음';
-                if (!teams[teamName]) {
-                  teams[teamName] = [];
+                const teamIndex = result.findIndex((team) => team.teamName === teamName);
+
+                if (teamIndex === -1) {
+                  result.push({ teamName, members: [employee] });
+                } else {
+                  result[teamIndex].members.push(employee);
                 }
-                teams[teamName].push(employee);
-                return teams;
-              }, {})
+                return result;
+              }, [])
             }));
 
             setMenuList(groupedData);
@@ -52,5 +56,3 @@ const useFetchUserInfo = (token) => {
 };
 
 export default useFetchUserInfo;
-
-

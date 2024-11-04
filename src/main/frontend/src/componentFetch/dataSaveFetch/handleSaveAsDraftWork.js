@@ -14,12 +14,22 @@ const HandleSaveAsDraft = forwardRef(({
   token,
   setIsSaved,
   setSaveDate,
-  setShowAlert
+  setShowAlert,
+  reportId,      // reportId 추가
+  setReportId    // reportId 저장을 위한 함수
 }, ref) => {
   const saveDraftToDB = async () => {
+    console.log("token : " + token);
+    console.log("HandleSaveAsDraft - Report ID:", reportId);
+
     try {
       // FormData를 사용하여 파일과 데이터를 함께 전송
       const formData = new FormData();
+
+      // reportId가 있으면 폼 데이터에 포함하여 업데이트로 처리
+      if (reportId) {
+        formData.append('reportId', reportId);
+      }
 
       // JSON 데이터 추가
       formData.append('reportTitle', reportTitle);
@@ -34,7 +44,7 @@ const HandleSaveAsDraft = forwardRef(({
 
       // 파일 배열 추가
       files.forEach((file, index) => {
-        formData.append('files', file); // `files` 키로 여러 파일을 전송할 수 있음
+        formData.append('files', file); 
       });
 
       const response = await fetch('/api/saveasdraft', {
@@ -49,6 +59,12 @@ const HandleSaveAsDraft = forwardRef(({
 
       const result = await response.json();
       console.log("Save result:", result);
+
+      // reportId가 처음 저장될 때 부모 컴포넌트에 전달
+      if (!reportId) {
+        setReportId(result.reportId); 
+      }
+
       setIsSaved(true);
       setSaveDate(new Date().toLocaleDateString('ko-KR'));
       setShowAlert(true);
