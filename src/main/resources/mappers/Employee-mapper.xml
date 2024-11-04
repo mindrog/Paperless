@@ -78,15 +78,7 @@
 	<select id="GetTeamNameList" resultType="String">
 		select dept_team_name from department where dept_name = #{dept_name}
 	</select>
-<<<<<<< HEAD
 
-=======
-<<<<<<< HEAD
-
-=======
-<<<<<<< HEAD
->>>>>>> bea5d302077eb8b8200cc80a71e1d9af136be999
->>>>>>> cb1c2e6a5515617eedf04e37cebd341c99b88970
 	<select id="GetDeptNo" resultType="int">
 		select dept_no from department where dept_name = #{dept_name} and dept_team_name =#{dept_team_name}
 	</select>
@@ -193,14 +185,5 @@ join
 		,emp_dept_no =#{emp_dept_no},emp_posi_no =#{emp_posi_no},
 		emp_email =#{emp_email},emp_phone =#{emp_phone} where emp_no =#{emp_no}
 	</update>
-<<<<<<< HEAD
 
-=======
-<<<<<<< HEAD
-
-=======
-=======
->>>>>>> bs
->>>>>>> bea5d302077eb8b8200cc80a71e1d9af136be999
->>>>>>> cb1c2e6a5515617eedf04e37cebd341c99b88970
 </mapper>
