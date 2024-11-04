@@ -5,7 +5,9 @@
 매핑해서 sql을 실행할 수 있다. -->
 <mapper namespace="com.ss.paperless.report.ReportMapper">
 
+<insert id="AddSaveAsDraftReportData">
 
+</insert>
 	
 	
 </mapper>

@@ -4,6 +4,7 @@ CREATE DATABASE IF NOT EXISTS paperless;
 USE paperless;
 
 -- 1. 기존 테이블 삭제
+DROP TABLE IF EXISTS `Todolist`;
 DROP TABLE IF EXISTS `Scheduler`;
 DROP TABLE IF EXISTS `Recipient`;
 DROP TABLE IF EXISTS `Reference`;
@@ -74,6 +75,7 @@ CREATE TABLE `Employee` (
 -- Report 테이블 생성 (수정)
 CREATE TABLE `Report` (
     `repo_no` BIGINT NOT NULL AUTO_INCREMENT,
+    `repo_code` VARCHAR(300),
     `repo_emp_no` BIGINT NOT NULL,
     `repo_title` VARCHAR(300) NOT NULL,
     `repo_content` TEXT NOT NULL,
@@ -81,6 +83,9 @@ CREATE TABLE `Report` (
     `repo_type` VARCHAR(100) NOT NULL,
     `submission_date` TIMESTAMP NULL,
     `cancel_date` TIMESTAMP NULL,
+    `repo_comp_date` TIMESTAMP NULL,
+    `repo_date` TIMESTAMP NOT NULL DEFAULT NOW(),
+    `cancel_comment` varchar(500) NULL,
     PRIMARY KEY (`repo_no`),
     FOREIGN KEY (`repo_emp_no`) REFERENCES `Employee` (`emp_no`)
 );
@@ -100,6 +105,7 @@ CREATE TABLE `AttendanceReport` (
     `vacation_type` VARCHAR(50) NOT NULL,
     `atten_start_date` DATE NOT NULL,
     `atten_end_date` DATE NULL,
+    `annual_leave_days` int NOT NULL,
     PRIMARY KEY (`atten_repo_no`),
     FOREIGN KEY (`atten_repo_no`) REFERENCES `Report` (`repo_no`)
 );
@@ -113,8 +119,8 @@ CREATE TABLE `PurchaseReport` (
     `product_size` VARCHAR(500) NOT NULL,
     `product_count` BIGINT NOT NULL,
     `product_price` BIGINT NOT NULL,
-    `productPrices` BIGINT NOT NULL,
-    `productEtc` VARCHAR(500) NULL,
+    `product_total` BIGINT NOT NULL,
+    `product_etc` VARCHAR(500) NULL,
     PRIMARY KEY (`product_no`),
     FOREIGN KEY (`purch_repo_no`) REFERENCES `Report` (`repo_no`)
 );
@@ -124,7 +130,11 @@ CREATE TABLE `Approver` (
     `appr_no` BIGINT NOT NULL AUTO_INCREMENT,
     `appr_repo_no` BIGINT NOT NULL,
     `appr_emp_no` BIGINT NOT NULL,
+    `appr_order` INT NOT NULL,
     `appr_status` VARCHAR(100) NOT NULL DEFAULT 'pending',
+    `appr_delegate` TINYINT(1) NOT NULL DEFAULT 0, -- 전결 여부 (1: 전결 가능, 0: 전결 불가)
+    `appr_is_read` TINYINT(1) DEFAULT 0,        -- 읽음 여부 (0: 안 읽음, 1: 읽음)
+    `appr_date` TIMESTAMP NULL,
     PRIMARY KEY (`appr_no`),
     FOREIGN KEY (`appr_repo_no`) REFERENCES `Report` (`repo_no`),
     FOREIGN KEY (`appr_emp_no`) REFERENCES `Employee` (`emp_no`)
@@ -132,22 +142,30 @@ CREATE TABLE `Approver` (
 
 -- Recipient 테이블 생성
 CREATE TABLE `Recipient` (
-    `reci_no` BIGINT NOT NULL,
+    `reci_no` BIGINT NOT NULL AUTO_INCREMENT,
     `reci_repo_no` BIGINT NOT NULL,
-    `reci_emp_no` BIGINT NOT NULL,
+    `reci_emp_no` BIGINT NULL,
+    `reci_dept_no` BIGINT NULL,
+    `reci_is_read` TINYINT(1) DEFAULT 0,        -- 읽음 여부 (0: 안 읽음, 1: 읽음)
+    `reci_date` TIMESTAMP NULL,
     PRIMARY KEY (`reci_no`),
     FOREIGN KEY (`reci_repo_no`) REFERENCES `Report` (`repo_no`),
-    FOREIGN KEY (`reci_emp_no`) REFERENCES `Employee` (`emp_no`)
+    FOREIGN KEY (`reci_emp_no`) REFERENCES `Employee` (`emp_no`),
+    FOREIGN KEY (`reci_dept_no`) REFERENCES `Department` (`dept_no`)
 );
 
 -- Reference 테이블 생성
 CREATE TABLE `Reference` (
-    `refe_no` BIGINT NOT NULL,
+    `refe_no` BIGINT NOT NULL AUTO_INCREMENT,
     `refe_repo_no` BIGINT NOT NULL,
-    `refe_emp_no` BIGINT NOT NULL,
+    `refe_emp_no` BIGINT NULL,
+    `refe_dept_no` BIGINT NULL,
+    `refe_is_read` TINYINT(1) DEFAULT 0,        -- 읽음 여부 (0: 안 읽음, 1: 읽음)
+    `refe_date` TIMESTAMP NULL,
     PRIMARY KEY (`refe_no`),
     FOREIGN KEY (`refe_repo_no`) REFERENCES `Report` (`repo_no`),
-    FOREIGN KEY (`refe_emp_no`) REFERENCES `Employee` (`emp_no`)
+    FOREIGN KEY (`refe_emp_no`) REFERENCES `Employee` (`emp_no`),
+    FOREIGN KEY (`refe_dept_no`) REFERENCES `Department` (`dept_no`)
 );
 
 -- Attachment 테이블 (첨부파일 기본 정보 저장)
@@ -195,19 +213,14 @@ CREATE TABLE `ReportAttachment` (
     FOREIGN KEY (`atta_no`) REFERENCES `Attachment` (`atta_no`)
 );
 
--- ChatAttachment 테이블 (채팅 첨부파일)
-CREATE TABLE `ChatAttachment` (
-    `chat_atta_no` BIGINT NOT NULL,
-    `chat_atta_key` VARCHAR(500) NOT NULL,
-    `chat_atta_url` TEXT NOT NULL,
-    `chat_atta_name` VARCHAR(500) NOT NULL,
-    PRIMARY KEY (`chat_atta_no`)
-);
-
 -- Scheduler 테이블 생성
 CREATE TABLE `Scheduler` (
     `sche_no` BIGINT NOT NULL,
     `sche_emp_no` BIGINT NOT NULL,
+    `sche_emp_title` varchar(300) NOT NULL,
+    `sche_color` varchar(100) NULL,
+    `sche_start_time` TIMESTAMP NOT NULL,
+    `sche_end_time` TIMESTAMP NOT NULL,
     PRIMARY KEY (`sche_no`),
     FOREIGN KEY (`sche_emp_no`) REFERENCES `Employee` (`emp_no`)
 );
@@ -249,6 +262,16 @@ CREATE TABLE `Request` (
     `requ_enroll` timestamp NOT NULL,
     
     PRIMARY KEY (`requ_no`)
+);
+
+-- `Todolist` 테이블 생성
+CREATE TABLE `Todolist` (
+    `todo_no` BIGINT NOT NULL AUTO_INCREMENT,
+    `todo_emp_no` BIGINT NOT NULL,
+    `todo_content` varchar(500) NULL,
+    `todo_date` TIMESTAMP NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (`todo_no`),
+    FOREIGN KEY (`todo_emp_no`) REFERENCES `Employee` (`emp_no`)
 );
 
 
@@ -526,7 +549,7 @@ VALUES
 
 
 
---email 더미 코드 
+-- email 더미 코드 
 
 INSERT INTO `Emailmessage` (
     `email_writer`, 
