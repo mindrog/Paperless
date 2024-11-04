@@ -239,14 +239,27 @@ public class EmailController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이메일 삭제 중 오류가 발생했습니다.");
 		}
 	}
+	
+	 @PostMapping("/restore")
+	    public ResponseEntity<?> restoreEmails(@RequestBody RestoreRequest restoreRequest, Principal principal) {
+	        try {
+	            String currentUserEmpCode = principal.getName();
+	            EmployeeEntity currentUser = employeeService.findByEmpCode(currentUserEmpCode);
+	            if (currentUser == null) {
+	                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 정보를 찾을 수 없습니다.");
+	            }
 
-	/**
-	 * 이메일 영구 삭제 API
-	 *
-	 * @param deleteRequest 삭제할 이메일 ID 목록
-	 * @param principal     인증된 사용자 정보
-	 * @return 응답 메시지
-	 */
+	            emailService.restoreEmails(restoreRequest.getEmailIds(), currentUser.getEmpNo());
+
+	            return ResponseEntity.ok("이메일이 성공적으로 복구되었습니다.");
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body("이메일 복구 중 오류가 발생했습니다: " + e.getMessage());
+	        }
+	    }
+
+	
 	@PostMapping("/permanent-delete")
 	public ResponseEntity<?> permanentDeleteEmails(@RequestBody DeleteEmailsRequest deleteRequest,
 			Principal principal) {

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -54,4 +55,19 @@ public class EmailService {
 		email.setStatus(status);
 		emailmessageRepository.save(email);
 	}
+	
+	public void restoreEmails(List<Long> emailIds, Long currentUserEmpNo) {
+        List<Emailmessage> emails = emailmessageRepository.findAllById(emailIds);
+
+        for (Emailmessage email : emails) {
+            // 권한 체크: 이메일이 현재 사용자에게 속하는지 확인
+            if (email.getRecipient().getEmpNo().equals(currentUserEmpNo) || email.getSender().getEmpNo().equals(currentUserEmpNo)) {
+        
+                email.setDeletedAt(null); // deletedDate를 null로 설정
+                emailmessageRepository.save(email);
+            } else {
+                throw new RuntimeException("권한이 없는 이메일입니다.");
+            }
+        }
+    }
 }

@@ -1,12 +1,12 @@
 // CompanyUserEmail.js
 
 import React, { useState, useEffect, useRef } from 'react';
-import styles from '../../styles/company/company_email.module.css'; // CSS 모듈 스타일
-import '../../styles/style.css'; // 글로벌 스타일
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap 스타일
+import styles from '../../styles/company/company_email.module.css'; 
+import '../../styles/style.css'; 
+import 'bootstrap/dist/css/bootstrap.min.css'; 
 import { useNavigate, useLocation } from 'react-router-dom';
-import Pagination from '../component/Pagination'; // 페이지네이션 컴포넌트
-import ComposeButton from '../component/ComposeButton'; // 메일 작성 버튼 컴포넌트
+import Pagination from '../component/Pagination'; 
+import ComposeButton from '../component/ComposeButton'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faEnvelopeOpen, faPaperclip, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
@@ -51,7 +51,7 @@ function CompanyUserEmail() {
 
     // JWT 토큰 가져오기
     const getToken = () => {
-        return localStorage.getItem('jwt'); // 'Bearer ' 접두사가 이미 포함된 토큰
+        return localStorage.getItem('jwt'); 
     };
 
     // Redux에서 사용자 정보 가져오기
@@ -197,7 +197,7 @@ function CompanyUserEmail() {
         fetch(`${backendUrl}/api/emails/delete`, {
             method: 'POST',
             headers: {
-                'Authorization': getToken(), // 'Bearer ' 접두사가 이미 포함된 토큰
+                'Authorization': getToken(), 
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ emailIds: selectedEmails }),
@@ -208,7 +208,7 @@ function CompanyUserEmail() {
                     setSelectedEmails([]);
                     setSelectAll(false);
                     setCurrentPage(1);
-                    fetchEmails(); // 이메일 목록 재조회
+                    fetchEmails(); 
                     alert('선택한 이메일이 휴지통으로 이동되었습니다.');
                 } else {
                     const errorText = await response.text();
@@ -232,7 +232,7 @@ function CompanyUserEmail() {
         fetch(`${backendUrl}/api/emails/permanent-delete`, {
             method: 'POST',
             headers: {
-                'Authorization': getToken(), // 'Bearer ' 접두사가 이미 포함된 토큰
+                'Authorization': getToken(), 
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ emailIds: selectedEmails }),
@@ -243,7 +243,7 @@ function CompanyUserEmail() {
                     setSelectedEmails([]);
                     setSelectAll(false);
                     setCurrentPage(1);
-                    fetchEmails(); // 이메일 목록 재조회
+                    fetchEmails(); 
                     alert('선택한 이메일이 영구 삭제되었습니다.');
                 } else {
                     const errorText = await response.text();
@@ -416,14 +416,14 @@ function CompanyUserEmail() {
                         onClick={() => handleFolderChange("inbox")}
                         disabled={folder === "inbox"}
                     >
-                        <FontAwesomeIcon icon={faEnvelope} /> Inbox
+                        <FontAwesomeIcon icon={faEnvelope} /> 
                     </button>
                     <button
                         className={`${styles['btn']} ${folder === "trash" ? styles.active : ''}`}
                         onClick={() => handleFolderChange("trash")}
                         disabled={folder === "trash"}
                     >
-                        <FontAwesomeIcon icon={faTrashAlt} /> Trash
+                        <FontAwesomeIcon icon={faTrashAlt} /> 
                     </button>
                 </div>
                 {/* 검색 바 및 버튼 추가 */}

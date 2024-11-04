@@ -97,7 +97,17 @@ function CompanyUserMain() {
     const handleEmailClick = (email) => {
         navigate('/Company/user/email/detail', { state: { emailNo: email.emailNo } });
         console.log(email.emailNo);
-    };;
+    };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+
     return (
         <div className="container-xl conbox1">
             <Menubar />
@@ -134,7 +144,7 @@ function CompanyUserMain() {
                                                     <td>{mail.emailNo}</td>
                                                     <td>{mail.title}</td>
                                                     <td>{mail.writerDisplayInfo}</td>
-                                                    <td>{new Date(mail.sendDate).toLocaleString()}</td>
+                                                    <td>{formatDate(mail.sendDate)}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
