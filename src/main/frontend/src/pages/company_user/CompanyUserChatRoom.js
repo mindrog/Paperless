@@ -125,12 +125,25 @@ function CompanyUserChatRoom() {
         const employees = [];
         data.forEach((dept) => {
             Object.values(dept.teams).forEach((team) => {
-                employees.push(...team);
+                if (Array.isArray(team.members)) {
+                    // 팀의 멤버들을 배열로 확인 후 직원 배열에 추가
+                    employees.push(...team.members);
+                }
             });
         });
         console.log('employees:', employees);
         return employees;
     };
+    // const getAllEmployees = (data) => {
+    //     const employees = [];
+    //     data.forEach((dept) => {
+    //         Object.values(dept.teams).forEach((team) => {
+    //             employees.push(...team);
+    //         });
+    //     });
+    //     console.log('employees:', employees);
+    //     return employees;
+    // };
 
     // 로그인한 사용자 찾기
     useEffect(() => {

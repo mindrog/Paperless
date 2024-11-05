@@ -46,13 +46,13 @@ const HandleSaveAsDraft = forwardRef(({
       files.forEach((file, index) => {
         formData.append('files', file); 
       });
+
       const response = await fetch('/api/saveasdraft', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `${token}`,
         },
-        body: JSON.stringify(payload),
+        body: formData,
       });
 
       if (!response.ok) throw new Error('Failed to save draft');
@@ -64,6 +64,7 @@ const HandleSaveAsDraft = forwardRef(({
       if (!reportId) {
         setReportId(result.reportId); 
       }
+
       setIsSaved(true);
       setSaveDate(new Date().toLocaleDateString('ko-KR'));
       setShowAlert(true);

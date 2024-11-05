@@ -30,6 +30,7 @@ const CompanyUserDraftWriteWork = () => {
   const [repoStartTime, setRepoStartTime] = useState(location.state?.repoStartTime || '');
   const [repoEndTime, setRepoEndTime] = useState(location.state?.repoEndTime || '');
   const [reportStatus, setReportStatus] = useState('작성 중');
+  const [showSaveModal, setShowSaveModal] = useState(false);
 
   // 알림 및 모달 상태 변수
   const [showModal, setShowModal] = useState(false); // 결재선 모달
