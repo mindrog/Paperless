@@ -1,10 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
+<<<<<<< HEAD
 import styles from '../../styles/company/company_email.module.css';
 import '../../styles/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../component/Pagination';
 import ComposeButton from '../component/ComposeButton';
+=======
+import styles from '../../styles/company/company_email.module.css'; 
+import '../../styles/style.css'; 
+import 'bootstrap/dist/css/bootstrap.min.css'; 
+import { useNavigate, useLocation } from 'react-router-dom';
+import Pagination from '../component/Pagination'; 
+import ComposeButton from '../component/ComposeButton'; 
+>>>>>>> 389de5046ecf6e461165716d9d7d1f131786af8c
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faEnvelopeOpen, faPaperclip, faTrashAlt, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
@@ -49,7 +58,7 @@ function CompanyUserEmail() {
 
     // JWT 토큰 가져오기
     const getToken = () => {
-        return localStorage.getItem('jwt');
+    return localStorage.getItem('jwt'); 
     };
 
     // Redux에서 사용자 정보 가져오기
@@ -62,7 +71,12 @@ function CompanyUserEmail() {
     // 폴더 상태: "inbox", "sent" 또는 "trash"
     const [folder, setFolder] = useState("inbox");
 
+<<<<<<< HEAD
     const backendUrl = 'http://localhost:8080';
+=======
+    // 백엔드 서버 주소 설정
+    const backendUrl = 'http://localhost:8080'; 
+>>>>>>> 389de5046ecf6e461165716d9d7d1f131786af8c
 
 
     // 이메일 데이터 가져오기 함수 정의
@@ -106,8 +120,9 @@ function CompanyUserEmail() {
         // 페이지네이션 파라미터 추가
         queryParams.append('page', currentPage - 1);
         queryParams.append('size', emailsPerPage);
+        console.log('emails params:', queryParams.toString()); 
 
-        console.log('emails params:', queryParams.toString());
+
 
         let endpoint = '';
         if (folder === 'sent') {
@@ -119,7 +134,8 @@ function CompanyUserEmail() {
         fetch(endpoint, {
             method: 'GET',
             headers: {
-                'Authorization': getToken(),
+                'Authorization': getToken(), 
+
                 'Content-Type': 'application/json',
             },
         })
@@ -146,7 +162,6 @@ function CompanyUserEmail() {
         setCurrentPage(1);
         setSelectAll(false);
         setSelectedEmails([]);
-
     };
 
     // useEffect에서 fetchEmails 호출
@@ -202,7 +217,7 @@ function CompanyUserEmail() {
         fetch(`${backendUrl}/api/emails/delete`, {
             method: 'POST',
             headers: {
-                'Authorization': getToken(),
+                'Authorization': getToken(), 
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ emailIds: selectedEmails }),
@@ -213,7 +228,7 @@ function CompanyUserEmail() {
                     setSelectedEmails([]);
                     setSelectAll(false);
                     setCurrentPage(1);
-                    fetchEmails();
+                    fetchEmails(); 
                     alert('선택한 이메일이 휴지통으로 이동되었습니다.');
                 } else {
                     const errorText = await response.text();
@@ -237,7 +252,7 @@ function CompanyUserEmail() {
         fetch(`${backendUrl}/api/emails/permanent-delete`, {
             method: 'POST',
             headers: {
-                'Authorization': getToken(),
+                'Authorization': getToken(), 
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ emailIds: selectedEmails }),
@@ -248,7 +263,8 @@ function CompanyUserEmail() {
                     setSelectedEmails([]);
                     setSelectAll(false);
                     setCurrentPage(1);
-                    fetchEmails();
+                    fetchEmails(); 
+
                     alert('선택한 이메일이 영구 삭제되었습니다.');
                 } else {
                     const errorText = await response.text();
@@ -456,6 +472,7 @@ function CompanyUserEmail() {
                         <>
                             <button
                                 className={styles['btn']}
+
                                 onClick={handleRestore}
                                 disabled={selectedEmails.length === 0}
                             >
@@ -468,6 +485,7 @@ function CompanyUserEmail() {
                             >
                                 영구 삭제
                             </button>
+
                             <button
                                 className={`${styles['btn']} ${folder === "inbox"}`}
                                 onClick={() => handleFolderChange("inbox")}
@@ -483,6 +501,7 @@ function CompanyUserEmail() {
                                 <FontAwesomeIcon icon={faPaperPlane} /> Sent
                             </button>
                         </>
+<<<<<<< HEAD
                     ) : folder === "sent" ? (
                         <>
                             <button
@@ -515,6 +534,26 @@ function CompanyUserEmail() {
                             </button>
                         </>
                     ) : null}
+=======
+                    )}
+
+                    {/* 폴더 선택 버튼 */}
+                    <button
+                        className={`${styles['btn']} ${folder === "inbox" ? styles.active : ''}`}
+                        onClick={() => handleFolderChange("inbox")}
+                        disabled={folder === "inbox"}
+                    >
+                        <FontAwesomeIcon icon={faEnvelope} /> 
+                    </button>
+                    <button
+                        className={`${styles['btn']} ${folder === "trash" ? styles.active : ''}`}
+                        onClick={() => handleFolderChange("trash")}
+                        disabled={folder === "trash"}
+                    >
+                        <FontAwesomeIcon icon={faTrashAlt} /> 
+                    </button>
+
+>>>>>>> 389de5046ecf6e461165716d9d7d1f131786af8c
                 </div>
                 {/* 검색 바 및 버튼 추가 */}
                 <div className={styles['search-bar']}>
@@ -655,12 +694,12 @@ function CompanyUserEmail() {
                                 {email.status === 'unread' ? (
                                     <FontAwesomeIcon icon={faEnvelope} style={{ color: 'skyblue' }} />
                                 ) : (
-                                    <FontAwesomeIcon icon={faEnvelopeOpen} style={{ color: 'skyblue' }} />
+                                    <FontAwesomeIcon icon={faEnvelopeOpen} style={{ color: 'skyblue' }}/>
                                 )}
                             </td>
                             <td>
                                 {email.hasAttachment && (
-                                    <FontAwesomeIcon icon={faPaperclip} style={{ color: 'skyblue' }} />
+                                    <FontAwesomeIcon icon={faPaperclip} style={{ color: 'skyblue' }}/>
                                 )}
                             </td>
                             <td onClick={() => handleEmailClick(email)} style={{ cursor: 'pointer' }}>{email.writerDisplayInfo}</td>

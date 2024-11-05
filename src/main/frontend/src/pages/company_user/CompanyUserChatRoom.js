@@ -122,10 +122,14 @@ function CompanyUserChatRoom() {
 
     // 조직도에서 모든 직원 추출하는 함수
     const getAllEmployees = (data) => {
+        console.log("getAllEmployees data : " + data);
         const employees = [];
         data.forEach((dept) => {
             Object.values(dept.teams).forEach((team) => {
-                employees.push(...team);
+                if (Array.isArray(team.members)) {
+                    // 팀의 멤버들을 배열로 확인 후 직원 배열에 추가
+                    employees.push(...team.members);
+                }
             });
         });
         console.log('employees:', employees);
@@ -198,7 +202,7 @@ function CompanyUserChatRoom() {
     const chatting = async (room_no) => {
         try {
             console.log("room_no:", room_no);
-
+            console.log('chatRoomList:', chatRoomList);
             // 해당 room_no의 채팅방 정보 찾기
             const room = chatRoomList.find(room => room.room_no === room_no);
             console.log('room:', room);
@@ -413,6 +417,16 @@ function CompanyUserChatRoom() {
         }
     }, [user]);
 
+    const [newRoomNo, setNewRoomNo] = useState(null);
+
+    useEffect(() => {
+        if (newRoomNo !== null) {
+            console.log('newRoomNo:', newRoomNo);
+            chatting(newRoomNo);
+            setNewRoomNo(null); // 한 번 실행한 후 초기화
+        }
+    }, [chatRoomList, newRoomNo]);
+
     // OrgChart에서 사람 클릭 시 호출 함수
     const handleMemberClick = async (member) => {
         try {
@@ -426,14 +440,24 @@ function CompanyUserChatRoom() {
             // 현재 채팅방 목록에서 해당 참여자들로 이루어진 일대일 채팅방을 찾기
             const existingChatRoom = chatRoomList.find(room => {
                 const participantNos = room.participantNos || [];
-                return participantNos.length === 2 && participantNos[0] === selectedEmpNo && participantNos.includes(user.emp_no);
+                console.log('participantNos:', participantNos);
+                return participantNos.length === 1 && participantNos.includes(selectedEmpNo);
             });
             console.log('existingChatRoom:', existingChatRoom);
 
             // 존재하거나 새로 생성한 채팅방으로 이동
             if (existingChatRoom) {
-                console.log('존재하는 채팅방으로 연결..');
-                chatting(existingChatRoom.room_no);
+                // 열려 있는 채팅방 확인
+                const openChatWindow = openChats.find(chat => chat.room_no === existingChatRoom.room_no);
+
+                if (openChatWindow && openChatWindow.window && !openChatWindow.window.closed) {
+                    console.log('이미 열려 있는 채팅방 포커스..');
+                    openChatWindow.window.focus(); // 이미 열려 있으면 포커스
+                } else {
+                    console.log('존재하는 채팅방으로 연결..');
+                    // 새 창을 열고 openChats에 추가
+                    chatting(existingChatRoom.room_no);
+                }
                 return;
             }
 
@@ -441,20 +465,54 @@ function CompanyUserChatRoom() {
             console.log('새 채팅방으로 연결..');
             // 채팅방이 존재하지 않는 경우 새로운 채팅방을 생성
             const roomDate = format(new Date(), 'yyyy-MM-dd HH:mm');
+            const newRoomNo = chatRoomList.length;
+            console.log('newRoomNo:', newRoomNo);
             const newRoomData = {
+                room_no: newRoomNo,
                 room_date: roomDate,
                 room_participants: [user.emp_no, selectedEmpNo],
             };
 
+            console.log('newRoomData:', newRoomData);
+
             // PUT 요청으로 새로운 채팅방 생성
-            const response = await api.createChatRoom(newRoomData);
+            const response = await api.createChatRoom(newRoomData, user.emp_no);
 
             if (response && response.data) {
-                // 새로 생성된 채팅방으로 연결
-                chatting(response.data.room_no);
+                console.log('response.data:', response.data);
+                console.log('newRoomData:', newRoomData);
+
+                // 새로 생성된 채팅방 데이터를 가공하여 추가 정보 설정
+                const otherParticipants = newRoomData.room_participants
+                    .filter(participant => participant !== user.emp_no)
+                    .map(participant => {
+                        const emp = findUserInOrgChart(participant, orgChartData);
+                        return emp ? {
+                            emp_no: emp.emp_no,
+                            emp_name: emp.emp_name,
+                            emp_dept_name: emp.dept_name || '',
+                            dept_team_name: emp.dept_team_name || '',
+                            emp_posi_name: emp.posi_name || ''
+                        } : { emp_no: participant, emp_name: '', emp_dept_name: '', dept_team_name: '', emp_posi_name: '' };
+                    });
+
+                const participantNames = otherParticipants.map(part => part.emp_name).join(', ');
+
+                // 가공된 데이터로 newRoomData를 업데이트
+                const updatedRoomData = {
+                    ...newRoomData,
+                    participantNames,
+                    participantNos: otherParticipants.map(part => part.emp_no),
+                    unread: 0
+                };
+
+                console.log('updatedRoomData:', updatedRoomData);
+
+                // 새로 생성된 채팅방을 chatRoomList에 추가
+                setChatRoomList(prevList => [...prevList, updatedRoomData]);
+                setNewRoomNo(response.data.room.room_no); // useEffect가 실행되도록 설정
                 return;
             }
-            console.log('existingChatRoom:', existingChatRoom);
         } catch (error) {
             console.error("Error handling member click: ", error);
         }
@@ -507,7 +565,8 @@ function CompanyUserChatRoom() {
                                             <div className={styles.eachChat_content}>
                                                 {recentMessages[room.room_no]?.chat_content_recent}
                                             </div>
-                                            <div className={styles.eachChat_unread} style={{ display: recentMessages[room.room_no]?.unread === 0 ? 'none' : 'block' }}>
+                                            <div className={styles.eachChat_unread} style={{ display: recentMessages[room.room_no]?.unread === 0 || recentMessages[room.room_no]?.unread === undefined ? 'none' : 'block' }}>
+                                            {console.log(`Unread for room ${room.room_no}:`, recentMessages[room.room_no]?.unread) /* 콘솔 출력 */}
                                                 {recentMessages[room.room_no]?.unread}
                                             </div>
                                         </div>

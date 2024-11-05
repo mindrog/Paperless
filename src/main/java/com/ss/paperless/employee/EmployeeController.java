@@ -56,27 +56,32 @@ public class EmployeeController {
     }
 
     @PostMapping("/getMenuList")
-    public Map<Object, List<EmployeeDTO>> getMenuList() {
-        String emp_code =  SecurityContextHolder.getContext().getAuthentication().getName();
+    public Map<String, Map<String, Object>> getMenuList() {
+        String emp_code = SecurityContextHolder.getContext().getAuthentication().getName();
         System.out.println("emp_code : " + emp_code);
         int emp_comp_no = employeeService.getEmpCompNo(emp_code);
         List<EmployeeDTO> menulist = employeeService.getEmpDepartMenuList(emp_comp_no);
         System.out.println("menulist : " + menulist);
 
-        // 부서별로 데이터를 그룹화
-        Map<Object, List<EmployeeDTO>> departmentGroupedMenu = menulist.stream()
-                .collect(Collectors.groupingBy(EmployeeDTO::getDept_name));
-        System.out.println("departmentGroupedMenu : " + departmentGroupedMenu);
-        
-        // 데이터 확인
-        if(departmentGroupedMenu != null) {
-            System.out.println("departmentGroupedMenu : " + departmentGroupedMenu);
-        } else {
-            System.out.println("departmentGroupedMenu : null");
-        }
+        // 부서별로 데이터를 그룹화하고 각 그룹에 dept_code를 포함
+        Map<String, Map<String, Object>> departmentGroupedMenu = menulist.stream()
+                .collect(Collectors.groupingBy(
+                        EmployeeDTO::getDept_name, // 부서 이름으로 그룹화
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                employees -> {
+                                    Map<String, Object> result = new HashMap<>();
+                                    result.put("dept_code", employees.get(0).getEmp_dept_no()); // 부서 코드 추가
+                                    result.put("employees", employees); // 직원 목록 추가
+                                    return result;
+                                }
+                        )
+                ));
 
+        System.out.println("departmentGroupedMenu with dept_code : " + departmentGroupedMenu);
         return departmentGroupedMenu;
     }
+
     @GetMapping("/getdeptnamelist")
     public List<String> GetDeptNamelist(){
     	
@@ -102,6 +107,8 @@ public class EmployeeController {
     public int userInsert(@RequestBody EmployeeDTO emp) {
     	System.out.println("userinsert located...");
     	System.out.println(emp);
+    	String encodedPW = passwordEncoder.encode(emp.getEmp_pw());
+    	emp.setEmp_pw(encodedPW);
     	emp.setEmp_role("user");
     	emp.setEmp_sign(emp.getEmp_name()+" 서명");
     	emp.setEmp_profile("https://via.placeholder.com/60");
@@ -114,7 +121,8 @@ public class EmployeeController {
     @PostMapping("useredit")
     public int userEdit(@RequestBody EmployeeDTO emp) {
     	System.out.println("edit emp : " + emp);
-    	
+    	String encodedPW = passwordEncoder.encode(emp.getEmp_pw());
+    	emp.setEmp_pw(encodedPW);
     	return employeeService.userEdit(emp);
     }
     @GetMapping("/getemps")

@@ -33,9 +33,10 @@ const DraggableRow = ({ person, index, moveRow, handleRemovePerson, handleSelect
     <tr ref={dragDropRef} className={rowClass} style={{ opacity: isDragging ? 0.5 : 1 }}>
       <td>{index + 1}</td>
       <td>{person.dept_name || person.deptName}</td>
-      <td>{person.dept_team_name || person.teamName}</td>
+      <td>{person.dept_team_name || person.teamName || "-"}</td>
       <td>{person.posi_name || "-"}</td> 
       <td>{person.emp_name || "-"}</td>
+      {person.type === 'approver' && (
       <td>
         <Form.Select aria-label="Default select example" value={person.approvalType || ''}
           onChange={(e) => handleSelectChange(index, e.target.value)}>
@@ -45,6 +46,7 @@ const DraggableRow = ({ person, index, moveRow, handleRemovePerson, handleSelect
           <option value="결재">결재</option>
         </Form.Select>
       </td>
+      )}
       <td>
         <Button variant="danger" size="sm" onClick={() => handleRemovePerson(index)}>
           삭제
@@ -63,22 +65,24 @@ const ApprovalLine = ({ showModal, handleModalClose, selectedApprovers,
   setSelectedReceivers }) => {
   const [activeTab, setActiveTab] = useState('approver');
 
+  // 콘솔
+  console.log("Selected References:", selectedReferences); // dept_code 포함 여부 확인
+  console.log("Selected Receivers:", selectedReceivers);   // dept_code 포함 여부 확인
+
   const handleTabSelect = (tab) => setActiveTab(tab);
 
   const updateList = (prevList, data) => {
-    // 중복 검사 로직 세분화
+    console.log("Received data in updateList:", data);
+  
+    // data가 유효하지 않으면 처리하지 않고 그대로 반환
+    if (!data || typeof data !== 'object') {
+      console.warn("Invalid data provided:", data);
+      return prevList;
+    }
+  
+    // 중복 검사 로직
     const isDuplicate = prevList.some((entry) => {
-      if (data.emp_name) {
-        // 개별 직원 추가 시, 같은 이름의 직원만 추가 방지
-        return entry.emp_name === data.emp_name;
-      } else if (data.team_name) {
-        // 팀 추가 시, 같은 팀명만 추가 방지
-        return entry.team_name === data.team_name;
-      } else if (data.dept_name) {
-        // 부서 추가 시, 같은 부서명만 추가 방지
-        return entry.dept_name === data.dept_name;
-      }
-      return false;
+      return entry.emp_name === data.emp_name;
     });
   
     // 중복이 아닌 경우에만 데이터 추가
@@ -86,19 +90,26 @@ const ApprovalLine = ({ showModal, handleModalClose, selectedApprovers,
       const newItem = {
         ...data,
         type: data.emp_name ? 'person' : data.team_name ? 'team' : 'department',
-        team_name: data.team_name || '', // 팀 추가 시 team_name 설정
-        dept_name: data.dept_name || '', // 부서 추가 시 dept_name 설정
+        team_name: data.team_name || '',
+        dept_name: data.dept_name || '',
       };
   
+      console.log("New item added to list:", newItem);
       return [...prevList, newItem];
+    } else {
+      console.log("Duplicate item found, not adding:", data);
     }
+  
     return prevList;
   };
 
   // 결재자 탭의 드롭 설정
   const [{ isOverApprover }, dropApprover] = useDrop({
     accept: ITEM_TYPE,
-    drop: (item) => setSelectedApprovers((prev) => updateList(prev, item.data)),
+    drop: (item) => {
+      console.log("Dropped item in approver:", item);
+      setSelectedApprovers((prev) => updateList(prev, item))
+    },
     collect: (monitor) => ({
       isOverApprover: monitor.isOver(),
     }),
@@ -107,7 +118,7 @@ const ApprovalLine = ({ showModal, handleModalClose, selectedApprovers,
   // 참조자 탭의 드롭 설정
   const [{ isOverReference }, dropReference] = useDrop({
     accept: ITEM_TYPE,
-    drop: (item) => setSelectedReferences((prev) => updateList(prev, item.data)),
+    drop: (item) => setSelectedReferences((prev) => updateList(prev, item)),
     collect: (monitor) => ({
       isOverReference: monitor.isOver(),
     }),
@@ -116,13 +127,16 @@ const ApprovalLine = ({ showModal, handleModalClose, selectedApprovers,
   // 수신자 탭의 드롭 설정
   const [{ isOverReceiver }, dropReceiver] = useDrop({
     accept: ITEM_TYPE,
-    drop: (item) => setSelectedReceivers((prev) => updateList(prev, item.data)),
-    collect: (monitor) => ({
+    drop: (item) => {
+      console.log("Dropped item in approver:", item);
+      setSelectedReceivers((prev) => updateList(prev, item));
+    },
+      collect: (monitor) => ({
       isOverReceiver: monitor.isOver(),
     }),
   });
 
-  const handleRemovePerson = (index, type) => {
+ const handleRemovePerson = (index, type) => {
     if (type === 'approver') {
       setSelectedApprovers((prev) => prev.filter((_, i) => i !== index));
     } else if (type === 'reference') {
@@ -171,7 +185,7 @@ const ApprovalLine = ({ showModal, handleModalClose, selectedApprovers,
           <th>팀 명</th>
           <th>직 급</th>
           <th>직원 명</th>
-          <th>결재 유형</th>
+          {type === 'approver' && <th>결재 유형</th>} {/* 결재자 탭에서만 표시 */}
           <th>작업</th>
         </tr>
       </thead>
@@ -181,6 +195,7 @@ const ApprovalLine = ({ showModal, handleModalClose, selectedApprovers,
             key={index}
             person={person}
             index={index}
+            type={type}
             moveRow={(dragIndex, hoverIndex) => moveRow(dragIndex, hoverIndex, type)}
             handleRemovePerson={() => handleRemovePerson(index, type)}
             handleSelectChange={(idx, value) => handleSelectChange(idx, value, type)}
@@ -190,7 +205,6 @@ const ApprovalLine = ({ showModal, handleModalClose, selectedApprovers,
       </tbody>
     </Table>
   );
-  
 
   return (
     <Modal show={showModal} onHide={handleModalClose} size="lg" centered>

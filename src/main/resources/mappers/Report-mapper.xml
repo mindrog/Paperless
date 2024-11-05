@@ -1,11 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!--  풀 패키지명을 namespace작성한다
-그래야지만 mapper 인터페이스에서 함수 호출시
-매핑해서 sql을 실행할 수 있다. -->
 <mapper namespace="com.ss.paperless.report.ReportMapper">
 
+    <!-- Report 테이블에 임시 저장 데이터를 삽입하는 SQL (문서번호 추가) -->
+    <insert id="AddReportData" parameterType="map" useGeneratedKeys="true" keyProperty="repo_no">
+        INSERT INTO `Report` (repo_code, repo_emp_no, repo_title, repo_content, repo_status, repo_type)
+        VALUES (#{repo_code}, #{repo_emp_no}, #{reportTitle}, #{reportContent}, #{reportStatus}, 'work')
+    </insert>
 
-	
+    <!-- WorkReport 테이블에 임시 저장 데이터를 삽입하는 SQL -->
+    <insert id="AddWorkReportData" parameterType="map">
+        INSERT INTO `WorkReport` (work_repo_no, repo_start_time, repo_end_time)
+        VALUES (#{work_repo_no}, #{repo_start_time}, #{repo_end_time})
+    </insert>
+
+    <update id="updateReportStatus">
+        UPDATE Report
+        SET repo_status = #{reportStatus, jdbcType=VARCHAR}
+        WHERE repo_no = #{reportId}
+    </update>
+
+    <select id="getApproversByReportId" resultType="map" parameterType="long">
+        SELECT * FROM Approver WHERE appr_repo_no = #{reportId} ORDER BY appr_order
+    </select>
+
+    <update id="updateApproverStatus" parameterType="map">
+        UPDATE Approver SET appr_status = #{appr_status} WHERE appr_repo_no = #{repo_no} AND appr_emp_no = #{appr_emp_no}
+    </update>
+
+    <!-- Approver 테이블에 결재자 데이터를 삽입하는 SQL -->
+    <insert id="AddApproversData" parameterType="map">
+        INSERT INTO `Approver` (appr_repo_no, appr_emp_no, appr_order, appr_status, appr_delegate)
+        VALUES
+        <foreach item="approver" collection="approvers" separator=",">
+            (#{repo_no}, #{approver.appr_emp_no}, #{approver.appr_order}, #{approver.appr_status}, #{approver.appr_delegate})
+        </foreach>
+    </insert>
+
+    <!-- Reference 테이블에 참조자 데이터를 삽입하는 SQL -->
+    <insert id="AddReferencesData" parameterType="map">
+        INSERT INTO `Reference` (refe_repo_no, refe_emp_no, refe_dept_no)
+        VALUES
+        <foreach item="reference" collection="references" separator=",">
+            (
+            #{repo_no},
+            <choose>
+                <when test="reference.refe_emp_no != null">
+                    #{reference.refe_emp_no, jdbcType=BIGINT}
+                </when>
+                <otherwise>NULL</otherwise>
+            </choose>,
+            <choose>
+                <when test="reference.refe_dept_no != null">
+                    #{reference.refe_dept_no, jdbcType=BIGINT}
+                </when>
+                <otherwise>NULL</otherwise>
+            </choose>
+            )
+        </foreach>
+    </insert>
+
+    <!-- Recipient 테이블에 수신자 데이터를 삽입하는 SQL -->
+    <insert id="AddReceiversData" parameterType="map">
+        INSERT INTO `Recipient` (reci_repo_no, reci_emp_no, reci_dept_no)
+        VALUES
+        <foreach item="recipient" collection="receivers" separator=",">
+            (
+            #{repo_no},
+            <choose>
+                <when test="recipient.rece_emp_no != null">
+                    #{recipient.rece_emp_no, jdbcType=BIGINT}
+                </when>
+                <otherwise>NULL</otherwise>
+            </choose>,
+            <choose>
+                <when test="recipient.rece_dept_no != null">
+                    #{recipient.rece_dept_no, jdbcType=BIGINT}
+                </when>
+                <otherwise>NULL</otherwise>
+            </choose>
+            )
+        </foreach>
+    </insert>
+
+    <!-- Attachment 테이블에 첨부파일 데이터를 삽입하는 SQL -->
+    <insert id="AddAttachmentData" parameterType="map" useGeneratedKeys="true" keyProperty="atta_no">
+        INSERT INTO `Attachment` (atta_key, atta_url, atta_original_name, atta_size)
+        VALUES (#{atta_key}, #{atta_url}, #{atta_original_name}, #{atta_size})
+    </insert>
+
+    <!-- ReportAttachment 테이블에 보고서와 첨부파일 관계를 삽입하는 SQL -->
+    <insert id="AddReportAttachmentData" parameterType="map">
+        INSERT INTO `ReportAttachment` (repo_no, atta_no)
+        VALUES (#{repo_no}, #{atta_no})
+    </insert>
+
+    <!-- 결재 상신 시 결재자 상태를 업데이트하는 SQL -->
+    <update id="UpdateApproverStatusForSubmission" parameterType="long">
+        UPDATE `Approver`
+        SET appr_status = 'pending'
+        WHERE appr_repo_no = #{repo_no}
+    </update>
+
+    <!-- 상신 취소 시 결재자 상태 초기화하는 SQL -->
+    <update id="ResetApproverStatus" parameterType="long">
+        UPDATE `Approver`
+        SET appr_status = 'pending'
+        WHERE appr_repo_no = #{repo_no}
+    </update>
+
+    <!-- 회수 시 결재자 상태를 중단하는 SQL -->
+    <update id="HaltApproverStatus" parameterType="long">
+        UPDATE `Approver`
+        SET appr_status = 'halted'
+        WHERE appr_repo_no = #{repo_no}
+    </update>
+
+    <insert id="AddSaveAsDraftReportData">
+
+    </insert>
 	
 </mapper>

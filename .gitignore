@@ -12,6 +12,8 @@ target/
 .settings
 .springBeans
 .sts4-cache
+application-KEY.properties
+git-filter-repo.py
 
 
 
@@ -20,9 +22,10 @@ target/
 *.iws
 *.iml
 *.ipr
-
-
 application-API-KEY.properties
+application-KEY.properties
+git-filter-repo.py
+
 
 ### NetBeans ###
 /nbproject/private/
