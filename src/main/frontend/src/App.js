@@ -29,9 +29,9 @@ import CompanyUserDraftWritePurc from './pages/company_user/CompanyUserDraftWrit
 import CompanyUserDraftFormWork from './pages/company_user/CompanyUserDraftFormWork';
 import CompanyUserDraftFormPurc from './pages/company_user/CompanyUserDraftFormPurc';
 import CompanyUserDraftFormAtten from './pages/company_user/CompanyUserDraftFormAtten';
-import CompanyUserDraftDetailWork from './pages/company_user/CompanyUserDraftDetailAtten';
+import CompanyUserDraftDetailWork from './pages/company_user/CompanyUserDraftDetailWork';
 import CompanyUserDraftDetailPurc from './pages/company_user/CompanyUserDraftDetailPurc';
-import CompanyUserDraftDetailAtten from './pages/company_user/CompanyUserDraftDetailWork';
+import CompanyUserDraftDetailAtten from './pages/company_user/CompanyUserDraftDetailAtten';
 import CompanyUserDraftDocAll from './pages/company_user/CompanyUserDraftDocAll';
 import CompanyUserDraftDocDraft from './pages/company_user/CompanyUserDraftDocDraft';
 import CompanyUserDraftDocAppr from './pages/company_user/CompanyUserDraftDocAppr';

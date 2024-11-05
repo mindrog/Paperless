@@ -6,7 +6,7 @@ import OrgChart from '../layout/org_chart';
 
 const ITEM_TYPE = 'ITEM';
 
-const DraggableRow = ({ person, index, moveRow, handleRemovePerson, handleSelectChange, rowClass }) => {
+const DraggableRow = ({ person, index, moveRow, handleRemovePerson, handleSelectChange, rowClass, type }) => {
   const [{ isDragging }, drag] = useDrag({
     type: ITEM_TYPE,
     item: { data: person, index },
@@ -36,7 +36,7 @@ const DraggableRow = ({ person, index, moveRow, handleRemovePerson, handleSelect
       <td>{person.dept_team_name || person.teamName || "-"}</td>
       <td>{person.posi_name || "-"}</td> 
       <td>{person.emp_name || "-"}</td>
-      {person.type === 'approver' && (
+      {type === 'approver' && (
       <td>
         <Form.Select aria-label="Default select example" value={person.approvalType || ''}
           onChange={(e) => handleSelectChange(index, e.target.value)}>
@@ -80,19 +80,21 @@ const ApprovalLine = ({ showModal, handleModalClose, selectedApprovers,
       return prevList;
     }
   
-    // 중복 검사 로직
+    // 중복 검사 로직 (emp_name, dept_name, dept_team_name을 조합한 키 생성)
+    const newEntryKey = `${data.emp_name}-${data.dept_name}-${data.dept_team_name}`;
     const isDuplicate = prevList.some((entry) => {
-      return entry.emp_name === data.emp_name;
+        const entryKey = `${entry.emp_name}-${entry.dept_name}-${entry.dept_team_name}`;
+        return entryKey === newEntryKey;
     });
-  
+
     // 중복이 아닌 경우에만 데이터 추가
     if (!isDuplicate) {
-      const newItem = {
-        ...data,
-        type: data.emp_name ? 'person' : data.team_name ? 'team' : 'department',
-        team_name: data.team_name || '',
-        dept_name: data.dept_name || '',
-      };
+        const newItem = {
+            ...data,
+            type: data.emp_name ? 'person' : data.team_name ? 'team' : 'department',
+            team_name: data.team_name || '',
+            dept_name: data.dept_name || '',
+        };
   
       console.log("New item added to list:", newItem);
       return [...prevList, newItem];

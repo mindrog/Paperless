@@ -19,7 +19,7 @@ const HandleSaveAsDraft = forwardRef(({
   setReportId    // reportId 저장을 위한 함수
 }, ref) => {
   const saveDraftToDB = async () => {
-    console.log("token : " + token);
+    console.log("token:", token);
     console.log("HandleSaveAsDraft - Report ID:", reportId);
 
     try {
@@ -60,17 +60,17 @@ const HandleSaveAsDraft = forwardRef(({
       const result = await response.json();
       console.log("Save result:", result);
 
-      // reportId가 처음 저장될 때 부모 컴포넌트에 전달
-      if (!reportId) {
-        setReportId(result.reportId); 
-      }
-
+      // reportId 설정 및 부모 컴포넌트에 업데이트
+      setReportId(result.reportId);
       setIsSaved(true);
       setSaveDate(new Date().toLocaleDateString('ko-KR'));
       setShowAlert(true);
+
+      return result; // 결과 반환
     } catch (error) {
       console.error('Error saving draft:', error);
       setShowAlert(true);
+      return null; // 오류 발생 시 null 반환
     }
   };
 

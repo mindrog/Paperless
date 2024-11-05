@@ -12,6 +12,8 @@ const CompanyUserDraftFormWork = () => {
   const saveDraftRef = useRef();
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('')
+  const [actionType, setActionType] = useState('draft');
   const currentSaveDraftDate = moment().format("YYYY-MM-DD");
   const printRef = useRef(); // PDF로 변환할 영역을 참조하는 ref
 
@@ -51,12 +53,6 @@ const CompanyUserDraftFormWork = () => {
     });
   };
 
-  const handleSaveClick = () => {
-    if (saveDraftRef.current) {
-      saveDraftRef.current();
-    }
-  };
-
   // PDF 다운로드 함수
   const handleDownloadPdf = async () => {
     const element = printRef.current;
@@ -79,13 +75,16 @@ const CompanyUserDraftFormWork = () => {
   };
 
   // 결재 상신
-  const handleSaveSuccess = () => {
-    setShowModal(true);
-    setTimeout(() => {
+  const handleSubmitForApproval = () => {
+  if (saveDraftRef.current) {
+      saveDraftRef.current('submit'); // 결재 상신 시 "submit"을 전달
+  }
+  setShowModal(true);
+  setTimeout(() => {
       setShowModal(false);
       navigate('/company/user/draft/doc/all');
-    }, 2000);
-  };
+  }, 2000);
+};
 
   return (
     <div className="container">
@@ -101,11 +100,11 @@ const CompanyUserDraftFormWork = () => {
           <div>
             <Button className={styles.pdfBtn} onClick={handleDownloadPdf}>pdf 변환</Button>
 
-            <Button className={styles.apprSumbitBtn} onClick={handleSaveClick}>결재 상신</Button>
+            <Button className={styles.apprSumbitBtn} onClick={handleSubmitForApproval}>결재 상신</Button>
           </div>
         </div>
         <div>
-          <HandleSaveDraftWork
+        <HandleSaveDraftWork
             ref={saveDraftRef}
             reportTitle={reportTitle}
             reportContent={reportContent}
@@ -122,8 +121,9 @@ const CompanyUserDraftFormWork = () => {
             setIsSaved={() => { }}
             setSaveDate={currentSaveDraftDate}
             setShowAlert={() => { }}
-            onSaveSuccess={handleSaveSuccess}
-          />
+            setAlertMessage={setAlertMessage}
+            actionType={actionType}
+        />
 
           {/* 모달 창 */}
           <Modal show={showModal} onHide={() => setShowModal(false)} centered>
@@ -148,7 +148,7 @@ const CompanyUserDraftFormWork = () => {
               <tbody>
                 <tr>
                   <td className={styles.labelCellTitle}>제&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;목</td>
-                  <td className={styles.valueCell}>{reportTitle}</td>
+                  <td className={styles.valueCellrepoTitle}>{reportTitle}</td>
                 </tr>
               </tbody>
             </Table>
