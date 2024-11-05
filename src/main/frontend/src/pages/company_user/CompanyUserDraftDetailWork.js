@@ -1,159 +1,159 @@
-import React, { useState } from 'react';
-import { Table, Button, Form, Modal, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Table, Button } from 'react-bootstrap';
 import styles from '../../styles/company/company_draft_write_work.module.css';
-import ApprovalLine from '../layout/ApprovalLine';
 
-function CompanyUserDraftDetailAtten() {
-  const [reportTitle, setReportTitle] = useState('');
-  const [reporter, setReporter] = useState('');
-  const [reportDate, setReportDate] = useState('');
-  const [department, setDepartment] = useState('');
-  const [reportContent, setReportContent] = useState('');
-  const [formErrors, setFormErrors] = useState({});
+const CompanyUserDraftDetailWork = () => {
+  const location = useLocation();
+  const {
+    reportId,
+    reportTitle = '업무 보고서',
+    reportContent = '상세 보고 내용입니다.',
+    reporter = '홍길동',
+    department = 'IT팀',
+    reportDate = '2024-10-16',
+    repoStartTime = '2024-10-19',
+    repoEndTime = '2024-10-31',
+    selectedApprovers = [
+      { emp_name: '박수진', posi_name: '부장', approvalType: '결재' },
+      { emp_name: '이민수', posi_name: '차장', approvalType: '합의' }
+    ],
+    selectedReferences = [{ emp_name: '김철수' }],
+    selectedReceivers = [{ emp_name: '이영희' }],
+    files = ['example.pdf', 'summary.docx']
+  } = location.state || {}; // 전달된 데이터를 추출
 
-  // 결재 상태
-  const [appr_status, setApprStatus] = useState("pending"); 
-  
+  useEffect(() => {
+    if (reportId) {
+      console.log("불러올 reportId:", reportId);
+      // API 호출 등 데이터 로딩 작업 수행 가능
+    }
+  }, [reportId]);
+
   return (
-    <div>
-      <div className="container">
+    <div className="container">
+      <div className={styles.formHeader}>
+        <h2 className={styles.pageTitle}>기안 상세보기</h2>
+      </div>
+
+      <div className={styles.formContent}>
         <div className={styles.apprSumbitBtnBox}>
-          <h2 className={styles.pageTitle}>업무 보고 기안 상세</h2>
-          <div>
-            <Button className={styles.SumbitCancelBtn} disabled={appr_status !== "pending"}>상신 취소</Button>
-          </div>
-          <div>
-            <Button className={styles.WithdrawBtn} disabled={appr_status === "pending"}>회신</Button>
-          </div>
+          <Button className={styles.cancelBtn}>상신 취소</Button>
+          <Button className={styles.approveBtn}>회신</Button>
         </div>
-        <Form>
-          <Table bordered className={styles.docTitleHeader}>
-            <thead>
-              <tr className={styles.docTitleBox}>
-                <th className={styles.docTitle}>기안 제목</th>
-                <th colSpan={3}>
-                  <Form.Control
-                    type="text"
-                    value={reportTitle}
-                    onChange={(e) => setReportTitle(e.target.value)}
-                    className={`${styles.inputForm} ${formErrors.reportTitle ? styles.errorInput : ''}`} // 오류가 있으면 테두리 색상 변경
-                    placeholder="기안 제목을 입력하세요"
-                    readOnly
-                  />
-                  {formErrors.reportTitle && <span className={styles.errorMessage}>기안 제목을 입력해주세요</span>}
-                </th>
-              </tr>
-            </thead>
-          </Table>
 
-          <div className={styles.docHeader}>
-            <Table bordered size="sm" className={styles.docInfo}>
-              <tbody>
-                <tr>
-                  <th className={styles.docKey}>문서번호</th>
-                  <td className={styles.docValue}>-</td>
-                </tr>
-                <tr>
-                  <td className={styles.docKey}>본&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;부</td>
-                  <td className={styles.docValue}>{department || 'Mark'}</td>
-                </tr>
-                <tr>
-                  <td className={styles.docKey}>부&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;서</td>
-                  <td className={styles.docValue}>{reporter || 'Jacob'}</td>
-                </tr>
-                <tr>
-                  <td className={styles.docKey}>기안일</td>
-                  <td className={styles.docValue}>{reportDate || '2024-10-16(수)'}</td>
-                </tr>
-                <tr>
-                  <td className={styles.docKey}>기안자</td>
-                  <td className={styles.docValue}>배수지</td>
-                </tr>
-                <tr>
-                  <td className={styles.docKey}>시행일자</td>
-                  <td className={styles.docValue}>2024-10-19(금)</td>
-                </tr>
-                <tr>
-                  <td className={styles.docKey}>결재 상태</td>
-                  <td className={styles.docValue}>신청</td>
-                </tr>
-              </tbody>
-            </Table>
-            <Table bordered size="sm" className={styles.apprLineBox}>
-              <tbody className={styles.apprLineTbody}>
-                <tr className={styles.apprLinedocTr}>
-                  <td className={styles.docKey}>상신</td>
-                  <td className={styles.docKey}>결재</td>
-                </tr>
-                <tr>
-                  <td className={styles.docKey}>배수지</td>
-                  <td>
-                    {/* <Button className={styles.cancelBtn} onClick={handleApprLineModal}>결재선 지정</Button> */}
-                  </td>
-                </tr>
-                <tr>
-                  <td className={styles.docValue_date}>2024/10/21</td>
-                  <td>-</td>
-                </tr>
-              </tbody>
-            </Table>
-          </div>
+        <Table bordered className={styles.mainTable}>
+          <tbody>
+            <tr>
+              <td className={styles.labelCellTitle}>제&nbsp;&nbsp;&nbsp;&nbsp;목</td>
+              <td className={styles.valueCell} colSpan="3">{reportTitle}</td>
+            </tr>
+          </tbody>
+        </Table>
 
-          <Table bordered className={styles.docContent}>
+        <div className={styles.docInfoSection}>
+          <Table bordered size="sm" className={styles.innerTable}>
             <tbody>
               <tr>
-                <td className={styles.docKey}>수 &nbsp;&nbsp;&nbsp; 신</td>
-                <td></td>
-                <td className={styles.docKey}>참 &nbsp;&nbsp;&nbsp; 조</td>
-                <td></td>
+                <td className={styles.labelCell}>문서번호</td>
+                <td className={styles.valueCell}>{reportId}</td>
               </tr>
               <tr>
-                <td className={styles.docKey}>제 &nbsp;&nbsp;&nbsp; 목</td>
-                <td colSpan={3}>
-                  <Form.Control
-                    type="text"
-                    value={reportTitle}
-                    onChange={(e) => setReportTitle(e.target.value)}
-                    className={`${styles.inputForm} ${formErrors.reportTitle ? styles.errorInput : ''}`}
-                    placeholder="문서 제목을 입력하세요"
-                    readOnly
-                  />
-                  {formErrors.reportTitle && <span className={styles.errorMessage}>문서 제목을 입력해주세요</span>}
-                </td>
+                <td className={styles.labelCell}>부&nbsp;&nbsp;서</td>
+                <td className={styles.valueCell}>{department}</td>
               </tr>
               <tr>
-                <td colSpan={4}>
-                  <Form.Control
-                    as="textarea"
-                    rows={5}
-                    value={reportContent}
-                    onChange={(e) => setReportContent(e.target.value)}
-                    className={`${styles.inputForm} ${formErrors.reportContent ? styles.errorInput : ''}`}
-                    placeholder="내용을 입력하세요"
-                    readOnly
-                  />
-                  {formErrors.reportContent && <span className={styles.errorMessage}>내용을 입력해주세요</span>}
-                </td>
+                <td className={styles.labelCell}>기&nbsp;안&nbsp;일</td>
+                <td className={styles.valueCell}>{reportDate}</td>
               </tr>
               <tr>
-                <td colSpan={4} className={styles.docKey}>첨부자료</td>
+                <td className={styles.labelCell}>기 안 자</td>
+                <td className={styles.valueCell}>{reporter}</td>
               </tr>
               <tr>
-                <td className={styles.docKey}>첨부자료</td>
-                <td
-                  colSpan={5}
-                  className={styles.dropZone}
-                >
-                  파일을 여기에 드롭하거나 클릭하여 추가하세요
-                </td>
+                <td className={styles.labelCell}>시행일자</td>
+                <td className={styles.valueCell}>{repoStartTime}</td>
+              </tr>
+              <tr>
+                <td className={styles.labelCell}>마감일자</td>
+                <td className={styles.valueCell}>{repoEndTime}</td>
               </tr>
             </tbody>
           </Table>
-        </Form>
+
+          <Table bordered size="sm" className={styles.innerApprTable}>
+            <tbody>
+              <tr>
+                <td className={styles.labelCell}>상신</td>
+                {selectedApprovers.map((_, index) => (
+                  <td key={index} className={styles.valueCell}>결재</td>
+                ))}
+              </tr>
+              <tr>
+                <td className={styles.valueCell}>{reporter}</td>
+                {selectedApprovers.map((approver, index) => (
+                  <td key={index} className={styles.valueCell}>
+                    <div>
+                      <span>{approver.posi_name}</span>
+                      {approver.emp_name} ({approver.approvalType})
+                    </div>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </Table>
+        </div>
+
+        <Table bordered className={styles.secondaryTable}>
+          <tbody>
+            <tr>
+              <td className={styles.labelCell}>참&nbsp;&nbsp;&nbsp;조</td>
+              <td className={styles.valueCell}>
+                {selectedReferences.map((ref, index) => (
+                  <span key={index}>{ref.emp_name}{index < selectedReferences.length - 1 && ', '}</span>
+                ))}
+              </td>
+              <td className={styles.labelCell}>수&nbsp;&nbsp;&nbsp;신</td>
+              <td className={styles.valueCell}>
+                {selectedReceivers.map((recv, index) => (
+                  <span key={index}>{recv.emp_name}{index < selectedReceivers.length - 1 && ', '}</span>
+                ))}
+              </td>
+            </tr>
+            <tr>
+              <td colSpan="4" className={styles.detailsTitle}>상세 내용</td>
+            </tr>
+            <tr>
+              <td colSpan="4" className={styles.valueCellContent}>
+                {reportContent}
+              </td>
+            </tr>
+          </tbody>
+        </Table>
+
+        <Table bordered>
+          <tbody>
+            <tr>
+              <td colSpan="4" className={styles.valueCellFile}>첨부 파일</td>
+            </tr>
+            <tr>
+              <td colSpan="4" className={styles.valueCellFile}>
+                {files.length > 0 ? (
+                  <ul>
+                    {files.map((file, index) => (
+                      <li key={index} className={styles.fileList}>📄 {file}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  '첨부된 파일이 없습니다.'
+                )}
+              </td>
+            </tr>
+          </tbody>
+        </Table>
       </div>
     </div>
   );
-}
+};
 
-export default CompanyUserDraftDetailAtten;
+export default CompanyUserDraftDetailWork;

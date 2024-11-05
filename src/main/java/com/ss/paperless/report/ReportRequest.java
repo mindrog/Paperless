@@ -1,5 +1,6 @@
 package com.ss.paperless.report;
 
+import com.ss.paperless.employee.EmployeeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ public class ReportRequest {
     private String repoStartTime;
     private String repoEndTime;
     private String reportStatus;
-    private List<ApproverDTO> selectedApprovers;
-    private List<ReferenceDTO> selectedReferences;
-    private List<ReferenceDTO> selectedReceivers;
+    private List<EmployeeDTO> selectedApprovers;
+    private List<EmployeeDTO> selectedReferences;
+    private List<EmployeeDTO> selectedReceivers;
 }

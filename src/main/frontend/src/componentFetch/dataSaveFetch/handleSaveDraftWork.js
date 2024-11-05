@@ -11,20 +11,23 @@ const HandleSaveDraftWork = forwardRef(({
   selectedApprovers,
   selectedReferences,
   selectedReceivers,
-  token,
   setIsSaved,
   setSaveDate,
   setShowAlert,
   setAlertMessage,
-  setReportId
+  setReportId,
+  files
 }, ref) => {
   const saveReportToDB = async (type = 'draft') => {
     console.log("HandleSaveReport - Report ID:", reportId);
     console.log("HandleSaveReport - type :", type);
 
     try {
-      // JSON 데이터 구성
-      const reportData = {
+
+      const formData = new FormData();
+
+      // JSON 데이터 추가
+      formData.append('reportData', new Blob([JSON.stringify({
         reportId,
         reportTitle,
         reportContent,
@@ -34,23 +37,60 @@ const HandleSaveDraftWork = forwardRef(({
         reportStatus,
         selectedApprovers,
         selectedReferences,
-        selectedReceivers
-      };
+        selectedReceivers,
+      })], { type: 'application/json' }));
 
-      console.log("ReportData JSON contents:", reportData);
+      // 파일이 있으면 추가
+      if (files && files.length > 0) {
+        files.forEach((file) => formData.append('files', file));
+      }
+
+      // FormData의 내용을 로그로 출력
+      console.log("FormData contents:");
+      for (let [key, value] of formData.entries()) {
+        if (value instanceof Blob) {
+          // Blob 객체는 파일일 가능성이 높으므로 파일 정보만 표시
+          console.log(`${key}: Blob - ${value.size} bytes`);
+        } else {
+          console.log(`${key}: ${value}`);
+        }
+      }
+
+      // JSON 데이터 구성
+      // const reportData = {
+      //   reportId,
+      //   reportTitle,
+      //   reportContent,
+      //   reportDate,
+      //   repoStartTime,
+      //   repoEndTime,
+      //   reportStatus,
+      //   selectedApprovers,
+      //   selectedReferences,
+      //   selectedReceivers
+      // };
+
+      // console.log("ReportData JSON contents:", reportData);
 
       const apiUrl = type === 'draft' ? '/api/saveasdraft' : '/api/saveworkreport';
-
-      console.log("apiUrl : " + apiUrl);
+      const token = localStorage.getItem('jwt');
 
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',  // JSON 형식으로 지정
-          Authorization: `${token}`,     // JWT 토큰을 Bearer로 추가
+          Authorization: `${token}`, 
         },
-        body: JSON.stringify(reportData) // JSON 데이터를 문자열로 변환하여 전송
+        body: formData,
       });
+
+      // const response = await fetch(apiUrl, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',  // JSON 형식으로 지정
+      //     Authorization: `${token}`,     // JWT 토큰을 Bearer로 추가
+      //   },
+      //   body: JSON.stringify(reportData) // JSON 데이터를 문자열로 변환하여 전송
+      // });
 
       if (!response.ok) throw new Error(`Failed to ${type} report`);
 

@@ -1,5 +1,6 @@
 package com.ss.paperless.report;
 
+import com.ss.paperless.attachment.AttachmentDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
@@ -72,4 +73,13 @@ public interface ReportMapper {
 
     // 문서 코드 생성 시 문서 타입 조회
     String getReportTypeById(Long reportId);
+
+    // 보고서 첨부 파일 데이터 삽입 메서드 추가
+    void insertAttachment(AttachmentDTO attachment);
+    void insertReportAttachment(Long reportId, Long attaNo);
+
+    // 결재자, 참조자, 수신자 데이터 삽입 메서드 추가
+    void insertApprover(Map<String, Object> approverData);
+    void insertReference(Map<String, Object> referenceData);
+    void insertRecipient(Map<String, Object> recipientData);
 }

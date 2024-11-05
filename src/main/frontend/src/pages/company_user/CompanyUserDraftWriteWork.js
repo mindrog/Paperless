@@ -39,7 +39,12 @@ const CompanyUserDraftWriteWork = () => {
   const [selectedReferences, setSelectedReferences] = useState(location.state?.selectedReferences || []);
   const [selectedReceivers, setSelectedReceivers] = useState(location.state?.selectedReceivers || []);
   const [files, setFiles] = useState(location.state?.files || []);
-  const [formErrors, setFormErrors] = useState({});
+  const [formErrors, setFormErrors] = useState({
+    reportTitle: false,
+    reportContent: false,
+    repoStartTime: false,
+    repoEndTime: false,
+  });
   const [isSaved, setIsSaved] = useState(false);
 
   const saveDraftRef = useRef(null);
@@ -58,19 +63,23 @@ const CompanyUserDraftWriteWork = () => {
   useEffect(() => {
     const autoSave = async () => {
       try {
-        const result = await saveDraftRef.current();
-        if (result && result.reportId) {
-          setReportId(result.reportId);
+        // reportId가 존재하는 경우에만 새로 설정되지 않도록 유지
+        if (reportId) {
+          const result = await saveDraftRef.current();
+          if (result && result.reportId) {
+            setReportId((prevId) => prevId || result.reportId); // 기존 reportId 유지
+          }
         }
       } catch (error) {
         console.error('Error during auto-save:', error);
       }
     };
 
-    const saveInterval = setInterval(autoSave, 60000); 
+    const saveInterval = setInterval(autoSave, 60000);
     return () => clearInterval(saveInterval);
-  }, [reportTitle, reportContent, selectedApprovers, selectedReferences, selectedReceivers]);
+  }, [reportTitle, reportContent, repoStartTime, repoEndTime, selectedApprovers, selectedReferences, selectedReceivers]);
 
+  // 임시 저장 버튼 클릭
   const handleSaveAsDraftClick = async () => {
     const currentDate = new Date().toLocaleString('ko-KR', {
       year: 'numeric',
@@ -82,6 +91,7 @@ const CompanyUserDraftWriteWork = () => {
     setSaveDate(currentDate);
 
     try {
+      // reportId가 없을 때에만 새로운 임시 저장 ID 생성
       const result = await saveDraftRef.current();
       if (result && result.reportId) {
         setReportId(result.reportId);
@@ -101,6 +111,8 @@ const CompanyUserDraftWriteWork = () => {
     const errors = {};
     if (!reportTitle) errors.reportTitle = true;
     if (!reportContent) errors.reportContent = true;
+    if (!repoStartTime) errors.repoStartTime = true;
+    if (!repoEndTime) errors.repoEndTime = true;
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -126,7 +138,7 @@ const CompanyUserDraftWriteWork = () => {
           selectedReferences,
           selectedReceivers,
           reportId,
-          actionType:"submit",
+          actionType: "submit",
           token,
           files,
         },
@@ -137,6 +149,26 @@ const CompanyUserDraftWriteWork = () => {
   };
 
   console.log("reportId :", reportId);
+
+  // 상세페이지로 reportId 보내기
+  const handleDetailPage = () => {
+    navigate(`/company/user/draft/detail`, {
+      state: {
+        reportId,
+        reportTitle,  // 업무 보고 기안의 제목
+        reportContent,  // 상세 내용
+        reporter : userData.emp_name,  // 기안자 정보
+        department : userData.dept_name,  // 부서 정보
+        reportDate,  // 기안일
+        repoStartTime,  // 시행일자
+        repoEndTime,  // 마감일자
+        selectedApprovers,  // 결재자 정보
+        selectedReferences,  // 참조자 정보
+        selectedReceivers,  // 수신자 정보
+        files  // 첨부 파일
+      }
+    });
+  };
 
   return (
     <div className="container">
@@ -155,6 +187,8 @@ const CompanyUserDraftWriteWork = () => {
               reportStatus={reportStatus}
               onStartDateChange={setRepoStartTime}
               onEndDateChange={setRepoEndTime}
+              startTimeError={formErrors.repoStartTime}
+              endTimeError={formErrors.repoEndTime}
             />
           ) : (
             <p>Loading user information...</p>

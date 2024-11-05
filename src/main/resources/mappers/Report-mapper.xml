@@ -5,13 +5,42 @@
     <!-- Report 테이블에 임시 저장 데이터를 삽입하는 SQL (문서번호 추가) -->
     <insert id="AddReportData" parameterType="map" useGeneratedKeys="true" keyProperty="repo_no">
         INSERT INTO `Report` (repo_code, repo_emp_no, repo_title, repo_content, repo_status, repo_type)
-        VALUES (#{repo_code}, #{repo_emp_no}, #{reportTitle}, #{reportContent}, #{reportStatus}, 'work')
+        VALUES (#{documentCode}, #{repoEmpNo}, #{reportTitle}, #{reportContent}, #{status}, 'work')
     </insert>
 
     <!-- WorkReport 테이블에 임시 저장 데이터를 삽입하는 SQL -->
     <insert id="AddWorkReportData" parameterType="map">
         INSERT INTO `WorkReport` (work_repo_no, repo_start_time, repo_end_time)
         VALUES (#{repo_no}, #{repoStartTime}, #{repoEndTime})
+    </insert>
+
+    <!-- Approver 테이블 -->
+    <insert id="insertApprover" parameterType="map">
+        INSERT INTO Approver (appr_repo_no, appr_emp_no, appr_order, appr_status, appr_delegate, appr_is_read)
+        VALUES (#{appr_repo_no}, #{appr_emp_no}, #{appr_order}, #{appr_status}, 0, 0)
+    </insert>
+
+    <!-- Reference 테이블 -->
+    <insert id="insertReference" parameterType="map">
+        INSERT INTO Reference (refe_repo_no, refe_emp_no, refe_dept_no, refe_is_read)
+        VALUES (#{refe_repo_no}, #{refe_emp_no}, #{refe_dept_no}, 0)
+    </insert>
+
+    <!-- Recipient 테이블 -->
+    <insert id="insertRecipient" parameterType="map">
+        INSERT INTO Recipient (reci_repo_no, reci_emp_no, reci_dept_no, reci_is_read)
+        VALUES (#{reci_repo_no}, #{reci_emp_no}, #{reci_dept_no}, 0)
+    </insert>
+
+    <!-- 파일 저장 -->
+    <insert id="insertAttachment" parameterType="com.ss.paperless.attachment.Attachment">
+        INSERT INTO Attachment (atta_key, atta_url, atta_original_name, atta_size)
+        VALUES (#{attaKey}, #{attaUrl}, #{attaOriginalName}, #{attaSize})
+    </insert>
+
+    <!-- ReportAttachment - 파일 저장 -->
+    <insert id="insertReportAttachment">
+        INSERT INTO ReportAttachment (repo_no, atta_no) VALUES (#{repoNo}, #{attaNo})
     </insert>
 
     <update id="updateReportStatus">
@@ -30,10 +59,10 @@
 
     <!-- Approver 테이블에 결재자 데이터를 삽입하는 SQL -->
     <insert id="AddApproversData" parameterType="map">
-        INSERT INTO `Approver` (appr_repo_no, appr_emp_no, appr_order, appr_status, appr_delegate)
+        INSERT INTO `Approver` (appr_repo_no, appr_emp_no, appr_dept_no, appr_order, appr_status, appr_delegate)
         VALUES
         <foreach item="approver" collection="approvers" separator=",">
-            (#{repo_no}, #{approver.appr_emp_no}, #{approver.appr_order}, #{approver.appr_status}, #{approver.appr_delegate})
+            (#{repo_no}, #{approver.appr_emp_no}, #{approver.appr_dept_no}, #{approver.appr_order}, #{approver.appr_status}, #{approver.appr_delegate})
         </foreach>
     </insert>
 
