@@ -44,6 +44,29 @@ public class ScheduleService {
 		return mapper.ScheduleInsertPrivate(emp_no,comp_no,dept_no,sche_title,sche_start,sche_end);
 	}
 
+	public int ScheduleEditComp(int sche_no, Long emp_no, Long comp_no, Long dept_no, String sche_title,
+			String sche_start, String sche_end) {
+		// TODO Auto-generated method stub
+		return mapper.ScheduleEditComp(sche_no,emp_no,comp_no,dept_no,sche_title,sche_start,sche_end);
+	}
+
+	public int ScheduleEditDept(int sche_no, Long emp_no, Long comp_no, Long dept_no, String sche_title,
+			String sche_start, String sche_end) {
+		// TODO Auto-generated method stub
+		return mapper.ScheduleEditDept(sche_no,emp_no,comp_no,dept_no,sche_title,sche_start,sche_end);
+	}
+
+	public int ScheduleEditPrivate(int sche_no, Long emp_no, Long comp_no, Long dept_no, String sche_title,
+			String sche_start, String sche_end) {
+		// TODO Auto-generated method stub
+		return mapper.ScheduleEditPrivate(sche_no,emp_no,comp_no,dept_no,sche_title,sche_start,sche_end);
+	}
+
+	public int ScheduleDelete(int sche_no) {
+		// TODO Auto-generated method stub
+		return mapper.ScheduleDelete(sche_no);
+	}
+
 	
 
 }

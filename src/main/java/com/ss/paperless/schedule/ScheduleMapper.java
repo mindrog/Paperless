@@ -21,6 +21,17 @@ public interface ScheduleMapper {
 
 	public int ScheduleInsertPrivate(Long emp_no, Long comp_no, Long dept_no, String sche_title, String sche_start,
 			String sche_end);
+
+	public int ScheduleEditComp(int sche_no, Long emp_no, Long comp_no, Long dept_no, String sche_title,
+			String sche_start, String sche_end);
+
+	public int ScheduleEditDept(int sche_no, Long emp_no, Long comp_no, Long dept_no, String sche_title,
+			String sche_start, String sche_end);
+
+	public int ScheduleEditPrivate(int sche_no, Long emp_no, Long comp_no, Long dept_no, String sche_title,
+			String sche_start, String sche_end);
+
+	public int ScheduleDelete(int sche_no);
 	
 
 }

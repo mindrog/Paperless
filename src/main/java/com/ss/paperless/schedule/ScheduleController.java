@@ -37,11 +37,12 @@ public class ScheduleController {
 		listAll.addAll(listCompSchedule);
 		listAll.addAll(listDeptSchedule);
 		listAll.addAll(listPrivateSchedule);
-
+		System.out.println("listAll" + listAll);
 		List<HashMap<String, Object>> scheduleList = new ArrayList<>();
 
 		for (ScheduleDTO schedule : listAll) {
 			HashMap<String, Object> hash = new HashMap<>();
+			hash.put("id", schedule.getSche_no());
 			hash.put("title", schedule.getSche_title());
 			hash.put("start", schedule.getSche_start());
 			hash.put("end", schedule.getSche_end());
@@ -52,7 +53,7 @@ public class ScheduleController {
 
 			scheduleList.add(hash);
 		}
-
+		System.out.println(scheduleList);
 		return scheduleList;
 	}
 	@GetMapping("/scheduleinsert")
@@ -79,4 +80,30 @@ public class ScheduleController {
 	            return service.ScheduleInsertPrivate(emp_no,comp_no,dept_no,sche_title,sche_start,sche_end);
 	        }
 	    }
+	@GetMapping("/scheduleedit")
+	 public int ScheduleEdit(
+			 	@RequestParam int sche_no,
+			 	@RequestParam Long emp_no,
+			 	@RequestParam Long comp_no,
+			 	@RequestParam Long dept_no,
+	            @RequestParam String sche_title,
+	            @RequestParam String sche_start, // LocalDate 대신 String으로 받음
+	            @RequestParam String sche_end,   // LocalDate 대신 String으로 받음
+	            @RequestParam String visibility) {
+		 LocalDate startDate = LocalDate.parse(sche_start);
+	        LocalDate endDate = LocalDate.parse(sche_end);
+		if ("company-wide".equals(visibility)) {
+            return service.ScheduleEditComp(sche_no,emp_no,comp_no,dept_no,sche_title,sche_start,sche_end);
+        } else if ("department-wide".equals(visibility)) {
+        	System.out.println("[ edit : sche_title = " + sche_title + ", sche_start = " + startDate + ", sche_end = " + endDate + "visibility = " + visibility + " ]");
+            return service.ScheduleEditDept(sche_no,emp_no,comp_no,dept_no,sche_title,sche_start,sche_end);
+        } else {
+        	System.out.println("[ edit : sche_title = " + sche_title + ", sche_start = " + startDate + ", sche_end = " + endDate + "visibility = " + visibility + " ]");
+            return service.ScheduleEditPrivate(sche_no,emp_no,comp_no,dept_no,sche_title,sche_start,sche_end);
+        }
+	}
+	@GetMapping("/scheduledelete")
+	 public int ScheduleDelete(@RequestParam int sche_no) {
+		return service.ScheduleDelete(sche_no);
+	}
 }

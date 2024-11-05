@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { identity } from 'lodash';
 Modal.setAppElement('#root'); // React 18 기준, 루트 엘리먼트를 지정
 const ModalContainer = styled.div`
     display: flex;
@@ -67,25 +68,38 @@ const Select = styled.select`
 
 const CalendarEditModal = ({ isOpen, onRequestClose, selectedEvent }) => {
     const userData = useSelector((state) => state.user.data);
-    const [title, setTitle] = useState(selectedEvent ? selectedEvent.title : ''); // 선택된 이벤트의 제목으로 초기화
+    const [title, setTitle] = useState(selectedEvent ? selectedEvent.title : '');
+    const [id, setID] = useState(selectedEvent ? selectedEvent.id : ''); // 선택된 이벤트의 제목으로 초기화
     const [start, setStart] = useState(selectedEvent ? selectedEvent.start : ''); // 선택된 이벤트의 시작일로 초기화
     const [end, setEnd] = useState(selectedEvent ? selectedEvent.end : ''); // 선택된 이벤트의 종료일로 초기화
     const [result, setResult] = useState('');
     const [visibility, setVisibility] = useState('company-wide');
     console.log(selectedEvent);
-    
-    const handleSave = async () => {
+
+    const handleEdit = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/scheduleinsert`, {
+            const response = await axios.get(`http://localhost:8080/api/scheduleedit`, {
                 params: {
-                    emp_no : userData.emp_no,
+                    sche_no: id,
+                    emp_no: userData.emp_no,
                     comp_no: userData.emp_comp_no,
                     dept_no: userData.emp_dept_no,
                     sche_title: title,
                     sche_start: start,
-                    sche_end:end,
-                    visibility : visibility
+                    sche_end: end,
+                    visibility: visibility
                 },
+            });
+            // 검색 결과 처리
+            setResult(response.data);
+            console.log("일정추가 성공 : " + result.data);
+        } catch (error) {
+            console.error("일정 추가 실패:", error);
+        }
+    };
+    const handleDelete = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/scheduledelete?sche_no=${id}`, {
             });
             // 검색 결과 처리
             setResult(response.data);
@@ -98,12 +112,27 @@ const CalendarEditModal = ({ isOpen, onRequestClose, selectedEvent }) => {
         if (selectedEvent) {
             setTitle(selectedEvent.title);
             setStart(selectedEvent.start ? selectedEvent.start.toISOString().split('T')[0] : '');
-            
-            setEnd(selectedEvent.end ? selectedEvent.end.toISOString().split('T')[0] : '');
-            console.log("start : " + start + "end : " + end)
-            
+            setID(selectedEvent.id);
+            setEnd(selectedEvent.end ? selectedEvent.end.toISOString().split('T')[0] : selectedEvent.start.toISOString().split('T')[0]);
+            setVisibility(selectedEvent.visibility);
         }
     }, [selectedEvent]);
+    const options = visibility === "company-wide"
+        ? [
+            { value: "company-wide", label: "회사 전체" },
+            { value: "department-wide", label: "부서 전체" },
+            { value: "personal", label: "본인만" },
+        ]
+        : visibility === "department-wide"
+            ? [
+                { value: "department-wide", label: "부서 전체" },
+                { value: "personal", label: "본인만" },
+                { value: "company-wide", label: "회사 전체" },
+            ]
+            : [{ value: "personal", label: "본인만" },
+            { value: "company-wide", label: "회사 전체" },
+            { value: "department-wide", label: "부서 전체" },
+            ];
     return (
         <Modal
             isOpen={isOpen}
@@ -114,7 +143,7 @@ const CalendarEditModal = ({ isOpen, onRequestClose, selectedEvent }) => {
                 overlay: {
                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     zIndex: 1000, // overlay의 z-index 설정
-                    
+
 
                 },
                 content: {
@@ -132,7 +161,7 @@ const CalendarEditModal = ({ isOpen, onRequestClose, selectedEvent }) => {
             <ModalContainer>
                 <h2>일정 수정</h2>
 
-                <InputContainer>    
+                <InputContainer>
                     <Label>일정 제목</Label>
                     <Input
                         type="text"
@@ -173,7 +202,8 @@ const CalendarEditModal = ({ isOpen, onRequestClose, selectedEvent }) => {
                 </InputContainer>
 
                 <ButtonContainer>
-                    <Button onClick={handleSave}>저장</Button>
+                    <Button onClick={handleEdit}>수정</Button>
+                    <Button onClick={handleDelete}>삭제</Button>
                     <Button onClick={onRequestClose}>취소</Button>
                 </ButtonContainer>
             </ModalContainer>
