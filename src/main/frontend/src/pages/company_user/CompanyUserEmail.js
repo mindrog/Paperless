@@ -108,13 +108,20 @@ function CompanyUserEmail() {
         // 페이지네이션 파라미터 추가
         queryParams.append('page', currentPage - 1);
         queryParams.append('size', emailsPerPage);
+<<<<<<< HEAD
+=======
+
+>>>>>>> ocy
         console.log('emails params:', queryParams.toString());
 
         fetch(`${backendUrl}/api/emails/list/${recipientId}?${queryParams.toString()}`, {
             method: 'GET',
             headers: {
                 'Authorization': getToken(),
+<<<<<<< HEAD
 
+=======
+>>>>>>> ocy
                 'Content-Type': 'application/json',
             },
         })
@@ -141,6 +148,7 @@ function CompanyUserEmail() {
         setCurrentPage(1);
         setSelectAll(false);
         setSelectedEmails([]);
+
     };
 
     // useEffect에서 fetchEmails 호출
@@ -442,7 +450,6 @@ function CompanyUserEmail() {
                         <>
                             <button
                                 className={styles['btn']}
-
                                 onClick={handleRestore}
                                 disabled={selectedEmails.length === 0}
                             >
@@ -455,7 +462,6 @@ function CompanyUserEmail() {
                             >
                                 영구 삭제
                             </button>
-
                             <button
                                 className={`${styles['btn']} ${folder === "inbox"}`}
                                 onClick={() => handleFolderChange("inbox")}
@@ -467,6 +473,7 @@ function CompanyUserEmail() {
                     )}
 
                     {/* 폴더 선택 버튼 */}
+<<<<<<< HEAD
                     <button
                         className={`${styles['btn']} ${folder === "inbox" ? styles.active : ''}`}
                         onClick={() => handleFolderChange("inbox")}
@@ -481,6 +488,9 @@ function CompanyUserEmail() {
                     >
                         <FontAwesomeIcon icon={faTrashAlt} />
                     </button>
+=======
+
+>>>>>>> ocy
 
                 </div>
                 {/* 검색 바 및 버튼 추가 */}

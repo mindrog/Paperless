@@ -1,3 +1,4 @@
+
 package com.ss.paperless.email;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,7 @@ public class EmailService {
 		emailmessageRepository.save(email);
 	}
 	
+<<<<<<< HEAD
 	public void restoreEmails(List<Long> emailIds, Long currentUserEmpNo) {
         List<Emailmessage> emails = emailmessageRepository.findAllById(emailIds);
 
@@ -76,4 +78,7 @@ public class EmailService {
 	public int getUnreadCount(String emp_code) {
 		return mapper.getUnreadCount(emp_code);
 	}
+=======
+	
+>>>>>>> ocy
 }
