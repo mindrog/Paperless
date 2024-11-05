@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Carousel, Card, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import main1 from '../../img/main_content1.png';
+import godown from '../../img/godownwhite.png'
 import main2 from '../../img/main_main.png';
 import main3 from '../../img/main_main2.png';
 import main4 from '../../img/main_main3.png';
@@ -212,7 +213,7 @@ function Home() {
                     </div>
                     <div></div>
                     <div className='top_btn_box'>
-                        <button type='button' className='next_div_btn' onClick={scrollToNext}></button>
+                        <img src={godown} className='next_div_btn' onClick={scrollToNext} alt='Description' />
                         <button type='button' className='top_btn' onClick={scrollToTop}>top</button>
                     </div>
                 </div>

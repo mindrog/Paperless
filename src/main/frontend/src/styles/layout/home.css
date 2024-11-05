@@ -182,12 +182,14 @@
 }
 
 .top_btn {
-    margin-right: 2vw;
-    width: 10vh;
-    height: 10vh;
+    margin-right:   2vw;
+    
+    width: 8vh;
+    height: 8vh;
     background-color: #2e3d86;
     position: fixed;
     border-radius: 100%;
+    border: 0;
     color: #fefefe;
     z-index: 1;
 }
@@ -196,9 +198,9 @@
     margin-right: 47.5%;
     width: 10vh;
     height: 10vh;
-    background-color: #2e3d86;
-
-    border-radius: 100%;
+    opacity: 70%;
+    
+    
     color: #fefefe;
 }
 
