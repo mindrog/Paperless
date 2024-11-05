@@ -4,9 +4,10 @@ import styles from '../../styles/company/company_chatroom.module.css';
 import OrgChart from '../layout/org_chart';
 import { Button, Modal } from 'react-bootstrap';
 import { format, isToday, isYesterday } from 'date-fns';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useFetchUserInfo from '../../componentFetch/useFetchUserInfo';
 import useWebSocket from 'react-use-websocket';
+import { setTotalUnreadCount } from '../../store/chatSlice.js';
 
 // .env 파일
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
@@ -51,6 +52,9 @@ function CompanyUserChatRoom() {
     // 새 창이 열릴 때마다 위치 조정해주는 변수
     const [offsetDown, setOffsetDown] = useState(0);
     const [offsetRight, setOffsetRight] = useState(0);
+
+    // Redux에 저장
+    const dispatch = useDispatch();
 
     // 보낸 메시지 관리
     // sendMessage: WebSocket 서버로 메시지를 보내는 함수
@@ -224,15 +228,16 @@ function CompanyUserChatRoom() {
                 // orgChartData에서 emp_no에 맞는 직원 정보를 찾는 함수
                 const findParticipantByEmpNo = (emp_no) => {
                     for (const dept of orgChartData) {
-                        for (const teamKey in dept.teams) {
-                            const team = dept.teams[teamKey];
-                            const participant = team.find(emp => emp.emp_no === emp_no);
+                        // dept.teams 배열 순회
+                        for (const team of dept.teams) {
+                            console.log("team.members type:", Array.isArray(team.members));
+                            const participant = team.members.find(emp => emp.emp_no === emp_no);
                             if (participant) return {
                                 emp_no: participant.emp_no,
                                 emp_name: participant.emp_name,
                                 emp_profile: participant.emp_profile || 'https://via.placeholder.com/60',
                                 emp_dept_name: dept.deptName,
-                                dept_team_name: teamKey,
+                                dept_team_name: team.teamName,
                                 emp_posi_name: participant.posi_name || ''
                             };
                         }
@@ -337,6 +342,9 @@ function CompanyUserChatRoom() {
                             // 각 채팅방들에 대한 메시지를 모두 저장
                             chatMessages[room.room_no] = chatDataArray;
 
+                            // 읽지 않은 메시지 개수 불러오기
+                            const unreadCount = chatDataArray.filter(msg => msg.chat_count > 0).length;
+
                             // 가장 최근 메시지 찾기
                             // chatDataArray 배열의 첫 번째 요소로 latest가 설정되어 순회 중인 message 값과 비교한다
                             // 따라서 reduce 함수의 콜백은 첫 번째 요소와 두 번쨰 요소를 비교하면서 시작되고, 최신의 메시지가 latest가 된다.
@@ -355,10 +363,14 @@ function CompanyUserChatRoom() {
                                 chat_content_recent: mostRecentMessage.chat_content || '',
                                 chat_date_recent: mostRecentMessage.chat_date || '',
                                 chat_no: mostRecentMessage.chat_no || 0,
-                                unread: mostRecentMessage.chat_count || 0
+                                unread: unreadCount || 0
                             };
                         })
                     );
+
+                    // Redux 상태에 totalUnread 저장
+                    const totalUnread = allRecentMessages.reduce((sum, room) => sum + room.unread, 0);
+                    dispatch(setTotalUnreadCount(totalUnread));
 
                     // 3. 가장 최근 메시지 정보들을 recentMessages 객체로 저장
                     // allRecentMessages 배열에 각각의 room_no가 저장되어있으므로 room_no를 키로 하여 저장
@@ -566,7 +578,7 @@ function CompanyUserChatRoom() {
                                                 {recentMessages[room.room_no]?.chat_content_recent}
                                             </div>
                                             <div className={styles.eachChat_unread} style={{ display: recentMessages[room.room_no]?.unread === 0 || recentMessages[room.room_no]?.unread === undefined ? 'none' : 'block' }}>
-                                            {console.log(`Unread for room ${room.room_no}:`, recentMessages[room.room_no]?.unread) /* 콘솔 출력 */}
+                                                {console.log(`Unread for room ${room.room_no}:`, recentMessages[room.room_no]?.unread) /* 콘솔 출력 */}
                                                 {recentMessages[room.room_no]?.unread}
                                             </div>
                                         </div>

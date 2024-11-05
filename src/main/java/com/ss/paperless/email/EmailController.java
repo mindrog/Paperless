@@ -19,6 +19,7 @@ import java.time.format.DateTimeParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.http.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,6 +53,15 @@ public class EmailController {
 		this.s3Service = s3Service;
 		this.emailAttachmentRepository = emailAttachmentRepository;
 		this.attachmentRepository = attachmentRepository;
+	}
+
+	@GetMapping("/unreadcount")
+	public int getUnreadCount() {
+		System.out.println("unreadCount 실행!");
+		String emp_code = SecurityContextHolder.getContext().getAuthentication().getName();
+		int unreadCount = emailService.getUnreadCount(emp_code);
+		System.out.println("unreadCount: " + unreadCount);
+		return unreadCount;
 	}
 
 	/**
@@ -238,67 +248,73 @@ public class EmailController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이메일 삭제 중 오류가 발생했습니다.");
 		}
 	}
-	
-	 @PostMapping("/restore")
-	    public ResponseEntity<?> restoreEmails(@RequestBody RestoreRequest restoreRequest, Principal principal) {
-	        try {
-	            String currentUserEmpCode = principal.getName();
-	            EmployeeEntity currentUser = employeeService.findByEmpCode(currentUserEmpCode);
-	            if (currentUser == null) {
-	                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 정보를 찾을 수 없습니다.");
-	            }
 
-	            emailService.restoreEmails(restoreRequest.getEmailIds(), currentUser.getEmpNo());
+	@PostMapping("/restore")
+	public ResponseEntity<?> restoreEmails(@RequestBody RestoreRequest restoreRequest, Principal principal) {
+		try {
+			String currentUserEmpCode = principal.getName();
+			EmployeeEntity currentUser = employeeService.findByEmpCode(currentUserEmpCode);
+			if (currentUser == null) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 정보를 찾을 수 없습니다.");
+			}
 
-	            return ResponseEntity.ok("이메일이 성공적으로 복구되었습니다.");
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                    .body("이메일 복구 중 오류가 발생했습니다: " + e.getMessage());
-	        }
-	    }
+			emailService.restoreEmails(restoreRequest.getEmailIds(), currentUser.getEmpNo());
 
-	
+			return ResponseEntity.ok("이메일이 성공적으로 복구되었습니다.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("이메일 복구 중 오류가 발생했습니다: " + e.getMessage());
+		}
+	}
 
 	// @PostMapping("/restore")
-	// public ResponseEntity<?> restoreEmails(@RequestBody RestoreRequest restoreRequest, Principal principal) {
-	// 	try {
-	// 		// 현재 로그인한 사용자 확인
-	// 		String currentUserEmpCode = principal.getName();
-	// 		EmployeeEntity currentUser = employeeService.findByEmpCode(currentUserEmpCode);
-	// 		if (currentUser == null) {
-	// 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 정보를 찾을 수 없습니다.");
-	// 		}
+	// public ResponseEntity<?> restoreEmails(@RequestBody RestoreRequest
+	// restoreRequest, Principal principal) {
+	// try {
+	// // 현재 로그인한 사용자 확인
+	// String currentUserEmpCode = principal.getName();
+	// EmployeeEntity currentUser =
+	// employeeService.findByEmpCode(currentUserEmpCode);
+	// if (currentUser == null) {
+	// return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 정보를 찾을 수
+	// 없습니다.");
+	// }
 
-	// 		// 삭제할 이메일 목록 조회
-	// 		List<Long> emailIds = restoreRequest.getEmailIds();
-	// 		List<Emailmessage> emailsToDelete = emailmessageRepository.findAllById(emailIds);
+	// // 삭제할 이메일 목록 조회
+	// List<Long> emailIds = restoreRequest.getEmailIds();
+	// List<Emailmessage> emailsToDelete =
+	// emailmessageRepository.findAllById(emailIds);
 
-	// 		if (emailsToDelete.isEmpty()) {
-	// 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("삭제할 이메일을 찾을 수 없습니다.");
-	// 		}
+	// if (emailsToDelete.isEmpty()) {
+	// return ResponseEntity.status(HttpStatus.NOT_FOUND).body("삭제할 이메일을 찾을 수
+	// 없습니다.");
+	// }
 
-	// 		for (Emailmessage email : emailsToDelete) {
-	// 			// 권한 체크: 현재 사용자가 해당 이메일의 수신자, 참조자, 발신자인지 확인
-	// 			boolean isAuthorized = email.getRecipient().getEmpNo().equals(currentUser.getEmpNo())
-	// 					|| (email.getCc() != null && email.getCc().getEmpNo().equals(currentUser.getEmpNo()))
-	// 					|| email.getWriter().getEmpNo().equals(currentUser.getEmpNo());
+	// for (Emailmessage email : emailsToDelete) {
+	// // 권한 체크: 현재 사용자가 해당 이메일의 수신자, 참조자, 발신자인지 확인
+	// boolean isAuthorized =
+	// email.getRecipient().getEmpNo().equals(currentUser.getEmpNo())
+	// || (email.getCc() != null &&
+	// email.getCc().getEmpNo().equals(currentUser.getEmpNo()))
+	// || email.getWriter().getEmpNo().equals(currentUser.getEmpNo());
 
-	// 			if (!isAuthorized) {
-	// 				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이메일에 접근할 권한이 없습니다.");
-	// 			}
+	// if (!isAuthorized) {
+	// return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이메일에 접근할 권한이
+	// 없습니다.");
+	// }
 
-	// 			// 휴지통으로 이동 (Soft Delete)
-	// 			email.setDeletedAt(null);
+	// // 휴지통으로 이동 (Soft Delete)
+	// email.setDeletedAt(null);
 
-	// 			emailmessageRepository.save(email);
-	// 		}
+	// emailmessageRepository.save(email);
+	// }
 
-	// 		return ResponseEntity.ok("선택한 이메일이 복구되었습니다.");
-	// 	} catch (Exception e) {
-	// 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	// 				.body(Collections.singletonMap("message", "이메일 복구 중 오류가 발생했습니다."));
-	// 	}
+	// return ResponseEntity.ok("선택한 이메일이 복구되었습니다.");
+	// } catch (Exception e) {
+	// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	// .body(Collections.singletonMap("message", "이메일 복구 중 오류가 발생했습니다."));
+	// }
 	// }
 	@PostMapping("/permanent-delete")
 	public ResponseEntity<?> permanentDeleteEmails(@RequestBody DeleteEmailsRequest deleteRequest,

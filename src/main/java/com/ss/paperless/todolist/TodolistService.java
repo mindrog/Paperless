@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TodolistService {
 	@Autowired
-	TodolistMapper mapper;
+	private TodolistMapper mapper;
 
 	public TodolistDTO getTodoList(String emp_code) {
 		return mapper.getTodoList(emp_code);

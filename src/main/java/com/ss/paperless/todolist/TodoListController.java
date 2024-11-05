@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class TodoListController {
 	@Autowired
-	TodolistService todoService;
+	private TodolistService todoService;
 
 	@GetMapping("/todolist")
 	public TodolistDTO getTodoList() {

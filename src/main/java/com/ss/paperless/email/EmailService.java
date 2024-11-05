@@ -16,10 +16,12 @@ import static org.springframework.data.jpa.domain.Specification.where;
 public class EmailService {
 
 	private final EmailmessageRepository emailmessageRepository;
+	private final EmailMapper mapper;
 
 	@Autowired
-	public EmailService(EmailmessageRepository emailmessageRepository) {
+	public EmailService(EmailmessageRepository emailmessageRepository, EmailMapper mapper) {
 		this.emailmessageRepository = emailmessageRepository;
+		this.mapper = mapper;
 	}
 
 	public Page<Emailmessage> getEmailsByRecipientWithFilters(
@@ -70,4 +72,8 @@ public class EmailService {
 //            }
 //        }
     }
+
+	public int getUnreadCount(String emp_code) {
+		return mapper.getUnreadCount(emp_code);
+	}
 }
