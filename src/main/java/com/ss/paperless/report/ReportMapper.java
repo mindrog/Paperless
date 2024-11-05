@@ -69,4 +69,7 @@ public interface ReportMapper {
 //    void updateReportStatus(@Param("reportId") Long reportId, @Param("status") String status);
 
     int AddSaveAsDraftReportData(ReportDTO report);
+
+    // 문서 코드 생성 시 문서 타입 조회
+    String getReportTypeById(Long reportId);
 }

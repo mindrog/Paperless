@@ -86,39 +86,76 @@ public class ReportController {
     }
 
     // 보고서 결재 상신 엔드포인트
-    @PostMapping(value = "/saveworkreport", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    // JSON 데이터와 파일을 함께 수신
+    @PostMapping(value = "/saveworkreport", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> submitWorkReport(
-            @RequestPart("reportTitle") String reportTitle,
-            @RequestPart("reportContent") String reportContent,
-            @RequestPart("reportDate") String reportDate,
-            @RequestPart("repoStartTime") String repoStartTime,
-            @RequestPart("repoEndTime") String repoEndTime,
-            @RequestPart("reportId") Long reportId,
-            @RequestPart("saveDraftDate") String saveDraftDate,
-            @RequestPart("selectedApprovers") String selectedApproversJson,
-            @RequestPart("selectedReferences") String selectedReferencesJson,
-            @RequestPart("selectedReceivers") String selectedReceiversJson,
+            @RequestPart("reportData") ReportRequest reportRequest, // JSON 데이터를 포함한 DTO
             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
 
-        try {
-            // 현재 인증된 사용자의 emp_code로 보고서 작성자 ID 조회
-            String empCode = SecurityContextHolder.getContext().getAuthentication().getName();
-            int repoEmpNo = reportService.getUserEmpNo(empCode);
+//        try {
+//            // 현재 인증된 사용자의 emp_code로 보고서 작성자 ID 조회
+//            String empCode = SecurityContextHolder.getContext().getAuthentication().getName();
+//            int repoEmpNo = reportService.getUserEmpNo(empCode);
+//
+//            // 데이터 저장을 위한 Map 생성
+//            Map<String, Object> reportData = reportService.prepareReportDataMap(
+//                    repoEmpNo,
+//                    reportRequest.getReportTitle(),
+//                    reportRequest.getReportContent(),
+//                    reportRequest.getReportDate(),
+//                    reportRequest.getRepoStartTime(),
+//                    reportRequest.getRepoEndTime(),
+//                    reportRequest.getReportId(),
+//                    "submitted",
+//                    reportRequest.getSelectedApprovers(),
+//                    reportRequest.getSelectedReferences(),
+//                    reportRequest.getSelectedReceivers(),
+//                    files
+//            );
 
-            // 데이터 저장을 위한 Map 생성
-            Map<String, Object> reportData = reportService.prepareReportDataMap(
-                    repoEmpNo, reportTitle, reportContent, reportDate, repoStartTime, repoEndTime, reportId,
-                    "submitted", selectedApproversJson, selectedReferencesJson, selectedReceiversJson, files);
-
-            // 결재 상신을 위한 서비스 호출
-            reportService.submitReportForApproval(reportData);
-
-            return ResponseEntity.ok("Report submitted successfully.");
-
-        } catch (Exception e) {
-            log.error("Error submitting work report", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to submit report: " + e.getMessage());
-        }
+        // 결재 상신을 위한 서비스 호출
+//            reportService.submitReportForApproval(reportData);
+//
+        return ResponseEntity.ok("Report submitted successfully.");
     }
-}
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("Failed to submit report: " + e.getMessage());
+//        }
+//    }
+//    @PostMapping(value = "/saveworkreport", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<?> submitWorkReport(
+//            @RequestPart("reportTitle") String reportTitle,
+//            @RequestPart("reportContent") String reportContent,
+//            @RequestPart("reportDate") String reportDate,
+//            @RequestPart("repoStartTime") String repoStartTime,
+//            @RequestPart("repoEndTime") String repoEndTime,
+//            @RequestPart("reportId") Long reportId,
+//            @RequestPart("saveDraftDate") String saveDraftDate,
+//            @RequestPart("selectedApprovers") String selectedApproversJson,
+//            @RequestPart("selectedReferences") String selectedReferencesJson,
+//            @RequestPart("selectedReceivers") String selectedReceiversJson,
+//            @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+//
+//        try {
+//            // 현재 인증된 사용자의 emp_code로 보고서 작성자 ID 조회
+//            String empCode = SecurityContextHolder.getContext().getAuthentication().getName();
+//            int repoEmpNo = reportService.getUserEmpNo(empCode);
+//
+//            // 데이터 저장을 위한 Map 생성
+//            Map<String, Object> reportData = reportService.prepareReportDataMap(
+//                    repoEmpNo, reportTitle, reportContent, reportDate, repoStartTime, repoEndTime, reportId,
+//                    "submitted", selectedApproversJson, selectedReferencesJson, selectedReceiversJson, files);
+//
+//            // 결재 상신을 위한 서비스 호출
+//            reportService.submitReportForApproval(reportData);
+//
+//            return ResponseEntity.ok("Report submitted successfully.");
+//
+//        } catch (Exception e) {
+//            log.error("Error submitting work report", e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to submit report: " + e.getMessage());
+//        }
+//    }
+
 

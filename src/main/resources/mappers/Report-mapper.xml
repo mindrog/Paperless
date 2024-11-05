@@ -11,7 +11,7 @@
     <!-- WorkReport 테이블에 임시 저장 데이터를 삽입하는 SQL -->
     <insert id="AddWorkReportData" parameterType="map">
         INSERT INTO `WorkReport` (work_repo_no, repo_start_time, repo_end_time)
-        VALUES (#{work_repo_no}, #{repo_start_time}, #{repo_end_time})
+        VALUES (#{repo_no}, #{repoStartTime}, #{repoEndTime})
     </insert>
 
     <update id="updateReportStatus">
@@ -119,5 +119,10 @@
     <insert id="AddSaveAsDraftReportData">
 
     </insert>
+
+    <!-- repo_type 조회 쿼리 -->
+    <select id="getReportTypeById" parameterType="long" resultType="string">
+        SELECT repo_type FROM Report WHERE repo_no = #{reportId}
+    </select>
 	
 </mapper>
