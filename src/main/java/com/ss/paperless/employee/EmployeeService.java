@@ -4,15 +4,23 @@ import java.util.List;
 
 import com.ss.paperless.company.CompanyDTO;
 import com.ss.paperless.employee.entity.EmployeeEntity;
+import com.ss.paperless.s3.S3Service;
+
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class EmployeeService implements UserDetailsService {
 	private final EmployeeRepository employeeRepository;
+
+	@Autowired
+	private S3Service s3Service;
 
 	public EmployeeService(EmployeeRepository employeeRepository) {
 		this.employeeRepository = employeeRepository;
@@ -65,24 +73,25 @@ public class EmployeeService implements UserDetailsService {
 		return employeeRepository.findByEmpEmail(email);
 	}
 
-	 public EmployeeEntity findByEmpNo(Long empNo) {
-	        return employeeRepository.findByEmpNo(empNo);
-	    }
+	public EmployeeEntity findByEmpNo(Long empNo) {
+		return employeeRepository.findByEmpNo(empNo);
+	}
+
 	public EmployeeEntity findByEmpCode(String empCode) {
 		return employeeRepository.findByEmpCode(empCode);
 	}
 
 	public List<CompanyDTO> GetAdminUsers() {
-		
+
 		return mapper.GetAdminUsers();
 	}
-
 
 	public EmployeeDTO getUserInfo(String emp_code) {
 		return mapper.getUserInfo(emp_code);
 	}
-public List<String> GetDeptNamelist() {
-		
+
+	public List<String> GetDeptNamelist() {
+
 		return mapper.GetDeptNamelist();
 	}
 
@@ -91,10 +100,9 @@ public List<String> GetDeptNamelist() {
 		return mapper.GetTeamNameList(dept_name);
 	}
 
-
 	public int GetDeptNo(String dept_name, String dept_team_name) {
 		// TODO Auto-generated method stub
-		return mapper.GetDeptNo(dept_name,dept_team_name);
+		return mapper.GetDeptNo(dept_name, dept_team_name);
 	}
 
 	public List<PositionDTO> GetPosition() {
@@ -104,7 +112,7 @@ public List<String> GetDeptNamelist() {
 
 	public int userInsert(EmployeeDTO emp) {
 		return mapper.userInsert(emp);
-		
+
 	}
 
 	public List<EmployeeDTO> getEmps(Long emp_comp_no) {
@@ -133,9 +141,9 @@ public List<String> GetDeptNamelist() {
 	}
 
 	public int DeleteEmp(Long emp_no) {
-		
+
 		return mapper.DeleteEmp(emp_no);
-		
+
 	}
 
 	public List<EmployeeDTO> empNameSearch(String query) {
@@ -163,5 +171,48 @@ public List<String> GetDeptNamelist() {
 		return mapper.userEdit(emp);
 	}
 
+	public String uploadProfileImage(Long empNo, MultipartFile file) throws IOException {
+        // EmployeeEntity 조회
+        EmployeeEntity employee = employeeRepository.findById(empNo)
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found with empNo: " + empNo));
+
+        // S3에 파일 업로드
+        String imageUrl = s3Service.uploadFile(file, "profile", employee.getEmpNo());
+
+        // 직원 엔티티의 프로필 이미지 URL 업데이트
+        employee.setEmpProfile(imageUrl);
+        employeeRepository.save(employee);
+
+        return imageUrl;
+    }
+
+    public Long getEmpNoByEmpCode(String empCode) {
+        EmployeeEntity employee = employeeRepository.findByEmpCode(empCode);
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee not found with empCode: " + empCode);
+        }
+        return employee.getEmpNo();
+    }
+    
+    public DepartmentDTO getDepartmentByNo(int deptNo) {
+        return mapper.getDepartmentByNo(deptNo);
+    }
+    
+    public void changePassword(Long empNo, String encodedNewPassword) {
+        EmployeeEntity employee = findByEmpNo(empNo);
+
+      
+        employee.setEmpPw(encodedNewPassword);
+        employeeRepository.save(employee);
+    }
+    
+    public void changePhoneNumber(Long empNo, String newPhoneNumber) {
+        EmployeeEntity employee = findByEmpNo(empNo);
+
+        // 전화번호 업데이트
+        employee.setEmpPhone(newPhoneNumber);
+        employeeRepository.save(employee);
+    }
+    
 
 }

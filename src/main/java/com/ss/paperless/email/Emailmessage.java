@@ -48,4 +48,6 @@ public class Emailmessage {
     private String title;
     
     
+    @Column(name = "email_deleted_date")
+    private LocalDateTime deletedAt;
 }

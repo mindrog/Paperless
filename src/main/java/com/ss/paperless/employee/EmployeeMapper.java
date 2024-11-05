@@ -3,6 +3,7 @@ package com.ss.paperless.employee;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import com.ss.paperless.company.CompanyDTO;
 
@@ -63,6 +64,7 @@ public interface EmployeeMapper {
 	public List<EmployeeDTO> empPosiSearch(String query);
 
 	public int userEdit(EmployeeDTO emp);
-
-
+	
+	@Select("SELECT * FROM Department WHERE dept_no = #{deptNo}")
+	public DepartmentDTO getDepartmentByNo(int deptNo);
 }

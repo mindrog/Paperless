@@ -1,3 +1,4 @@
+
 package com.ss.paperless.email;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,29 +48,6 @@ public class EmailService {
                 pageable
         );
     }
-	public Page<Emailmessage> getSentEmailsWithFilters(
-            Long senderId,
-            String senderEmail,
-            String subject,
-            String content,
-            LocalDateTime startDate,
-            LocalDateTime endDate,
-            boolean hasAttachment,
-            Pageable pageable
-    ) {
-        return emailmessageRepository.findAll(
-                where(EmailSpecification.senderIdEquals(senderId))
-                        .and(EmailSpecification.senderContains(senderEmail))
-                        .and(EmailSpecification.subjectContains(subject))
-                        .and(EmailSpecification.contentContains(content))
-                        .and(EmailSpecification.sentAfter(startDate))
-                        .and(EmailSpecification.sentBefore(endDate))
-                        .and(EmailSpecification.hasAttachment(hasAttachment))
-                        .and(EmailSpecification.notDeletedBySender()),
-                pageable
-        );
-    }
-	
 
 	@Transactional
 	public void updateEmailStatus(Long emailNo, String status) {
@@ -79,18 +57,5 @@ public class EmailService {
 		emailmessageRepository.save(email);
 	}
 	
-	public void restoreEmails(List<Long> emailIds, Long currentUserEmpNo) {
-        List<Emailmessage> emails = emailmessageRepository.findAllById(emailIds);
-
-//        for (Emailmessage email : emails) {
-//            // 권한 체크: 이메일이 현재 사용자에게 속하는지 확인
-//            if (email.getRecipient().getEmpNo().equals(currentUserEmpNo) || email.getSender().getEmpNo().equals(currentUserEmpNo)) {
-//
-//                email.setDeletedAt(null); // deletedDate를 null로 설정
-//                emailmessageRepository.save(email);
-//            } else {
-//                throw new RuntimeException("권한이 없는 이메일입니다.");
-//            }
-//        }
-    }
+	
 }
