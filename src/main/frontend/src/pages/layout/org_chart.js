@@ -8,7 +8,7 @@ const ITEM_TYPE = 'ITEM';
 
 const OrgChart = forwardRef((props, ref) => {
     const [isDropdown, setIsDropdown] = useState({});
-    const { showModal, selectedUser, onMemberClick = () => {}, enableDrag = false } = props;
+    const { showModal, selectedUser, onMemberClick = () => { }, enableDrag = false } = props;
 
     const token = localStorage.getItem('jwt');
     const menuList = useFetchUserInfo(token);
@@ -116,11 +116,17 @@ const OrgChart = forwardRef((props, ref) => {
                                 <ul>
                                     {team.members.map((member) => (
                                         <li key={member.emp_code} style={{ listStyle: 'none' }}>
-                                            <DraggableWrapper data={{ ...member, type: 'employee' }}>
+                                            <DraggableWrapper data={member ? { ...member, type: 'employee' } : { type: 'employee' }}>
                                                 <button onClick={() => onMemberClick(member)}>
                                                     🧑‍💼 {member.posi_name} {member.emp_name}
                                                 </button>
                                             </DraggableWrapper>
+
+                                            {/* <DraggableWrapper data={{ ...member, type: 'employee' }}>
+                                                <button onClick={() => onMemberClick(member)}>
+                                                    🧑‍💼 {member.posi_name} {member.emp_name}
+                                                </button>
+                                            </DraggableWrapper> */}
                                         </li>
                                     ))}
                                 </ul>
@@ -136,10 +142,17 @@ const OrgChart = forwardRef((props, ref) => {
         <div className={styles.container_orgChart}>
             <ul className={styles.orgChartList}>
                 {Array.isArray(menuList) && menuList.length > 0 ? (
-                    menuList.map((menu) => renderMenu(menu))
+                    menuList.map((menu) =>
+                        menu && menu.deptName && Array.isArray(menu.teams) ? renderMenu(menu) : null
+                    )
                 ) : (
                     <li>조직도 데이터를 불러오는 중입니다...</li>
                 )}
+                {/* {Array.isArray(menuList) && menuList.length > 0 ? (
+                    menuList.map((menu) => renderMenu(menu))
+                ) : (
+                    <li>조직도 데이터를 불러오는 중입니다...</li>
+                )} */}
             </ul>
         </div>
     );

@@ -122,6 +122,7 @@ function CompanyUserChatRoom() {
 
     // 조직도에서 모든 직원 추출하는 함수
     const getAllEmployees = (data) => {
+        console.log("getAllEmployees data : " + data);
         const employees = [];
         data.forEach((dept) => {
             Object.values(dept.teams).forEach((team) => {
@@ -134,16 +135,6 @@ function CompanyUserChatRoom() {
         console.log('employees:', employees);
         return employees;
     };
-    // const getAllEmployees = (data) => {
-    //     const employees = [];
-    //     data.forEach((dept) => {
-    //         Object.values(dept.teams).forEach((team) => {
-    //             employees.push(...team);
-    //         });
-    //     });
-    //     console.log('employees:', employees);
-    //     return employees;
-    // };
 
     // 로그인한 사용자 찾기
     useEffect(() => {
