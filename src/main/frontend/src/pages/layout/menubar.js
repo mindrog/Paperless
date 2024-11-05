@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styles from '../../styles/layout/menubar.module.css'; // CSS 모듈 사용 시
 import { Button, Modal } from 'react-bootstrap';
+import axios from 'axios';
+import { setUnreadCount } from '../../store/emailSlice';
 
 const Menubar = ({ isMenuOpen }) => {
     // Redux에서 로그인 사용자 정보 가져오기
+    const dispatch = useDispatch();
     const userData = useSelector((state) => state.user.data);
     const userPosi = useSelector((state) => state.user.userPosi);
+    const emailUnreadCountState = useSelector((state) => state.email.emailUnreadCountState); // Redux 상태 바로 가져오기
+    const totalUnreadCount = useSelector((state) => state.chat.totalUnreadCount); // Redux에서 totalUnreadCount 불러오기
     const emp_no = userData.emp_no;
 
+    const [notificationCount, setNotificationCount] = useState(0); // 알림 개수 상태
+    const [emailUnreadCount, setEmailUnreadCount] = useState(0); // 읽지 않은 메일 개수 상태
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDocDropdownOpen, setIsDocDropdownOpen] = useState(false); // 기안 문서함 상태
     const [isFormDropdownOpen, setIsFormDropdownOpen] = useState(false); // 기안 양식 상태
@@ -21,6 +28,11 @@ const Menubar = ({ isMenuOpen }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
+    // totalUnreadCount가 변경될 때 리랜더링 트리거
+    useEffect(() => {
+        console.log('Unread count updated:', totalUnreadCount);
+    }, [totalUnreadCount]);
+
     // 일반적인 메뉴 항목 클릭
     const handleItemClick = (itemName) => {
         setActiveItem(itemName); // 클릭된 항목을 active 상태로 설정
@@ -30,8 +42,26 @@ const Menubar = ({ isMenuOpen }) => {
         setIsFormDropdownOpen(false); // 기안 양식 드롭다운 닫기
         navigate(itemName); // 해당 경로로 이동
     };
-    const MenubarSuper = () => {
 
+    useEffect(() => {
+        const fetchUnreadCount = async () => {
+            try {
+                const token = localStorage.getItem('jwt');
+                const response = await axios.get('/api/emails/unreadcount', {
+                    headers: { Authorization: token },
+                });
+                setEmailUnreadCount(response.data);
+                dispatch(setUnreadCount(response.data));
+            } catch (error) {
+                console.error('읽지 않은 메일 개수를 가져오는 중 오류:', error);
+            }
+        };
+
+        fetchUnreadCount();
+    }, [emailUnreadCountState, dispatch]);
+
+
+    const MenubarSuper = () => {
         return (
             <div className={styles.menubar}>
                 <div className={styles.profil}>
@@ -65,6 +95,7 @@ const Menubar = ({ isMenuOpen }) => {
                 </ul>
             </div>);
     };
+
     const MenubarAdmin = () => {
         return (
             <div className={styles.menubar}>
@@ -79,9 +110,6 @@ const Menubar = ({ isMenuOpen }) => {
                         <div className={styles.iconbox}>
                             <button onClick={showEmployeeNotificationModal}>
                                 <i className="material-icons notifications">notifications</i>
-                                <div className={styles.notificationCount}>
-                                    3
-                                </div>
                             </button>
                             <button onClick={() => handleItemClick('/company/user/email')}><i className="material-icons mail">mail</i></button>
                             <button onClick={() => handleChatItemClick('/chatroom')}><i className="material-icons chat_bubble">chat_bubble</i></button>
@@ -104,6 +132,7 @@ const Menubar = ({ isMenuOpen }) => {
                 </ul>
             </div>);
     };
+
     const MenubarUser = () => {
         return (
             <div className={styles.menubar}>
@@ -111,15 +140,27 @@ const Menubar = ({ isMenuOpen }) => {
                     <div className={styles.profilbox}>
                         <div className={styles.profiltitle} onClick={handlerCompanyMain}>
                             <p></p>
+                            <div>
+                                {/* 팀이름 */}
+                            </div>
                             <div className={styles.titlename}>
                                 <div className={styles.userName}>{userData.emp_name}</div>
                                 <div className={styles.userGrade}>{userPosi}</div>
                             </div>
                         </div>
                         <div className={styles.iconbox}>
-                            <button onClick={showEmployeeNotificationModal}><i className="material-icons notifications">notifications</i></button>
-                            <button onClick={() => handleItemClick('/company/user/email')}><i className="material-icons mail">mail</i></button>
-                            <button onClick={() => handleChatItemClick('/chatroom')}><i className="material-icons chat_bubble">chat_bubble</i></button>
+                            <button onClick={showEmployeeNotificationModal}>
+                                <i className="material-icons notifications">notifications</i>
+                                <span className={styles.notificationCount} style={{ display: notificationCount === 0 ? 'none' : 'block' }}>{notificationCount}</span>
+                            </button>
+                            <button onClick={() => handleItemClick('/company/user/email')}>
+                                <i className="material-icons mail">mail</i>
+                                <span className={styles.notificationCount} style={{ display: emailUnreadCountState === 0 ? 'none' : 'block' }}>{emailUnreadCountState}</span>
+                            </button>
+                            <button onClick={() => handleChatItemClick('/chatroom')}>
+                                <i className="material-icons chat_bubble">chat_bubble</i>
+                                <span className={styles.notificationCount} style={{ display: totalUnreadCount === 0 ? 'none' : 'block' }}>{totalUnreadCount}</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -231,6 +272,7 @@ const Menubar = ({ isMenuOpen }) => {
                 </ul>
             </div>);
     };
+
     const renderMenu = (userData) => {
         if (userData.emp_role === 'super') {
             return <MenubarSuper />;
@@ -240,6 +282,7 @@ const Menubar = ({ isMenuOpen }) => {
             return <MenubarUser />;
         }
     };
+
     // 채팅 아이콘 클릭
     const handleChatItemClick = async (url) => {
         try {

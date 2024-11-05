@@ -64,6 +64,7 @@
   border-radius: 100%;
   width: 25%;
   height: 45px;
+  position: relative;
 }
 
 .iconbox button:hover {
@@ -82,6 +83,22 @@
 
 .iconbox i:hover {
   cursor: pointer;
+}
+
+/* 알림 개수 */
+.notificationCount {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 23px;
+  height: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
 }
 
 /* 페이지 내용이 메뉴바 옆으로 위치하도록 설정 */
@@ -173,7 +190,7 @@
   display: block;
   width: 180px; /* 버튼이 부모 요소의 전체 너비를 차지하도록 */
   text-align: center; 
-  padding-left: 20px;
+  padding-left: 10px;
   padding-right: 60px;
   border: none;
   cursor: pointer;

@@ -115,7 +115,7 @@ const OrgChart = forwardRef((props, ref) => {
                             {isDropdown[team.teamName] && (
                                 <ul>
                                     {team.members.map((member) => (
-                                        <li key={member.emp_code} style={{ listStyle: 'none' }}>
+                                        <li key={member.emp_code} style={{ listStyle: 'none' }} id={`user-${member.emp_no}`}>
                                             <DraggableWrapper data={member ? { ...member, type: 'employee' } : { type: 'employee' }}>
                                                 <button onClick={() => onMemberClick(member)}>
                                                     🧑‍💼 {member.posi_name} {member.emp_name}

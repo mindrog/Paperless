@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../../styles/company/company_email_detail.module.css';
 import '../../styles/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -6,7 +6,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import ComposeButton from '../component/ComposeButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { triggerUnreadCountUpdate } from '../../store/emailSlice';
 
 function CompanyUserEmailDetail() {
   const location = useLocation();
@@ -16,6 +17,10 @@ function CompanyUserEmailDetail() {
   const [email, setEmail] = useState(null); // 이메일 상세 정보를 저장
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Redux에 저장
+  const dispatch = useDispatch();
+  const emailUnreadCountState = useSelector((state) => state.email.emailUnreadCountState);
 
   // Redux에서 사용자 정보 가져오기
   const user = useSelector((state) => state.user.data);
@@ -54,6 +59,8 @@ function CompanyUserEmailDetail() {
         // 이메일 상태가 'unread'인 경우 'read'로 업데이트
         if (data.status === 'unread') {
           updateEmailStatus(emailNo, 'read');
+          // Redux 상태 업데이트
+          dispatch(triggerUnreadCountUpdate());
         }
       })
       .catch((error) => {
@@ -61,7 +68,7 @@ function CompanyUserEmailDetail() {
         setError('이메일 데이터를 가져오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
         setLoading(false);
       });
-  }, [emailNo, navigate]);
+  }, [emailNo, navigate, dispatch]);
 
   /**
    * 이메일 상태 업데이트 함수
