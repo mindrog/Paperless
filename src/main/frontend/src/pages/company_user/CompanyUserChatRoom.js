@@ -122,10 +122,14 @@ function CompanyUserChatRoom() {
 
     // 조직도에서 모든 직원 추출하는 함수
     const getAllEmployees = (data) => {
+        console.log("getAllEmployees data : " + data);
         const employees = [];
         data.forEach((dept) => {
             Object.values(dept.teams).forEach((team) => {
-                employees.push(...team);
+                if (Array.isArray(team.members)) {
+                    // 팀의 멤버들을 배열로 확인 후 직원 배열에 추가
+                    employees.push(...team.members);
+                }
             });
         });
         console.log('employees:', employees);

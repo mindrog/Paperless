@@ -116,4 +116,8 @@
         WHERE appr_repo_no = #{repo_no}
     </update>
 
+    <insert id="AddSaveAsDraftReportData">
+
+    </insert>
+	
 </mapper>
