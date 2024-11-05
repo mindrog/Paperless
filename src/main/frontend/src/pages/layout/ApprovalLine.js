@@ -33,7 +33,7 @@ const DraggableRow = ({ person, index, moveRow, handleRemovePerson, handleSelect
     <tr ref={dragDropRef} className={rowClass} style={{ opacity: isDragging ? 0.5 : 1 }}>
       <td>{index + 1}</td>
       <td>{person.dept_name || person.deptName}</td>
-      <td>{person.dept_team_name || person.teamName}</td>
+      <td>{person.dept_team_name || person.teamName || "-"}</td>
       <td>{person.posi_name || "-"}</td> 
       <td>{person.emp_name || "-"}</td>
       {person.type === 'approver' && (

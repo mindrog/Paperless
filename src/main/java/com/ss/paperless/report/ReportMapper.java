@@ -68,4 +68,5 @@ public interface ReportMapper {
 //    @Update("UPDATE Report SET repo_status = #{status, jdbcType=VARCHAR} WHERE repo_no = #{reportId, jdbcType=BIGINT}")
 //    void updateReportStatus(@Param("reportId") Long reportId, @Param("status") String status);
 
+    int AddSaveAsDraftReportData(ReportDTO report);
 }
