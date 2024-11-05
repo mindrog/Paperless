@@ -1,14 +1,12 @@
-// CompanyUserEmail.js
-
 import React, { useState, useEffect, useRef } from 'react';
 import styles from '../../styles/company/company_email.module.css';
 import '../../styles/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Pagination from '../component/Pagination';
 import ComposeButton from '../component/ComposeButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope, faEnvelopeOpen, faPaperclip, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faEnvelopeOpen, faPaperclip, faTrashAlt, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 
 function CompanyUserEmail() {
@@ -61,11 +59,11 @@ function CompanyUserEmail() {
     // 로그인한 사용자 ID 가져오기
     const recipientId = user ? user.emp_no : null;
 
-    // 폴더 상태: "inbox" 또는 "trash"
+    // 폴더 상태: "inbox", "sent" 또는 "trash"
     const [folder, setFolder] = useState("inbox");
 
-    // 백엔드 서버 주소 설정
     const backendUrl = 'http://localhost:8080';
+
 
     // 이메일 데이터 가져오기 함수 정의
     const fetchEmails = () => {
@@ -111,7 +109,14 @@ function CompanyUserEmail() {
 
         console.log('emails params:', queryParams.toString());
 
-        fetch(`${backendUrl}/api/emails/list/${recipientId}?${queryParams.toString()}`, {
+        let endpoint = '';
+        if (folder === 'sent') {
+            endpoint = `${backendUrl}/api/emails/sent?${queryParams.toString()}`;
+        } else {
+            endpoint = `${backendUrl}/api/emails/list/${recipientId}?${queryParams.toString()}`;
+        }
+
+        fetch(endpoint, {
             method: 'GET',
             headers: {
                 'Authorization': getToken(),
@@ -256,6 +261,7 @@ function CompanyUserEmail() {
             });
     };
 
+    // 복구 버튼 클릭
     const handleRestore = () => {
         if (selectedEmails.length === 0) return;
 
@@ -438,8 +444,15 @@ function CompanyUserEmail() {
                             >
                                 <FontAwesomeIcon icon={faTrashAlt} />
                             </button>
+                            <button
+                                className={`${styles['btn']} ${folder === "sent"}`}
+                                onClick={() => handleFolderChange("sent")}
+                                disabled={folder === "sent"}
+                            >
+                                <FontAwesomeIcon icon={faPaperPlane} /> Sent
+                            </button>
                         </>
-                    ) : (
+                    ) : folder === "trash" ? (
                         <>
                             <button
                                 className={styles['btn']}
@@ -460,14 +473,48 @@ function CompanyUserEmail() {
                                 onClick={() => handleFolderChange("inbox")}
                                 disabled={folder === "inbox"}
                             >
-                                <FontAwesomeIcon icon={faEnvelope} />
+                                <FontAwesomeIcon icon={faEnvelope} /> Inbox
+                            </button>
+                            <button
+                                className={`${styles['btn']} ${folder === "sent"}`}
+                                onClick={() => handleFolderChange("sent")}
+                                disabled={folder === "sent"}
+                            >
+                                <FontAwesomeIcon icon={faPaperPlane} /> Sent
                             </button>
                         </>
-                    )}
-
-                    {/* 폴더 선택 버튼 */}
-
-
+                    ) : folder === "sent" ? (
+                        <>
+                            <button
+                                className={styles['btn']}
+                                onClick={handleDelete}
+                                disabled={selectedEmails.length === 0}
+                            >
+                                삭제
+                            </button>
+                            <button
+                                className={styles['btn']}
+                                onClick={handleForward}
+                                disabled={selectedEmails.length !== 1}
+                            >
+                                전달
+                            </button>
+                            <button
+                                className={`${styles['btn']} ${folder === "inbox"}`}
+                                onClick={() => handleFolderChange("inbox")}
+                                disabled={folder === "inbox"}
+                            >
+                                <FontAwesomeIcon icon={faEnvelope} /> Inbox
+                            </button>
+                            <button
+                                className={`${styles['btn']} ${folder === "trash"}`}
+                                onClick={() => handleFolderChange("trash")}
+                                disabled={folder === "trash"}
+                            >
+                                <FontAwesomeIcon icon={faTrashAlt} /> Trash
+                            </button>
+                        </>
+                    ) : null}
                 </div>
                 {/* 검색 바 및 버튼 추가 */}
                 <div className={styles['search-bar']}>
@@ -617,7 +664,17 @@ function CompanyUserEmail() {
                                 )}
                             </td>
                             <td onClick={() => handleEmailClick(email)} style={{ cursor: 'pointer' }}>{email.writerDisplayInfo}</td>
-                            <td onClick={() => handleEmailClick(email)} style={{ cursor: 'pointer' }}>{email.title}</td>
+                            <td onClick={() => handleEmailClick(email)} style={{ cursor: 'pointer' }}>
+                                {folder === "trash" ? (
+                                    email.isSent ? (
+                                        <span className={styles['sent-email']}>보낸메일함) {email.title}</span>
+                                    ) : (
+                                        <span className={styles['received-email']}>받은메일함) {email.title}</span>
+                                    )
+                                ) : (
+                                    email.title
+                                )}
+                            </td>
                             <td onClick={() => handleEmailClick(email)} style={{ cursor: 'pointer' }}>{email.sendDate.replace('T', ' ')}</td>
                         </tr>
                     ))}

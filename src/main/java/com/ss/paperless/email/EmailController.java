@@ -198,6 +198,71 @@ public class EmailController {
 					.body(Collections.singletonMap("message", "이메일 목록을 불러오는 중 오류가 발생했습니다: " + e.getMessage()));
 		}
 	}
+	@GetMapping("/sent")
+    public ResponseEntity<?> getSentEmails(
+            @RequestParam(value = "sender", required = false) String sender,
+            @RequestParam(value = "subject", required = false) String subject,
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "startDate", required = false) String startDateStr,
+            @RequestParam(value = "endDate", required = false) String endDateStr,
+            @RequestParam(value = "hasAttachment", defaultValue = "false") boolean hasAttachment,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortBy", defaultValue = "sendDate") String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "desc") String sortDir,
+            Principal principal) {
+        try {
+            // 현재 로그인한 사용자 정보 가져오기 (발신자)
+            String senderEmpCode = principal.getName();
+            EmployeeEntity senderEntity = employeeService.findByEmpCode(senderEmpCode);
+            if (senderEntity == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 정보를 찾을 수 없습니다.");
+            }
+
+            // 날짜 문자열을 LocalDateTime으로 변환
+            LocalDateTime startDate = null;
+            LocalDateTime endDate = null;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            if (startDateStr != null && !startDateStr.isEmpty()) {
+                startDate = LocalDate.parse(startDateStr, formatter).atStartOfDay();
+            }
+            if (endDateStr != null && !endDateStr.isEmpty()) {
+                endDate = LocalDate.parse(endDateStr, formatter).atTime(23, 59, 59);
+            }
+
+            // 정렬 설정
+            Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+            // 페이징 객체 생성
+            PageRequest pageRequest = PageRequest.of(page, size, sort);
+
+            // 서비스 호출하여 보낸 이메일 목록 조회
+            Page<Emailmessage> emailPage = emailService.getSentEmailsWithFilters(
+                    senderEntity.getEmpNo(), sender, subject, content,
+                    startDate, endDate, hasAttachment, pageRequest);
+
+            List<EmailDTO> emailDtoList = emailPage.getContent().stream().map(this::convertToDTO)
+                    .collect(Collectors.toList());
+
+            // 페이지 정보를 별도로 추출하여 응답 생성
+            Map<String, Object> response = new HashMap<>();
+            response.put("content", emailDtoList);
+            response.put("currentPage", emailPage.getNumber());
+            response.put("totalItems", emailPage.getTotalElements());
+            response.put("totalPages", emailPage.getTotalPages());
+
+            return ResponseEntity.ok(response);
+        } catch (DateTimeParseException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.singletonMap("message", "날짜 형식이 올바르지 않습니다. (YYYY-MM-DD)"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("message", "보낸 이메일 목록을 불러오는 중 오류가 발생했습니다: " + e.getMessage()));
+        }
+    }
+	
 
 	@PostMapping("/delete")
 	public ResponseEntity<?> deleteEmails(@RequestBody DeleteEmailsRequest deleteRequest, Principal principal) {
@@ -362,6 +427,8 @@ public class EmailController {
 					.body(Collections.singletonMap("message", "이메일을 불러오는 중 오류가 발생했습니다: " + e.getMessage()));
 		}
 	}
+	
+	
 
 	private EmailDTO convertToDTO(Emailmessage email) {
 		EmailDTO dto = new EmailDTO();

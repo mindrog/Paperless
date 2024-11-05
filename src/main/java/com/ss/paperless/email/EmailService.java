@@ -47,6 +47,29 @@ public class EmailService {
                 pageable
         );
     }
+	public Page<Emailmessage> getSentEmailsWithFilters(
+            Long senderId,
+            String senderEmail,
+            String subject,
+            String content,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            boolean hasAttachment,
+            Pageable pageable
+    ) {
+        return emailmessageRepository.findAll(
+                where(EmailSpecification.senderIdEquals(senderId))
+                        .and(EmailSpecification.senderContains(senderEmail))
+                        .and(EmailSpecification.subjectContains(subject))
+                        .and(EmailSpecification.contentContains(content))
+                        .and(EmailSpecification.sentAfter(startDate))
+                        .and(EmailSpecification.sentBefore(endDate))
+                        .and(EmailSpecification.hasAttachment(hasAttachment))
+                        .and(EmailSpecification.notDeletedBySender()),
+                pageable
+        );
+    }
+	
 
 	@Transactional
 	public void updateEmailStatus(Long emailNo, String status) {
