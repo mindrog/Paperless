@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -120,3 +121,15 @@ public class ReportController {
         }
     }
 }
+
+    @PostMapping("/saveasdraft")
+    public ResponseEntity<EmployeeDTO> saveAsDraftReport (@RequestBody ReportDTO reportDTO) {
+        String emp_code =  SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("saveAsDraftReport - emp_code : " + emp_code);
+        System.out.println("saveAsDraftReport - reportDTO : " + reportDTO);
+
+        int res = reportService.AddSaveAsDraftReportData(reportDTO);
+
+        return ResponseEntity.ok(new EmployeeDTO());
+    }
+

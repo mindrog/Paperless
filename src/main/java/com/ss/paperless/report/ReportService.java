@@ -161,4 +161,8 @@ public class ReportService {
         }
         return attachments;
     }
+
+    public int AddSaveAsDraftReportData(ReportDTO report) {
+        return reportMapper.AddSaveAsDraftReportData(report);
+    }
 }
