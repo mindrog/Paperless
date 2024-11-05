@@ -30,9 +30,9 @@ const Menubar = ({ isMenuOpen }) => {
         setIsFormDropdownOpen(false); // 기안 양식 드롭다운 닫기
         navigate(itemName); // 해당 경로로 이동
     };
-    const MenubarSuper= () =>{
-        
-        return(
+    const MenubarSuper = () => {
+
+        return (
             <div className={styles.menubar}>
                 <div className={styles.profil}>
                     <div className={styles.profilbox}>
@@ -49,13 +49,12 @@ const Menubar = ({ isMenuOpen }) => {
                         </div>
                     </div>
                 </div>
-        <ul className={styles.menuList}>
+                <ul className={styles.menuList}>
                     <li className={`${styles.dropdown} ${activeItem === '/system/admin/member' ? styles.active : ''}`} onClick={() => handleItemClick('/system/admin/member')} >
                         <button className={styles.sublist_mypage}>
                             🧑 도입 업체
                         </button>
                     </li>
-
 
                     <li className={`${styles.dropdown} ${activeItem === '/system/admin/inquiry' ? styles.active : ''}`}
                         onClick={() => handleItemClick('/system/admin/member')} >
@@ -64,10 +63,10 @@ const Menubar = ({ isMenuOpen }) => {
                         </button>
                     </li>
                 </ul>
-                </div>);
+            </div>);
     };
-    const MenubarAdmin= () =>{
-        return(
+    const MenubarAdmin = () => {
+        return (
             <div className={styles.menubar}>
                 <div className={styles.profil}>
                     <div className={styles.profilbox}>
@@ -78,13 +77,18 @@ const Menubar = ({ isMenuOpen }) => {
                             </div>
                         </div>
                         <div className={styles.iconbox}>
-                            <button onClick={showEmployeeNotificationModal}><i className="material-icons notifications">notifications</i></button>
+                            <button onClick={showEmployeeNotificationModal}>
+                                <i className="material-icons notifications">notifications</i>
+                                <div className={styles.notificationCount}>
+                                    3
+                                </div>
+                            </button>
                             <button onClick={() => handleItemClick('/company/user/email')}><i className="material-icons mail">mail</i></button>
                             <button onClick={() => handleChatItemClick('/chatroom')}><i className="material-icons chat_bubble">chat_bubble</i></button>
                         </div>
                     </div>
                 </div>
-        <ul className={styles.menuList}>
+                <ul className={styles.menuList}>
                     <li className={`${styles.dropdown} ${activeItem === '/company/user/mypage' ? styles.active : ''}`} onClick={() => handleItemClick('/company/user/mypage')} >
                         <button className={styles.sublist_mypage}>
                             🧑 회사 관리
@@ -98,28 +102,28 @@ const Menubar = ({ isMenuOpen }) => {
                         </button>
                     </li>
                 </ul>
-                </div>);
+            </div>);
     };
-    const MenubarUser= () =>{
-        return(
+    const MenubarUser = () => {
+        return (
             <div className={styles.menubar}>
-            <div className={styles.profil}>
-                <div className={styles.profilbox}>
-                    <div className={styles.profiltitle} onClick={handlerCompanyMain}>
-                        <p></p>
-                        <div className={styles.titlename}>
-                            <div className={styles.userName}>{userData.emp_name}</div>
-                            <div className={styles.userGrade}>{userPosi}</div>
+                <div className={styles.profil}>
+                    <div className={styles.profilbox}>
+                        <div className={styles.profiltitle} onClick={handlerCompanyMain}>
+                            <p></p>
+                            <div className={styles.titlename}>
+                                <div className={styles.userName}>{userData.emp_name}</div>
+                                <div className={styles.userGrade}>{userPosi}</div>
+                            </div>
+                        </div>
+                        <div className={styles.iconbox}>
+                            <button onClick={showEmployeeNotificationModal}><i className="material-icons notifications">notifications</i></button>
+                            <button onClick={() => handleItemClick('/company/user/email')}><i className="material-icons mail">mail</i></button>
+                            <button onClick={() => handleChatItemClick('/chatroom')}><i className="material-icons chat_bubble">chat_bubble</i></button>
                         </div>
                     </div>
-                    <div className={styles.iconbox}>
-                        <button onClick={showEmployeeNotificationModal}><i className="material-icons notifications">notifications</i></button>
-                        <button onClick={() => handleItemClick('/company/user/email')}><i className="material-icons mail">mail</i></button>
-                        <button onClick={() => handleChatItemClick('/chatroom')}><i className="material-icons chat_bubble">chat_bubble</i></button>
-                    </div>
                 </div>
-            </div>
-        <ul className={styles.menuList}>
+                <ul className={styles.menuList}>
                     <li className={`${styles.dropdown} ${activeItem === '/company/user/mypage' ? styles.active : ''}`} onClick={() => handleItemClick('/company/user/mypage')} >
                         <button className={styles.sublist_mypage}>
                             🧑 마이페이지
@@ -216,7 +220,7 @@ const Menubar = ({ isMenuOpen }) => {
                             📦 재고 관리
                         </button>
                     </li>
-                    
+
 
                     <li className={`${styles.dropdown} ${activeItem === '/company/admin/member' ? styles.active : ''}`}
                         onClick={() => handleItemClick('/company/admin/member')} >
@@ -225,7 +229,7 @@ const Menubar = ({ isMenuOpen }) => {
                         </button>
                     </li>
                 </ul>
-                </div>);
+            </div>);
     };
     const renderMenu = (userData) => {
         if (userData.emp_role === 'super') {
@@ -329,19 +333,19 @@ const Menubar = ({ isMenuOpen }) => {
     return (
         <nav className={`${styles.menubar} ${isMenuOpen ? styles.showMenu : ''}`}>
             {renderMenu(userData)}
-                <Modal show={notificationModal} onHide={closeEmployeeNotificationModal} centered>
-                    <Modal.Header closeButton>
-                        <Modal.Title>알림 목록</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <p>알림 리스트</p>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="primary" onClick={closeEmployeeNotificationModal}>
-                            닫기
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
+            <Modal show={notificationModal} onHide={closeEmployeeNotificationModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>알림 목록</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>알림 리스트</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={closeEmployeeNotificationModal}>
+                        닫기
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </nav>
     );
 };
