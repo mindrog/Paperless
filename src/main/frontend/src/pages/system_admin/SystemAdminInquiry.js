@@ -86,20 +86,7 @@ function SystemAdminInquiry() {
                 {showInquiryTable && (
                     <div className='inquiryTable'>
                         <div className='inquirytitle'>도입 문의</div>
-                        <Form inline>
-                            <Row>
-                                <Col xs="auto">
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="Search"
-                                        className="mb-sm-2"
-                                    />
-                                </Col>
-                                <Col xs="auto">
-                                    <Button type="submit">Submit</Button>
-                                </Col>
-                            </Row>
-                        </Form>
+                        
                         <Table striped bordered hover>
                             <thead>
                                 <tr>
@@ -138,20 +125,7 @@ function SystemAdminInquiry() {
                 {!showInquiryTable && (
                     <div className='requestTable'>
                         <div className='inquirytitle'>문의</div>
-                        <Form inline>
-                            <Row>
-                                <Col xs="auto">
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="Search"
-                                        className="mr-sm-2"
-                                    />
-                                </Col>
-                                <Col xs="auto">
-                                    <Button type="submit">Submit</Button>
-                                </Col>
-                            </Row>
-                        </Form>
+                        
                         <Table striped bordered hover>
                             <thead>
                                 <tr>

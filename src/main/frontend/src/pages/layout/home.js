@@ -19,6 +19,13 @@ import logo10 from '../../img/logo10.png';
 import logo11 from '../../img/logo11.png';
 import logo12 from '../../img/logo12.png';
 import girl1 from '../../img/main_girl1.png';
+import girl2 from '../../img/main_girl2.png';
+import girl3 from '../../img/main_girl3.png';
+import girl4 from '../../img/main_girl4.png';
+import boy1 from '../../img/main_boy1.png';
+import boy2 from '../../img/main_boy2.png';
+import boy3 from '../../img/main_boy3.png';
+
 
 import '../../styles/layout/home.css';
 
@@ -43,7 +50,7 @@ const cardData = [
         title: '김민수, 중소기업 팀장',
         text: '“Paperless 덕분에 팀의 업무 효율이 눈에 띄게 향상되었습니다. 다양한 보고서 템플릿이 있어 매번 처음부터 작성할 필요 없이 시간을 절약할 수 있습니다!”',
 
-        imgSrc: logo1, // 첫 번째 카드 이미지
+        imgSrc: boy1, // 첫 번째 카드 이미지
         bgc: 'lightsteelblue'
     },
     {
@@ -57,21 +64,21 @@ const cardData = [
         title: '박지훈, 스타트업 CEO',
         text: '“클라우드 저장 기능 덕분에 언제 어디서나 문서에 접근할 수 있어 매우 편리합니다. 자동 저장도 정말 마음에 들어요. 데이터 유실 걱정이 없어졌습니다!”',
 
-        imgSrc: logo3,
+        imgSrc: boy2,
         bgc: 'lightpink'
     },
     {
         title: '최하나, 프리랜서',
         text: '“직관적인 인터페이스 덕분에 처음 사용하더라도 쉽게 적응할 수 있었습니다. 필요한 기능이 모두 모여 있어 정말 만족스럽습니다.”',
 
-        imgSrc: '../../img/logo1.png',
+        imgSrc: girl2,
         bgc: 'lightskyblue'  // 두 번째 카드 이미지
     },
     {
         title: '홍상희, 공공기관 직원',
         text: '“보고서 작성이 이렇게 간편해질 줄은 몰랐습니다. Paperless를 통해 팀 내 소통도 활발해지고, 업무의 체계성이 확실히 개선되었습니다!”',
 
-        imgSrc: '../../img/logo1.png',
+        imgSrc: girl3,
         bgc: 'lightgray' // 세 번째 카드 이미지
     }
     ,
@@ -79,14 +86,14 @@ const cardData = [
         title: '정수민, 교육 기관 관리자',
         text: '“Paperless를 사용한 이후로 문서 작성이 훨씬 간편해졌습니다. 교육 관련 보고서를 작성할 때 필요한 템플릿이 많아 큰 도움이 되고 있습니다. 팀원들과의 협업도 원활해져서 업무 진행 속도가 빨라졌어요!”',
 
-        imgSrc: '../../img/logo1.png',
+        imgSrc: girl4,
         bgc: 'lightblue'  // 두 번째 카드 이미지
     },
     {
         title: '이민호, IT 회사 개발자',
         text: '“실시간 협업 기능이 특히 유용합니다. 여러 팀원과 동시에 작업할 수 있어 아이디어를 빠르게 교환하고, 프로젝트 진행 상황을 즉시 확인할 수 있어요. Paperless 덕분에 팀워크가 더욱 강화되었습니다!”',
 
-        imgSrc: '../../img/logo1.png',
+        imgSrc: boy3,
         bgc: 'lightgoldenrodyellow'  // 세 번째 카드 이미지
     }
 ];
@@ -205,7 +212,7 @@ function Home() {
                     </div>
                     <div className='main_cont_1_btn_container'>
                         <Link to="/inquiry" className='main_btn1'>
-                            도입 문의하기
+                            도입 신청하기
                         </Link>
                         <Link to="/login" className='main_btn2'>
                             로그인

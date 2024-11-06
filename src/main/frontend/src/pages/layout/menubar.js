@@ -72,11 +72,7 @@ const Menubar = ({ isMenuOpen }) => {
                                 <div className={styles.userName}>{userData.emp_name}</div>
                             </div>
                         </div>
-                        <div className={styles.iconbox}>
-                            <button onClick={showEmployeeNotificationModal}><i className="material-icons notifications">notifications</i></button>
-                            <button onClick={() => handleItemClick('/company/user/email')}><i className="material-icons mail">mail</i></button>
-                            <button onClick={() => handleChatItemClick('/chatroom')}><i className="material-icons chat_bubble">chat_bubble</i></button>
-                        </div>
+    
                     </div>
                 </div>
                 <ul className={styles.menuList}>
@@ -87,7 +83,7 @@ const Menubar = ({ isMenuOpen }) => {
                     </li>
 
                     <li className={`${styles.dropdown} ${activeItem === '/system/admin/inquiry' ? styles.active : ''}`}
-                        onClick={() => handleItemClick('/system/admin/member')} >
+                        onClick={() => handleItemClick('/system/admin/inquiry')} >
                         <button className={styles.sublist_member}>
                             ⚙️ 문의 관리
                         </button>
@@ -106,13 +102,6 @@ const Menubar = ({ isMenuOpen }) => {
                             <div className={styles.titlename}>
                                 <div className={styles.userName}>{userData.emp_name}</div>
                             </div>
-                        </div>
-                        <div className={styles.iconbox}>
-                            <button onClick={showEmployeeNotificationModal}>
-                                <i className="material-icons notifications">notifications</i>
-                            </button>
-                            <button onClick={() => handleItemClick('/company/user/email')}><i className="material-icons mail">mail</i></button>
-                            <button onClick={() => handleChatItemClick('/chatroom')}><i className="material-icons chat_bubble">chat_bubble</i></button>
                         </div>
                     </div>
                 </div>
@@ -259,14 +248,6 @@ const Menubar = ({ isMenuOpen }) => {
                         onClick={() => handleItemClick('/company/user/stock')} >
                         <button className={styles.sublist_member}>
                             📦 재고 관리
-                        </button>
-                    </li>
-
-
-                    <li className={`${styles.dropdown} ${activeItem === '/company/admin/member' ? styles.active : ''}`}
-                        onClick={() => handleItemClick('/company/admin/member')} >
-                        <button className={styles.sublist_member}>
-                            ⚙️ 직원 관리
                         </button>
                     </li>
                 </ul>
