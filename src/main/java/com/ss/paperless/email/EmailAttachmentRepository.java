@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EmailAttachmentRepository extends JpaRepository<EmailAttachment, EmailAttachmentId> {
 	List<EmailAttachment> findByEmailNo(Long emailNo);
+	boolean existsByEmailNo(Long emailNo);
 }

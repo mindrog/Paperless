@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EmailmessageRepository extends JpaRepository<Emailmessage, Long>, JpaSpecificationExecutor<Emailmessage> {
-	List<Emailmessage> findByDeletedAtBefore(LocalDateTime cutoffDate);
+	
 }
