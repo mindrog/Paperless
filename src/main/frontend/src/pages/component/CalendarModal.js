@@ -76,7 +76,7 @@ const Input = styled.input`
 `;
 
 const Select = styled.select`
-    padding: 8px;
+    padding: 6px;
     font-size: 16px;
     width: 100%;
     border: 1px solid #ddd;
