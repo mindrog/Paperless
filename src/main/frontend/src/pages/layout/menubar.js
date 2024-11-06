@@ -130,7 +130,7 @@ const Menubar = ({ isMenuOpen }) => {
                         <div className={styles.profiltitle} onClick={handlerCompanyMain}>
                             <p></p>
                             <div>
-                                {/* 팀이름 */}
+                                {userData.dept_team_name}
                             </div>
                             <div className={styles.titlename}>
                                 <div className={styles.userName}>{userData.emp_name}</div>
