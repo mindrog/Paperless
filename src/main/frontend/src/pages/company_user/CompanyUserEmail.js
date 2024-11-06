@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import Pagination from '../component/Pagination';
 import ComposeButton from '../component/ComposeButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope, faEnvelopeOpen, faPaperclip, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faEnvelopeOpen, faPaperclip, faTrashAlt,faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 
 function CompanyUserEmail() {
@@ -422,65 +422,85 @@ function CompanyUserEmail() {
         <div className={styles.Container}>
             <div className={styles['toolbar']}>
                 <div className={styles['left-buttons']}>
-                    {/* 폴더에 따라 다른 버튼 표시 */}
-                    {folder === 'inbox' ? (
-                        <>
-                            <button className={styles['btn']} onClick={handleDelete} disabled={selectedEmails.length === 0}>
-                                삭제
-                            </button>
-                            <button className={styles['btn']} onClick={handleReply} disabled={selectedEmails.length !== 1}>
-                                답장
-                            </button>
-                            <button className={styles['btn']} onClick={handleForward} disabled={selectedEmails.length !== 1}>
-                                전달
-                            </button>
-                        </>
-                    ) : folder === 'sent' ? (
-                        <>
-                            <button className={styles['btn']} onClick={handleDelete} disabled={selectedEmails.length === 0}>
-                                삭제
-                            </button>
-                            <button className={styles['btn']} onClick={handleReply} disabled={true}>
-                                답장
-                            </button>
-                            <button className={styles['btn']} onClick={handleForward} disabled={true}>
-                                전달
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <button className={styles['btn']} onClick={handleRestore} disabled={selectedEmails.length === 0}>
-                                복구
-                            </button>
-                            <button
-                                className={styles['btn']}
-                                onClick={handlePermanentDelete}
-                                disabled={selectedEmails.length === 0}
-                            >
-                                영구 삭제
-                            </button>
-                        </>
-                    )}
+                    <div className={styles['folder-buttons']}>
 
-                    {/* 폴더 선택 버튼 */}
-                    <button
-                        className={`${styles['btn']} ${folder === 'inbox' ? styles.active : ''}`}
-                        onClick={() => handleFolderChange('inbox')}
-                    >
-                        받은 편지함
-                    </button>
-                    <button
-                        className={`${styles['btn']} ${folder === 'sent' ? styles.active : ''}`}
-                        onClick={() => handleFolderChange('sent')}
-                    >
-                        보낸 메일함
-                    </button>
-                    <button
-                        className={`${styles['btn']} ${folder === 'trash' ? styles.active : ''}`}
-                        onClick={() => handleFolderChange('trash')}
-                    >
-                        휴지통
-                    </button>
+                    
+                        <button
+                            className={`${styles['btn']} ${folder === 'sent' ? styles.active : ''}`}
+                            onClick={() => handleFolderChange('sent')}
+                        >
+                            
+                            <FontAwesomeIcon icon={faPaperPlane} className={styles['icon']}/>   
+                            보낸 메일
+                             
+                        </button>
+                        <button
+                            className={`${styles['btn']} ${folder === 'inbox' ? styles.active : ''}`}
+                            onClick={() => handleFolderChange('inbox')}
+                        >
+                            <FontAwesomeIcon icon={faEnvelope} className={styles['icon']} />
+                            받은 메일
+                             
+                        </button>
+
+
+                    </div>
+
+                    <div className={styles['separator']}></div>
+
+                    <div className={styles['utility-buttons']}>
+                        {/* 폴더에 따라 다른 버튼 표시 */}
+                        {folder === 'inbox' ? (
+                            <>
+                                <button className={styles['btn']} onClick={handleDelete} disabled={selectedEmails.length === 0}>
+                                    삭제
+                                </button>
+                                <button className={styles['btn']} onClick={handleReply} disabled={selectedEmails.length !== 1}>
+                                    답장
+                                </button>
+                                <button className={styles['btn']} onClick={handleForward} disabled={selectedEmails.length !== 1}>
+                                    전달
+                                </button>
+                            </>
+                        ) : folder === 'sent' ? (
+                            <>
+                                <button className={styles['btn']} onClick={handleDelete} disabled={selectedEmails.length === 0}>
+                                    삭제
+                                </button>
+                                <button className={styles['btn']} onClick={handleReply} disabled={true}>
+                                    답장
+                                </button>
+                                <button className={styles['btn']} onClick={handleForward} disabled={true}>
+                                    전달
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <button className={styles['btn']} onClick={handleRestore} disabled={selectedEmails.length === 0}>
+                                    복구
+                                </button>
+                                <button
+                                    className={styles['btn']}
+                                    onClick={handlePermanentDelete}
+                                    disabled={selectedEmails.length === 0}
+                                >
+                                    영구 삭제
+                                </button>
+                            </>
+                        )}
+                    </div>
+
+
+                    <div className={styles['separator']}></div>
+
+                    <div className={styles['trash-button']}>
+                        <button
+                            className={`${styles['btn']} ${folder === 'trash' ? styles.active : ''}`}
+                            onClick={() => handleFolderChange('trash')}
+                        >
+                            <FontAwesomeIcon icon={faTrashAlt}  />
+                        </button>
+                    </div>
                 </div>
                 {/* 검색 바 및 버튼 추가 */}
                 <div className={styles['search-bar']}>

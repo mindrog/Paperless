@@ -264,25 +264,9 @@ public class EmailController {
 
             // 삭제할 이메일 목록 조회
             List<Long> emailIds = deleteRequest.getEmailIds();
-            List<Emailmessage> emailsToDelete = emailmessageRepository.findAllById(emailIds);
 
-            if (emailsToDelete.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("삭제할 이메일을 찾을 수 없습니다.");
-            }
-
-            for (Emailmessage email : emailsToDelete) {
-                // 권한 체크: 현재 사용자가 해당 이메일의 수신자, 참조자, 발신자인지 확인
-                boolean isAuthorized = email.getRecipient().getEmpNo().equals(currentUser.getEmpNo())
-                        || (email.getCc() != null && email.getCc().getEmpNo().equals(currentUser.getEmpNo()))
-                        || email.getWriter().getEmpNo().equals(currentUser.getEmpNo());
-
-                if (!isAuthorized) {
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이메일에 접근할 권한이 없습니다.");
-                }
-
-                // 영구 삭제 (Hard Delete)
-                emailmessageRepository.delete(email);
-            }
+            // 서비스 메서드 호출
+            emailService.permanentDeleteEmails(emailIds, currentUser);
 
             return ResponseEntity.ok("선택한 이메일이 영구 삭제되었습니다.");
         } catch (Exception e) {

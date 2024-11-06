@@ -69,6 +69,10 @@ function Chatting({ chatData, onSendMessage }) {
     // 검색어 입력 핸들러
     const handleSearchInputChange = (event) => {
         setSearchTerm(event.target.value);
+        // 새로운 검색어 입력 시 이전 결과 초기화
+        setSearchResults([]); 
+        // 인덱스 초기화
+        setCurrentSearchIndex(0); 
     };
 
     // 검색 실행 함수
