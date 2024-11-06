@@ -57,7 +57,7 @@ function Chatting({ chatData, onSendMessage }) {
     const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
 
     // WebSocket hook
-    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
+    const { sendMessage, lastMessage, readyState } = useWebSocket(WEBSOCKET_URL);
 
     // 검색 초기화 버튼
     const clearSearchTerm = () => {
@@ -70,9 +70,9 @@ function Chatting({ chatData, onSendMessage }) {
     const handleSearchInputChange = (event) => {
         setSearchTerm(event.target.value);
         // 새로운 검색어 입력 시 이전 결과 초기화
-        setSearchResults([]); 
+        setSearchResults([]);
         // 인덱스 초기화
-        setCurrentSearchIndex(0); 
+        setCurrentSearchIndex(0);
     };
 
     // 검색 실행 함수
@@ -139,7 +139,8 @@ function Chatting({ chatData, onSendMessage }) {
     // emp 데이터가 준비되었을 때 WebSocket URL 설정
     useEffect(() => {
         console.log('emp:', emp);
-        if (emp && emp.chat_room_no) {
+        // console.log('emp.chat_room_no:', emp.chat_room_no);
+        if (emp && emp.chat_room_no < 0) {
             const url = `${WEBSOCKET_URL}?chat_room_no=${emp.chat_room_no}`;
             if (url !== socketUrl) {
                 console.log('emp.chat_room_no:', emp.chat_room_no);
