@@ -10,6 +10,30 @@
     /* flex-direction: column; */
 }
 
+.profileImageContainer {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    
+    
+}
+.cameraIcon {
+    position: absolute; /* 절대 위치 설정 */
+    bottom: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 50%;
+    padding: 8px;
+    cursor: pointer;
+    transform: translate(25%, 25%); /* 아이콘을 이미지 밖으로 약간 이동 */
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1; /* 이미지 위에 표시되도록 설정 */
+}
+
 @media (max-width: 992px) {
     .mypageContainer {
         margin-left: 20px;
@@ -28,6 +52,10 @@
 }
 
 .mypageProfil {
+    display: flex; /* Flexbox 활성화 */
+    flex-direction: column; /* 세로 방향으로 정렬 */
+    align-items: center; /* 가로축 중앙 정렬 */
+    justify-content: center; /* 세로축 중앙 정렬 */
     margin-left: auto; 
     margin-right: auto; 
     max-width: 900px;
@@ -82,7 +110,10 @@
 }
 
 .image {
+    width: 170px;
+    height: 170px;
     border-radius: 100%;
+    border: solid 2px black;
 }
    
 .titlename {
