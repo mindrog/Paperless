@@ -82,7 +82,7 @@ const CompanyUserDraftFormWork = () => {
   setShowModal(true);
   setTimeout(() => {
       setShowModal(false);
-      navigate('/company/user/draft/doc/all');
+      navigate(`/company/user/draft/approval/detail/work/${reportId}`);
   }, 2000);
 };
 

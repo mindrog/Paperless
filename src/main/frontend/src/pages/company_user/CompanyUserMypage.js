@@ -366,18 +366,12 @@ function CompanyUserMypage() {
                         <tr>
                             <td className={styles.profilTd_id}>◼ 사번</td>
                             <td className={styles.profilTd_value}>{employeeData.emp_no}</td> {/* 직원 번호 동적으로 표시 */}
-                            <td className={styles.profilTd_id}>◼ 전화번호</td>
+                            <td className={styles.profilTd_id_num}>◼ 전화번호</td>
                             <td className={styles.profilTd_value}>
                                 {employeeData.emp_phone}
                                 <Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUsernumUpdate}>수정</Button>
                             </td>
-                        </tr>
-                        <tr>
-                            <td className={styles.profilTd_id}>◼ 비밀번호</td>
-                            <td className={styles.profilTd_value_pw}>
-                                <Button variant="primary" className={styles.userPwChangebtnInput} onClick={handleUserPwChangebtn}>변경</Button>
-                            </td>
-                            <td colSpan={2}></td>
+                            <td className={styles.profilTd_id}>◼ 비밀번호<Button variant="primary" className={styles.userPwChangebtnInput} onClick={handleUserPwChangebtn}>변경</Button></td>
                         </tr>
                     </tbody>
                 </Table>
