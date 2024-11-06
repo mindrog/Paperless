@@ -106,7 +106,7 @@ const Menubar = ({ isMenuOpen }) => {
                     </div>
                 </div>
                 <ul className={styles.menuList}>
-                    <li className={`${styles.dropdown} ${activeItem === '/company/user/mypage' ? styles.active : ''}`} onClick={() => handleItemClick('/company/user/mypage')} >
+                    <li className={`${styles.dropdown} ${activeItem === '/company/info' ? styles.active : ''}`} onClick={() => handleItemClick('/company/info')} >
                         <button className={styles.sublist_mypage}>
                             🧑 회사 관리
                         </button>
