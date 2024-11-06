@@ -19,12 +19,17 @@ function CompanyUserMypage() {
     const dispatch = useDispatch();
 
     // 모달 상태 관리
-    const [showModal, setShowModal] = useState(false);
+    const [showPhoneModal, setShowPhoneModal] = useState(false);
+    const [showEmailModal, setShowEmailModal] = useState(false);
     const [showPwChangeModal, setShowPwChangeModal] = useState(false);
 
     // 전화번호 입력 상태
     const [phoneNumber, setPhoneNumber] = useState(employeeData.emp_phone || '');
     const [newPhoneNumber, setNewPhoneNumber] = useState('');
+
+    // 이메일 입력 상태
+    const [emailAddr, setEmailAddr] = useState(employeeData.emp_email || '');
+    const [newEmailAddr, setNewEmailAddr] = useState('');
 
     // 비밀번호 변경 상태
     const [currentPassword, setCurrentPassword] = useState('');
@@ -61,17 +66,17 @@ function CompanyUserMypage() {
     const calculateYearsAndMonths = (dateString) => {
         const joinDate = new Date(dateString);
         const today = new Date();
-      
+
         let years = today.getFullYear() - joinDate.getFullYear();
         let months = today.getMonth() - joinDate.getMonth();
-      
+
         if (months < 0) {
-          years--;
-          months += 12;
+            years--;
+            months += 12;
         }
-      
+
         return `${years}년 ${months}개월`;
-      };
+    };
 
     useEffect(() => {
         const fetchEmpInfo = async () => {
@@ -141,10 +146,23 @@ function CompanyUserMypage() {
         setNewPhoneNumber(formattedValue);
     };
 
+    // 이메일 변경 핸들러
+    const hnadleEmailAddrChange = (event) => {
+    };
+
+    const hnadleNewEmailAddrChange = (event) => {
+    };
+
     // 전화번호 변경 모달 열기 함수
     const handleUsernumUpdate = () => {
-        setShowModal(true); // 모달 열기
+        setShowPhoneModal(true); // 모달 열기
         setPhoneNumber(employeeData.emp_phone || '');
+    };
+
+    // 이메일 변경 모달 열기 함수
+    const handleUserEmailUpdate = () => {
+        setShowEmailModal(true);
+        setEmailAddr(employeeData.emp_email || '');
     };
 
     // 사용자 정보 가져오기 함수
@@ -172,7 +190,7 @@ function CompanyUserMypage() {
     };
 
     // 전화번호 변경 모달 닫기 함수
-    const handleCloseModal = async () => {
+    const handleClosePhoneModal = async () => {
         if (newPhoneNumber) {
             try {
                 const response = await fetch(`/api/employees/${employeeData.emp_no}/phone`, {
@@ -201,7 +219,41 @@ function CompanyUserMypage() {
             alert('새로운 전화번호를 입력해주세요.');
         }
 
-        setShowModal(false); // 모달 닫기
+        setShowPhoneModal(false); // 모달 닫기
+        setNewPhoneNumber('');
+    };
+
+    // 이메일 변경 모달 닫기 함수
+    const handleCloseEmailModal = async () => {
+        if (newPhoneNumber) {
+            try {
+                const response = await fetch(`/api/employees/${employeeData.emp_no}/phone`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': getToken(),
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phone: newPhoneNumber }),
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                }
+
+                // 전화번호 업데이트가 성공하면 사용자 정보를 다시 가져오기
+                await fetchUserInfo();
+
+                alert('전화번호가 성공적으로 변경되었습니다.');
+            } catch (error) {
+                console.error('전화번호 업데이트 오류:', error);
+                alert(`전화번호 변경 중 오류가 발생했습니다: ${error.message}`);
+            }
+        } else {
+            alert('새로운 전화번호를 입력해주세요.');
+        }
+
+        setShowEmailModal(false); // 모달 닫기
         setNewPhoneNumber('');
     };
 
@@ -354,56 +406,65 @@ function CompanyUserMypage() {
                     </div>
 
                     <div className={styles.profiltitle}>
-                        <p>{employeeInfo.dept_name} - {employeeInfo.dept_team_name}</p> {/* 부서 정보 동적으로 표시 */}
+                        {/* <p>{employeeInfo.dept_name} - {employeeInfo.dept_team_name}</p> 부서 정보 동적으로 표시 */}
                         <div className={styles.titlename}>
                             <div className={styles.userName}>{employeeData.emp_name}</div> {/* 이름 동적으로 표시 */}
                             <div className={styles.userGrade}>{userPosition}</div> {/* 직급 동적으로 표시 */}
                         </div>
                     </div>
                 </div>
-                <Table className={styles.tablebox_profil}>
-                    <tbody>
-                        <tr>
-                            <td className={styles.profilTd_id}>◼ 사번</td>
-                            <td className={styles.profilTd_value}>{employeeData.emp_no}</td> {/* 직원 번호 동적으로 표시 */}
-                            <td className={styles.profilTd_id_num}>◼ 전화번호</td>
-                            <td className={styles.profilTd_value}>
-                                {employeeData.emp_phone}
-                                <Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUsernumUpdate}>수정</Button>
-                            </td>
-                            <td className={styles.profilTd_id}>◼ 비밀번호<Button variant="primary" className={styles.userPwChangebtnInput} onClick={handleUserPwChangebtn}>변경</Button></td>
-                        </tr>
-                    </tbody>
-                </Table>
-            </div>
-            <div className={styles.userAnnualInfobox}>
-                <h3 className={styles.userAnnualInfo_title}>연차 정보</h3>
-                <hr className={styles.titlebar} />
-                <div className={styles.tablebox}>
+                <div className={styles.infoTable}>
                     <Table className={styles.userAnnualInfoTable}>
                         <tbody>
-                            <tr className={styles.tableHead}>
-                                <td colSpan={4}>단위: 개</td>
+                            <tr>
+                                <td className={styles.infotitle}>사 번</td>
+                                <td className={styles.infoValue}>{employeeInfo.emp_no}</td>
+                                <td className={styles.infotitle}>비밀번호</td>
+                                <td className={styles.infoValue}><Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUserPwChangebtn}>변경</Button></td>
                             </tr>
                             <tr>
-                                <td className={styles.infotitle}>총 근무 기간</td>
-                                <td className={styles.infoValue}>{employeeData.emp_join_date ? `${formatDate(employeeData.emp_join_date)} ~ / ${calculateYearsAndMonths(employeeData.emp_join_date)} 근무 중` : '정보 없음'}</td>
-                                <td className={styles.infotitle}>총 연차 수</td>
-                                <td className={styles.infoValue}>15</td>
+                                <td className={styles.infotitle}>부 서</td>
+                                <td className={styles.infoValue}>{employeeInfo.dept_name}</td>
+                                <td className={styles.infotitle}>팀</td>
+                                <td className={styles.infoValue}>{employeeInfo.dept_team_name}</td>
+
                             </tr>
                             <tr>
-                                <td className={styles.infotitle}>사용된 연차 수</td>
-                                <td className={styles.infoValue}>5</td>
-                                <td className={styles.infotitle}>사용가능 연차 수</td>
-                                <td className={styles.infoValue}>10</td>
+                                <td className={styles.infotitle}>이 메 일</td>
+                                <td className={styles.infoValue}><Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUserEmailUpdate}>수정</Button></td>
+                                <td className={styles.infotitle}>전화번호</td>
+                                <td className={styles.infoValue}><Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUsernumUpdate}>수정</Button></td>
                             </tr>
                         </tbody>
                     </Table>
                 </div>
+                <div className={styles.userAnnualInfobox}>
+                    <div className={styles.tablebox}>
+                        <Table className={styles.userAnnualInfoTable}>
+                            <tbody>
+                                <tr className={styles.tableHead}>
+                                    <td colSpan={4}>단위: 개</td>
+                                </tr>
+                                <tr>
+                                    <td className={styles.infotitle}>총 근무 기간</td>
+                                    <td className={styles.infoValue}>{employeeData.emp_join_date ? `${formatDate(employeeData.emp_join_date)} ~ / ${calculateYearsAndMonths(employeeData.emp_join_date)} 근무 중` : '정보 없음'}</td>
+                                    <td className={styles.infotitle}>총 연차 수</td>
+                                    <td className={styles.infoValue}>15</td>
+                                </tr>
+                                <tr>
+                                    <td className={styles.infotitle}>사용된 연차 수</td>
+                                    <td className={styles.infoValue}>5</td>
+                                    <td className={styles.infotitle}>사용가능 연차 수</td>
+                                    <td className={styles.infoValue}>10</td>
+                                </tr>
+                            </tbody>
+                        </Table>
+                    </div>
+                </div>
             </div>
 
             {/* 전화번호 수정 모달 */}
-            <Modal show={showModal} onHide={() => setShowModal(false)} centered className={styles.userNumModal}>
+            <Modal show={showPhoneModal} onHide={() => setShowPhoneModal(false)} centered className={styles.userNumModal}>
                 <Modal.Header closeButton>
                     <Modal.Title className={styles.modalTitle}>전화번호 수정</Modal.Title>
                 </Modal.Header>
@@ -434,7 +495,43 @@ function CompanyUserMypage() {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer className={styles.modal_footer}>
-                    <Button variant="primary" onClick={handleCloseModal} className={styles.userNumUpdatebtn}>
+                    <Button variant="primary" onClick={handleClosePhoneModal} className={styles.userNumUpdatebtn}>
+                        저장
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* 이메일 수정 모달 */}
+            <Modal show={showEmailModal} onHide={() => setShowEmailModal(false)} centered className={styles.userNumModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title className={styles.modalTitle}>이메일 수정</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className={styles.modal_body}>
+                    <Form className={styles.userEmail_form}>
+                        <Form.Group controlId="userEmailAddr" className={styles.formEmailAddr}>
+                            <Form.Label>기존 이메일 주소</Form.Label>
+                            <Form.Control
+                                type="text"
+                                className={styles.modal_input}
+                                value={emailAddr}
+                                placeholder='abc@naver.com'
+                                onChange={handlePhoneNumberChange}
+                                readOnly
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formEmailAddr" className={styles.formEmailAddrNew}>
+                            <Form.Label>새 이메일 주소</Form.Label>
+                            <Form.Control
+                                type="text"
+                                className={styles.modal_input}
+                                value={newEmailAddr}
+                                onChange={handleNewPhoneNumberChange}
+                            />
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer className={styles.modal_footer}>
+                    <Button variant="primary" onClick={handleCloseEmailModal} className={styles.userEmailUpdatebtn}>
                         저장
                     </Button>
                 </Modal.Footer>
