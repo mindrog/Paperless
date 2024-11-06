@@ -76,7 +76,12 @@
 
 .profilTd_id{
     width:auto;
-    text-align: center;
+    text-align: justify;
+}
+
+.profilTd_id_num{
+    width: 100px;
+    text-align: end;
 }
 
 .profilTd_value{
@@ -146,6 +151,7 @@
     vertical-align: middle; /* 세로 가운데 정렬 */
     padding: 10px; /* 셀 내부 여백 */
     height: 50px; /* 모든 셀의 높이를 동일하게 설정 */
+    text-align: center;
 }
 
 .tablebox_profil tr td {
@@ -195,7 +201,7 @@
 .userPwChangebtnInput {
     background-color: #2e3d86;
     border:#2e3d86;
-    margin-left: 0px;
+    margin-left: 15px;
     width: 100px;
 }
 
@@ -257,6 +263,7 @@
 .userAnnualInfobox {
     margin-top: 40px;
     margin-left: auto;
+    margin-right: auto;
     text-align: center;
     width: 95%; /* 화면 크기에 맞게 너비 확장 */
     padding: 20px; /* 내부 여백 */

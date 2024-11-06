@@ -29,32 +29,21 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
-    @PutMapping("/emp/updateEmp/{id}")
-    public ResponseEntity<String> updateEmployee(@PathVariable Long id) {
-        log.info("Updating employee with id: " + id);
-
-        // SecurityContext에서 사용자 정보 확인
+    @GetMapping("/infolist")
+    public EmployeeDTO getInfoList() {
         String emp_code = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("emp_code : " + emp_code);
 
-        // 사용자 권한 확인 로직 추가 가능 (예: 관리자만 접근 가능하도록)
-        log.info("User with emp_code: {} is updating employee with ID: {}", emp_code, id);
-
-        // 직원 정보 업데이트
-        int res = employeeService.updateEmp(id);
-
-        if (res == 1) {
-            log.info("Employee with id: " + id + " 업데이트 성공");
-        } else {
-            log.info("Employee with id: " + id + " 업데이트 실패");
-        }
-
-        return ResponseEntity.ok("Employee with ID " + id + " updated successfully.");
+        EmployeeDTO InfoList = employeeService.getUserInfo(emp_code);
+        System.out.println("InfoList : " + InfoList);
+        return InfoList;
     }
 
     @GetMapping("getdept/{dept_no}")
     public DepartmentDTO getDepartment(@PathVariable int dept_no) {
         return employeeService.getDepartmentByNo(dept_no);
     }
+
     @PostMapping("/getMenuList")
     public Map<String, Map<String, Object>> getMenuList() {
         String emp_code = SecurityContextHolder.getContext().getAuthentication().getName();

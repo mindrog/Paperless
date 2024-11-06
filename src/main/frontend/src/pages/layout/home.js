@@ -92,16 +92,16 @@ const cardData = [
 ];
 const faqs = [
     {
-        question: 'Q1.보고서 템플릿은 어떻게 사용하나요?',
-        answer: 'A1.Paperless에서 제공하는 보고서 템플릿은 미리 설정된 형식으로, 필요에 따라 수정하여 사용할 수 있습니다. 간편하게 제목과 내용을 입력하면 전문적인 보고서를 빠르게 작성할 수 있습니다.'
+        question: 'Q1. 보고서 템플릿은 어떻게 사용하나요?',
+        answer: 'A1. Paperless에서 제공하는 보고서 템플릿은 미리 설정된 형식으로, 필요에 따라 수정하여 사용할 수 있습니다. 간편하게 제목과 내용을 입력하면 전문적인 보고서를 빠르게 작성할 수 있습니다.'
     },
     {
-        question: 'Q2.Paperless를 사용하기 위해 필요한 시스템 요구 사항은 무엇인가요?',
-        answer: 'A2.Paperless는 웹 기반 플랫폼으로, 최신 브라우저(Chrome, Firefox, Safari 등)와 안정적인 인터넷 연결만 있으면 사용 가능합니다. 특별한 설치가 필요하지 않습니다.'
+        question: 'Q2. Paperless를 사용하기 위해 필요한 시스템 요구 사항은 무엇인가요?',
+        answer: 'A2. Paperless는 웹 기반 플랫폼으로, 최신 브라우저(Chrome, Firefox, Safari 등)와 안정적인 인터넷 연결만 있으면 사용 가능합니다. 특별한 설치가 필요하지 않습니다.'
     },
     {
-        question: 'Q3.고객 지원은 언제 이용할 수 있나요??',
-        answer: 'A3.고객 지원팀은 평일 근무 시간 동안 운영되며, 이메일 및 채팅을 통해 문의할 수 있습니다. 긴급한 문제는 우선 순위로 처리됩니다.'
+        question: 'Q3. 고객 지원은 언제 이용할 수 있나요??',
+        answer: 'A3. 고객 지원팀은 평일 근무 시간 동안 운영되며, 이메일 및 채팅을 통해 문의할 수 있습니다. 긴급한 문제는 우선 순위로 처리됩니다.'
     }
 ];
 const CardComponent = ({ title, text, imgSrc, bgc }) => {
@@ -133,7 +133,7 @@ const FAQComponent = ({ question, answer }) => {
                 <p className='qa_q'>{question}</p>
             </div>
             <div className={`main_cont_4_type1_a ${isOpen ? 'show' : ''}`}>
-                <p>{answer}</p>
+                <p className='qa_a'>{answer}</p>
             </div>
         </div>
     );

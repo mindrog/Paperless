@@ -91,9 +91,8 @@ function CompanyUserDraftDocAll() {
     };
   
     // 행 클릭 시 처리 함수
-    const handleRowClick = (doc) => {
-      
-      alert(`${doc.id} 번호 이동`);
+    const handleRowClick = (reportId) => {
+      navigate(`/company/user/draft/approval/detail/work/${reportId}`);
     };
   
     return (

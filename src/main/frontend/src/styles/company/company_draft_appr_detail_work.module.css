@@ -1,0 +1,133 @@
+.pageTitle {
+    text-align: left;
+    margin-bottom: 15px;
+    color: gray;
+}
+
+.apprSumbitBtnBox {
+    margin-bottom: 13px;
+    text-align: right;
+}
+
+/* 결재 승인 / 반려 버튼 */
+.approveBtn {
+    width: 80px;
+    padding : 6px;
+    font-size: large;
+    font-weight: bold;
+    background-color: #2e3d86;
+    border-color: #2e3d86;
+}
+
+.rejectBtn {
+    width: 80px;
+    padding : 6px;
+    font-size: large;
+    font-weight: bold;
+    margin-right: 15px;
+    background-color: #5A77B6;
+    border-color: #5A77B6;
+}
+
+.rejectBtn:hover,
+.approveBtn:hover {
+    border-color: #7289CF;
+    background-color: #7289CF;
+    font-weight: bold;
+}
+
+.rejectBtn:focus,
+.approveBtn:focus {
+    border-color: #2e3d86 !important;
+    background-color: #2e3d86 !important;
+    font-weight: bold;
+}
+
+/* 문서정보 테이블, 결재선 테이블 */
+.docInfoSection{
+    display: flex;
+    justify-content: space-between;
+}
+
+.docInfo, .approvalLine {
+    vertical-align: middle;
+    align-items: center;
+}
+
+.innerTable {
+    width: 30%;
+}
+
+.innerApprTable {
+    width: 15%;
+    vertical-align: middle;
+}
+
+/* 기안 제목 */
+.labelCellTitle {
+    width: 30%;
+    background-color: #F1F2F6 !important;
+    color: #7E7E7F !important;
+    font-weight: 600;
+}
+
+.labelCelldoc {
+    background-color: #F1F2F6 !important;
+    color: #7E7E7F !important;
+    vertical-align: middle;
+    font-weight: 600;
+    height: 35px;
+    width: 50%;
+}
+
+.valueCellAppr {
+    font-weight: bold;
+    width: 100px !important;
+    height: 50px;
+    background-color: #F1F2F6 !important;
+    color: #7E7E7F !important;
+}
+
+.docValue_date {
+    font-size: small;
+    height: 40px;
+}
+
+/* 참조, 수신 */
+.labelCellSec {
+    width: 15%;
+    background-color: #F1F2F6 !important;
+    color: #7E7E7F !important;
+    font-weight: 600;
+}
+
+/* 상세 내용 */
+/* .detailsTitle{
+    text-align: left;
+    background-color: #F1F2F6 !important;
+    color: #7E7E7F !important;
+    font-weight: 600;
+} */
+
+.valueCellContent {
+    text-align: left;
+    padding: 10%;
+    height: 300px;
+}
+
+/* 첨부파일 */
+.labelCellFile {
+    background-color: #F1F2F6 !important;
+    color: #7E7E7F !important;
+    font-weight: 600;
+}
+
+.valueCellFile ul {
+    list-style: none;
+    text-align: left;
+    margin-top: 10px;
+}
+
+.valueCellFile ul li {
+    margin: 8px;
+}
