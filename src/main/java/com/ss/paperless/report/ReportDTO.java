@@ -54,8 +54,6 @@ public class ReportDTO {
 	@JsonProperty("approvalType")
 	private String approvalType;			// 전결 여부
 
-	private int appr_order;					// 결재 순서
-
 	// 업무
 	private int work_repo_no;				// 업무 보고서 번호
 
@@ -93,5 +91,31 @@ public class ReportDTO {
 
 	// 첨부 파일 목록
 	private List<MultipartFile> files; // 첨부파일 리스트
+
+	// 결재자
+	private int appr_no;
+	private int appr_repo_no;
+	private int appr_emp_no;
+	private int appr_order;
+	private String appr_status;
+	private int appr_delegate;
+	private int appr_is_read;
+	private LocalDate appr_date;
+
+	// 참조자
+	private int reci_no;
+	private int reci_repo_no;
+	private int reci_emp_no;
+	private int reci_dept_no;
+	private int reci_is_read;
+	private LocalDate reci_date;
+
+	// 수신자
+	private int refe_no;
+	private int refe_repo_no;
+	private int refe_emp_no;
+	private int refe_dept_no;
+	private int refe_is_read;
+	private LocalDate refe_date;
 
 }   

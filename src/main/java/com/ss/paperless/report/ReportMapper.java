@@ -3,7 +3,6 @@ package com.ss.paperless.report;
 import com.ss.paperless.attachment.AttachmentDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 import java.util.Map;
@@ -82,4 +81,6 @@ public interface ReportMapper {
     void insertApprover(Map<String, Object> approverData);
     void insertReference(Map<String, Object> referenceData);
     void insertRecipient(Map<String, Object> recipientData);
+
+    ReportDTO selectReportById(Long reportId);
 }

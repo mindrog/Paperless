@@ -63,8 +63,10 @@ public class ReportService {
      * @param empCode 사용자 코드
      * @return int 사용자 emp_no
      */
-    public int getUserEmpNo(String empCode) {
-        return employeeRepository.findEmpNoByEmpCode(empCode);
+    public Integer getUserEmpNo(String empCode) {
+        Integer res = employeeRepository.findEmpNoByEmpCode(empCode);
+        System.out.println("res : " + res);
+        return res;
     }
 
     /**
@@ -288,13 +290,18 @@ public class ReportService {
     /**
      * 상신 취소 로직
      * @param
-     * @return List<Map<Object, Object>> 파일 정보 리스트
+     * @return
      */
-
-
-
-
     public int AddSaveAsDraftReportData(ReportDTO report) {
         return reportMapper.AddSaveAsDraftReportData(report);
+    }
+
+    /**
+     * 상세 페이지 조회
+     * @param reportId
+     * @return ReportDTO
+     */
+    public ReportDTO selectReportById(Long reportId) {
+        return reportMapper.selectReportById(reportId);
     }
 }

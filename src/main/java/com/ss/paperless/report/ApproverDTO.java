@@ -17,6 +17,7 @@ public class ApproverDTO {
     private int appr_order;
     private String appr_status;
     private int appr_delegate;
+    private int appr_is_read;
 
     @JsonProperty("approvalType")
     private String approval_type;    // 결재 유형(전결, 결재 등)

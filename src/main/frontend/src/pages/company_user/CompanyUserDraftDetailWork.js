@@ -1,34 +1,51 @@
-import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import { Table, Button } from 'react-bootstrap';
-import styles from '../../styles/company/company_draft_write_work.module.css';
+import styles from '../../styles/company/company_draft_appr_detail_work.module.css';
+import moment from 'moment';
 
 const CompanyUserDraftDetailWork = () => {
+  const { reportId } = useParams();
+  const [reportData, setReportData] = useState(null);
+
   const location = useLocation();
-  const {
-    reportId,
-    reportTitle = '업무 보고서',
-    reportContent = '상세 보고 내용입니다.',
-    reporter = '홍길동',
-    department = 'IT팀',
-    reportDate = '2024-10-16',
-    repoStartTime = '2024-10-19',
-    repoEndTime = '2024-10-31',
-    selectedApprovers = [
-      { emp_name: '박수진', posi_name: '부장', approvalType: '결재' },
-      { emp_name: '이민수', posi_name: '차장', approvalType: '합의' }
-    ],
-    selectedReferences = [{ emp_name: '김철수' }],
-    selectedReceivers = [{ emp_name: '이영희' }],
-    files = ['example.pdf', 'summary.docx']
-  } = location.state || {}; // 전달된 데이터를 추출
+  const [reportStatus, setReportStatus] = useState('');
+  const [repoStartTime, setRepoStartTime] = useState('');
+  const [repoEndTime, setRepoEndTime] = useState('');
+  const [formErrors, setFormErrors] = useState({});
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (reportId) {
-      console.log("불러올 reportId:", reportId);
-      // API 호출 등 데이터 로딩 작업 수행 가능
+      const fetchData = async () => {
+        try {
+          const token = localStorage.getItem("token");
+
+          const response = await fetch(`/api/report/${reportId}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `${token}`,
+              'Content-Type': 'application/json',
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          setReportData(data);
+          
+          console.log("response data:", JSON.stringify(data, null, 2))
+        } catch (error) {
+          console.error('Error fetching report data:', error);
+        }
+      };
+      fetchData();
     }
   }, [reportId]);
+
+  const apprIsRead = reportData?.appr_is_read; // 예: reportData에 appr_is_read 값이 포함된 경우
 
   return (
     <div className="container">
@@ -37,16 +54,33 @@ const CompanyUserDraftDetailWork = () => {
       </div>
 
       <div className={styles.formContent}>
-        <div className={styles.apprSumbitBtnBox}>
-          <Button className={styles.cancelBtn}>상신 취소</Button>
-          <Button className={styles.approveBtn}>회신</Button>
+        <div className={styles.btnBox}>
+          <Button
+            className={styles.submitCancelBtn}
+          >
+            목록으로
+          </Button>
+          <div>
+            <Button
+              className={styles.submitCancelBtn}
+              disabled={apprIsRead === 1} // appr_is_read이 1이면 비활성화
+            >
+              상신 취소
+            </Button>
+            <Button
+              className={styles.retrieveBtn}
+              disabled={apprIsRead === 0} // appr_is_read이 0이면 비활성화
+            >
+              회수
+            </Button>
+          </div>
         </div>
 
         <Table bordered className={styles.mainTable}>
           <tbody>
             <tr>
               <td className={styles.labelCellTitle}>제&nbsp;&nbsp;&nbsp;&nbsp;목</td>
-              <td className={styles.valueCell} colSpan="3">{reportTitle}</td>
+              <td className={styles.valueCell} colSpan="3">{reportData?.repo_title || ''}</td>
             </tr>
           </tbody>
         </Table>
@@ -55,49 +89,61 @@ const CompanyUserDraftDetailWork = () => {
           <Table bordered size="sm" className={styles.innerTable}>
             <tbody>
               <tr>
-                <td className={styles.labelCell}>문서번호</td>
-                <td className={styles.valueCell}>{reportId}</td>
+                <td className={styles.labelCelldoc}>문서번호</td>
+                <td className={styles.valueCell}>{reportData?.repo_code || ''}</td>
               </tr>
               <tr>
-                <td className={styles.labelCell}>부&nbsp;&nbsp;서</td>
-                <td className={styles.valueCell}>{department}</td>
+                <td className={styles.labelCelldoc}>부&nbsp;&nbsp;&nbsp;서</td>
+                <td className={styles.valueCell}>{reportData?.department || ''}</td>
               </tr>
               <tr>
-                <td className={styles.labelCell}>기&nbsp;안&nbsp;일</td>
-                <td className={styles.valueCell}>{reportDate}</td>
+                <td className={styles.labelCelldoc}>기&nbsp;안&nbsp;일</td>
+                <td className={styles.valueCell}>
+                  {reportData?.draft_date ? moment(reportData.draft_date).format("YYYY-MM-DD") : ''}
+                </td>
               </tr>
               <tr>
-                <td className={styles.labelCell}>기 안 자</td>
-                <td className={styles.valueCell}>{reporter}</td>
+                <td className={styles.labelCelldoc}>기 안 자</td>
+                <td className={styles.valueCell}>{reportData?.writer || ''}</td>
               </tr>
               <tr>
-                <td className={styles.labelCell}>시행일자</td>
-                <td className={styles.valueCell}>{repoStartTime}</td>
+                <td className={styles.labelCelldoc}>시행일자</td>
+                <td className={styles.valueCell}>{reportData?.repo_start_time || ''}</td>
               </tr>
               <tr>
-                <td className={styles.labelCell}>마감일자</td>
-                <td className={styles.valueCell}>{repoEndTime}</td>
+                <td className={styles.labelCelldoc}>마감일자</td>
+                <td className={styles.valueCell}>{reportData?.repo_end_time || ''}</td>
               </tr>
             </tbody>
           </Table>
 
           <Table bordered size="sm" className={styles.innerApprTable}>
-            <tbody>
+            <tbody className="apprLineTbody">
+              <tr className="apprLinedocTr">
+                <td className={styles.valueCellAppr}>상신</td>
+                {(reportData?.approver || []).map((_, index) => (
+                  <td key={index} className={styles.valueCellAppr}>결재</td>
+                ))}
+              </tr>
+
               <tr>
-                <td className={styles.labelCell}>상신</td>
-                {selectedApprovers.map((_, index) => (
-                  <td key={index} className={styles.valueCell}>결재</td>
+                <td className={styles.docValueAppr}>{reportData?.writer || ''}</td>
+                {(reportData?.approver || []).map((approver, index) => (
+                  <td key={index} className={styles.docValueAppr}>
+                    <div style={{ position: 'relative' }}>
+                      <div className="apprTypePosi">{approver.posi_name}</div>
+                      {approver.emp_name}
+                      <div className="apprType">{approver.approvalType && `(${approver.approvalType})`}</div>
+                    </div>
+                  </td>
                 ))}
               </tr>
               <tr>
-                <td className={styles.valueCell}>{reporter}</td>
-                {selectedApprovers.map((approver, index) => (
-                  <td key={index} className={styles.valueCell}>
-                    <div>
-                      <span>{approver.posi_name}</span>
-                      {approver.emp_name} ({approver.approvalType})
-                    </div>
-                  </td>
+                <td className={styles.docValue_date}>
+                  {reportData?.draft_date ? moment(reportData.draft_date).format("YYYY-MM-DD") : ''}
+                </td>
+                {(reportData?.approver || []).map((_, index) => (
+                  <td key={index} className={styles.docValue_date}></td>
                 ))}
               </tr>
             </tbody>
@@ -107,25 +153,27 @@ const CompanyUserDraftDetailWork = () => {
         <Table bordered className={styles.secondaryTable}>
           <tbody>
             <tr>
-              <td className={styles.labelCell}>참&nbsp;&nbsp;&nbsp;조</td>
+              <td className={styles.labelCellSec}>참&nbsp;&nbsp;&nbsp;조</td>
               <td className={styles.valueCell}>
-                {selectedReferences.map((ref, index) => (
-                  <span key={index}>{ref.emp_name}{index < selectedReferences.length - 1 && ', '}</span>
+                {(reportData?.reference || []).map((ref, index) => (
+                  <span key={index}>{ref.emp_name}{index < reportData.reference.length - 1 && ', '}</span>
                 ))}
               </td>
-              <td className={styles.labelCell}>수&nbsp;&nbsp;&nbsp;신</td>
+              <td className={styles.labelCellSec}>수&nbsp;&nbsp;&nbsp;신</td>
               <td className={styles.valueCell}>
-                {selectedReceivers.map((recv, index) => (
-                  <span key={index}>{recv.emp_name}{index < selectedReceivers.length - 1 && ', '}</span>
+                {(reportData?.recipient || []).map((recv, index) => (
+                  <span key={index}>{recv.emp_name}{index < reportData.recipient.length - 1 && ', '}</span>
                 ))}
               </td>
             </tr>
-            <tr>
-              <td colSpan="4" className={styles.detailsTitle}>상세 내용</td>
-            </tr>
+          </tbody>
+        </Table>
+
+        <Table bordered className={styles.secondaryTable}>
+          <tbody>
             <tr>
               <td colSpan="4" className={styles.valueCellContent}>
-                {reportContent}
+                {reportData?.repo_content || ''}
               </td>
             </tr>
           </tbody>
@@ -134,13 +182,13 @@ const CompanyUserDraftDetailWork = () => {
         <Table bordered>
           <tbody>
             <tr>
-              <td colSpan="4" className={styles.valueCellFile}>첨부 파일</td>
+              <td colSpan="4" className={styles.labelCellFile}>첨부 파일</td>
             </tr>
             <tr>
               <td colSpan="4" className={styles.valueCellFile}>
-                {files.length > 0 ? (
+                {reportData?.files && reportData.files.length > 0 ? (
                   <ul>
-                    {files.map((file, index) => (
+                    {reportData.files.map((file, index) => (
                       <li key={index} className={styles.fileList}>📄 {file}</li>
                     ))}
                   </ul>

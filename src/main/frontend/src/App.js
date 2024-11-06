@@ -104,16 +104,19 @@ function App() {
                         <Route path='/company/user/draft/doc/draft' element={<CompanyUserDraftDocDraft />} />
                         <Route path='/company/user/draft/doc/approval' element={<CompanyUserDraftDocAppr />} />
                         <Route path='/company/user/draft/detail/work' element={<CompanyUserDraftDetailWork />} />
+                        <Route path='/company/user/draft/detail/work/:reportId' element={<CompanyUserDraftDetailWork />} />
                         <Route path='/company/user/draft/detail/purchase' element={<CompanyUserDraftDetailPurc />} />
+                        <Route path='/company/user/draft/detail/purchase/:reportId' element={<CompanyUserDraftDetailPurc />} />
                         <Route path='/company/user/draft/detail/attendance' element={<CompanyUserDraftDetailAtten />} />
+                        <Route path='/company/user/draft/detail/attendance/:reportId' element={<CompanyUserDraftDetailAtten />} />
                         <Route path='/company/user/draft/form/work' element={<CompanyUserDraftFormWork />} />
                         <Route path='/company/user/draft/form/purchase' element={<CompanyUserDraftFormPurc />} />
                         <Route path='/company/user/draft/form/attendance' element={<CompanyUserDraftFormAtten />} />
                         <Route path='/company/user/draft/write/work' element={<CompanyUserDraftWriteWork />} />
                         <Route path='/company/user/draft/write/attendance' element={<CompanyUserDraftWriteAtten />} />
                         <Route path='/company/user/draft/write/purchase' element={<CompanyUserDraftWritePurc />} />
-                        {/* <Route path='/company/user/draft/approval/detail/work' element={<CompanyUserDraftApprDetailWork />} /> */}
-                        <Route path='/company/user/draft/approval/detail/work:reportId' element={<CompanyUserDraftApprDetailWork />} />
+                        <Route path='/company/user/draft/approval/detail/work' element={<CompanyUserDraftApprDetailWork />} />
+                        <Route path='/company/user/draft/approval/detail/work/:reportId' element={<CompanyUserDraftApprDetailWork />} />
 
                         {/* 재고관리 */}
                         <Route path='/company/user/stock' element={<CompanyUserStock />} />

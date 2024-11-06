@@ -76,15 +76,15 @@ const CompanyUserDraftFormWork = () => {
 
   // 결재 상신
   const handleSubmitForApproval = () => {
-  if (saveDraftRef.current) {
+    if (saveDraftRef.current) {
       saveDraftRef.current('submit'); // 결재 상신 시 "submit"을 전달
-  }
-  setShowModal(true);
-  setTimeout(() => {
+    }
+    setShowModal(true);
+    setTimeout(() => {
       setShowModal(false);
       navigate(`/company/user/draft/approval/detail/work/${reportId}`);
-  }, 2000);
-};
+    }, 3000);
+  };
 
   return (
     <div className="container">
@@ -92,7 +92,7 @@ const CompanyUserDraftFormWork = () => {
         <h2 className={styles.pageTitle}>기안 미리보기</h2>
       </div>
 
-      <div className={styles.backsection}  ref={printRef}>
+      <div className={styles.backsection} ref={printRef}>
         <div className={styles.apprSumbitBtnBox}>
           <div>
             <Button className={styles.cancelBtn} onClick={handleCancel}>취소</Button>
@@ -104,7 +104,7 @@ const CompanyUserDraftFormWork = () => {
           </div>
         </div>
         <div>
-        <HandleSaveDraftWork
+          <HandleSaveDraftWork
             ref={saveDraftRef}
             reportTitle={reportTitle}
             reportContent={reportContent}
@@ -123,7 +123,7 @@ const CompanyUserDraftFormWork = () => {
             setShowAlert={() => { }}
             setAlertMessage={setAlertMessage}
             actionType={actionType}
-        />
+          />
 
           {/* 모달 창 */}
           <Modal show={showModal} onHide={() => setShowModal(false)} centered>
@@ -244,6 +244,10 @@ const CompanyUserDraftFormWork = () => {
                     ))}
                   </td>
                 </tr>
+              </tbody>
+            </Table>
+            <Table bordered className={styles.secondaryTable}>
+              <tbody>
                 <tr>
                   <td colSpan="4" className={styles.detailsTitle}>상&nbsp;&nbsp;세&nbsp;&nbsp;내&nbsp;&nbsp;용</td>
                 </tr>

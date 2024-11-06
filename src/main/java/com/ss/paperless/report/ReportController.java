@@ -144,4 +144,15 @@ public class ReportController {
                     .body("Failed to submit report: " + e.getMessage());
         }
     }
+
+    // 보고서 상세 페이지
+    @GetMapping("/report/{reportId}")
+    public ReportDTO getReport(@PathVariable Long reportId) {
+
+        ReportDTO report = reportService.selectReportById(reportId);
+        System.out.println("controller reportId : " + reportId);
+        System.out.println("getReport report : " + report);
+
+        return report;
+    }
 }

@@ -1,6 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ss.paperless.report.ReportMapper">
+    <resultMap id="ReportResultMap" type="com.ss.paperless.report.ReportDTO">
+
+        <!-- Report 기본 필드 매핑 -->
+        <id property="repo_no" column="repo_no"/>
+        <result property="repo_emp_no" column="repo_emp_no"/>
+        <result property="emp_code" column="emp_code"/>
+        <result property="repo_title" column="repo_title"/>
+        <result property="repo_content" column="repo_content"/>
+        <result property="repo_status" column="repo_status"/>
+        <result property="repo_code" column="repo_code"/>
+        <result property="draft_date" column="draft_date"/>
+        <result property="submission_date" column="submission_date"/>
+        <result property="cancel_date" column="cancel_date"/>
+        <result property="cancel_content" column="cancel_content"/>
+        <result property="repo_type" column="repo_type"/>
+        <result property="writer" column="writer"/>
+        <result property="approvalType" column="approval_type"/>
+        <result property="appr_order" column="appr_order"/>
+
+        <!-- Work 관련 필드 매핑 -->
+        <result property="work_repo_no" column="work_repo_no"/>
+        <result property="repo_start_time" column="repo_start_time"/>
+        <result property="repo_end_time" column="repo_end_time"/>
+
+        <!-- Purchase 관련 필드 매핑 -->
+        <result property="purch_repo_no" column="purch_repo_no"/>
+        <result property="product_no" column="product_no"/>
+        <result property="category" column="category"/>
+        <result property="product_name" column="product_name"/>
+        <result property="product_size" column="product_size"/>
+        <result property="product_count" column="product_count"/>
+        <result property="product_price" column="product_price"/>
+        <result property="productPrices" column="product_prices"/>
+        <result property="productEtc" column="product_etc"/>
+
+        <!-- Attendance 관련 필드 매핑 -->
+        <result property="atten_repo_no" column="atten_repo_no"/>
+        <result property="vacation_type" column="vacation_type"/>
+        <result property="atten_start_date" column="atten_start_date"/>
+        <result property="atten_end_date" column="atten_end_date"/>
+
+        <!-- Attachment 관련 필드 매핑 -->
+        <result property="atta_no" column="atta_no"/>
+        <result property="atta_key" column="atta_key"/>
+        <result property="atta_url" column="atta_url"/>
+        <result property="atta_original_name" column="atta_original_name"/>
+        <result property="atta_size" column="atta_size"/>
+
+        <!-- 결재자 목록 (ApproverDTO) 매핑 -->
+        <collection property="approver" ofType="com.ss.paperless.report.ApproverDTO">
+            <id property="appr_no" column="appr_no"/>
+            <result property="emp_no" column="emp_no"/>
+            <result property="appr_repo_no" column="appr_repo_no"/>
+            <result property="appr_emp_no" column="appr_emp_no"/>
+            <result property="appr_order" column="appr_order"/>
+            <result property="appr_status" column="appr_status"/>
+            <result property="approval_type" column="approval_type"/>
+            <result property="appr_delegate" column="appr_delegate"/>
+        </collection>
+
+        <!-- 참조자 목록 (ReferenceDTO) 매핑 -->
+        <collection property="reference" ofType="com.ss.paperless.report.ReferenceDTO">
+            <id property="refe_no" column="refe_no"/>
+            <result property="refe_repo_no" column="refe_repo_no"/>
+            <result property="refe_emp_no" column="refe_emp_no"/>
+            <result property="refe_dept_no" column="refe_dept_no"/>
+        </collection>
+
+        <!-- 수신자 목록 (RecipientDTO) 매핑 -->
+        <collection property="recipient" ofType="com.ss.paperless.report.RecipientDTO">
+            <id property="reci_no" column="reci_no"/>
+            <result property="reci_repo_no" column="reci_repo_no"/>
+            <result property="reci_emp_no" column="reci_emp_no"/>
+            <result property="reci_dept_no" column="reci_dept_no"/>
+        </collection>
+    </resultMap>
 
     <!-- Report 테이블에 임시 저장 데이터를 삽입하는 SQL (문서번호 추가) -->
     <insert id="AddReportData" parameterType="map" useGeneratedKeys="true" keyProperty="repo_no">
@@ -152,6 +228,16 @@
     <!-- repo_type 조회 쿼리 -->
     <select id="getReportTypeById" parameterType="long" resultType="string">
         SELECT repo_type FROM Report WHERE repo_no = #{reportId}
+    </select>
+
+    <!-- 보고서 상세 페이지 데이터 조회 쿼리 -->
+    <select id="selectReportById" resultMap="ReportResultMap" parameterType="Long">
+        SELECT * FROM report r
+                          left join workreport wr on r.repo_no = wr.work_repo_no
+                          left join approver a on a.appr_repo_no = r.repo_no
+                          left join recipient re on re.reci_repo_no = r.repo_no
+                          left join reference rf on rf.refe_repo_no = r.repo_no
+                 WHERE repo_status = 'submitted' AND repo_no = #{reportId}
     </select>
 	
 </mapper>
