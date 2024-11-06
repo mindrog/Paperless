@@ -17,7 +17,8 @@ function CompanyUserEmailSend() {
     const navigate = useNavigate(); // useNavigate 훅 사용
 
     const location = useLocation();
-    const initialReceiverEmail = location.state?.receiverEmail || '';
+    const query = new URLSearchParams(location.search);
+    const initialReceiverEmail = query.get('receiverEmail') || '';
 
     const [receiverEmail, setReceiverEmail] = useState(initialReceiverEmail);
     const [ccEmail, setCcEmail] = useState('');

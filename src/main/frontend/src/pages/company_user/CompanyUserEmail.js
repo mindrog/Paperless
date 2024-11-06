@@ -617,7 +617,7 @@ function CompanyUserEmail() {
                         {emails.map((email) => (
                             <tr
                                 key={email.emailNo}
-                                className={`${email.status === 'unread' ? styles.unread : ''} ${selectedEmails.includes(email.emailNo) ? styles.selected : ''
+                                className={`${email.status === 'unread' ? styles.unread : styles.read } ${selectedEmails.includes(email.emailNo) ? styles.selected : ''
                                     }`}
                             >
                                 <td>
@@ -629,14 +629,14 @@ function CompanyUserEmail() {
                                 </td>
                                 <td onClick={() => handleEmailClick(email)} style={{ cursor: 'pointer' }}>
                                     {email.status === 'unread' ? (
-                                        <FontAwesomeIcon icon={faEnvelope} style={{ color: 'skyblue' }} />
+                                        <FontAwesomeIcon icon={faEnvelope} style={{ color: '#5A77B6' }} />
                                     ) : (
-                                        <FontAwesomeIcon icon={faEnvelopeOpen} style={{ color: 'skyblue' }} />
+                                        <FontAwesomeIcon icon={faEnvelopeOpen} style={{ color: '#5A77B6' }} />
                                     )}
                                 </td>
                                 <td>
                                     {email.hasAttachment && (
-                                        <FontAwesomeIcon icon={faPaperclip} style={{ color: 'skyblue' }} />
+                                        <FontAwesomeIcon icon={faPaperclip} style={{ color: '#5A77B6' }} />
                                     )}
                                 </td>
                                 <td onClick={() => handleEmailClick(email)} style={{ cursor: 'pointer' }}>

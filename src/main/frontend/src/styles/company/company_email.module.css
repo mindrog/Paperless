@@ -168,7 +168,9 @@
 .unread {
     font-weight: bold;
 }
-
+.read{
+    color: gray;
+}
 .selected {
     background-color: #d0e1ff;
 }

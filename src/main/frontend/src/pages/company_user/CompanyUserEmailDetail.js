@@ -55,7 +55,7 @@ function CompanyUserEmailDetail() {
       .then((data) => {
         setEmail(data);
         setLoading(false);
-
+        console.log(data);
         // 이메일 상태가 'unread'인 경우 'read'로 업데이트
         if (data.status === 'unread') {
           updateEmailStatus(emailNo, 'read');
@@ -154,6 +154,8 @@ function CompanyUserEmailDetail() {
     return null;
   }
 
+  
+
   return (
     <div className={styles.Container}>
       {/* 상단의 버튼 */}
@@ -170,7 +172,7 @@ function CompanyUserEmailDetail() {
           </button>
         </div>
       </div>
-
+      
       {/* 이메일 상세 내용 */}
       <div className={styles['email-detail']}>
         <div className={styles['email-header']}>
@@ -210,8 +212,8 @@ function CompanyUserEmailDetail() {
               <strong>첨부파일:</strong>{' '}
               {email.attachments.map((attachment, index) => (
                 <span key={index}>
-                  <a href={attachment.fileUrl} target="_blank" rel="noopener noreferrer">
-                    {attachment.fileName}
+                  <a href={attachment.attaUrl} target="_blank" rel="noopener noreferrer">
+                    {attachment.attaOriginalName}
                   </a>
                   {index < email.attachments.length - 1 && ', '}
                 </span>
