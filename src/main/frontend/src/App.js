@@ -37,6 +37,7 @@ import CompanyUserDraftDocDraft from './pages/company_user/CompanyUserDraftDocDr
 import CompanyUserDraftDocAppr from './pages/company_user/CompanyUserDraftDocAppr';
 import CompanyUserStock from './pages/company_user/CompanyUserStock';
 import CompanyUserCalender from './pages/company_user/CompanyUserCalender';
+import CompanyPage from './pages/company_admin/CompanyCompanypage';
 import Menubar from './pages/layout/menubar';
 import GraphChart from './pages/layout/GraphChart';
 import ApprovalLine from './pages/layout/ApprovalLine';
@@ -87,7 +88,7 @@ function App() {
                         {/* 기업 관리자 */}
                         <Route path='/company/admin/' element={<CompanyAdminMain />} />
                         <Route path='/company/admin/member' element={<CompanyAdminMember />} />
-                        
+                        <Route path='/company/info' element={<CompanyPage />} />
                         <Route path='/company/admin/approval' element={<CompanyAdminApproval />} />
 
                         {/* 기업 사용자 */}

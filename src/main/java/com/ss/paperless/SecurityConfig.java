@@ -76,7 +76,7 @@ public class SecurityConfig {
 				.mvcMatchers("/login", "/", "/join", "/api/login", "/api/name", "/api/userifo", "/api/inquirysend",
 						"/api/requestsend", "/api/getMenuList","/api/infolist","/api/saveasdraft","/api/saveworkreport","/api/report/**", "/api/getreportlist","/api/getinquiry","/api/getrequest",
 						"/api/approveinquiry","/api/getdeptno","/api/getposi","api/userinsert","/api/getemps","/api/deleteemployees",
-						"/api/empsearch","/api/getemps","/api/getscheduls","/api/scheduleinsert","/api/scheduledelete","/api/scheduleedit")
+						"/api/empsearch","/api/getemps","/api/getscheduls","/api/scheduleinsert","/api/scheduledelete","/api/scheduleedit","/api/getcompinfo")
 
 				.permitAll().mvcMatchers("/api/updateEmp").hasRole("admin")
 				.mvcMatchers("/api/emails/send").authenticated().anyRequest().authenticated());

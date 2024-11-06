@@ -43,7 +43,7 @@ function Company_admin_member() {
                 </Form>
                 <Form inline>
                     <Row>
-                        <Col xs="auto">
+                        <Col >
                             <Form.Control
                                 type="text"
                                 placeholder="Search"

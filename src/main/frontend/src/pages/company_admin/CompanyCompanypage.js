@@ -9,15 +9,17 @@ import { faCamera } from '@fortawesome/free-solid-svg-icons';
 import '../../styles/style.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { setUserData } from '../../store/userSlice';
+import axios from 'axios';
 
-function CompanyUserMypage() {
+
+function CompanyCompanypage() {
     const location = useLocation();
     const navigate = useNavigate();
     const employeeData = useSelector((state) => state.user.data); // employee 테이블을 가져옵니다.
     const userPosition = useSelector((state) => state.user.userPosi); // 직책을 가져옵니다.
 
     const dispatch = useDispatch();
-
+    const [compInfo,setCompInfo] = useState('');
     // 모달 상태 관리
     const [showPhoneModal, setShowPhoneModal] = useState(false);
     const [showEmailModal, setShowEmailModal] = useState(false);
@@ -166,6 +168,30 @@ function CompanyUserMypage() {
     };
 
     // 사용자 정보 가져오기 함수
+    useEffect(() => {
+
+        const getCompInfo = async () => {
+            try {
+                const token = localStorage.getItem('jwt');
+                if (!token) {
+                    console.error("토큰이 없습니다.");
+                    return;
+                }
+                const Response = await axios.get(`http://localhost:8080/api/getcompinfo?comp_no=${employeeData.emp_comp_no}`, {
+                    headers: {
+                        'Authorization': token,
+                        
+                    }
+                });
+                console.log(Response.data);
+                setCompInfo(Response.data);
+                console.log("comp data : " + Response.data);
+            } catch (error) {
+                console.error('호출이 실패 했습니다 :', error);
+            }
+        };
+        getCompInfo();
+    }, []);
     const fetchUserInfo = async () => {
         try {
             const response = await fetch('/api/userinfo', {
@@ -188,7 +214,6 @@ function CompanyUserMypage() {
             console.error('Error fetching employee data:', error);
         }
     };
-
     // 전화번호 변경 모달 닫기 함수
     const handleClosePhoneModal = async () => {
         if (newPhoneNumber) {
@@ -409,7 +434,6 @@ function CompanyUserMypage() {
                         {/* <p>{employeeInfo.dept_name} - {employeeInfo.dept_team_name}</p> 부서 정보 동적으로 표시 */}
                         <div className={styles.titlename}>
                             <div className={styles.userName}>{employeeData.emp_name}</div> {/* 이름 동적으로 표시 */}
-                            <div className={styles.userGrade}>{userPosition}</div> {/* 직급 동적으로 표시 */}
                         </div>
                     </div>
                 </div>
@@ -417,50 +441,28 @@ function CompanyUserMypage() {
                     <Table className={styles.userAnnualInfoTable}>
                         <tbody>
                             <tr>
-                                <td className={styles.infotitle}>사 번</td>
-                                <td className={styles.infoValue}>{employeeInfo.emp_no}</td>
-                                <td className={styles.infotitle}>비밀번호</td>
-                                <td className={styles.infoValue}><Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUserPwChangebtn}>변경</Button></td>
-                            </tr>
+                                <td className={styles.infotitle}>회사 고유 번호</td>
+                                <td className={styles.infoValue}>{compInfo.comp_no}</td>
+                                <td className={styles.infotitle}>인원 수</td>
+                                <td className={styles.infoValue}>{compInfo.comp_headcount}</td></tr>
                             <tr>
-                                <td className={styles.infotitle}>부 서</td>
-                                <td className={styles.infoValue}>{employeeInfo.dept_name}</td>
-                                <td className={styles.infotitle}>팀</td>
-                                <td className={styles.infoValue}>{employeeInfo.dept_team_name}</td>
+                            <td className={styles.infotitle}>업종</td>
+                            <td className={styles.infoValue}>{compInfo.comp_industry}</td>
+                            <td className={styles.infotitle}>비밀번호</td>
+                            <td className={styles.infoValue}><Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUserPwChangebtn}>변경</Button></td>
+                               
 
                             </tr>
                             <tr>
                                 <td className={styles.infotitle}>이 메 일</td>
-                                <td className={styles.infoValue}><Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUserEmailUpdate}>수정</Button></td>
+                                <td className={styles.infoValue}>{compInfo.comp_email}<Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUserEmailUpdate}>수정</Button></td>
                                 <td className={styles.infotitle}>전화번호</td>
-                                <td className={styles.infoValue}><Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUsernumUpdate}>수정</Button></td>
+                                <td className={styles.infoValue}>{compInfo.comp_phone}<Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUsernumUpdate}>수정</Button></td>
                             </tr>
                         </tbody>
                     </Table>
                 </div>
-                <div className={styles.userAnnualInfobox}>
-                    <div className={styles.tablebox}>
-                        <Table className={styles.userAnnualInfoTable}>
-                            <tbody>
-                                <tr className={styles.tableHead}>
-                                    <td colSpan={4}>단위: 개</td>
-                                </tr>
-                                <tr>
-                                    <td className={styles.infotitle}>총 근무 기간</td>
-                                    <td className={styles.infoValue}>{employeeData.emp_join_date ? `${formatDate(employeeData.emp_join_date)} ~ / ${calculateYearsAndMonths(employeeData.emp_join_date)} 근무 중` : '정보 없음'}</td>
-                                    <td className={styles.infotitle}>총 연차 수</td>
-                                    <td className={styles.infoValue}>15</td>
-                                </tr>
-                                <tr>
-                                    <td className={styles.infotitle}>사용된 연차 수</td>
-                                    <td className={styles.infoValue}>5</td>
-                                    <td className={styles.infotitle}>사용가능 연차 수</td>
-                                    <td className={styles.infoValue}>10</td>
-                                </tr>
-                            </tbody>
-                        </Table>
-                    </div>
-                </div>
+                
             </div>
 
             {/* 전화번호 수정 모달 */}
@@ -615,4 +617,4 @@ function CompanyUserMypage() {
     );
 }
 
-export default CompanyUserMypage;
+export default CompanyCompanypage;

@@ -117,7 +117,7 @@ const OrgChart = forwardRef((props, ref) => {
                                     {team.members.map((member) => (
                                         <li key={member.emp_code} style={{ listStyle: 'none' }} id={`user-${member.emp_no}`}>
                                             <DraggableWrapper data={member ? { ...member, type: 'employee' } : { type: 'employee' }}>
-                                                <button onClick={() => onMemberClick(member)}>
+                                                <button onClick={() => onMemberClick(member)} style={{ cursor: 'default' }}>
                                                     🧑‍💼 {member.posi_name} {member.emp_name}
                                                 </button>
                                             </DraggableWrapper>

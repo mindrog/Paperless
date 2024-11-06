@@ -106,7 +106,7 @@ const Menubar = ({ isMenuOpen }) => {
                     </div>
                 </div>
                 <ul className={styles.menuList}>
-                    <li className={`${styles.dropdown} ${activeItem === '/company/user/mypage' ? styles.active : ''}`} onClick={() => handleItemClick('/company/user/mypage')} >
+                    <li className={`${styles.dropdown} ${activeItem === '/company/info' ? styles.active : ''}`} onClick={() => handleItemClick('/company/info')} >
                         <button className={styles.sublist_mypage}>
                             🧑 회사 관리
                         </button>
@@ -309,27 +309,13 @@ const Menubar = ({ isMenuOpen }) => {
         }
     };
 
-    // 경로에 따라 프로필 이름 변경
-    const profileName = location.pathname.toLowerCase().startsWith('/company/admin')
-        ? '강동원'
-        : location.pathname.toLowerCase().startsWith('/company/user')
-            ? '배수지'
-            : '사용자';
-
-    // 경로에 따른 직급 설정
-    const getUserGrade = () => {
-        if (location.pathname.toLowerCase().startsWith('/company/admin')) {
-            return '부장'; // 회사 관리자
-        } else if (location.pathname.toLowerCase().startsWith('/company/user')) {
-            return '대리'; // 회사 사용자
-        }
-        return '사용자'; // 기본 값
-    };
-
     const handlerCompanyMain = () => {
-        if (getUserGrade() === '부장') {
-            navigate('/company/admin');
-        } else {
+        console.log('userData.emp_role:', userData.emp_role);
+        if (userData.emp_role === 'super') {
+            navigate('/system/admin/inquiry');
+        } else if (userData.emp_role === 'admin') {
+            navigate('/company/admin/member');
+        } else if (userData.emp_role === 'user') {
             navigate('/company/user');
         }
     }
