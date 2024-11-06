@@ -119,12 +119,6 @@
         INSERT INTO ReportAttachment (repo_no, atta_no) VALUES (#{repoNo}, #{attaNo})
     </insert>
 
-    <update id="updateReportStatus">
-        UPDATE Report
-        SET repo_status = #{reportStatus, jdbcType=VARCHAR}
-        WHERE repo_no = #{reportId}
-    </update>
-
     <select id="getApproversByReportId" resultType="map" parameterType="long">
         SELECT * FROM Approver WHERE appr_repo_no = #{reportId} ORDER BY appr_order
     </select>
