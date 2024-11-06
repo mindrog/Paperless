@@ -288,20 +288,75 @@ public class ReportService {
     }
 
     /**
-     * 상신 취소 로직
-     * @param
-     * @return
-     */
-    public int AddSaveAsDraftReportData(ReportDTO report) {
-        return reportMapper.AddSaveAsDraftReportData(report);
-    }
-
-    /**
      * 상세 페이지 조회
      * @param reportId
      * @return ReportDTO
      */
     public ReportDTO selectReportById(Long reportId) {
         return reportMapper.selectReportById(reportId);
+    }
+
+    public Map<Long, ReportDTO> selectReportListByDeptNo(Long deptNo) {
+
+        Map<Long, ReportDTO> reportsMap = new HashMap<>();
+
+        List<ReportDTO> workReports = reportMapper.selectWorkReports(deptNo);
+        workReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        List<ReportDTO> attendanceReports  = reportMapper.selectAttenReports(deptNo);
+        attendanceReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        List<ReportDTO> purchaseReports  = reportMapper.selectPurcReports(deptNo);
+        purchaseReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        return reportsMap;
+    }
+
+    // 상신 취소
+    public boolean cancelSubmission(Long reportId, String empCode) {
+        // 작성자 확인 및 상태 확인
+        Integer repoEmpNo = reportMapper.getReportEmpNo(reportId);
+        if (repoEmpNo != null && repoEmpNo.equals(reportMapper.getEmpNoByCode(empCode))) {
+            // 상신 취소 처리
+            int updated = reportMapper.updateReportStatus(reportId, "canceled");
+            return updated > 0;
+        }
+        return false;
+    }
+
+    // 회수
+    public boolean retrieveReport(Long reportId, String empCode) {
+        // 작성자 확인 및 상태 확인
+        Integer repoEmpNo = reportMapper.getReportEmpNo(reportId);
+        if (repoEmpNo != null && repoEmpNo.equals(reportMapper.getEmpNoByCode(empCode))) {
+            // 회수 처리
+            int updated = reportMapper.updateReportStatus(reportId, "retrieved");
+            return updated > 0;
+        }
+        return false;
+    }
+
+    // 승인
+    public boolean approveReport(Long reportId, String empCode) {
+        // 결재자 확인 및 상태 확인
+        Integer approverEmpNo = reportMapper.getApproverEmpNo(reportId);
+        if (approverEmpNo != null && approverEmpNo.equals(reportMapper.getEmpNoByCode(empCode))) {
+            // 승인 처리
+            int updated = reportMapper.updateReportStatus(reportId, "approved");
+            return updated > 0;
+        }
+        return false;
+    }
+
+    // 반려
+    public boolean rejectReport(Long reportId, String empCode, String rejectionReason) {
+        // 결재자 확인 및 상태 확인
+        Integer approverEmpNo = reportMapper.getApproverEmpNo(reportId);
+        if (approverEmpNo != null && approverEmpNo.equals(reportMapper.getEmpNoByCode(empCode))) {
+            // 반려 처리
+            int updated = reportMapper.rejectReport(reportId, "rejected", rejectionReason);
+            return updated > 0;
+        }
+        return false;
     }
 }

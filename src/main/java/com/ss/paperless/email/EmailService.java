@@ -64,7 +64,7 @@ public class EmailService {
 	        // 받은 편지함이나 보낸 메일함의 경우, deletedAt이 NULL인 이메일 조회
 	        statuses = userEmailStatusRepository.findByUserAndFolderAndDeletedAtIsNull(user, folder);
 	    }
-	    
+
 	    System.out.println("Fetching emails for folder: " + folder);
 	    System.out.println("Number of emails fetched: " + statuses.size());
 
@@ -126,7 +126,7 @@ public class EmailService {
 
 	        return matches;
 	    }).collect(Collectors.toList());
-	    
+
 	    System.out.println("Number of emails after filtering: " + filteredStatuses.size());
 
 
@@ -143,7 +143,7 @@ public class EmailService {
 	                comparator = order.isAscending() ? Comparator.comparing(EmailDTO::getSendDate)
 	                        : Comparator.comparing(EmailDTO::getSendDate).reversed();
 	            }
-	          
+
 	        }
 	    }
 
@@ -187,8 +187,8 @@ public class EmailService {
 
 		for (UserEmailStatus status : statuses) {
 			status.setDeletedAt(null);
-			
-			
+
+
 			if (status.getEmail().getWriter().equals(user)) {
 	            status.setFolder("sent"); // 발신자라면 'sent' 폴더로 복구
 	        } else {
@@ -203,7 +203,7 @@ public class EmailService {
 		return mapper.getUnreadCount(emp_code);
 	}
 
-	// 이메일 저장 
+	// 이메일 저장
 	public void saveEmail(Emailmessage email, List<EmployeeEntity> recipients) {
 		emailmessageRepository.save(email);
 
@@ -304,13 +304,13 @@ public class EmailService {
 
 		return dto;
 	}
-	
+
 	public void permanentDeleteEmails(List<Long> emailIds, EmployeeEntity user) {
 	    // 현재 사용자에 대한 UserEmailStatus 엔티티를 삭제
 	    List<UserEmailStatus> statuses = userEmailStatusRepository.findByEmailEmailNoInAndUser(emailIds, user);
 
 	    userEmailStatusRepository.deleteAll(statuses);
 
-	    
+
 	}
 }

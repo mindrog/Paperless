@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { Table, Button } from 'react-bootstrap';
 import styles from '../../styles/company/company_draft_appr_detail_work.module.css';
 import moment from 'moment';
@@ -9,6 +9,7 @@ const CompanyUserDraftDetailWork = () => {
   const [reportData, setReportData] = useState(null);
 
   const location = useLocation();
+  const navigate = useNavigate(); // 페이지 이동을 위한 네비게이트 훅
   const [reportStatus, setReportStatus] = useState('');
   const [repoStartTime, setRepoStartTime] = useState('');
   const [repoEndTime, setRepoEndTime] = useState('');
@@ -19,7 +20,7 @@ const CompanyUserDraftDetailWork = () => {
     if (reportId) {
       const fetchData = async () => {
         try {
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem("jwt");
 
           const response = await fetch(`/api/report/${reportId}`, {
             method: 'GET',
@@ -45,7 +46,12 @@ const CompanyUserDraftDetailWork = () => {
     }
   }, [reportId]);
 
-  const apprIsRead = reportData?.appr_is_read; // 예: reportData에 appr_is_read 값이 포함된 경우
+  const apprIsRead = reportData?.appr_is_read;
+
+  // 목록으로 이동 버튼 클릭 핸들러
+  const handleGoBack = () => {
+    navigate('/company/user/draft/doc/all');
+  };
 
   return (
     <div className="container">
@@ -57,19 +63,20 @@ const CompanyUserDraftDetailWork = () => {
         <div className={styles.btnBox}>
           <Button
             className={styles.submitCancelBtn}
+            onClick={handleGoBack} // 목록으로 이동
           >
             목록으로
           </Button>
           <div>
             <Button
               className={styles.submitCancelBtn}
-              disabled={apprIsRead === 1} // appr_is_read이 1이면 비활성화
+              disabled={apprIsRead === 1}
             >
               상신 취소
             </Button>
             <Button
               className={styles.retrieveBtn}
-              disabled={apprIsRead === 0} // appr_is_read이 0이면 비활성화
+              disabled={apprIsRead === 0}
             >
               회수
             </Button>
@@ -80,7 +87,7 @@ const CompanyUserDraftDetailWork = () => {
           <tbody>
             <tr>
               <td className={styles.labelCellTitle}>제&nbsp;&nbsp;&nbsp;&nbsp;목</td>
-              <td className={styles.valueCell} colSpan="3">{reportData?.repo_title || ''}</td>
+              <td className={styles.valueCell} colSpan="3">{reportData?.reportTitle || ''}</td>
             </tr>
           </tbody>
         </Table>
@@ -94,12 +101,12 @@ const CompanyUserDraftDetailWork = () => {
               </tr>
               <tr>
                 <td className={styles.labelCelldoc}>부&nbsp;&nbsp;&nbsp;서</td>
-                <td className={styles.valueCell}>{reportData?.department || ''}</td>
+                <td className={styles.valueCell}>{reportData?.emp_code || ''}</td>
               </tr>
               <tr>
                 <td className={styles.labelCelldoc}>기&nbsp;안&nbsp;일</td>
                 <td className={styles.valueCell}>
-                  {reportData?.draft_date ? moment(reportData.draft_date).format("YYYY-MM-DD") : ''}
+                  {reportData?.reportDate || ''}
                 </td>
               </tr>
               <tr>
@@ -108,11 +115,11 @@ const CompanyUserDraftDetailWork = () => {
               </tr>
               <tr>
                 <td className={styles.labelCelldoc}>시행일자</td>
-                <td className={styles.valueCell}>{reportData?.repo_start_time || ''}</td>
+                <td className={styles.valueCell}>{reportData?.repoStartTime || ''}</td>
               </tr>
               <tr>
                 <td className={styles.labelCelldoc}>마감일자</td>
-                <td className={styles.valueCell}>{reportData?.repo_end_time || ''}</td>
+                <td className={styles.valueCell}>{reportData?.repoEndTime || ''}</td>
               </tr>
             </tbody>
           </Table>
@@ -121,19 +128,19 @@ const CompanyUserDraftDetailWork = () => {
             <tbody className="apprLineTbody">
               <tr className="apprLinedocTr">
                 <td className={styles.valueCellAppr}>상신</td>
-                {(reportData?.approver || []).map((_, index) => (
+                {(reportData?.selectedApprovers || []).map((_, index) => (
                   <td key={index} className={styles.valueCellAppr}>결재</td>
                 ))}
               </tr>
 
               <tr>
                 <td className={styles.docValueAppr}>{reportData?.writer || ''}</td>
-                {(reportData?.approver || []).map((approver, index) => (
+                {(reportData?.selectedApprovers || []).map((selectedApprovers, index) => (
                   <td key={index} className={styles.docValueAppr}>
                     <div style={{ position: 'relative' }}>
-                      <div className="apprTypePosi">{approver.posi_name}</div>
-                      {approver.emp_name}
-                      <div className="apprType">{approver.approvalType && `(${approver.approvalType})`}</div>
+                      <div className="apprTypePosi">{selectedApprovers.posi_name}</div>
+                      {selectedApprovers.emp_name}
+                      <div className="apprType">{selectedApprovers.approvalType && `(${selectedApprovers.approvalType})`}</div>
                     </div>
                   </td>
                 ))}
@@ -142,7 +149,7 @@ const CompanyUserDraftDetailWork = () => {
                 <td className={styles.docValue_date}>
                   {reportData?.draft_date ? moment(reportData.draft_date).format("YYYY-MM-DD") : ''}
                 </td>
-                {(reportData?.approver || []).map((_, index) => (
+                {(reportData?.selectedApprovers || []).map((_, index) => (
                   <td key={index} className={styles.docValue_date}></td>
                 ))}
               </tr>
@@ -155,14 +162,14 @@ const CompanyUserDraftDetailWork = () => {
             <tr>
               <td className={styles.labelCellSec}>참&nbsp;&nbsp;&nbsp;조</td>
               <td className={styles.valueCell}>
-                {(reportData?.reference || []).map((ref, index) => (
-                  <span key={index}>{ref.emp_name}{index < reportData.reference.length - 1 && ', '}</span>
+                {(reportData?.selectedReferences || []).map((ref, index) => (
+                  <span key={index}>{ref.emp_name}{index < reportData.selectedReferences.length - 1 && ', '}</span>
                 ))}
               </td>
               <td className={styles.labelCellSec}>수&nbsp;&nbsp;&nbsp;신</td>
               <td className={styles.valueCell}>
-                {(reportData?.recipient || []).map((recv, index) => (
-                  <span key={index}>{recv.emp_name}{index < reportData.recipient.length - 1 && ', '}</span>
+                {(reportData?.selectedReceivers || []).map((recv, index) => (
+                  <span key={index}>{recv.emp_name}{index < reportData.selectedReceivers.length - 1 && ', '}</span>
                 ))}
               </td>
             </tr>
@@ -173,7 +180,7 @@ const CompanyUserDraftDetailWork = () => {
           <tbody>
             <tr>
               <td colSpan="4" className={styles.valueCellContent}>
-                {reportData?.repo_content || ''}
+                {reportData?.reportContent || ''}
               </td>
             </tr>
           </tbody>

@@ -78,10 +78,10 @@
         </collection>
     </resultMap>
 
-    <!-- Report 테이블에 임시 저장 데이터를 삽입하는 SQL (문서번호 추가) -->
+    <!-- Report 테이블에 저장 데이터를 삽입하는 SQL (문서번호 추가) -->
     <insert id="AddReportData" parameterType="map" useGeneratedKeys="true" keyProperty="repo_no">
-        INSERT INTO `Report` (repo_code, repo_emp_no, repo_title, repo_content, repo_status, repo_type)
-        VALUES (#{documentCode}, #{repoEmpNo}, #{reportTitle}, #{reportContent}, #{status}, 'work')
+        INSERT INTO `Report` (repo_code, repo_emp_no, repo_title, repo_content, repo_status, repo_type, repo_date)
+        VALUES (#{documentCode}, #{repoEmpNo}, #{reportTitle}, #{reportContent}, #{status}, 'work', #{reportDate})
     </insert>
 
     <!-- WorkReport 테이블에 임시 저장 데이터를 삽입하는 SQL -->
@@ -230,6 +230,31 @@
         SELECT repo_type FROM Report WHERE repo_no = #{reportId}
     </select>
 
+    <!-- 보고서 전체 목록(부서별) -->
+    <select id="selectWorkReports" parameterType="java.lang.Long" resultType="ReportDTO">
+        SELECT *
+        FROM Report r
+                 JOIN WorkReport w ON r.repo_no = w.work_repo_no
+                 JOIN Employee e ON r.repo_emp_no = e.emp_no
+        WHERE e.emp_dept_no = #{deptNo}
+    </select>
+
+    <select id="selectAttenReports" parameterType="java.lang.Long" resultType="ReportDTO">
+        SELECT *
+        FROM Report r
+                 JOIN AttendanceReport a ON r.repo_no = a.atten_repo_no
+                 JOIN Employee e ON r.repo_emp_no = e.emp_no
+        WHERE e.emp_dept_no = #{deptNo}
+    </select>
+
+    <select id="selectPurcReports" parameterType="java.lang.Long" resultType="ReportDTO">
+        SELECT *
+        FROM Report r
+                 JOIN PurchaseReport p ON r.repo_no = p.purch_repo_no
+                 JOIN Employee e ON r.repo_emp_no = e.emp_no
+        WHERE e.emp_dept_no = #{deptNo}
+    </select>
+
     <!-- 보고서 상세 페이지 데이터 조회 쿼리 -->
     <select id="selectReportById" resultMap="ReportResultMap" parameterType="Long">
         SELECT * FROM report r
@@ -237,6 +262,7 @@
                           left join approver a on a.appr_repo_no = r.repo_no
                           left join recipient re on re.reci_repo_no = r.repo_no
                           left join reference rf on rf.refe_repo_no = r.repo_no
+                          left join employee e on e.emp_no = r.repo_emp_no
                  WHERE repo_status = 'submitted' AND repo_no = #{reportId}
     </select>
 	

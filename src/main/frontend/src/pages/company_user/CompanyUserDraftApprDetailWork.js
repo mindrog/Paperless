@@ -12,7 +12,7 @@ const CompanyUserDraftApprDetailWork = () => {
     if (reportId) {
       const fetchData = async () => {
         try {
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem("jwt");
 
           const response = await fetch(`/api/report/${reportId}`, {
             method: 'GET',
@@ -28,6 +28,9 @@ const CompanyUserDraftApprDetailWork = () => {
 
           const data = await response.json();
           setReportData(data);
+
+          console.log("data ： " + data);
+          console.log("response data:", JSON.stringify(data, null, 2))
         } catch (error) {
           console.error('Error fetching report data:', error);
         }
@@ -53,7 +56,7 @@ const CompanyUserDraftApprDetailWork = () => {
             <tr>
               <td className={styles.labelCellTitle}>기안 제목</td>
               <td className={styles.valueCell} colSpan="3">
-                {reportData?.repo_title || ''}
+                {reportData?.reportTitle || ''}
               </td>
             </tr>
           </tbody>
@@ -78,15 +81,15 @@ const CompanyUserDraftApprDetailWork = () => {
               </tr>
               <tr>
                 <td className={styles.labelCelldoc}>기 안 자</td>
-                <td className={styles.valueCell}>{reportData?.writer || ''}</td>
+                <td className={styles.valueCell}>{reportData?.repo_emp_no || ''}</td>
               </tr>
               <tr>
                 <td className={styles.labelCelldoc}>시행일자</td>
-                <td className={styles.valueCell}>{reportData?.repo_start_time || ''}</td>
+                <td className={styles.valueCell}>{reportData?.repoStartTime || ''}</td>
               </tr>
               <tr>
                 <td className={styles.labelCelldoc}>마감일자</td>
-                <td className={styles.valueCell}>{reportData?.repo_end_time || ''}</td>
+                <td className={styles.valueCell}>{reportData?.repoEndTime || ''}</td>
               </tr>
             </tbody>
           </Table>
@@ -147,7 +150,7 @@ const CompanyUserDraftApprDetailWork = () => {
           <tbody>
             <tr>
               <td colSpan="4" className={styles.valueCellContent}>
-                {reportData?.repo_content || ''}
+                {reportData?.reportContent || ''}
               </td>
             </tr>
           </tbody>

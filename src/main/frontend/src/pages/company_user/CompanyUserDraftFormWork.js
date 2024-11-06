@@ -82,7 +82,7 @@ const CompanyUserDraftFormWork = () => {
     setShowModal(true);
     setTimeout(() => {
       setShowModal(false);
-      navigate(`/company/user/draft/approval/detail/work/${reportId}`);
+      navigate(`/company/user/draft/detail/work/${reportId}`);
     }, 3000);
   };
 
@@ -127,7 +127,7 @@ const CompanyUserDraftFormWork = () => {
 
           {/* 모달 창 */}
           <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-            <Modal.Body className="text-center">저장되었습니다</Modal.Body>
+            <Modal.Body className="text-center">정상적으로 상신 되었습니다</Modal.Body>
           </Modal>
 
           <div className={styles.contentsection}>
