@@ -8,11 +8,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import useFetchUserInfo from '../../componentFetch/useFetchUserInfo';
 import useWebSocket from 'react-use-websocket';
 import { setTotalUnreadCount } from '../../store/chatSlice.js';
+import { useNavigate } from 'react-router-dom';
 
 // .env 파일
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
 function CompanyUserChatRoom() {
+    const navigate = useNavigate();
+
     // Redux에서 사용자 정보 가져오기
     const userData = useSelector((state) => state.user.data);
 
@@ -189,9 +192,10 @@ function CompanyUserChatRoom() {
         if (emp_no) {
             // 전달된 emp_no를 통해 사용자 정보를 찾고 업데이트
             const selectedProfile = findUserInOrgChart(emp_no, orgChartData);
-            console.log('selectedProfile:', selectedProfile);
+            const selectedChatRoom = chatRoomList.find(room => room.participantNos[0] === emp_no);
+            const selectedChatRoomNo = selectedChatRoom.room_no;
             if (selectedProfile) {
-                setProfileInfo(selectedProfile);
+                setProfileInfo({...selectedProfile, room_no: selectedChatRoomNo});
             } else {
                 console.error(`Profile not found for emp_no: ${emp_no}`);
             }
@@ -202,9 +206,19 @@ function CompanyUserChatRoom() {
         setProfileModal(true);
     }
 
+    // 메일 전송하기 버튼
+    const handleEmail = (emp_email) => {
+        if (window.opener) {
+            // 원래 창의 URL을 변경
+            window.opener.location.href = `/company/user/email/send?receiverEmail=${emp_email}`;
+        }
+        setProfileModal(false);
+    };
+
     // 채팅 새 창
     const chatting = async (room_no) => {
         try {
+            console.log('profileInfo:', profileInfo);
             console.log("room_no:", room_no);
             console.log('chatRoomList:', chatRoomList);
             // 해당 room_no의 채팅방 정보 찾기
@@ -578,7 +592,6 @@ function CompanyUserChatRoom() {
                                                 {recentMessages[room.room_no]?.chat_content_recent}
                                             </div>
                                             <div className={styles.eachChat_unread} style={{ display: recentMessages[room.room_no]?.unread === 0 || recentMessages[room.room_no]?.unread === undefined ? 'none' : 'block' }}>
-                                                {console.log(`Unread for room ${room.room_no}:`, recentMessages[room.room_no]?.unread) /* 콘솔 출력 */}
                                                 {recentMessages[room.room_no]?.unread}
                                             </div>
                                         </div>
@@ -621,10 +634,15 @@ function CompanyUserChatRoom() {
                                     </div>
                                 </Modal.Body>
                                 <Modal.Footer className={styles.modal_footer}>
-                                    <Button variant="primary" onClick={(e) => { e.stopPropagation(); closeProfileModal() }} >
+                                    <Button variant="primary" onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (window.opener) {
+                                            handleEmail(profileInfo.emp_email);
+                                        }
+                                    }} >
                                         메일 전송
                                     </Button>
-                                    <Button variant="primary" onClick={(e) => { e.stopPropagation(); chatting(profileInfo.name); closeProfileModal() }} >
+                                    <Button variant="primary" onClick={(e) => { e.stopPropagation(); chatting(profileInfo.room_no); closeProfileModal() }} >
                                         채팅하기
                                     </Button>
                                 </Modal.Footer>
