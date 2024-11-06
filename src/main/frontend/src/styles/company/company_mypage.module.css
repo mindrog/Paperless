@@ -16,8 +16,6 @@
     position: relative;
     width: 150px;
     height: 150px;
-
-
 }
 
 .cameraIcon {
@@ -72,6 +70,7 @@
     padding: 0px;
     margin-top: 20px;
     text-align: center;
+    margin-bottom: 30px;
 }
 
 /* 중간 화면일 때의 스타일 */
@@ -225,6 +224,10 @@
     border: #2e3d86;
     margin-left: 15px;
     width: 100px;
+    padding-left: auto;
+    padding-right: auto;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .userNumUpdatebtnInput:hover,
@@ -285,13 +288,10 @@
 
 /* 연차 정보 */
 .userAnnualInfobox {
-    margin-top: 20px;
-    margin-left: auto;
-    margin-right: auto;
     text-align: center;
-    width: 95%;
+    width: 100%;
     /* 화면 크기에 맞게 너비 확장 */
-    padding: 20px;
+    padding: 0 20px 20px 20px;
     /* 내부 여백 */
     font-family: 'ONE-Mobile-Regular';
 }
@@ -334,6 +334,10 @@
     width: 100%;
     margin: 0 auto;
     height: auto;
+}
+
+.infoTable {
+    padding: 20px;
 }
 
 .userAnnualInfoTable {

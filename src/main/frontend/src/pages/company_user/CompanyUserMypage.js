@@ -413,29 +413,32 @@ function CompanyUserMypage() {
                         </div>
                     </div>
                 </div>
-                <Table className={styles.userAnnualInfoTable}>
-                    <tbody>
-                        <tr>
-                            <td className={styles.infotitle}>사 번</td>
-                            <td className={styles.infoValue}>{employeeInfo.emp_no}</td>
-                            <td className={styles.infotitle}>부 서</td>
-                            <td className={styles.infoValue}>{employeeInfo.dept_name}</td>
-                            <td className={styles.infotitle}>팀</td>
-                            <td className={styles.infoValue}>{employeeInfo.dept_team_name}</td>
-                        </tr>
-                        <tr>
-                            <td className={styles.infotitle}>비밀번호</td>
-                            <td className={styles.infoValue}><Button variant="primary" className={styles.userPwChangebtnInput} onClick={handleUserPwChangebtn}>변경</Button></td>
-                            <td className={styles.infotitle}>이 메 일</td>
-                            <td className={styles.infoValue}><Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUserEmailUpdate}>수정</Button></td>
-                            <td className={styles.infotitle}>전화번호</td>
-                            <td className={styles.infoValue}><Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUsernumUpdate}>수정</Button></td>
-                        </tr>
-                    </tbody>
-                </Table>
+                <div className={styles.infoTable}>
+                    <Table className={styles.userAnnualInfoTable}>
+                        <tbody>
+                            <tr>
+                                <td className={styles.infotitle}>사 번</td>
+                                <td className={styles.infoValue}>{employeeInfo.emp_no}</td>
+                                <td className={styles.infotitle}>비밀번호</td>
+                                <td className={styles.infoValue}><Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUserPwChangebtn}>변경</Button></td>
+                            </tr>
+                            <tr>
+                                <td className={styles.infotitle}>부 서</td>
+                                <td className={styles.infoValue}>{employeeInfo.dept_name}</td>
+                                <td className={styles.infotitle}>팀</td>
+                                <td className={styles.infoValue}>{employeeInfo.dept_team_name}</td>
+
+                            </tr>
+                            <tr>
+                                <td className={styles.infotitle}>이 메 일</td>
+                                <td className={styles.infoValue}><Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUserEmailUpdate}>수정</Button></td>
+                                <td className={styles.infotitle}>전화번호</td>
+                                <td className={styles.infoValue}><Button variant="primary" className={styles.userNumUpdatebtnInput} onClick={handleUsernumUpdate}>수정</Button></td>
+                            </tr>
+                        </tbody>
+                    </Table>
+                </div>
                 <div className={styles.userAnnualInfobox}>
-                    <h3 className={styles.userAnnualInfo_title}>연차 정보</h3>
-                    <hr className={styles.titlebar} />
                     <div className={styles.tablebox}>
                         <Table className={styles.userAnnualInfoTable}>
                             <tbody>
