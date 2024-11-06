@@ -81,11 +81,13 @@ body {
   background-color: #F1F2F6 !important;
   color: #7E7E7F !important;
   padding: 8px;
+  vertical-align: middle;
 }
 
 .docValue {
   font-weight: 100;
   width: 250px;
+  vertical-align: middle;
 }
 
 .docValue_date {
@@ -100,11 +102,13 @@ body {
   background-color: #F1F2F6 !important;
   color: #7E7E7F !important;
   padding: 8px;
+  vertical-align: middle;
 }
 
 .docValueAppr {
   font-weight: bold;
   width: 100px !important;
+  vertical-align: middle;
 }
 
 .docValueRen {

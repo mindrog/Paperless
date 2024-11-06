@@ -17,7 +17,7 @@ import SystemAdminMember from './pages/system_admin/SystemAdminMember';
 import CompanyAdminMain from './pages/company_admin/CompanyAdminMain';
 import CompanyAdminMember from './pages/company_admin/CompanyAdminMember';
 import CompanyAdminApproval from './pages/company_admin/CompanyAdminApproval';
-import CompanyAdminApprovalDetail from './pages/company_admin/CompanyAdminApprovalDetail';
+import CompanyUserDraftApprDetailWork from './pages/company_user/CompanyUserDraftApprDetailWork';
 import CompanyUserMain from './pages/company_user/CompanyUserMain';
 import CompanyUserMypage from './pages/company_user/CompanyUserMypage';
 import CompanyUserEmail from './pages/company_user/CompanyUserEmail';
@@ -89,7 +89,6 @@ function App() {
                         <Route path='/company/admin/member' element={<CompanyAdminMember />} />
                         
                         <Route path='/company/admin/approval' element={<CompanyAdminApproval />} />
-                        <Route path='/company/admin/approval/detail' element={<CompanyAdminApprovalDetail />} />
 
                         {/* 기업 사용자 */}
                         <Route path='/company/user/' element={<CompanyUserMain />} />
@@ -113,6 +112,8 @@ function App() {
                         <Route path='/company/user/draft/write/work' element={<CompanyUserDraftWriteWork />} />
                         <Route path='/company/user/draft/write/attendance' element={<CompanyUserDraftWriteAtten />} />
                         <Route path='/company/user/draft/write/purchase' element={<CompanyUserDraftWritePurc />} />
+                        {/* <Route path='/company/user/draft/approval/detail/work' element={<CompanyUserDraftApprDetailWork />} /> */}
+                        <Route path='/company/user/draft/approval/detail/work:reportId' element={<CompanyUserDraftApprDetailWork />} />
 
                         {/* 재고관리 */}
                         <Route path='/company/user/stock' element={<CompanyUserStock />} />

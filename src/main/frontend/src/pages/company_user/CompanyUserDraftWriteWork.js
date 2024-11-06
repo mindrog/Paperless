@@ -124,7 +124,7 @@ const CompanyUserDraftWriteWork = () => {
       if (result && result.reportId) {
         setReportId(result.reportId);
       }
-
+      navigate(`/company/user/draft/approval/detail/work/${reportId}`);
       navigate('/company/user/draft/form/work', {
         state: {
           reportTitle,
