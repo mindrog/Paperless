@@ -31,15 +31,6 @@
 		insert into scheduler (sche_emp_no, sche_comp_no, sche_dept_no, sche_title, sche_color, sche_start, sche_end)
 		values (#{emp_no},#{comp_no},#{dept_no},#{sche_title},'#a0c49c',#{sche_start},#{sche_end})
 	</insert>
-	<!-- 
-	public int ScheduleEditComp(int sche_no, Long emp_no, Long comp_no, Long dept_no, String sche_title,
-			String sche_start, String sche_end);
-
-	public int ScheduleEditDept(int sche_no, Long emp_no, Long comp_no, Long dept_no, String sche_title,
-			String sche_start, String sche_end);
-
-	public int ScheduleEditPrivate(int sche_no, Long emp_no, Long comp_no, Long dept_no, String sche_title,
-			String sche_start, String sche_end); -->
 	<update id="ScheduleEditComp">
 		update scheduler set sche_emp_no = null, sche_comp_no = #{comp_no}, sche_dept_no= null,
 		 sche_title=#{sche_title}, sche_color='#87CEFA', sche_start=#{sche_start}, sche_end=#{sche_end} where sche_no=#{sche_no}

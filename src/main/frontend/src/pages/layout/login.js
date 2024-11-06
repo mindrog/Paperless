@@ -60,7 +60,7 @@ function Login() {
                 if (userData.emp_role === "super") {
                     navigate("/system/admin/inquiry");
                 } else if (userData.emp_role === "admin") {
-                    navigate("/company/admin");
+                    navigate("/company/admin/member");
                 } else {
                     navigate("/company/user");
                 }

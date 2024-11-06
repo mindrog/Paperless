@@ -35,26 +35,10 @@ function SystemAdminMember () {
         <div className="container-xl">
             <Menubar />
 
-            <div>직원 관리</div>
+            <h2 s>직원 관리</h2>
             <div>
-                <Form inline>
-                    <Button variant="primary">Primary</Button>
-                    <Button variant="primary">Primary</Button>
-                </Form>
-                <Form inline>
-                    <Row>
-                        <Col xs="auto">
-                            <Form.Control
-                                type="text"
-                                placeholder="Search"
-                                className=" mr-sm-2"
-                            />
-                        </Col>
-                        <Col xs="auto">
-                            <Button type="submit">Submit</Button>
-                        </Col>
-                    </Row>
-                </Form>
+                
+                
                 
             </div>
             <Table striped bordered hover>

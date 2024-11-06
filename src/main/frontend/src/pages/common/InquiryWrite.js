@@ -26,14 +26,14 @@ function InquiryWrite() {
             });
 
             if (response.ok) {
-                alert('폼이 성공적으로 제출되었습니다.');
+                alert('문의가 성공적으로 제출되었습니다.');
                 navigate("/");
             } else {
-                alert('폼 제출에 실패했습니다.');
+                alert('문의 제출에 실패했습니다.');
             }
         } catch (error) {
             console.error('폼 제출 오류:', error);
-            alert('폼 제출 중 오류가 발생했습니다.');
+            alert('문의 제출 중 오류가 발생했습니다.');
         }
     };
 

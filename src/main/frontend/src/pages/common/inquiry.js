@@ -34,14 +34,14 @@ function Inquiry() {
             });
 
             if (response.ok) {
-                alert('폼이 성공적으로 제출되었습니다.');
+                alert('문의가 성공적으로 제출되었습니다');
                 navigate("/"); // 페이지 이동
             } else {
-                alert('폼 제출에 실패했습니다.');
+                alert('문의 제출에 실패했습니다.');
             }
         } catch (error) {
             console.error('폼 제출 오류:', error);
-            alert('폼 제출 중 오류가 발생했습니다.');
+            alert('문의 제출 중 오류가 발생했습니다.');
         }
     };
 
@@ -109,7 +109,7 @@ function Inquiry() {
                         <p className='form_accept_p'>에 동의합니다</p>
                     </div>
                     <p className='form_accept_sub'>위 동의를 거부할 권리가 있으며, 필수 항목의 동의를 거부하실 경우 문의 처리 및 결과 회신이 제한됩니다.</p>
-                    <button type='submit' className='submit_inquiry_form'>제출하기</button>
+                    <button type='submit' className='submit_inquiry_form'>전송하기</button>
                 </div>
             </form>
 
