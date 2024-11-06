@@ -41,10 +41,6 @@ public interface ReportMapper {
     // reportAttachmentData 맵은 보고서 ID와 첨부 파일 ID로 이 관계를 저장
     void AddReportAttachmentData(Map<String, Object> reportAttachmentData);
 
-    // Report 테이블에서 보고서의 상태를 업데이트
-    // updateData 맵은 보고서 ID와 새로 업데이트할 상태 데이터를 포함
-    void UpdateReportStatus(Map<String, Object> updateData);
-
     // 결재 상신 시 모든 결재자의 상태를 초기화하여 결재 프로세스를 시작
     // repoNo는 초기화할 결재가 있는 보고서의 ID
     void UpdateApproverStatusForSubmission(@Param("repoNo") Long repoNo);
@@ -67,7 +63,6 @@ public interface ReportMapper {
 
     // 보고서 ID와 상태를 기반으로 보고서의 상태를 업데이트
     // reportId는 상태 업데이트할 보고서의 ID, submitted는 업데이트할 상태
-//    void updateReportStatus(Long reportId, String reportStatus);
 
     // 문서 코드 생성 시 문서 타입 조회
     String getReportTypeById(Long reportId);
