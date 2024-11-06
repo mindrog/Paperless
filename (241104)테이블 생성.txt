@@ -277,6 +277,39 @@ CREATE TABLE `Todolist` (
 );
 
 
+CREATE TABLE UserEmailStatus (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email_no BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    folder VARCHAR(20) NOT NULL DEFAULT 'inbox',  -- 'inbox', 'sent', 'trash'
+    status VARCHAR(20) NOT NULL DEFAULT 'unread', -- 'unread', 'read' 등
+    deleted_at DATETIME DEFAULT NULL,
+    FOREIGN KEY (email_no) REFERENCES Emailmessage(email_no),
+    FOREIGN KEY (user_id) REFERENCES Employee(emp_no)
+);
+DELIMITER $$
+CREATE TRIGGER trg_after_email_insert
+AFTER INSERT ON Emailmessage
+FOR EACH ROW
+BEGIN
+    -- 발신자 상태 추가 (보낸 메일함)
+    INSERT INTO UserEmailStatus (email_no, user_id, folder, status)
+    VALUES (NEW.email_no, NEW.email_writer, 'sent', 'read');
+
+    -- 수신자 상태 추가 (받은 편지함)
+    INSERT INTO UserEmailStatus (email_no, user_id, folder, status)
+    VALUES (NEW.email_no, NEW.email_recipient, 'inbox', 'unread');
+
+    -- 참조자(CC)가 있을 경우 상태 추가
+    IF NEW.email_cc IS NOT NULL THEN
+        INSERT INTO UserEmailStatus (email_no, user_id, folder, status)
+        VALUES (NEW.email_no, NEW.email_cc, 'inbox', 'unread');
+    END IF;
+END$$
+
+DELIMITER ;
+
+
 
 -- 3. 데이터 삽입
 -- company/기업

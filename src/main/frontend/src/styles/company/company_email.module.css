@@ -6,7 +6,9 @@
     color: #2e3d86;
     margin-left: 220px;
     height: 85vh;
-    width: 80vw;
+    max-height: 900px; /* 원하는 최대 높이로 설정 */
+    width: 2000px;
+    max-width: 80%; /* 원하는 최대 높이로 설정 */
     position: relative;
 }
 
@@ -16,6 +18,14 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+
+}
+.left-buttons{
+    display: flex;
+    
+}
+.icon {
+    margin-right: 8px; /* 원하는 간격만큼 조절 */
 }
 
 .left-buttons .btn {
@@ -36,6 +46,12 @@
 .left-buttons .btn:not(:disabled) {
     background-color: #2e3d86;
 }
+
+.folder-buttons, .utility-buttons, .trash-button {
+    display: flex;
+    align-items: center;
+}
+
 
 /* 검색 바 스타일 */
 .search-bar {
@@ -126,7 +142,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    
+
 }
 
 .email-table th,
@@ -163,23 +179,30 @@
     justify-content: center;
     align-items: center;
     margin-top: 8px;
-    
-  }
-  
-  
-  .pagination {
-    flex: 1; 
-    display: flex;
-    justify-content: center; 
-  }
-  
-  
-  .composeButton {
-    position: relative; 
-    margin-left: auto; 
-   
-  }
 
-  .email-table-container{
+}
+
+
+.pagination {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+
+.composeButton {
+    position: relative;
+    margin-left: auto;
+
+}
+
+.email-table-container {
     height: 85%;
-  }
+}
+
+.separator {
+    width: 1px;
+    height: 20 px;
+    background-color: #dee2e6;
+    margin: 0 15px;
+}

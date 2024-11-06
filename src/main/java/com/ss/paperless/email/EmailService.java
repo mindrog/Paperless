@@ -304,4 +304,13 @@ public class EmailService {
 
 		return dto;
 	}
+	
+	public void permanentDeleteEmails(List<Long> emailIds, EmployeeEntity user) {
+	    // 현재 사용자에 대한 UserEmailStatus 엔티티를 삭제
+	    List<UserEmailStatus> statuses = userEmailStatusRepository.findByEmailEmailNoInAndUser(emailIds, user);
+
+	    userEmailStatusRepository.deleteAll(statuses);
+
+	    
+	}
 }
