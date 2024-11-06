@@ -126,6 +126,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
+    
 }
 
 .email-table th,
@@ -177,4 +178,8 @@
     position: relative; 
     margin-left: auto; 
    
+  }
+
+  .email-table-container{
+    height: 85%;
   }
