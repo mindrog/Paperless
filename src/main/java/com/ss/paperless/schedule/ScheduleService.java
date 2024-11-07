@@ -67,6 +67,21 @@ public class ScheduleService {
 		return mapper.ScheduleDelete(sche_no);
 	}
 
+	public List<ScheduleDTO> GetPersnalSchedules(int emp_no, int comp_no, int dept_no) {
+		// TODO Auto-generated method stub
+		return mapper.GetPersnalSchedules(emp_no,comp_no,dept_no);
+	}
+
+	public List<ScheduleDTO> GetDeptSchedules(int emp_no, int comp_no, int dept_no) {
+		// TODO Auto-generated method stub
+		return mapper.GetDeptSchedules(emp_no,comp_no,dept_no);
+	}
+
+	public List<ScheduleDTO> GetTeamSchedules(int emp_no, int comp_no, int dept_no) {
+		// TODO Auto-generated method stub
+		return mapper.GetTeamSchedules(emp_no,comp_no,dept_no);
+	}
+
 	
 
 }

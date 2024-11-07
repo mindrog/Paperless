@@ -21,9 +21,32 @@
     display: flex;
     flex-direction: column;
     color: #2e3d86;
+    font-family: 'ONE-Mobile-Regular';
     /* width: 450px; */
 }
+.inGridText p{
+  font-family: 'ONE-Mobile-Regular';
+  margin: 0;
+  text-align: start;
+  color: black;
 
+}
+.inGridText{
+  margin-left: 10px;
+}
+
+.gridItem2 {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  height: 165px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  color: #2e3d86;
+  /* width: 450px; */
+}
 .gridItemMailbox {
   grid-area: mailbox;
 }

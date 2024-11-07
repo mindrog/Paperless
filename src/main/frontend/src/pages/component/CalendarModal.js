@@ -109,6 +109,8 @@ const ScheduleModal = ({ isOpen, onRequestClose, onSave }) => {
             // 검색 결과 처리
             setResult(response.data);
             console.log("일정추가 성공 : " + result.data);
+            window.location.reload();
+            onRequestClose();
         } catch (error) {
             console.error("일정 추가 실패:", error);
         }

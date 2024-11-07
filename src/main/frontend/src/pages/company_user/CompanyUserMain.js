@@ -7,7 +7,7 @@ import '../../styles/style.css';
 import Menubar from '../layout/menubar';
 import GraphChart from '../layout/GraphChart';
 import axios from 'axios';
-
+import { useSelector, useDispatch } from 'react-redux';
 const reportData = [
     {
         id: 1,
@@ -58,7 +58,10 @@ function CompanyUserMain() {
     const [todoContent, setTodoContent] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const inputRef = useRef(null);
-
+    const [persschedules, setPersschedules] = useState('');
+    const [deptschedules, setDeptschedules] = useState('');
+    const [teamschedules, setTeamschedules] = useState('');
+    const userData = useSelector((state) => state.user.data);
     useEffect(() => {
         const fetchEmails = async () => {
             try {
@@ -119,6 +122,72 @@ function CompanyUserMain() {
 
         fetchTodoList();
     }, [token]);
+    useEffect(() => {
+
+        const getPersschedules = async () => {
+            try {
+
+                const token = localStorage.getItem('jwt');
+                const Response = await axios.get(`http://localhost:8080/api/getpersschedules?emp_no=${userData.emp_no}&comp_no=${userData.emp_comp_no}&dept_no=${userData.emp_dept_no}`,
+                    {
+                        headers: {
+                            'Authorization': token
+                        }
+                    });
+                console.log("getPersschedules" + Response.data);
+                setPersschedules(Response.data); // 내용이 없으면 빈 문자열로 초기화
+            } catch (error) {
+                console.error('Deptschedules 리스트를 가져오는 중 오류:', error);
+                setError('Deptschedules 리스트를 가져오는 중 오류가 발생했습니다.');
+            }
+        };
+
+        getPersschedules();
+    }, []);
+    useEffect(() => {
+
+        const getDeptschedules = async () => {
+            try {
+
+                const token = localStorage.getItem('jwt');
+                const Response = await axios.get(`http://localhost:8080/api/getdeptschedules?emp_no=${userData.emp_no}&comp_no=${userData.emp_comp_no}&dept_no=${userData.emp_dept_no}`,
+                    {
+                        headers: {
+                            'Authorization': token
+                        }
+                    });
+
+                setDeptschedules(Response.data); // 내용이 없으면 빈 문자열로 초기화
+            } catch (error) {
+                console.error('Deptschedules 리스트를 가져오는 중 오류:', error);
+                setError('Deptschedules 리스트를 가져오는 중 오류가 발생했습니다.');
+            }
+        };
+
+        getDeptschedules();
+    }, []);
+    useEffect(() => {
+
+        const getTeamschedules = async () => {
+            try {
+
+                const token = localStorage.getItem('jwt');
+                const Response = await axios.get(`http://localhost:8080/api/getteamschedules?emp_no=${userData.emp_no}&comp_no=${userData.emp_comp_no}&dept_no=${userData.emp_dept_no}`,
+                    {
+                        headers: {
+                            'Authorization': token
+                        }
+                    });
+
+                setTeamschedules(Response.data); // 내용이 없으면 빈 문자열로 초기화
+            } catch (error) {
+                console.error('Teamschedules 리스트를 가져오는 중 오류:', error);
+                setError('Teamschedules 리스트를 가져오는 중 오류가 발생했습니다.');
+            }
+        };
+
+        getTeamschedules();
+    }, []);
 
     const handleEmailClick = (email) => {
         navigate('/Company/user/email/detail', { state: { emailNo: email.emailNo } });
@@ -193,7 +262,9 @@ function CompanyUserMain() {
             saveTodo();
         }
     };
-
+    console.log(persschedules);
+    console.log(teamschedules);
+    console.log(deptschedules);
     return (
         <div className="container-xl conbox1">
             <Menubar />
@@ -273,7 +344,7 @@ function CompanyUserMain() {
                                 <div className={styles.divTodoList}>
                                     {isEditing ? (
                                         <textarea ref={inputRef} value={todoContent} onChange={handleChange} onBlur={handleBlur} onKeyDown={handleKeyDown} placeholder="메모를 입력하세요." className={styles.todoInput}
-                                        style={{ width: "100%", resize: "none", overflow: "hidden", }} />
+                                            style={{ width: "100%", resize: "none", overflow: "hidden", }} />
                                     ) : (
                                         <div onClick={handleEdit} className={styles.todoContent}>
                                             {todoContent || "메모를 입력하세요."}
@@ -281,20 +352,47 @@ function CompanyUserMain() {
                                     )}
                                 </div>
                             </div>
-                            <div className={`${styles.gridItem} ${styles.gridItemStatistics}`}>
+                            <div className={`${styles.gridItem} ${styles.gridItemStatistics}`} >
                                 <h3 className={styles.colTitle}>나의 일정</h3>
-                                
-                                {/* <hr className={styles.titleBorderBar} /> */}
-                            </div>
-                            <div className={`${styles.gridItem} ${styles.gridItemCalendar}`}>
-                                <h3 className={styles.colTitle}>캘린더</h3>
-                                
-                                {/* <hr className={styles.titleBorderBar} /> */}
-                            </div>
-                             <div className={`${styles.gridItem} ${styles.gridItemCalendar}`}>
-                                <h3 className={styles.colTitle}>캘린더</h3>
-                                
-                                {/* <hr className={styles.titleBorderBar} /> */}
+                                {persschedules.length > 0 ? (
+                                    persschedules.map((schedule, index) => (
+                                        <div key={index} className={styles.inGridText}>
+                                            <p className={styles.scheduletitle}>일정 제목: {schedule.sche_title}</p>
+                                            <p className={styles.scheduleDuring} style={{ marginBottom: '8px' }}>  기간: {new Date(schedule.sche_start).toLocaleDateString('en-CA')} ~ {new Date(schedule.sche_end).toLocaleDateString('en-CA')}</p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>일정 없음</p>
+                                )}
+                            </div >
+                            <div>
+                                <div className={`${styles.gridItem2} ${styles.gridItemperCalendar}`} >
+                                    <h3 className={styles.colTitle}>부서 일정</h3>
+                                    {deptschedules.length > 0 ? (
+                                    deptschedules.map((schedule, index) => (
+                                        <div key={index} className={styles.inGridText}>
+                                            <p className={styles.scheduletitle}>일정 제목: {schedule.sche_title}</p>
+                                            <p className={styles.scheduleDuring} style={{ marginBottom: '8px' }}>  기간: {new Date(schedule.sche_start).toLocaleDateString('en-CA')} ~ {new Date(schedule.sche_end).toLocaleDateString('en-CA')}</p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>일정 없음</p>
+                                )}
+                                    {/* <hr className={styles.titleBorderBar} /> */}
+                                </div>
+                                <div className={`${styles.gridItem2} ${styles.gridItemteamCalendar}`} >
+                                    <h3 className={styles.colTitle}>팀 일정</h3>
+                                    {teamschedules.length > 0 ? (
+                                    teamschedules.map((schedule, index) => (
+                                        <div key={index} className={styles.inGridText}>
+                                            <p className={styles.scheduletitle}>일정 제목: {schedule.sche_title}</p>
+                                            <p className={styles.scheduleDuring} style={{ marginBottom: '8px' }}>  기간: {new Date(schedule.sche_start).toLocaleDateString('en-CA')} ~ {new Date(schedule.sche_end).toLocaleDateString('en-CA')}</p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>일정 없음</p>
+                                )}
+                                </div>
                             </div>
                         </div>
                     </div>
