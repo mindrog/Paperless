@@ -312,6 +312,26 @@ public class ReportService {
         return reportsMap;
     }
 
+    // 상세 보고서 내에 결재자, 수신자, 참조자 정보 조회
+    public ReportDTO selectReportApprsInfoById(Long reportId) {
+        // ReportDTO 객체 생성
+        ReportDTO reportDTO = new ReportDTO();
+
+        // Mapper를 통해 결재자, 수신자, 참조자 정보를 가져옴
+        List<ApproverDTO> approverInfo = reportMapper.selectReportApprsInfoById(reportId);
+        List<RecipientDTO> reciInfo = reportMapper.selectReportRecisInfoById(reportId);
+        List<ReferenceDTO> refeInfo = reportMapper.selectReportRefesInfoById(reportId);
+
+        // ReportDTO에 reportId와 각 정보를 설정
+        reportDTO.setRepo_no(Math.toIntExact(reportId));
+        reportDTO.setApproverInfo(approverInfo);
+        reportDTO.setRecipientInfo(reciInfo);
+        reportDTO.setReferenceInfo(refeInfo);
+
+        return reportDTO;
+    }
+
+
     // 상신 취소
     public boolean cancelSubmission(Long reportId, String empCode) {
         // 작성자 확인 및 상태 확인
@@ -359,4 +379,6 @@ public class ReportService {
         }
         return false;
     }
+
+
 }

@@ -7,6 +7,7 @@
         <id property="repo_no" column="repo_no"/>
         <result property="repo_emp_no" column="repo_emp_no"/>
         <result property="emp_code" column="emp_code"/>
+        <result property="emp_name" column="emp_name"/>
         <result property="repo_title" column="repo_title"/>
         <result property="repo_content" column="repo_content"/>
         <result property="repo_status" column="repo_status"/>
@@ -18,7 +19,6 @@
         <result property="repo_type" column="repo_type"/>
         <result property="writer" column="writer"/>
         <result property="approvalType" column="approval_type"/>
-        <result property="appr_order" column="appr_order"/>
 
         <!-- Work 관련 필드 매핑 -->
         <result property="work_repo_no" column="work_repo_no"/>
@@ -50,33 +50,63 @@
         <result property="atta_size" column="atta_size"/>
 
         <!-- 결재자 목록 (ApproverDTO) 매핑 -->
-        <collection property="approver" ofType="com.ss.paperless.report.ApproverDTO">
+        <collection property="approverInfo" ofType="com.ss.paperless.report.ApproverDTO">
             <id property="appr_no" column="appr_no"/>
-            <result property="emp_no" column="emp_no"/>
             <result property="appr_repo_no" column="appr_repo_no"/>
             <result property="appr_emp_no" column="appr_emp_no"/>
             <result property="appr_order" column="appr_order"/>
             <result property="appr_status" column="appr_status"/>
             <result property="approval_type" column="approval_type"/>
             <result property="appr_delegate" column="appr_delegate"/>
+            <result property="appr_is_read" column="appr_is_read"/>
+            <result property="appr_date" column="appr_date"/>
+            <result property="emp_code" column="emp_code"/>
+            <result property="emp_name" column="emp_name"/>
+            <result property="emp_dept_no" column="emp_dept_no"/>
+            <result property="dept_name" column="dept_name"/>
+            <result property="dept_team_name" column="dept_team_name"/>
+            <result property="emp_posi_no" column="emp_posi_no"/>
+            <result property="posi_name" column="posi_name"/>
+            <result property="emp_role" column="emp_role"/>
         </collection>
 
         <!-- 참조자 목록 (ReferenceDTO) 매핑 -->
-        <collection property="reference" ofType="com.ss.paperless.report.ReferenceDTO">
+        <collection property="referenceInfo" ofType="com.ss.paperless.report.ReferenceDTO">
             <id property="refe_no" column="refe_no"/>
             <result property="refe_repo_no" column="refe_repo_no"/>
             <result property="refe_emp_no" column="refe_emp_no"/>
             <result property="refe_dept_no" column="refe_dept_no"/>
+            <result property="refe_is_read" column="refe_is_read"/>
+            <result property="refe_date" column="refe_date"/>
+            <result property="emp_code" column="emp_code"/>
+            <result property="emp_name" column="emp_name"/>
+            <result property="emp_dept_no" column="emp_dept_no"/>
+            <result property="dept_name" column="dept_name"/>
+            <result property="dept_team_name" column="dept_team_name"/>
+            <result property="emp_posi_no" column="emp_posi_no"/>
+            <result property="posi_name" column="posi_name"/>
+            <result property="emp_role" column="emp_role"/>
         </collection>
 
         <!-- 수신자 목록 (RecipientDTO) 매핑 -->
-        <collection property="recipient" ofType="com.ss.paperless.report.RecipientDTO">
+        <collection property="recipientInfo" ofType="com.ss.paperless.report.RecipientDTO">
             <id property="reci_no" column="reci_no"/>
             <result property="reci_repo_no" column="reci_repo_no"/>
             <result property="reci_emp_no" column="reci_emp_no"/>
             <result property="reci_dept_no" column="reci_dept_no"/>
+            <result property="reci_is_read" column="reci_is_read"/>
+            <result property="reci_date" column="reci_date"/>
+            <result property="emp_code" column="emp_code"/>
+            <result property="emp_name" column="emp_name"/>
+            <result property="emp_dept_no" column="emp_dept_no"/>
+            <result property="dept_name" column="dept_name"/>
+            <result property="dept_team_name" column="dept_team_name"/>
+            <result property="emp_posi_no" column="emp_posi_no"/>
+            <result property="posi_name" column="posi_name"/>
+            <result property="emp_role" column="emp_role"/>
         </collection>
     </resultMap>
+
 
     <!-- Report 테이블에 저장 데이터를 삽입하는 SQL (문서번호 추가) -->
     <insert id="AddReportData" parameterType="map" useGeneratedKeys="true" keyProperty="repo_no">
@@ -258,6 +288,115 @@
                           left join reference rf on rf.refe_repo_no = r.repo_no
                           left join employee e on e.emp_no = r.repo_emp_no
                  WHERE repo_status = 'submitted' AND repo_no = #{reportId}
+    </select>
+
+    <!-- 보고서 내에 결재자 정보 조회 -->
+    <select id="selectReportApprsInfoById" resultMap="ReportResultMap" parameterType="Long">
+        SELECT
+            a.appr_no,
+            a.appr_repo_no,
+            a.appr_emp_no,
+            a.appr_order,
+            a.appr_status,
+            a.appr_delegate,
+            a.appr_is_read,
+            a.appr_date,
+            e.emp_code,
+            e.emp_name,
+            e.emp_dept_no,
+            d.dept_name,
+            d.dept_team_name,
+            e.emp_posi_no,
+            p.posi_name,
+            e.emp_role
+        FROM
+            approver a
+                LEFT JOIN
+            employee e
+            ON
+                e.emp_no = a.appr_emp_no
+                LEFT JOIN
+            department d
+            ON
+                d.dept_no = e.emp_dept_no
+                LEFT JOIN
+            position p
+            ON
+                p.posi_no = e.emp_posi_no
+        WHERE
+            a.appr_repo_no = #{reportId}
+    </select>
+
+    <!-- 수신자  -->
+    <select id="selectReportRecisInfoById" resultMap="ReportResultMap" parameterType="Long">
+        SELECT
+            r.reci_no,
+            r.reci_repo_no,
+            r.reci_emp_no,
+            r.reci_dept_no,
+            r.reci_is_read,
+            r.reci_date,
+            e.emp_no,
+            e.emp_code,
+            e.emp_name,
+            e.emp_dept_no,
+            d.dept_name,
+            d.dept_team_name,
+            e.emp_posi_no,
+            p.posi_name,
+            e.emp_role
+        FROM
+            recipient r
+                LEFT JOIN
+            employee e
+            ON
+                e.emp_no = r.reci_emp_no
+                LEFT JOIN
+            department d
+            ON
+                d.dept_no = e.emp_dept_no
+                LEFT JOIN
+            position p
+            ON
+                p.posi_no = e.emp_posi_no
+        WHERE
+            r.reci_repo_no = #{reportId}
+    </select>
+
+    <!-- 참조자 -->
+    <select id="selectReportRefesInfoById" resultMap="ReportResultMap" parameterType="Long">
+        SELECT
+            rf.refe_no,
+            rf.refe_repo_no,
+            rf.refe_emp_no,
+            rf.refe_dept_no,
+            rf.refe_is_read,
+            rf.refe_date,
+            e.emp_no,
+            e.emp_code,
+            e.emp_name,
+            e.emp_dept_no,
+            d.dept_name,
+            d.dept_team_name,
+            e.emp_posi_no,
+            p.posi_name,
+            e.emp_role
+        FROM
+            reference rf
+                LEFT JOIN
+            employee e
+            ON
+                e.emp_no = rf.refe_emp_no
+                LEFT JOIN
+            department d
+            ON
+                d.dept_no = e.emp_dept_no
+                LEFT JOIN
+            position p
+            ON
+                p.posi_no = e.emp_posi_no
+        WHERE
+            rf.refe_repo_no = #{reportId}
     </select>
 	
 </mapper>

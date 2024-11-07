@@ -174,6 +174,13 @@ public class ReportController {
         return report;
     }
 
+    // 보고서 상세 페이지 작성자 정보
+    @GetMapping("/apprsinfo/{reportId}")
+    public ReportDTO getReportInfo(@PathVariable Long reportId) {
+        ReportDTO report = reportService.selectReportApprsInfoById(reportId);
+        return report;
+    }
+
     // 상신 취소
     @PostMapping("/cancelSubmission/{reportId}")
     public ResponseEntity<?> cancelSubmission(@PathVariable Long reportId) {

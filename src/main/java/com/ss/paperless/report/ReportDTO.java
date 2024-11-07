@@ -20,7 +20,9 @@ public class ReportDTO {
 	private int repo_no; 
 	private int repo_emp_no;				// 작성자 번호 (fk)
 	private String emp_code;				// 작성자 코드
-	private String emp_name;
+
+	private String emp_name;				// 작성자 이름
+	private String empName;				// 작성자 이름
 
 	@JsonProperty("reportTitle")
 	private String repo_title; 				// 제목
@@ -120,4 +122,7 @@ public class ReportDTO {
 	private int refe_is_read;
 	private LocalDate refe_date;
 
-}   
+	private List<ApproverDTO> approverInfo;		// 결재자 정보
+	private List<RecipientDTO> recipientInfo; 	// 참조자 정보
+	private List<ReferenceDTO> referenceInfo; 	// 수신자 정보
+}

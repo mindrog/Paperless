@@ -110,4 +110,9 @@ public interface ReportMapper {
     // 사원 정보 가져오기 (empCode로 조회)
     @Select("SELECT * FROM employee WHERE emp_code = #{empCode}")
     EmployeeEntity findEmployeeByCode(@Param("empCode") String empCode);
+
+    // 보고서 내 결재자, 참조자, 수신자 정보 가져오기
+    List<ApproverDTO> selectReportApprsInfoById(Long reportId);
+    List<RecipientDTO> selectReportRecisInfoById(Long reportId);
+    List<ReferenceDTO> selectReportRefesInfoById(Long reportId);
 }
