@@ -74,10 +74,16 @@ public class SecurityConfig {
 
 		http.authorizeHttpRequests((auth) -> auth
 				.mvcMatchers("/login", "/", "/join", "/api/login", "/api/name", "/api/userifo", "/api/inquirysend",
+<<<<<<< HEAD
 						"/api/requestsend", "/api/getMenuList","/api/infolist","/api/saveasdraft","/api/saveworkreport","/api/report/**","/api/apprsinfo/**",
 						"/api/getreportlist","/api/getdraftassavelist", "/api/getpendingdoclist", "/api/getmydoclist","/api/cancel/**", "/api/retrieve/**",
 						"/api/approve/**" ,"/api/reject/**", "/api/approveinquiry","/api/getdeptno","/api/getposi","api/userinsert","/api/getemps","/api/deleteemployees",
 						"/api/empsearch","/api/getemps","/api/getscheduls","/api/scheduleinsert","/api/scheduledelete","/api/scheduleedit","/api/getcompinfo")
+=======
+						"/api/requestsend", "/api/getMenuList","/api/infolist","/api/saveasdraft","/api/saveworkreport","/api/report/**","/api/apprsinfo/**", "/api/getreportlist","/api/getinquiry","/api/getrequest",
+						"/api/approveinquiry","/api/getdeptno","/api/getposi","api/userinsert","/api/getemps","/api/deleteemployees",
+						"/api/empsearch","/api/getemps","/api/getscheduls","/api/scheduleinsert","/api/scheduledelete","/api/scheduleedit","/api/getcompinfo","/api/getpersschedules","/api/getdeptschedules","/api/getteamschedules")
+>>>>>>> 74697497f20629383df770e51789b730e11635ae
 
 				.permitAll().mvcMatchers("/api/updateEmp").hasRole("admin")
 				.mvcMatchers("/api/emails/send").authenticated().anyRequest().authenticated());

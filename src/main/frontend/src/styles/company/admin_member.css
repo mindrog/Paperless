@@ -41,7 +41,7 @@
 .passwordinput{
     font-family: 'NanumSquare';
 }
-.addEmpModal input,select,option{
+.addEmpModal input, .addEmpModal select, .addEmpModal option{
     
     width: 15vw;
     height: 4vh;

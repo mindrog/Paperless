@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import Pagination from '../component/Pagination';
 import ComposeButton from '../component/ComposeButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope, faEnvelopeOpen, faPaperclip, faTrashAlt,faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faEnvelopeOpen, faPaperclip, faTrashAlt, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 
 function CompanyUserEmail() {
@@ -168,7 +168,11 @@ function CompanyUserEmail() {
         setCurrentPage(1);
         setSelectAll(false);
         setSelectedEmails([]);
-        setSearchTerm(searchInput); // 기본 검색어 설정
+        if (searchInput.trim() === '') {
+            handleFolderChange('inbox'); // 검색어가 빈칸일 경우 받은 메일함으로 설정
+        } else {
+            setSearchTerm(searchInput); // 기본 검색어 설정
+        }
     };
 
     // 상세 검색 버튼 클릭 핸들러
@@ -424,24 +428,24 @@ function CompanyUserEmail() {
                 <div className={styles['left-buttons']}>
                     <div className={styles['folder-buttons']}>
 
-                    
-                        <button
-                            className={`${styles['btn']} ${folder === 'sent' ? styles.active : ''}`}
-                            onClick={() => handleFolderChange('sent')}
-                        >
-                            
-                            <FontAwesomeIcon icon={faPaperPlane} className={styles['icon']}/>   
-                            보낸 메일
-                             
-                        </button>
                         <button
                             className={`${styles['btn']} ${folder === 'inbox' ? styles.active : ''}`}
                             onClick={() => handleFolderChange('inbox')}
                         >
                             <FontAwesomeIcon icon={faEnvelope} className={styles['icon']} />
                             받은 메일
-                             
+
                         </button>
+                        <button
+                            className={`${styles['btn']} ${folder === 'sent' ? styles.active : ''}`}
+                            onClick={() => handleFolderChange('sent')}
+                        >
+
+                            <FontAwesomeIcon icon={faPaperPlane} className={styles['icon']} />
+                            보낸 메일
+
+                        </button>
+                        
 
 
                     </div>
@@ -498,7 +502,7 @@ function CompanyUserEmail() {
                             className={`${styles['btn']} ${folder === 'trash' ? styles.active : ''}`}
                             onClick={() => handleFolderChange('trash')}
                         >
-                            <FontAwesomeIcon icon={faTrashAlt}  />
+                            <FontAwesomeIcon icon={faTrashAlt} />
                         </button>
                     </div>
                 </div>
@@ -608,7 +612,11 @@ function CompanyUserEmail() {
                             </th>
                             <th style={{ width: '5%' }}></th>
                             <th style={{ width: '5%' }}></th>
-                            <th style={{ width: '20%' }}>보낸 사람</th>
+                            <th style={{ width: '20%' }}>
+                                {folder === 'sent' ? '받는 사람' : '보낸 사람'}
+
+
+                            </th>
                             <th style={{ width: '40%' }}>제목</th>
                             <th style={{ width: '25%' }}>받은 시간</th>
                         </tr>
@@ -617,7 +625,7 @@ function CompanyUserEmail() {
                         {emails.map((email) => (
                             <tr
                                 key={email.emailNo}
-                                className={`${email.status === 'unread' ? styles.unread : styles.read } ${selectedEmails.includes(email.emailNo) ? styles.selected : ''
+                                className={`${email.status === 'unread' ? styles.unread : styles.read} ${selectedEmails.includes(email.emailNo) ? styles.selected : ''
                                     }`}
                             >
                                 <td>
@@ -640,7 +648,8 @@ function CompanyUserEmail() {
                                     )}
                                 </td>
                                 <td onClick={() => handleEmailClick(email)} style={{ cursor: 'pointer' }}>
-                                    {email.writerDisplayInfo}
+                                    {folder === 'sent' ? `${email.recipientDisplayInfo}` : `${email.writerDisplayInfo}`}
+
                                 </td>
                                 <td onClick={() => handleEmailClick(email)} style={{ cursor: 'pointer' }}>
                                     {email.title}

@@ -6,9 +6,9 @@ import style_purc from '../../styles/company/company_draft_write_purc.module.css
 import style_atten from '../../styles/company/company_draft_write_atten.module.css';
 import ApprovalLine from '../layout/ApprovalLine';
 import useFetchData from '../../componentFetch/useFetchData';
-import FileUploader from '../company_user/draftWriteComponent/FileUploader';
+import FileUploader from './draftWriteComponent/FileUploader';
 
-const CompanyUserDraftWriteWork = () => {
+const CompanyUserDraftwritePurc = () => {
   const [reportTitle, setReportTitle] = useState('');
   const [reporter, setReporter] = useState('');
   const [reportDate, setReportDate] = useState('');
@@ -393,4 +393,4 @@ const CompanyUserDraftWriteWork = () => {
   );
 };
 
-export default CompanyUserDraftWriteWork;
+export default CompanyUserDraftwritePurc;
