@@ -64,8 +64,8 @@ const CompanyUserDraftDetailWork = () => {
         <div className={styles.btnBox}>
           <Button className={styles.submitCancelBtn} onClick={handleGoBack}>목록으로</Button>
           <div>
-            {apprIsRead === 0 && <Button className={styles.submitCancelBtn}>상신 취소</Button>}
-            {apprIsRead === 1 && <Button className={styles.retrieveBtn}>회수</Button>}
+            <Button className={styles.rejectBtn}>반려</Button>
+            <Button className={styles.approveBtn}>승인</Button>
           </div>
         </div>
 
@@ -99,6 +99,14 @@ const CompanyUserDraftDetailWork = () => {
                 <td className={styles.labelCelldoc}>기 안 자</td>
                 <td className={styles.valueCell}>{reportData.emp_name || ''}</td>
               </tr>
+              <tr>
+                <td className={styles.labelCelldoc}>시행일자</td>
+                <td className={styles.valueCell}>{reportData?.repoStartTime || ''}</td>
+              </tr>
+              <tr>
+                <td className={styles.labelCelldoc}>마감일자</td>
+                <td className={styles.valueCell}>{reportData?.repoEndTime || ''}</td>
+              </tr>
             </tbody>
           </Table>
 
@@ -112,23 +120,35 @@ const CompanyUserDraftDetailWork = () => {
               </tr>
 
               <tr>
-                <td className={styles.docValueAppr}>{reportData?.writer || ''}</td>
-                {(apprLineInfo?.approverInfo || []).map((approver, index) => (
-                  <td key={index} className={styles.docValueAppr}>
-                    <div style={{ position: 'relative' }}>
-                      <div className="apprTypePosi">{approver.posi_name}</div>
-                      {approver.emp_name}
-                      <div className="apprType">{approver.approvalType && `(${approver.approvalType})`}</div>
-                    </div>
-                  </td>
-                ))}
+                <td className={styles.docValueAppr}>
+                  <div className={styles.apprTypePosi}>
+                    {empCodeInfo.dept_team_name || ''} {empCodeInfo.posi_name || ''}
+                  </div>
+                  <p>{reportData.emp_name || ''}</p>
+                </td>
+              {apprLineInfo.approverInfo.map((approver, index) => (
+                <td key={index} className={styles.docValueAppr}>
+                  <div style={{ position: 'relative' }}>
+                    {/* 최상위 approver의 posi_name, emp_name 출력 */}
+                    {/* <div className="apprTypePosi">{approver.posi_name}</div>
+                    {approver.emp_name} */}
+                    {/* 중첩된 approverInfo가 존재할 경우에만 접근 */}
+                    {approver.approverInfo && approver.approverInfo.map((innerApprover, innerIndex) => (
+                      <div key={innerIndex} style={{ marginLeft: '10px' }}>
+                        <div className={styles.apprTypePosi}>{innerApprover.dept_team_name} {innerApprover.posi_name}</div>
+                        {innerApprover.emp_name}
+                      </div>
+                    ))}
+                  </div>
+                </td>
+              ))}
               </tr>
 
               <tr>
                 <td className={styles.docValue_date}>
-                  {reportData?.draft_date ? moment(reportData.draft_date).format("YYYY-MM-DD") : ''}
+                  {reportData.submission_date ? moment(reportData.submission_date).format("YYYY-MM-DD") : ''}
                 </td>
-                {(apprLineInfo?.approverInfo || []).map((approver, index) => (
+                {apprLineInfo.approverInfo.map((approver, index) => (
                   <td key={index} className={styles.docValue_date}>
                     {approver.appr_date ? moment(approver.appr_date).format("YYYY-MM-DD") : ''}
                   </td>

@@ -1,6 +1,7 @@
 package com.ss.paperless.report;
 
 import com.ss.paperless.attachment.AttachmentDTO;
+import com.ss.paperless.employee.EmployeeDTO;
 import com.ss.paperless.employee.entity.EmployeeEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -88,12 +89,10 @@ public interface ReportMapper {
     // 결재 로직 ----------------------
 
     // 보고서 상태 업데이트
-    @Update("UPDATE report SET status = #{status} WHERE repo_no = #{reportId}")
-    int updateReportStatus(@Param("reportId") Long reportId, @Param("status") String status);
+    int updateReportStatus(Map<String, Object> params);
 
     // 반려 사유와 함께 상태 업데이트
-    @Update("UPDATE report SET status = #{status}, rejection_reason = #{rejectionReason} WHERE repo_no = #{reportId}")
-    int rejectReport(@Param("reportId") Long reportId, @Param("status") String status, @Param("rejectionReason") String rejectionReason);
+    int rejectReport(Map<String, Object> params);
 
     // 보고서 작성자 번호 가져오기
     @Select("SELECT repo_emp_no FROM report WHERE repo_no = #{reportId}")
@@ -115,4 +114,21 @@ public interface ReportMapper {
     List<ApproverDTO> selectReportApprsInfoById(Long reportId);
     List<RecipientDTO> selectReportRecisInfoById(Long reportId);
     List<ReferenceDTO> selectReportRefesInfoById(Long reportId);
+
+    EmployeeDTO findByEmpCode(String empCode);
+
+    // 임시 저장함
+    List<ReportDTO> selectDraftAsSaveWorkReports(Map<String, Object> param);
+    List<ReportDTO> selectDraftAsSaveAttenReports(Map<String, Object> param);
+    List<ReportDTO> selectDraftAsSavePurcReports(Map<String, Object> param);
+
+    // 결재 대기함
+    List<ReportDTO> selectPendingDocWorkReports(Map<String, Object> param);
+    List<ReportDTO> selectPendingDocAttenReports(Map<String, Object> param);
+    List<ReportDTO> selectPendingDocPurcReports(Map<String, Object> param);
+
+    // 내 문서함
+    List<ReportDTO> selectMyDocWorkReports(Long empNo);
+    List<ReportDTO> selectMyDocAttenReports(Long empNo);
+    List<ReportDTO> selectMyDocPurcReports(Long empNo);
 }

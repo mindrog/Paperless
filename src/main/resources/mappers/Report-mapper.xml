@@ -107,11 +107,19 @@
         </collection>
     </resultMap>
 
+    <select id="findByEmpCode" parameterType="String" resultType="com.ss.paperless.employee.EmployeeDTO">
+        select e.emp_no, e.emp_code, e.emp_name, e.emp_comp_no, e.emp_dept_no, d.dept_name, d.dept_team_name, e.emp_posi_no, p.posi_name
+        from employee e
+        left join department d on d.dept_no = e.emp_dept_no
+        left join position p on p.posi_no = e.emp_posi_no
+        where emp_code = #{empCode}
+    </select>
+
 
     <!-- Report 테이블에 저장 데이터를 삽입하는 SQL (문서번호 추가) -->
     <insert id="AddReportData" parameterType="map" useGeneratedKeys="true" keyProperty="repo_no">
         INSERT INTO `Report` (repo_code, repo_emp_no, repo_title, repo_content, repo_status, repo_type, repo_date)
-        VALUES (#{documentCode}, #{repoEmpNo}, #{reportTitle}, #{reportContent}, #{status}, 'work', #{reportDate})
+        VALUES (#{repoCode}, #{repoEmpNo}, #{reportTitle}, #{reportContent}, 'saved','work', #{reportDate})
     </insert>
 
     <!-- WorkReport 테이블에 임시 저장 데이터를 삽입하는 SQL -->
@@ -245,9 +253,11 @@
         WHERE appr_repo_no = #{repo_no}
     </update>
 
-    <insert id="AddSaveAsDraftReportData">
-
-    </insert>
+    <update id="updateReportStatus" parameterType="map">
+        UPDATE report
+        SET status = #{status}
+        WHERE repo_no = #{reportId}
+    </update>
 
     <!-- repo_type 조회 쿼리 -->
     <select id="getReportTypeById" parameterType="long" resultType="string">
@@ -256,27 +266,116 @@
 
     <!-- 보고서 전체 목록(부서별) -->
     <select id="selectWorkReports" parameterType="java.lang.Long" resultType="ReportDTO">
+        SELECT DISTINCT r.*
+        FROM Report r
+                 LEFT JOIN Employee e ON r.repo_emp_no = e.emp_no
+                 LEFT JOIN Recipient re ON r.repo_no = re.reci_repo_no
+                 LEFT JOIN Reference ref ON r.repo_no = ref.refe_repo_no
+                 LEFT JOIN WorkReport wr ON r.repo_no = wr.work_repo_no
+        WHERE e.emp_dept_no = #{deptNo}
+           OR re.reci_dept_no = #{deptNo}
+           OR ref.refe_dept_no = #{deptNo}
+
+    </select>
+
+    <select id="selectAttenReports" parameterType="java.lang.Long" resultType="ReportDTO">
+
+        SELECT DISTINCT *
+        FROM Report r
+                 LEFT JOIN Approver a ON r.repo_no = a.appr_repo_no
+                 LEFT JOIN Recipient re ON r.repo_no = re.reci_repo_no
+                 LEFT JOIN Reference ref ON r.repo_no = ref.refe_repo_no
+                 LEFT JOIN AttendanceReport ar ON r.repo_no = ar.atten_repo_no
+        WHERE a.appr_dept_no = #{deptNo}
+           OR re.reci_dept_no = #{deptNo}
+           OR ref.refe_dept_no = #{deptNo}
+    </select>
+
+    <select id="selectPurcReports" parameterType="java.lang.Long" resultType="ReportDTO">
+        SELECT DISTINCT *
+        FROM Report r
+                 LEFT JOIN Approver a ON r.repo_no = a.appr_repo_no
+                 LEFT JOIN Recipient re ON r.repo_no = re.reci_repo_no
+                 LEFT JOIN Reference ref ON r.repo_no = ref.refe_repo_no
+                 LEFT JOIN PurchaseReport pr ON r.repo_no = pr.purch_repo_no
+        WHERE a.appr_dept_no = #{deptNo}
+           OR re.reci_dept_no = #{deptNo}
+           OR ref.refe_dept_no = #{deptNo}
+    </select>
+
+    <!-- 임시 저장함-->
+    <select id="selectDraftAsSaveWorkReports" parameterType="map" resultType="ReportDTO">
         SELECT *
         FROM Report r
                  JOIN WorkReport w ON r.repo_no = w.work_repo_no
                  JOIN Employee e ON r.repo_emp_no = e.emp_no
-        WHERE e.emp_dept_no = #{deptNo}
+        WHERE repo_emp_no = #{empNo}
+          AND repo_status = 'saved'
     </select>
 
-    <select id="selectAttenReports" parameterType="java.lang.Long" resultType="ReportDTO">
+    <select id="selectDraftAsSaveAttenReports" parameterType="map" resultType="ReportDTO">
         SELECT *
         FROM Report r
                  JOIN AttendanceReport a ON r.repo_no = a.atten_repo_no
                  JOIN Employee e ON r.repo_emp_no = e.emp_no
-        WHERE e.emp_dept_no = #{deptNo}
+        WHERE repo_emp_no = #{empNo}
+          AND repo_status = 'saved'
     </select>
 
-    <select id="selectPurcReports" parameterType="java.lang.Long" resultType="ReportDTO">
+    <select id="selectDraftAsSavePurcReports" parameterType="map" resultType="ReportDTO">
         SELECT *
         FROM Report r
                  JOIN PurchaseReport p ON r.repo_no = p.purch_repo_no
                  JOIN Employee e ON r.repo_emp_no = e.emp_no
-        WHERE e.emp_dept_no = #{deptNo}
+        WHERE repo_emp_no = #{empNo}
+          AND repo_status = 'saved'
+    </select>
+
+    <!-- 결재 대기함 -->
+    <select id="selectPendingDocWorkReports" parameterType="java.lang.Long" resultType="ReportDTO">
+        SELECT DISTINCT r.*
+        FROM Report r
+                 LEFT JOIN Approver a ON r.repo_no = a.appr_repo_no
+                 LEFT JOIN WorkReport wr ON r.repo_no = wr.work_repo_no
+        WHERE a.appr_emp_no = #{empNo}
+    </select>
+
+    <select id="selectPendingDocAttenReports" parameterType="java.lang.Long" resultType="ReportDTO">
+        SELECT DISTINCT r.*
+        FROM Report r
+                 LEFT JOIN Approver a ON r.repo_no = a.appr_repo_no
+                 LEFT JOIN AttendanceReport ar ON r.repo_no = ar.atten_repo_no
+        WHERE a.appr_emp_no = #{empNo}
+    </select>
+
+    <select id="selectPendingDocPurcReports" parameterType="java.lang.Long" resultType="ReportDTO">
+        SELECT DISTINCT r.*
+        FROM Report r
+                 LEFT JOIN Approver a ON r.repo_no = a.appr_repo_no
+                 LEFT JOIN PurchaseReport pr ON r.repo_no = pr.purch_repo_no
+        WHERE a.appr_emp_no = #{empNo}
+    </select>
+
+    <!-- 내 문서함 -->
+    <select id="selectMyDocWorkReports" parameterType="java.lang.Long" resultType="ReportDTO">
+        SELECT r.*
+        FROM Report r
+                 INNER JOIN WorkReport wr ON r.repo_no = wr.work_repo_no
+        WHERE r.repo_emp_no = #{empNo}
+    </select>
+
+    <select id="selectMyDocAttenReports" parameterType="java.lang.Long" resultType="ReportDTO">
+        SELECT r.*
+        FROM Report r
+                 INNER JOIN AttendanceReport ar ON r.repo_no = ar.atten_repo_no
+        WHERE r.repo_emp_no = #{empNo}
+    </select>
+
+    <select id="selectMyDocPurcReports" parameterType="java.lang.Long" resultType="ReportDTO">
+        SELECT r.*
+        FROM Report r
+                 INNER JOIN PurchaseReport pr ON r.repo_no = pr.purch_repo_no
+        WHERE r.repo_emp_no = #{empNo}
     </select>
 
     <!-- 보고서 상세 페이지 데이터 조회 쿼리 -->
@@ -287,7 +386,7 @@
                           left join recipient re on re.reci_repo_no = r.repo_no
                           left join reference rf on rf.refe_repo_no = r.repo_no
                           left join employee e on e.emp_no = r.repo_emp_no
-                 WHERE repo_status = 'submitted' AND repo_no = #{reportId}
+        WHERE repo_status = 'submitted' AND repo_no = #{reportId}
     </select>
 
     <!-- 보고서 내에 결재자 정보 조회 -->

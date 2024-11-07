@@ -37,3 +37,20 @@
     padding: 2px !important;
     margin: 0 0 6px 0 !important;
 }
+
+/*  */
+.docInfo {
+    width: 300px;
+}
+
+.docKey {
+    width: 30%;
+}
+
+.docValue {
+    width: 40%;
+}
+
+.apprLineBox {
+    width: 25%;
+}
