@@ -1,8 +1,10 @@
 package com.ss.paperless.report;
 
 import com.ss.paperless.attachment.AttachmentDTO;
+import com.ss.paperless.employee.entity.EmployeeEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
@@ -39,10 +41,6 @@ public interface ReportMapper {
     // reportAttachmentData 맵은 보고서 ID와 첨부 파일 ID로 이 관계를 저장
     void AddReportAttachmentData(Map<String, Object> reportAttachmentData);
 
-    // Report 테이블에서 보고서의 상태를 업데이트
-    // updateData 맵은 보고서 ID와 새로 업데이트할 상태 데이터를 포함
-    void UpdateReportStatus(Map<String, Object> updateData);
-
     // 결재 상신 시 모든 결재자의 상태를 초기화하여 결재 프로세스를 시작
     // repoNo는 초기화할 결재가 있는 보고서의 ID
     void UpdateApproverStatusForSubmission(@Param("repoNo") Long repoNo);
@@ -65,11 +63,6 @@ public interface ReportMapper {
 
     // 보고서 ID와 상태를 기반으로 보고서의 상태를 업데이트
     // reportId는 상태 업데이트할 보고서의 ID, submitted는 업데이트할 상태
-    void updateReportStatus(Long reportId, String reportStatus);
-//    @Update("UPDATE Report SET repo_status = #{status, jdbcType=VARCHAR} WHERE repo_no = #{reportId, jdbcType=BIGINT}")
-//    void updateReportStatus(@Param("reportId") Long reportId, @Param("status") String status);
-
-    int AddSaveAsDraftReportData(ReportDTO report);
 
     // 문서 코드 생성 시 문서 타입 조회
     String getReportTypeById(Long reportId);
@@ -82,4 +75,44 @@ public interface ReportMapper {
     void insertApprover(Map<String, Object> approverData);
     void insertReference(Map<String, Object> referenceData);
     void insertRecipient(Map<String, Object> recipientData);
+
+    ReportDTO selectReportById(Long reportId);
+
+    ReportDTO selectReportListByDeptNo(Long deptNo);
+    
+    // 각 유형의 보고서 조회
+    List<ReportDTO> selectWorkReports(Long deptNo);
+    List<ReportDTO> selectAttenReports(Long deptNo);
+    List<ReportDTO> selectPurcReports(Long deptNo);
+
+    // 결재 로직 ----------------------
+
+    // 보고서 상태 업데이트
+    @Update("UPDATE report SET status = #{status} WHERE repo_no = #{reportId}")
+    int updateReportStatus(@Param("reportId") Long reportId, @Param("status") String status);
+
+    // 반려 사유와 함께 상태 업데이트
+    @Update("UPDATE report SET status = #{status}, rejection_reason = #{rejectionReason} WHERE repo_no = #{reportId}")
+    int rejectReport(@Param("reportId") Long reportId, @Param("status") String status, @Param("rejectionReason") String rejectionReason);
+
+    // 보고서 작성자 번호 가져오기
+    @Select("SELECT repo_emp_no FROM report WHERE repo_no = #{reportId}")
+    Integer getReportEmpNo(@Param("reportId") Long reportId);
+
+    // 결재자 사원 번호 가져오기 (여러 결재자 중 현재 사용자가 결재자인지 확인)
+    @Select("SELECT appr_emp_no FROM approver WHERE appr_repo_no = #{reportId} AND appr_status = 'pending'")
+    Integer getApproverEmpNo(@Param("reportId") Long reportId);
+
+    // 사원 번호 가져오기 (empCode로 조회)
+    @Select("SELECT emp_no FROM employee WHERE emp_code = #{empCode}")
+    Integer getEmpNoByCode(@Param("empCode") String empCode);
+
+    // 사원 정보 가져오기 (empCode로 조회)
+    @Select("SELECT * FROM employee WHERE emp_code = #{empCode}")
+    EmployeeEntity findEmployeeByCode(@Param("empCode") String empCode);
+
+    // 보고서 내 결재자, 참조자, 수신자 정보 가져오기
+    List<ApproverDTO> selectReportApprsInfoById(Long reportId);
+    List<RecipientDTO> selectReportRecisInfoById(Long reportId);
+    List<ReferenceDTO> selectReportRefesInfoById(Long reportId);
 }

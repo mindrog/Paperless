@@ -21,6 +21,9 @@ public class ReportDTO {
 	private int repo_emp_no;				// 작성자 번호 (fk)
 	private String emp_code;				// 작성자 코드
 
+	private String emp_name;				// 작성자 이름
+	private String empName;				// 작성자 이름
+
 	@JsonProperty("reportTitle")
 	private String repo_title; 				// 제목
 
@@ -40,7 +43,7 @@ public class ReportDTO {
 	private LocalDateTime cancel_date;  	// 상신 취소일
 	private String cancel_content;			// 상신 취소 사유
 	private String repo_type;				// 문서 타입
-    
+
 	private String writer; 					// 기안자
 	@JsonProperty("selectedApprovers")
 	private List<EmployeeDTO> approver;				// 결재자
@@ -53,8 +56,6 @@ public class ReportDTO {
 
 	@JsonProperty("approvalType")
 	private String approvalType;			// 전결 여부
-
-	private int appr_order;					// 결재 순서
 
 	// 업무
 	private int work_repo_no;				// 업무 보고서 번호
@@ -94,4 +95,34 @@ public class ReportDTO {
 	// 첨부 파일 목록
 	private List<MultipartFile> files; // 첨부파일 리스트
 
-}   
+	// 결재자
+	private int appr_no;
+	private int appr_repo_no;
+	private int appr_emp_no;
+	private int appr_order;
+	private String appr_status;
+	private int appr_delegate;
+	private int appr_is_read;
+	private LocalDate appr_date;
+
+	// 참조자
+	private int reci_no;
+	private int reci_repo_no;
+	private int reci_emp_no;
+	private int reci_dept_no;
+	private int reci_is_read;
+	private LocalDate reci_date;
+
+	// 수신자
+	private int refe_no;
+	private int refe_repo_no;
+
+	private int refe_emp_no;
+	private int refe_dept_no;
+	private int refe_is_read;
+	private LocalDate refe_date;
+
+	private List<ApproverDTO> approverInfo;		// 결재자 정보
+	private List<RecipientDTO> recipientInfo; 	// 참조자 정보
+	private List<ReferenceDTO> referenceInfo; 	// 수신자 정보
+}

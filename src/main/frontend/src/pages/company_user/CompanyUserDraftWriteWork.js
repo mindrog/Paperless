@@ -124,7 +124,7 @@ const CompanyUserDraftWriteWork = () => {
       if (result && result.reportId) {
         setReportId(result.reportId);
       }
-      navigate(`/company/user/draft/approval/detail/work/${reportId}`);
+
       navigate('/company/user/draft/form/work', {
         state: {
           reportTitle,
@@ -149,27 +149,7 @@ const CompanyUserDraftWriteWork = () => {
   };
 
   console.log("reportId :", reportId);
-
-  // 상세페이지로 reportId 보내기
-  const handleDetailPage = () => {
-    navigate(`/company/user/draft/detail`, {
-      state: {
-        reportId,
-        reportTitle,  // 업무 보고 기안의 제목
-        reportContent,  // 상세 내용
-        reporter : userData.emp_name,  // 기안자 정보
-        department : userData.dept_name,  // 부서 정보
-        reportDate,  // 기안일
-        repoStartTime,  // 시행일자
-        repoEndTime,  // 마감일자
-        selectedApprovers,  // 결재자 정보
-        selectedReferences,  // 참조자 정보
-        selectedReceivers,  // 수신자 정보
-        files  // 첨부 파일
-      }
-    });
-  };
-
+  
   return (
     <div className="container">
       <h2 className={styles.pageTitle}>업무 보고 기안</h2>

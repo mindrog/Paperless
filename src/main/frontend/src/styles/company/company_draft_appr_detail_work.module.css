@@ -9,9 +9,24 @@
     text-align: right;
 }
 
-/* 결재 승인 / 반려 버튼 */
-.approveBtn {
+.btnBox {
+    margin-bottom: 13px;
+    text-align: right;
+    display: flex;
+    justify-content: space-between;
+}
+/* 결재 승인 / 반려 버튼 / 상신 취소 / 회수 버튼 */
+.approveBtn, .retrieveBtn {
     width: 80px;
+    padding : 6px;
+    font-size: large;
+    font-weight: bold;
+    background-color: #2e3d86;
+    border-color: #2e3d86;
+}
+
+.submitCancelBtn {
+    width: 110px;
     padding : 6px;
     font-size: large;
     font-weight: bold;
@@ -30,14 +45,18 @@
 }
 
 .rejectBtn:hover,
-.approveBtn:hover {
+.approveBtn:hover,
+.retrieveBtn:hover, 
+.submitCancelBtn:hover {
     border-color: #7289CF;
     background-color: #7289CF;
     font-weight: bold;
 }
 
 .rejectBtn:focus,
-.approveBtn:focus {
+.approveBtn:focus,
+.retrieveBtn:focus, 
+.submitCancelBtn:focus {
     border-color: #2e3d86 !important;
     background-color: #2e3d86 !important;
     font-weight: bold;
@@ -59,7 +78,7 @@
 }
 
 .innerApprTable {
-    width: 15%;
+    width: 35%;
     vertical-align: middle;
 }
 

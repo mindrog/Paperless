@@ -1,5 +1,6 @@
 package com.ss.paperless.report;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.ss.paperless.employee.EmployeeDTO;
 import com.ss.paperless.employee.entity.EmployeeEntity;
 import lombok.extern.slf4j.Slf4j;
@@ -142,6 +143,128 @@ public class ReportController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to submit report: " + e.getMessage());
+        }
+    }
+
+    // 보고서 전체 목록
+    @GetMapping("/getreportlist")
+    public Map<Long, ReportDTO> getReportList() {
+
+        // 현재 인증된 사용자의 emp_code를 가져옴
+        String empCode = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // 서비스에서 사용자 정보 조회
+        EmployeeEntity userInfo = reportService.getUserInfo(empCode);
+        Long dept_no = userInfo.getEmpDeptNo();
+
+        Map<Long, ReportDTO> reportsMap = reportService.selectReportListByDeptNo(dept_no);
+        System.out.println("reportsMap : " + reportsMap);
+
+        return reportsMap;
+    }
+
+    // 보고서 상세 페이지
+    @GetMapping("/report/{reportId}")
+    public ReportDTO getReport(@PathVariable Long reportId) {
+
+        ReportDTO report = reportService.selectReportById(reportId);
+        System.out.println("controller reportId : " + reportId);
+        System.out.println("getReport report : " + report);
+
+        return report;
+    }
+
+    // 보고서 상세 페이지 작성자 정보
+    @GetMapping("/apprsinfo/{reportId}")
+    public ReportDTO getReportInfo(@PathVariable Long reportId) {
+        ReportDTO report = reportService.selectReportApprsInfoById(reportId);
+        return report;
+    }
+
+    // 상신 취소
+    @PostMapping("/cancelSubmission/{reportId}")
+    public ResponseEntity<?> cancelSubmission(@PathVariable Long reportId) {
+        try {
+            // 현재 인증된 사용자의 emp_code로 보고서 작성자 ID 확인
+            String empCode = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            // 상신 취소를 위한 서비스 호출
+            boolean success = reportService.cancelSubmission(reportId, empCode);
+
+            if (success) {
+                return ResponseEntity.ok("Submission canceled successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to cancel this submission.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to cancel submission: " + e.getMessage());
+        }
+    }
+
+    // 회수
+    @PostMapping("/retrieveReport/{reportId}")
+    public ResponseEntity<?> retrieveReport(@PathVariable Long reportId) {
+        try {
+            // 현재 인증된 사용자의 emp_code로 보고서 작성자 ID 확인
+            String empCode = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            // 회수를 위한 서비스 호출
+            boolean success = reportService.retrieveReport(reportId, empCode);
+
+            if (success) {
+                return ResponseEntity.ok("Report retrieved successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to retrieve this report.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to retrieve report: " + e.getMessage());
+        }
+    }
+
+    // 승인
+    @PostMapping("/approveReport/{reportId}")
+    public ResponseEntity<?> approveReport(@PathVariable Long reportId) {
+        try {
+            // 현재 인증된 사용자의 emp_code로 결재자 ID 확인
+            String empCode = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            // 승인을 위한 서비스 호출
+            boolean success = reportService.approveReport(reportId, empCode);
+
+            if (success) {
+                return ResponseEntity.ok("Report approved successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to approve this report.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to approve report: " + e.getMessage());
+        }
+    }
+
+    // 반려
+    @PostMapping("/rejectReport/{reportId}")
+    public ResponseEntity<?> rejectReport(@PathVariable Long reportId, @RequestBody Map<String, String> requestBody) {
+        try {
+            // 현재 인증된 사용자의 emp_code로 결재자 ID 확인
+            String empCode = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            // 반려 사유 가져오기
+            String rejectionReason = requestBody.get("reason");
+
+            // 반려를 위한 서비스 호출
+            boolean success = reportService.rejectReport(reportId, empCode, rejectionReason);
+
+            if (success) {
+                return ResponseEntity.ok("Report rejected successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to reject this report.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to reject report: " + e.getMessage());
         }
     }
 }

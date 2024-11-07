@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// 참조자
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -14,4 +14,17 @@ public class ReferenceDTO {
     private int refe_repo_no;
     private int refe_emp_no;
     private int refe_dept_no;
+    private int refe_is_read;
+    private LocalDate refe_date;
+
+    // Employee 관련 정보
+    private String emp_code;
+    private String emp_name;
+    private int emp_dept_no;
+    private String dept_name;
+    private String dept_team_name;
+    private int emp_posi_no;
+    private String posi_name;
+    private String emp_role;
 }
+

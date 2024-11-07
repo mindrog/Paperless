@@ -63,8 +63,10 @@ public class ReportService {
      * @param empCode 사용자 코드
      * @return int 사용자 emp_no
      */
-    public int getUserEmpNo(String empCode) {
-        return employeeRepository.findEmpNoByEmpCode(empCode);
+    public Integer getUserEmpNo(String empCode) {
+        Integer res = employeeRepository.findEmpNoByEmpCode(empCode);
+        System.out.println("res : " + res);
+        return res;
     }
 
     /**
@@ -286,15 +288,97 @@ public class ReportService {
     }
 
     /**
-     * 상신 취소 로직
-     * @param
-     * @return List<Map<Object, Object>> 파일 정보 리스트
+     * 상세 페이지 조회
+     * @param reportId
+     * @return ReportDTO
      */
-
-
-
-
-    public int AddSaveAsDraftReportData(ReportDTO report) {
-        return reportMapper.AddSaveAsDraftReportData(report);
+    public ReportDTO selectReportById(Long reportId) {
+        return reportMapper.selectReportById(reportId);
     }
+
+    public Map<Long, ReportDTO> selectReportListByDeptNo(Long deptNo) {
+
+        Map<Long, ReportDTO> reportsMap = new HashMap<>();
+
+        List<ReportDTO> workReports = reportMapper.selectWorkReports(deptNo);
+        workReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        List<ReportDTO> attendanceReports  = reportMapper.selectAttenReports(deptNo);
+        attendanceReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        List<ReportDTO> purchaseReports  = reportMapper.selectPurcReports(deptNo);
+        purchaseReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        return reportsMap;
+    }
+
+    // 상세 보고서 내에 결재자, 수신자, 참조자 정보 조회
+    public ReportDTO selectReportApprsInfoById(Long reportId) {
+        // ReportDTO 객체 생성
+        ReportDTO reportDTO = new ReportDTO();
+
+        // Mapper를 통해 결재자, 수신자, 참조자 정보를 가져옴
+        List<ApproverDTO> approverInfo = reportMapper.selectReportApprsInfoById(reportId);
+        List<RecipientDTO> reciInfo = reportMapper.selectReportRecisInfoById(reportId);
+        List<ReferenceDTO> refeInfo = reportMapper.selectReportRefesInfoById(reportId);
+
+        // ReportDTO에 reportId와 각 정보를 설정
+        reportDTO.setRepo_no(Math.toIntExact(reportId));
+        reportDTO.setApproverInfo(approverInfo);
+        reportDTO.setRecipientInfo(reciInfo);
+        reportDTO.setReferenceInfo(refeInfo);
+
+        return reportDTO;
+    }
+
+
+    // 상신 취소
+    public boolean cancelSubmission(Long reportId, String empCode) {
+        // 작성자 확인 및 상태 확인
+        Integer repoEmpNo = reportMapper.getReportEmpNo(reportId);
+        if (repoEmpNo != null && repoEmpNo.equals(reportMapper.getEmpNoByCode(empCode))) {
+            // 상신 취소 처리
+            int updated = reportMapper.updateReportStatus(reportId, "canceled");
+            return updated > 0;
+        }
+        return false;
+    }
+
+    // 회수
+    public boolean retrieveReport(Long reportId, String empCode) {
+        // 작성자 확인 및 상태 확인
+        Integer repoEmpNo = reportMapper.getReportEmpNo(reportId);
+        if (repoEmpNo != null && repoEmpNo.equals(reportMapper.getEmpNoByCode(empCode))) {
+            // 회수 처리
+            int updated = reportMapper.updateReportStatus(reportId, "retrieved");
+            return updated > 0;
+        }
+        return false;
+    }
+
+    // 승인
+    public boolean approveReport(Long reportId, String empCode) {
+        // 결재자 확인 및 상태 확인
+        Integer approverEmpNo = reportMapper.getApproverEmpNo(reportId);
+        if (approverEmpNo != null && approverEmpNo.equals(reportMapper.getEmpNoByCode(empCode))) {
+            // 승인 처리
+            int updated = reportMapper.updateReportStatus(reportId, "approved");
+            return updated > 0;
+        }
+        return false;
+    }
+
+    // 반려
+    public boolean rejectReport(Long reportId, String empCode, String rejectionReason) {
+        // 결재자 확인 및 상태 확인
+        Integer approverEmpNo = reportMapper.getApproverEmpNo(reportId);
+        if (approverEmpNo != null && approverEmpNo.equals(reportMapper.getEmpNoByCode(empCode))) {
+            // 반려 처리
+            int updated = reportMapper.rejectReport(reportId, "rejected", rejectionReason);
+            return updated > 0;
+        }
+        return false;
+    }
+
+
 }

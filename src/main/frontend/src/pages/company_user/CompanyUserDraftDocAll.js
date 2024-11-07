@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+// CompanyUserDraftDocAll.js
+
+import React, { useEffect, useState } from 'react';
 import styles from '../../styles/company/company_doc_list.module.css';
 import '../../styles/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -6,119 +8,128 @@ import DocumentList from '../component/DocumentList';
 import Toolbar from '../component/Toolbar';
 import Pagination from '../component/Pagination';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function CompanyUserDraftDocAll() {
     const navigate = useNavigate();
-    const completedColumns = [
-      { key: 'no', label: 'No', width: '5%' },
-      { key: 'docNumber', label: '문서 번호', width: '10%' },
-      { key: 'docType', label: '문서 양식', width: '10%' },
-      { key: 'title', label: '문서 제목', width: '30%' },
-      { key: 'drafter', label: '기안자', width: '15%' },
-      { key: 'draftDate', label: '기안일', width: '15%' },
-      { key: 'status', label: '결재 상태', width: '10%' },
-    ];
-  
-    // 임의의 문서 데이터 생성
-    const generateDocs = () => {
-      const docList = [];
-      for (let i = 1; i <= 35; i++) {
-        docList.push({
-          id: i,
-          docNumber: `DOC-${1000 + i}`,
-          docType: `양식 ${i % 5 + 1}`,
-          title: `문서 제목 ${i}`,
-          drafter: `사용자 ${i}`,
-          draftDate: `2024-10-${String(i).padStart(2, '0')}`,
-          status: i % 3 === 0 ? '승인' : i % 3 === 1 ? '진행 중' : '반려',
-        });
-      }
-      return docList;
-    };
-  
-    const [docs, setDocs] = useState(() => generateDocs());
-  
-    // 페이지네이션 상태
+    const [docs, setDocs] = useState([]); 
     const [currentPage, setCurrentPage] = useState(1);
-    const docsPerPage = 10;
-  
-    // 현재 페이지의 문서 가져오기
-    const indexOfLastDoc = currentPage * docsPerPage;
-    const indexOfFirstDoc = indexOfLastDoc - docsPerPage;
-    const currentDocs = docs.slice(indexOfFirstDoc, indexOfLastDoc);
-  
-    // 총 페이지 수 계산
-    const totalPages = Math.ceil(docs.length / docsPerPage);
-  
-    // 정렬 방식 상태
+    const docsPerPage = 10; // 페이지 당 문서 수
+
+    // 테이블 열 정의
+    const completedColumns = [
+        { key: 'no', label: 'no', width: '10%' },
+        { key: 'repo_code', label: '문서코드', width: '20%' },
+        { key: 'reportTitle', label: '제목', width: '30%' },
+        { key: 'emp_name', label: '작성자', width: '20%' },
+        { key: 'reportStatus', label: '상태', width: '20%' },
+        { key: 'submission_date', label: '작성일', width: '20%' }
+    ];
+    
+    // 문서 목록 가져오기 - API 호출
+    useEffect(() => {
+        const fetchdocRequest = async () => {
+            try {
+                const token = localStorage.getItem('jwt'); // 토큰 가져오기
+                if (!token) {
+                    console.error("토큰이 없습니다.");
+                    return;
+                }
+                const response = await axios.get('http://localhost:8080/api/getreportlist', {
+                    headers: {
+                        'Authorization': token
+                    }
+                });
+    
+                // 응답 데이터를 배열로 변환하여 상태에 설정
+                setDocs(Object.values(response.data)); 
+                console.log("Raw response data:", response.data);
+            } catch (error) {
+                console.error('호출이 실패 했습니다 :', error);
+            }
+        };
+        fetchdocRequest();
+    }, []);
+
+    // 페이지네이션 계산
+    const indexOfLastDoc = currentPage * docsPerPage;  // 마지막 문서 인덱스 계산
+    const indexOfFirstDoc = indexOfLastDoc - docsPerPage; // 첫 문서 인덱스 계산
+
+    // 현재 페이지에 해당하는 문서 목록 (docs가 undefined일 때 빈 배열로 처리)
+    const currentDocs = docs ? docs.slice(indexOfFirstDoc, indexOfLastDoc) : []; 
+
+    // 총 페이지 수 계산 (docs가 undefined일 때 기본값 1로 설정)
+    const totalPages = docs ? Math.ceil(docs.length / docsPerPage) : 1;
+
+    // 정렬 옵션 상태
     const [sortOption, setSortOption] = useState('dateDesc');
-  
-    // 정렬 방식 변경 핸들러
+
+    // 정렬 옵션 변경 핸들러
     const handleSortChange = (e) => {
-      const value = e.target.value;
-      setSortOption(value);
-  
-      let sortedDocs = [...docs];
-  
-      if (value === 'dateDesc') {
-        sortedDocs.sort((a, b) => new Date(b.draftDate) - new Date(a.draftDate));
-      } else if (value === 'dateAsc') {
-        sortedDocs.sort((a, b) => new Date(a.draftDate) - new Date(b.draftDate));
-      } else if (value === 'titleAsc') {
-        sortedDocs.sort((a, b) => a.title.localeCompare(b.title));
-      } else if (value === 'titleDesc') {
-        sortedDocs.sort((a, b) => b.title.localeCompare(a.title));
-      }
-  
-      setDocs(sortedDocs);
-      setCurrentPage(1); // 정렬 변경 시 첫 페이지로 이동
+        const value = e.target.value;
+        setSortOption(value);
+
+        // 현재 정렬 옵션에 따라 문서 목록 정렬
+        let sortedDocs = [...docs];
+
+        if (value === 'dateDesc') {
+            sortedDocs.sort((a, b) => new Date(b.submission_date) - new Date(a.submission_date));
+        } else if (value === 'dateAsc') {
+            sortedDocs.sort((a, b) => new Date(a.submission_date) - new Date(b.submission_date));
+        } else if (value === 'titleAsc') {
+            sortedDocs.sort((a, b) => a.reportTitle.localeCompare(b.reportTitle));
+        } else if (value === 'titleDesc') {
+            sortedDocs.sort((a, b) => b.reportTitle.localeCompare(a.reportTitle));
+        }
+
+        setDocs(sortedDocs); // 정렬된 결과로 문서 목록 업데이트
+        setCurrentPage(1); // 정렬 변경 시 첫 페이지로 이동
     };
-  
-    // 검색 상태 및 핸들러
+
+    // 검색 상태와 핸들러
     const [searchTerm, setSearchTerm] = useState('');
-  
+
     const handleSearchTermChange = (value) => {
-      setSearchTerm(value);
+        setSearchTerm(value);
     };
-  
+
     const handleSearch = () => {
-      // 검색어에 따라 문서 필터링
-      const filteredDocs = generateDocs().filter((doc) =>
-        doc.title.includes(searchTerm) || doc.drafter.includes(searchTerm)
-      );
-      setDocs(filteredDocs);
-      setCurrentPage(1);
+        // 검색어에 따라 문서 목록 필터링
+        const filteredDocs = docs.filter((doc) =>
+            doc.reportTitle.includes(searchTerm) || doc.emp_name.includes(searchTerm)
+        );
+        setDocs(filteredDocs); // 필터링된 결과로 문서 목록 업데이트
+        setCurrentPage(1); // 검색 후 첫 페이지로 이동
     };
-  
-    // 행 클릭 시 처리 함수
+
+    // 행 클릭 시 문서 상세 페이지로 이동
     const handleRowClick = (reportId) => {
-      navigate(`/company/user/draft/approval/detail/work/${reportId}`);
+        navigate(`/company/user/draft/detail/work/${reportId}`);
     };
-  
+
     return (
-      <div className={styles.Container}>
-        {/* 툴바 컴포넌트 사용 */}
-        <Toolbar
-          sortOption={sortOption}
-          onSortChange={handleSortChange}
-          searchTerm={searchTerm}
-          onSearchTermChange={handleSearchTermChange}
-          onSearch={handleSearch}
-        />
-  
-        {/* 문서 리스트 컴포넌트 사용 */}
-        <DocumentList docs={currentDocs} onRowClick={handleRowClick} columns={completedColumns} />
-  
-        {/* 페이지네이션 컴포넌트 사용 */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          className={styles.pagenaition}
-        />
-      </div>
+        <div className={styles.Container}>
+            {/* 정렬 및 검색을 위한 툴바 컴포넌트 */}
+            <Toolbar
+                sortOption={sortOption}
+                onSortChange={handleSortChange}
+                searchTerm={searchTerm}
+                onSearchTermChange={handleSearchTermChange}
+                onSearch={handleSearch}
+            />
+
+            {/* 문서 리스트 컴포넌트 */}
+            <DocumentList docs={currentDocs} onRowClick={handleRowClick} columns={completedColumns} />
+
+            {/* 페이지네이션 컴포넌트 */}
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                className={styles.pagenation}
+            />
+        </div>
     );
-  }
-  
+}
 
 export default CompanyUserDraftDocAll;

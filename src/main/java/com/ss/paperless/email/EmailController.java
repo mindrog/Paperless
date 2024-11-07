@@ -55,14 +55,14 @@ public class EmailController {
         this.attachmentRepository = attachmentRepository;
     }
 
-    @GetMapping("/unreadcount")
-    public int getUnreadCount() {
-        System.out.println("unreadCount 실행!");
-        String emp_code = SecurityContextHolder.getContext().getAuthentication().getName();
-        int unreadCount = emailService.getUnreadCount(emp_code);
-        System.out.println("unreadCount: " + unreadCount);
-        return unreadCount;
-    }
+//    @GetMapping("/unreadcount")
+//    public int getUnreadCount() {
+//        System.out.println("unreadCount 실행!");
+//        String emp_code = SecurityContextHolder.getContext().getAuthentication().getName();
+//        int unreadCount = emailService.getUnreadCount(emp_code);
+//        System.out.println("unreadCount: " + unreadCount);
+//        return unreadCount;
+//    }
 
     /**
      * 이메일 전송 API
@@ -136,7 +136,7 @@ public class EmailController {
             if (cc != null) {
                 recipients.add(cc);
             }
-            emailService.saveEmail(email, recipients);
+//            emailService.saveEmail(email, recipients);
 
             return ResponseEntity.ok("이메일이 성공적으로 전송되었습니다.");
         } catch (Exception e) {
@@ -206,7 +206,7 @@ public class EmailController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Collections.singletonMap("message", "이메일 목록을 불러오는 중 오류가 발생했습니다: " + e.getMessage()));
-        }
+        }//
     }
 
     @PostMapping("/delete")
