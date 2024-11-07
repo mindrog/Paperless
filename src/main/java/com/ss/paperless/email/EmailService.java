@@ -131,7 +131,7 @@ public class EmailService {
 
 
 	    // 이메일 DTO로 변환
-	    List<EmailDTO> emailDTOs = filteredStatuses.stream().map(status -> convertToDTO(status.getEmail(), status))
+	    List<EmailDTO> emailDTOs = filteredStatuses.stream().map(status -> convertToDTO(status.getEmail(), status,user))
 	            .collect(Collectors.toList());
 
 	    // 정렬 적용
@@ -220,7 +220,7 @@ public class EmailService {
 
 		// 권한 체크: 해당 사용자의 이메일인지 확인
 		Optional<UserEmailStatus> optionalStatus = userEmailStatusRepository.findByEmailAndUser(email, currentUser);
-		if (!optionalStatus.isPresent() || optionalStatus.get().getDeletedAt() != null) {
+		if (!optionalStatus.isPresent() ) {
 			throw new RuntimeException("이메일에 접근할 권한이 없습니다.");
 		}
 
@@ -228,11 +228,11 @@ public class EmailService {
 		markAsRead(email, currentUser);
 
 		// DTO 변환
-		return convertToDTO(email, optionalStatus.get());
+		return convertToDTO(email, optionalStatus.get(),currentUser);
 	}
 
 	// DTO 변환 메서드
-	private EmailDTO convertToDTO(Emailmessage email, UserEmailStatus status) {
+	private EmailDTO convertToDTO(Emailmessage email, UserEmailStatus status,EmployeeEntity loginUser) {
 		EmailDTO dto = new EmailDTO();
 		dto.setEmailNo(email.getEmailNo());
 		dto.setTitle(email.getTitle());
@@ -241,34 +241,51 @@ public class EmailService {
 		dto.setSendDate(email.getSendDate().toString());
 		dto.setDeletedAt(status.getDeletedAt());
 
-		// 발신자 정보 설정
+		// 발신자 수신자 정 정보 설정
 		EmployeeEntity senderEntity = email.getWriter();
+		EmployeeEntity recipientEntity=email.getRecipient();
 		dto.setWriterEmail(senderEntity.getEmpEmail());
 		dto.setWriterName(senderEntity.getEmpName());
-
+		dto.setRecipientName(recipientEntity.getEmpName());
+		
+		Long recipientCompanyNo = recipientEntity.getEmpCompNo();
+		Long recipientdeptNo = recipientEntity.getEmpDeptNo();
+		
+		
 		Long senderCompanyNo = senderEntity.getEmpCompNo();
 		Long senderDeptNo = senderEntity.getEmpDeptNo();
-
+		
+		String recipientCompanyName = "";
+		String recipientDeptName = "";
+		
 		String senderCompanyName = "";
 		String senderDeptName = "";
 
 		CompanyEntity senderCompany = companyService.findByCompNo(senderCompanyNo);
+		CompanyEntity recipientCompany = companyService.findByCompNo(recipientCompanyNo);
 		if (senderCompany != null) {
 			senderCompanyName = senderCompany.getCompName();
 		}
-
+		if (recipientCompany != null) {
+			recipientCompanyName = recipientCompany.getCompName();
+		}
 		DepartmentEntity senderDepartment = departmentService.findByDeptNo(senderDeptNo);
+		DepartmentEntity recipientDepartment = departmentService.findByDeptNo(recipientdeptNo);
 		if (senderDepartment != null) {
 			senderDeptName = senderDepartment.getDeptName();
 		}
+		if (recipientDepartment != null) {
+			recipientDeptName = recipientDepartment.getDeptName();
+		}
+		
+		
 
 		// 표시할 정보 설정
 		String writerDisplayInfo;
-
-		Long recipientCompanyNo = email.getRecipient().getEmpCompNo();
-
+		String recipientDisplayInfo;
+		
 		if (senderCompanyNo != null && recipientCompanyNo != null) {
-			if (senderCompanyNo.equals(recipientCompanyNo)) {
+			if (senderCompanyNo.equals(loginUser.getEmpCompNo())) {
 				// 같은 회사인 경우 부서명 표시
 				writerDisplayInfo = "[" + senderDeptName + "] " + senderEntity.getEmpName();
 			} else {
@@ -279,9 +296,23 @@ public class EmailService {
 			// 회사 정보가 없는 경우 그냥 이름만 표시
 			writerDisplayInfo = senderEntity.getEmpName();
 		}
+		
+		if ( recipientCompanyNo != null && senderCompanyNo != null) {
+			if (recipientCompanyNo.equals(loginUser.getEmpCompNo())) {
+				// 같은 회사인 경우 부서명 표시
+				recipientDisplayInfo = "[" + recipientDeptName + "] " + recipientEntity.getEmpName();
+			} else {
+				// 다른 회사인 경우 회사명 표시
+				recipientDisplayInfo = "[" + recipientCompanyName + "] " + recipientEntity.getEmpName();
+			}
+		} else {
+			// 회사 정보가 없는 경우 그냥 이름만 표시
+			recipientDisplayInfo = recipientEntity.getEmpName();
+		}
 
 		dto.setWriterDisplayInfo(writerDisplayInfo);
-
+		dto.setRecipientDisplayInfo(recipientDisplayInfo);
+		
 		// 수신자와 참조자 이메일 설정
 		dto.setRecipientEmail(email.getRecipient().getEmpEmail());
 		if (email.getCc() != null) {

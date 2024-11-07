@@ -7,11 +7,11 @@
 		SELECT
 		COUNT(*)
 		FROM
-		emailmessage em
+		userEmailStatus em
 		LEFT JOIN
-		employee e ON em.email_recipient = e.emp_no
+		employee e ON em.user_id = e.emp_no
 		WHERE
-		emp_code = #{emp_code}
-		AND email_status = 'unread'
+		user_id = 3
+		AND status = 'unread'
 	</select>
 </mapper>

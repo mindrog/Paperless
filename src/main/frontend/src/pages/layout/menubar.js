@@ -60,6 +60,8 @@ const Menubar = ({ isMenuOpen }) => {
         fetchUnreadCount();
     }, [emailUnreadCountState, dispatch]);
 
+    
+
 
     const MenubarSuper = () => {
         return (

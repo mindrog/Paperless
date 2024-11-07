@@ -22,6 +22,10 @@ public class EmailDTO {
 	private String status; // 상태 (읽음, 안읽음)
 	private String sendDate; // 전송 시간 
 	
+	private String recipientName;
+	private String recipientDisplayInfo;
+	
+	
     private String writerName;
     private String writerDisplayInfo;
     
