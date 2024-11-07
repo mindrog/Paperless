@@ -72,7 +72,7 @@ function CompanyUserMain() {
                 const recipientId = userInfo.emp_no;
 
                 // 이메일 목록 가져오기 (가장 최근 5개)
-                const emailsResponse = await axios.get(`/api/emails/list`, {
+                const emailsResponse = await axios.get(`/api/emails/list/${recipientId}`, {
                     headers: {
                         'Authorization': token
                     },
@@ -282,12 +282,18 @@ function CompanyUserMain() {
                                 </div>
                             </div>
                             <div className={`${styles.gridItem} ${styles.gridItemStatistics}`}>
-                                <h3 className={styles.colTitle}>통계자료</h3>
-                                <GraphChart />
+                                <h3 className={styles.colTitle}>나의 일정</h3>
+                                
                                 {/* <hr className={styles.titleBorderBar} /> */}
                             </div>
                             <div className={`${styles.gridItem} ${styles.gridItemCalendar}`}>
                                 <h3 className={styles.colTitle}>캘린더</h3>
+                                
+                                {/* <hr className={styles.titleBorderBar} /> */}
+                            </div>
+                             <div className={`${styles.gridItem} ${styles.gridItemCalendar}`}>
+                                <h3 className={styles.colTitle}>캘린더</h3>
+                                
                                 {/* <hr className={styles.titleBorderBar} /> */}
                             </div>
                         </div>

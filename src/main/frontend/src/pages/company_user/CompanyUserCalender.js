@@ -104,6 +104,7 @@ function CompanyUserCalender() {
   const [modalOpen, setModalOpen] = useState(false);
   const [EditModalOpen,setEditModalOpen] =useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  
     const handleSave = (scheduleData) => {
         console.log('일정 데이터:', scheduleData);
         // 서버로 전송 로직 추가 가능
@@ -140,6 +141,13 @@ function CompanyUserCalender() {
     getSchedule();
     
 }, []);
+const handleEditSchedule = (updatedSchedule) => {
+  setSchedules((prevSchedules) => 
+      prevSchedules.map((schedule) =>
+          schedule.id === updatedSchedule.id ? updatedSchedule : schedule
+      )
+  );
+};
   return (
     <div>
     <div className='fullcalendarContainer'>
@@ -163,10 +171,7 @@ function CompanyUserCalender() {
       events={schedules}
       eventClick={(info) => {
          
-        setEditModalOpen(true);
-        if(info.event.start === info.event.end){
-          info.event.end = info.event.start
-        }
+        setEditModalOpen(true); 
         setSelectedEvent(info.event);   
     }}
     />
@@ -182,7 +187,9 @@ function CompanyUserCalender() {
     <ScheduleEditModal
     isOpen={EditModalOpen}
     onRequestClose={() => setEditModalOpen(false)}
-    selectedEvent={selectedEvent} />
+    selectedEvent={selectedEvent} 
+    onEdit={handleEditSchedule}/>
+    
   </div>
   </div>
   );

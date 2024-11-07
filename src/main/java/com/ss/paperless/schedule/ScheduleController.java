@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.resource.transaction.internal.SynchronizationRegistryStandardImpl;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,7 @@ public class ScheduleController {
 	            @RequestParam String sche_start, // LocalDate 대신 String으로 받음
 	            @RequestParam String sche_end,   // LocalDate 대신 String으로 받음
 	            @RequestParam String visibility) {
-
+		
 	        // 문자열을 LocalDate로 변환
 	        LocalDate startDate = LocalDate.parse(sche_start);
 	        LocalDate endDate = LocalDate.parse(sche_end);
@@ -91,7 +92,8 @@ public class ScheduleController {
 	            @RequestParam String sche_end,   // LocalDate 대신 String으로 받음
 	            @RequestParam String visibility) {
 		 LocalDate startDate = LocalDate.parse(sche_start);
-	        LocalDate endDate = LocalDate.parse(sche_end);
+	     LocalDate endDate = LocalDate.parse(sche_end);
+	     
 		if ("company-wide".equals(visibility)) {
             return service.ScheduleEditComp(sche_no,emp_no,comp_no,dept_no,sche_title,sche_start,sche_end);
         } else if ("department-wide".equals(visibility)) {

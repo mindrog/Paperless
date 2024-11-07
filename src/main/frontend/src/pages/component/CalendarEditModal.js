@@ -17,22 +17,51 @@ const ModalContainer = styled.div`
 
 const ButtonContainer = styled.div`
     display: flex;
-    justify-content: space-between;
+    justify-content: end;
     width: 100%;
     margin-top: 20px;
 `;
 
 const Button = styled.button`
-    padding: 10px 20px;
+    padding: 8px 20px;
     font-size: 16px;
+    margin : 0 0 0 0.5vw;
     cursor: pointer;
     border: none;
     border-radius: 4px;
-    background-color: #007bff;
+    background-color: #2e3d86;
     color: white;
 
     &:hover {
         background-color: #0056b3;
+    }
+`;
+const Button2 = styled.button`
+    padding: 8px 20px;
+    font-size: 16px;
+    margin : 0 0 0 0.5vw;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    background-color: #d1180b;
+    color: white;
+
+    &:hover {
+        background-color: #f33f32;
+    }
+`;
+const Button3 = styled.button`
+    padding: 8px 20px;
+    font-size: 16px;
+    margin : 0 0.5vw 0 0.5vw;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    background-color: #8a8a8a;
+    color: white;
+
+    &:hover {
+        background-color: #9c9c9c;
     }
 `;
 const Label = styled.label`
@@ -56,14 +85,20 @@ const Input = styled.input`
     width: 100%;
     border: 1px solid #ddd;
     border-radius: 4px;
+    &:focus {
+        border: 3px solid #2e3d86;
+    }
 `;
 
 const Select = styled.select`
-    padding: 8px;
+    padding: 6px;
     font-size: 16px;
     width: 100%;
     border: 1px solid #ddd;
     border-radius: 4px;
+    &:focus {
+        border: 3px solid #2e3d86;
+    }
 `;
 
 const CalendarEditModal = ({ isOpen, onRequestClose, selectedEvent }) => {
@@ -93,9 +128,12 @@ const CalendarEditModal = ({ isOpen, onRequestClose, selectedEvent }) => {
             // 검색 결과 처리
             setResult(response.data);
             console.log("일정추가 성공 : " + result.data);
+            window.location.reload();
+            onRequestClose();
         } catch (error) {
             console.error("일정 추가 실패:", error);
         }
+        
     };
     const handleDelete = async () => {
         try {
@@ -103,20 +141,30 @@ const CalendarEditModal = ({ isOpen, onRequestClose, selectedEvent }) => {
             });
             // 검색 결과 처리
             setResult(response.data);
-            console.log("일정추가 성공 : " + result.data);
+            console.log("일정삭제 성공 : " + result.data);
+            window.location.reload();
+            onRequestClose();
         } catch (error) {
-            console.error("일정 추가 실패:", error);
+            console.error("일정 삭제 실패:", error);
         }
     };
     useEffect(() => {
         if (selectedEvent) {
-            setTitle(selectedEvent.title);
-            setStart(selectedEvent.start ? selectedEvent.start.toISOString().split('T')[0] : '');
+            const localStart = new Date(selectedEvent.start);
+            const localEnd = selectedEvent.end ? new Date(selectedEvent.end) : localStart;
+    
+           setTitle(selectedEvent.title);
+            const formatToLocalDate = (date) => date.toLocaleDateString('en-CA'); // 'en-CA'는 YYYY-MM-DD 형식
+    
+            setStart(formatToLocalDate(localStart));
             setID(selectedEvent.id);
-            setEnd(selectedEvent.end ? selectedEvent.end.toISOString().split('T')[0] : selectedEvent.start.toISOString().split('T')[0]);
-            setVisibility(selectedEvent.visibility);
+            setEnd(formatToLocalDate(localEnd));
+    
+            console.log("selected start : " + selectedEvent.start);
+            
         }
     }, [selectedEvent]);
+    console.log("start : " + start);
     const options = visibility === "company-wide"
         ? [
             { value: "company-wide", label: "회사 전체" },
@@ -203,8 +251,8 @@ const CalendarEditModal = ({ isOpen, onRequestClose, selectedEvent }) => {
 
                 <ButtonContainer>
                     <Button onClick={handleEdit}>수정</Button>
-                    <Button onClick={handleDelete}>삭제</Button>
-                    <Button onClick={onRequestClose}>취소</Button>
+                    <Button2 onClick={handleDelete}>삭제</Button2>
+                    <Button3 onClick={onRequestClose}>취소</Button3>
                 </ButtonContainer>
             </ModalContainer>
         </Modal>
