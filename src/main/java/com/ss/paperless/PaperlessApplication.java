@@ -18,7 +18,8 @@ public class PaperlessApplication {
 		System.setProperty("AWS_SECRET_ACCESS_KEY", dotenv.get("AWS_SECRET_ACCESS_KEY"));
 		System.setProperty("AWS_REGION", dotenv.get("AWS_REGION"));
 		System.setProperty("AWS_S3_BUCKET", dotenv.get("AWS_S3_BUCKET"));
-
+		System.setProperty("NAVER_ID",dotenv.get("NAVER_ID"));
+		System.setProperty("NAVER_PASSWORD",dotenv.get("NAVER_PASSWORD"));
 		SpringApplication.run(PaperlessApplication.class, args);
 	}
 }
