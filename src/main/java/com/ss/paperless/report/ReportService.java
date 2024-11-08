@@ -77,12 +77,17 @@ public class ReportService {
      * @return Long 저장된 보고서 ID
      */
     public Long addSaveAsDraftReportData(Map<String, Object> reportData) {
+
         reportMapper.AddReportData(reportData);
+
         Long reportId = ((BigInteger) reportData.get("repo_no")).longValue(); // 생성된 repo_no 사용
         reportData.put("repo_no", reportId); // 다음 작업을 위해 ID를 다시 저장
+
         System.out.println("reportId : " + reportId);
         System.out.println("reportData : " + reportData);
+
         reportMapper.AddWorkReportData(reportData); // workReport
+
         return reportId;
     }
 

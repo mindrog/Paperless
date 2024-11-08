@@ -114,8 +114,11 @@ function App() {
                         <Route path='/company/user/draft/detail/attendance' element={<CompanyUserDraftDetailAtten />} />
                         <Route path='/company/user/draft/detail/attendance/:reportId' element={<CompanyUserDraftDetailAtten />} />
                         <Route path='/company/user/draft/form/work' element={<CompanyUserDraftFormWork />} />
+                        <Route path='/company/user/draft/form/work/:reportId' element={<CompanyUserDraftFormWork />} />
                         <Route path='/company/user/draft/form/purchase' element={<CompanyUserDraftFormPurc />} />
+                        <Route path='/company/user/draft/form/purchase/:reportId' element={<CompanyUserDraftFormPurc />} />
                         <Route path='/company/user/draft/form/attendance' element={<CompanyUserDraftFormAtten />} />
+                        <Route path='/company/user/draft/form/attendance/:reportId' element={<CompanyUserDraftFormAtten />} />
                         <Route path='/company/user/draft/write/work' element={<CompanyUserDraftWriteWork />} />
                         <Route path='/company/user/draft/write/attendance' element={<CompanyUserDraftWriteAtten />} />
                         <Route path='/company/user/draft/write/purchase' element={<CompanyUserDraftWritePurc />} />
