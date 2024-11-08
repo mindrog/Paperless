@@ -7,6 +7,7 @@ import com.ss.paperless.company.CompanyEntity;
 import com.ss.paperless.company.CompanyService;
 import com.ss.paperless.company.DepartmentEntity;
 import com.ss.paperless.company.DepartmentService;
+import com.ss.paperless.employee.EmployeeRepository;
 import com.ss.paperless.employee.EmployeeService;
 import com.ss.paperless.employee.entity.EmployeeEntity;
 import com.ss.paperless.s3.S3Service;
@@ -33,12 +34,13 @@ public class EmailService {
 	private final CompanyService companyService;
 	private final DepartmentService departmentService;
 	private final EmailMapper mapper;
+	private final EmployeeRepository employeeRepository;
 
 	@Autowired
 	public EmailService(EmailmessageRepository emailmessageRepository,
 			UserEmailStatusRepository userEmailStatusRepository, EmployeeService employeeService,
 			AttachmentRepository attachmentRepository, EmailAttachmentRepository emailAttachmentRepository,
-			CompanyService companyService, DepartmentService departmentService, EmailMapper mapper) {
+			CompanyService companyService, DepartmentService departmentService, EmailMapper mapper,EmployeeRepository employeeRepository) {
 		this.emailmessageRepository = emailmessageRepository;
 		this.userEmailStatusRepository = userEmailStatusRepository;
 		this.employeeService = employeeService;
@@ -47,6 +49,7 @@ public class EmailService {
 		this.companyService = companyService;
 		this.departmentService = departmentService;
 		this.mapper = mapper;
+		this.employeeRepository= employeeRepository;
 	}
 
 	// 받은 편지함 조회
@@ -206,7 +209,9 @@ public class EmailService {
 	}
 
 	public int getUnreadCount(String emp_code) {
-		return mapper.getUnreadCount(emp_code);
+		EmployeeEntity employee=employeeRepository.findByEmpCode(emp_code);
+		
+		return mapper.getUnreadCount(employee.getEmpNo());
 	}
 
 	// 이메일 저장
