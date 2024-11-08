@@ -149,7 +149,7 @@ public class EmailController {
     public ResponseEntity<?> getEmailList(Principal principal,
             @RequestParam(value = "sender", required = false) String sender,
             @RequestParam(value = "recipient", required = false) String recipientParam,
-            @RequestParam(value = "subject", required = false) String subject,
+            @RequestParam(required = false) String basicSearch,
             @RequestParam(value = "content", required = false) String content,
             @RequestParam(value = "startDate", required = false) String startDateStr,
             @RequestParam(value = "endDate", required = false) String endDateStr,
@@ -186,7 +186,7 @@ public class EmailController {
 
             // 서비스 호출하여 이메일 목록 조회
             Page<EmailDTO> emailPage = emailService.getEmailsByUserWithFilters(currentUser, sender,
-                    recipientParam, subject, content, startDate, endDate, hasAttachment, folder, pageRequest);
+                    recipientParam, basicSearch, content, startDate, endDate, hasAttachment, folder, pageRequest);
 
             // 페이지 정보를 별도로 추출하여 응답 생성
             Map<String, Object> response = new HashMap<>();

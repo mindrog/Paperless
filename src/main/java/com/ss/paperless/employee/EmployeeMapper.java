@@ -55,13 +55,13 @@ public interface EmployeeMapper {
 
 	public int DeleteEmp(Long emp_no);
 
-	public List<EmployeeDTO> empNameSearch(String query);
+	public List<EmployeeDTO> empNameSearch(String query,int comp_no);
 
-	public List<EmployeeDTO> empEmailSearch(String query);
+	public List<EmployeeDTO> empEmailSearch(String query,int comp_no);
 
-	public List<EmployeeDTO> empDeptSearch(String query);
+	public List<EmployeeDTO> empDeptSearch(String query,int comp_no);
 
-	public List<EmployeeDTO> empPosiSearch(String query);
+	public List<EmployeeDTO> empPosiSearch(String query,int comp_no);
 
 	public int userEdit(EmployeeDTO emp);
 	

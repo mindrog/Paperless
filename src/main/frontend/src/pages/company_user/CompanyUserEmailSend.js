@@ -18,11 +18,11 @@ function CompanyUserEmailSend() {
 
     const location = useLocation();
     const emailToForward = location.state?.emailToForward;
+    const receiverEmailFromState = location.state?.receiverEmail || '';
 
-    const query = new URLSearchParams(location.search);
-    const initialReceiverEmail = query.get('receiverEmail') || '';
+    
 
-    const [receiverEmail, setReceiverEmail] = useState(initialReceiverEmail);
+    const [receiverEmail, setReceiverEmail] = useState(receiverEmailFromState);
     const [ccEmail, setCcEmail] = useState('');
     const [title, setTitle] = useState('');
     const [emailContent, setEmailContent] = useState('');

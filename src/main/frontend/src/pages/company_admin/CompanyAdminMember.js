@@ -190,6 +190,7 @@ function CompanyAdminMember() {
             const response = await axios.get(`http://localhost:8080/api/empsearch`, {
                 params: {
                     category: searchCategory,
+                    comp_no: userData.emp_comp_no,
                     query: searchQuery,
                 },
             });
@@ -348,7 +349,7 @@ function CompanyAdminMember() {
             console.log("직원 추가 성공:", response.data);
             alert("직원이 성공적으로 수정되었습니다.");
             handleCloseAddModal();
-            window.location.reload(); // 모달 닫기
+            window.location.reload(); 
         } catch (error) {
             console.error("직원 추가 실패:", error);
             alert("직원 추가 중 오류가 수정했습니다.");
