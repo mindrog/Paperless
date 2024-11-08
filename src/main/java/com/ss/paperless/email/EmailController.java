@@ -55,14 +55,14 @@ public class EmailController {
         this.attachmentRepository = attachmentRepository;
     }
 
-//    @GetMapping("/unreadcount")
-//    public int getUnreadCount() {
-//        System.out.println("unreadCount 실행!");
-//        String emp_code = SecurityContextHolder.getContext().getAuthentication().getName();
-//        int unreadCount = emailService.getUnreadCount(emp_code);
-//        System.out.println("unreadCount: " + unreadCount);
-//        return unreadCount;
-//    }
+    @GetMapping("/unreadcount")
+    public int getUnreadCount() {
+        System.out.println("unreadCount 실행!");
+        String emp_code = SecurityContextHolder.getContext().getAuthentication().getName();
+        int unreadCount = emailService.getUnreadCount(emp_code);
+        System.out.println("unreadCount: " + unreadCount);
+        return unreadCount;
+    }
 
     /**
      * 이메일 전송 API
