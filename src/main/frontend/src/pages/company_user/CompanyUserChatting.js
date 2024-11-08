@@ -12,7 +12,7 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
-function Chatting({ chatData, onSendMessage }) {
+function Chatting() {
     // Redux에서 사용자 정보 가져오기
     const userData = useSelector((state) => state.user.data);
 

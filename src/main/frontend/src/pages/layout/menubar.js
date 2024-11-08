@@ -16,7 +16,6 @@ const Menubar = ({ isMenuOpen }) => {
     const emp_no = userData.emp_no;
 
     const [notificationCount, setNotificationCount] = useState(0); // 알림 개수 상태
-    const [emailUnreadCount, setEmailUnreadCount] = useState(0); // 읽지 않은 메일 개수 상태
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDocDropdownOpen, setIsDocDropdownOpen] = useState(false); // 기안 문서함 상태
     const [isFormDropdownOpen, setIsFormDropdownOpen] = useState(false); // 기안 양식 상태
@@ -42,26 +41,6 @@ const Menubar = ({ isMenuOpen }) => {
         setIsFormDropdownOpen(false); // 기안 양식 드롭다운 닫기
         navigate(itemName); // 해당 경로로 이동
     };
-
-    useEffect(() => {
-        const fetchUnreadCount = async () => {
-            try {
-                const token = localStorage.getItem('jwt');
-                const response = await axios.get('/api/emails/unreadcount', {
-                    headers: { Authorization: token },
-                });
-                setEmailUnreadCount(response.data);
-                dispatch(setUnreadCount(response.data));
-            } catch (error) {
-                console.error('읽지 않은 메일 개수를 가져오는 중 오류:', error);
-            }
-        };
-
-        fetchUnreadCount();
-    }, [emailUnreadCountState, dispatch]);
-
-    
-
 
     const MenubarSuper = () => {
         return (
