@@ -41,12 +41,16 @@
   padding: 10px;
   text-align: center;
   height: 165px;
-  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   color: #2e3d86;
   /* width: 450px; */
 }
+
+.gridItemperCalendar {
+  margin-bottom: 20px;
+}
+
 .gridItemMailbox {
   grid-area: mailbox;
 }
