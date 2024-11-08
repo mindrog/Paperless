@@ -75,7 +75,7 @@ function CompanyUserMain() {
                 const recipientId = userInfo.emp_no;
 
                 // 이메일 목록 가져오기 (가장 최근 5개)
-                const emailsResponse = await axios.get(`/api/emails/list/${recipientId}`, {
+                const emailsResponse = await axios.get(`/api/emails/list/`, {
                     headers: {
                         'Authorization': token
                     },
