@@ -165,7 +165,7 @@ const Menubar = ({ isMenuOpen }) => {
                     {/* 기안 관리 섹션 */}
                     <li className={`${styles.dropdown} ${isDropdownOpen ? styles.active : ''}`}>
                         <button onClick={toggleDropdown} className={`${styles.dropdownToggle} ${isDraftSectionActive ? styles.active : ''}`}>
-                            📑 기안 관리
+                            📑 문서 관리
                         </button>
                         {/* 기안 관리 하위 메뉴 */}
                         {isDropdownOpen && (
@@ -173,7 +173,7 @@ const Menubar = ({ isMenuOpen }) => {
                                 <ul>
                                     <li>
                                         <button onClick={toggleDocDropdown} className={styles.submenu}>
-                                            🗂️ 기안 문서함
+                                        📂 전자 문서함
                                         </button>
                                         {isDocDropdownOpen && (
                                             <ul className={styles.innerSubDropdownMenu_draftList}>
@@ -182,7 +182,7 @@ const Menubar = ({ isMenuOpen }) => {
                                                         className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/all' ? styles.active : ''}`}
                                                         onClick={() => handleDraftSectionClick('/company/user/draft/doc/all')}
                                                     >
-                                                        📁 전체 문서함
+                                                        📄 전체 문서함
                                                     </button>
                                                 </li>
                                                 <li>
@@ -190,14 +190,21 @@ const Menubar = ({ isMenuOpen }) => {
                                                         className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/draft' ? styles.active : ''}`}
                                                         onClick={() => handleDraftSectionClick('/company/user/draft/doc/draft')}
                                                     >
-                                                        📁 임시 저장함
+                                                        📄 임시 저장함
                                                     </button>
                                                 </li>
                                                 <li>
                                                     <button
-                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/approval' ? styles.active : ''}`}
-                                                        onClick={() => handleDraftSectionClick('/company/user/draft/doc/approval')}>
-                                                        📁 결재 문서함
+                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/penforappr' ? styles.active : ''}`}
+                                                        onClick={() => handleDraftSectionClick('/company/user/draft/doc/penforappr')}>
+                                                        📄 결재 대기함
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button
+                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/myuser' ? styles.active : ''}`}
+                                                        onClick={() => handleDraftSectionClick('/company/user/draft/doc/myuser')}>
+                                                        📄 내 문서함
                                                     </button>
                                                 </li>
                                             </ul>
@@ -205,7 +212,7 @@ const Menubar = ({ isMenuOpen }) => {
                                     </li>
                                     <li>
                                         <button onClick={toggleDocDropdown} className={styles.submenu2}>
-                                            📑 기안 양식
+                                            📂 기안 양식
                                         </button>
                                         {isDocDropdownOpen && (
                                             <ul className={styles.innerSubDropdownMenu_draftWrite}>
@@ -248,7 +255,7 @@ const Menubar = ({ isMenuOpen }) => {
 
                     <li className={`${styles.dropdown} ${activeItem === '/company/user/stock' ? styles.active : ''}`}
                         onClick={() => handleItemClick('/company/user/stock')} >
-                        <button className={styles.sublist_member}>
+                        <button className={styles.sublist_cal}>
                             📦 재고 관리
                         </button>
                     </li>

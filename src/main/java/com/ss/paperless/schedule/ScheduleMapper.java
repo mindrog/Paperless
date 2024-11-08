@@ -32,6 +32,12 @@ public interface ScheduleMapper {
 			String sche_start, String sche_end);
 
 	public int ScheduleDelete(int sche_no);
+
+	public List<ScheduleDTO> GetPersnalSchedules(int emp_no, int comp_no, int dept_no);
+
+	public List<ScheduleDTO> GetDeptSchedules(int emp_no, int comp_no, int dept_no);
+
+	public List<ScheduleDTO> GetTeamSchedules(int emp_no, int comp_no, int dept_no);
 	
 
 }

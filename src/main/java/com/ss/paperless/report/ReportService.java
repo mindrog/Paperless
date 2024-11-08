@@ -10,6 +10,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import org.springframework.transaction.annotation.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -54,8 +56,8 @@ public class ReportService {
      * @param empCode 사용자 코드
      * @return EmployeeEntity 사용자 엔티티 정보
      */
-    public EmployeeEntity getUserInfo(String empCode) {
-        return employeeRepository.findByEmpCode(empCode);
+    public EmployeeDTO getUserInfo(String empCode) {
+        return reportMapper.findByEmpCode(empCode);
     }
 
     /**
@@ -185,7 +187,12 @@ public class ReportService {
             System.out.println("Work report data added for reportId: " + reportId);
 
             // 4. 보고서 상태를 'submitted'로 업데이트
-            reportMapper.updateReportStatus(reportId, "submitted");
+            Map<String, Object> params = new HashMap<>();
+            params.put("reportId", reportId);
+            params.put("status", "submitted");
+
+            reportMapper.updateReportStatus(params);
+
             System.out.println("Report status updated to 'submitted' for reportId: " + reportId);
 
             // 5. 결재자, 참조자, 수신자 목록을 Map으로 변환하여 처리
@@ -338,7 +345,13 @@ public class ReportService {
         Integer repoEmpNo = reportMapper.getReportEmpNo(reportId);
         if (repoEmpNo != null && repoEmpNo.equals(reportMapper.getEmpNoByCode(empCode))) {
             // 상신 취소 처리
-            int updated = reportMapper.updateReportStatus(reportId, "canceled");
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("reportId", reportId);
+            params.put("status", "canceled");
+
+            int updated = reportMapper.updateReportStatus(params);
+
             return updated > 0;
         }
         return false;
@@ -350,7 +363,11 @@ public class ReportService {
         Integer repoEmpNo = reportMapper.getReportEmpNo(reportId);
         if (repoEmpNo != null && repoEmpNo.equals(reportMapper.getEmpNoByCode(empCode))) {
             // 회수 처리
-            int updated = reportMapper.updateReportStatus(reportId, "retrieved");
+            Map<String, Object> params = new HashMap<>();
+            params.put("reportId", reportId);
+            params.put("status", "retrieved");
+
+            int updated = reportMapper.updateReportStatus(params);
             return updated > 0;
         }
         return false;
@@ -362,7 +379,11 @@ public class ReportService {
         Integer approverEmpNo = reportMapper.getApproverEmpNo(reportId);
         if (approverEmpNo != null && approverEmpNo.equals(reportMapper.getEmpNoByCode(empCode))) {
             // 승인 처리
-            int updated = reportMapper.updateReportStatus(reportId, "approved");
+            Map<String, Object> params = new HashMap<>();
+            params.put("reportId", reportId);
+            params.put("status", "approved");
+
+            int updated = reportMapper.updateReportStatus(params);
             return updated > 0;
         }
         return false;
@@ -374,11 +395,78 @@ public class ReportService {
         Integer approverEmpNo = reportMapper.getApproverEmpNo(reportId);
         if (approverEmpNo != null && approverEmpNo.equals(reportMapper.getEmpNoByCode(empCode))) {
             // 반려 처리
-            int updated = reportMapper.rejectReport(reportId, "rejected", rejectionReason);
+            Map<String, Object> params = new HashMap<>();
+            params.put("reportId", reportId);
+            params.put("status", "rejected");
+            params.put("rejectionReason", rejectionReason);
+
+            int updated = reportMapper.rejectReport(params);
             return updated > 0;
         }
         return false;
     }
 
+    // 임시 저장함
+    public Map<Long, ReportDTO> selectDraftAsSaveDocList(Long deptNo, Long empNo) {
 
+        // 변수 넘기기
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("deptNo", deptNo);
+        param.put("empNo", empNo);
+
+        // 리스트 저장할 map
+        Map<Long, ReportDTO> reportsMap = new HashMap<>();
+
+        List<ReportDTO> workReports = reportMapper.selectDraftAsSaveWorkReports(param);
+        workReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        List<ReportDTO> attendanceReports  = reportMapper.selectDraftAsSaveAttenReports(param);
+        attendanceReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        List<ReportDTO> purchaseReports  = reportMapper.selectDraftAsSavePurcReports(param);
+        purchaseReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        return reportsMap;
+    }
+
+    // 결재 대기함
+    public Map<Long, ReportDTO> selectPendingDocList(Long deptNo, Long empNo) {
+
+        // 변수 넘기기
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("deptNo", deptNo);
+        param.put("empNo", empNo);
+
+        // 리스트 저장할 map
+        Map<Long, ReportDTO> reportsMap = new HashMap<>();
+
+        List<ReportDTO> workReports = reportMapper.selectPendingDocWorkReports(param);
+        workReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        List<ReportDTO> attendanceReports  = reportMapper.selectPendingDocAttenReports(param);
+        attendanceReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        List<ReportDTO> purchaseReports  = reportMapper.selectPendingDocPurcReports(param);
+        purchaseReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        return reportsMap;
+    }
+
+    // 내 문서함
+    public Map<Long, ReportDTO> selectMyDocList(Long empNo) {
+
+        // 리스트 저장할 map
+        Map<Long, ReportDTO> reportsMap = new HashMap<>();
+
+        List<ReportDTO> workReports = reportMapper.selectMyDocWorkReports(empNo);
+        workReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        List<ReportDTO> attendanceReports  = reportMapper.selectMyDocAttenReports(empNo);
+        attendanceReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        List<ReportDTO> purchaseReports  = reportMapper.selectMyDocPurcReports(empNo);
+        purchaseReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
+
+        return reportsMap;
+    }
 }

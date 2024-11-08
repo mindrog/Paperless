@@ -108,4 +108,19 @@ public class ScheduleController {
 	 public int ScheduleDelete(@RequestParam int sche_no) {
 		return service.ScheduleDelete(sche_no);
 	}
+	@GetMapping("/getpersschedules")
+	public List<ScheduleDTO> GetPersnalSchedules(@RequestParam int emp_no,@RequestParam int comp_no,@RequestParam int dept_no ){
+		System.out.println(emp_no + comp_no + dept_no);
+		return service.GetPersnalSchedules(emp_no,comp_no,dept_no);
+	}
+	@GetMapping("/getdeptschedules")
+	public List<ScheduleDTO> GetDeptSchedules(@RequestParam int emp_no,@RequestParam int comp_no,@RequestParam int dept_no ){
+		System.out.println(emp_no + comp_no + dept_no);
+		return service.GetDeptSchedules(emp_no,comp_no,dept_no);
+	}
+	@GetMapping("/getteamschedules")
+	public List<ScheduleDTO> GetTeamSchedules(@RequestParam int emp_no,@RequestParam int comp_no,@RequestParam int dept_no ){
+		System.out.println(emp_no + comp_no + dept_no);
+		return service.GetTeamSchedules(emp_no,comp_no,dept_no);
+	}
 }

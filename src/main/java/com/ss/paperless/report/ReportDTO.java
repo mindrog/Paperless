@@ -36,7 +36,7 @@ public class ReportDTO {
 
 	@JsonProperty("reportDate")
 	@JsonFormat(pattern = "yyyy. MM. dd. a hh:mm", locale = "ko_KR")
-	private String draft_date; 		// 기안일
+	private LocalDateTime draft_date; 		// 기안일
 
 	@JsonProperty("submission_date")
 	private LocalDateTime submission_date; 	// 상신일

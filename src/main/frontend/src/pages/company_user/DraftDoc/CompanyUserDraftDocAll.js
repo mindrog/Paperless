@@ -1,12 +1,12 @@
-// CompanyUserDraftDocAll.js
+// 전체 문서함
 
 import React, { useEffect, useState } from 'react';
-import styles from '../../styles/company/company_doc_list.module.css';
-import '../../styles/style.css';
+import styles from '../../../styles/company/company_doc_list.module.css';
+import '../../../styles/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import DocumentList from '../component/DocumentList';
-import Toolbar from '../component/Toolbar';
-import Pagination from '../component/Pagination';
+import DocumentList from '../../component/DocumentList';
+import Toolbar from '../../component/Toolbar';
+import Pagination from '../../component/Pagination';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
