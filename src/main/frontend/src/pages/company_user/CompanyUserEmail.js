@@ -65,27 +65,28 @@ function CompanyUserEmail() {
 
         // 기본 검색어가 있을 경우 추가
         if (searchTerm) {
-            queryParams.append('subject', searchTerm);
+            queryParams.append('basicSearch', searchTerm);
         }
-
-        // 상세 검색 필터가 있을 경우 추가
-        if (detailSearch.sender) {
-            queryParams.append('sender', detailSearch.sender);
-        }
-        if (detailSearch.recipient) {
-            queryParams.append('recipient', detailSearch.recipient);
-        }
-        if (detailSearch.content) {
-            queryParams.append('content', detailSearch.content);
-        }
-        if (detailSearch.startDate) {
-            queryParams.append('startDate', detailSearch.startDate);
-        }
-        if (detailSearch.endDate) {
-            queryParams.append('endDate', detailSearch.endDate);
-        }
-        if (detailSearch.hasAttachment) {
-            queryParams.append('hasAttachment', detailSearch.hasAttachment);
+        if (!searchTerm) {
+            // 상세 검색 필터가 있을 경우 추가
+            if (detailSearch.sender) {
+                queryParams.append('sender', detailSearch.sender);
+            }
+            if (detailSearch.recipient) {
+                queryParams.append('recipient', detailSearch.recipient);
+            }
+            if (detailSearch.content) {
+                queryParams.append('content', detailSearch.content);
+            }
+            if (detailSearch.startDate) {
+                queryParams.append('startDate', detailSearch.startDate);
+            }
+            if (detailSearch.endDate) {
+                queryParams.append('endDate', detailSearch.endDate);
+            }
+            if (detailSearch.hasAttachment) {
+                queryParams.append('hasAttachment', detailSearch.hasAttachment);
+            }
         }
 
         // 폴더 파라미터 추가
@@ -172,6 +173,15 @@ function CompanyUserEmail() {
             handleFolderChange('inbox'); // 검색어가 빈칸일 경우 받은 메일함으로 설정
         } else {
             setSearchTerm(searchInput); // 기본 검색어 설정
+            setDetailSearch({
+                sender: '',
+                recipient: '',
+                content: '',
+                periodOption: '전체 기간',
+                startDate: '',
+                endDate: '',
+                hasAttachment: false,
+            });
         }
     };
 
@@ -181,6 +191,7 @@ function CompanyUserEmail() {
         setSelectAll(false);
         setSelectedEmails([]);
         setDetailSearch(detailSearchInput); // 상세 검색 필터 설정
+        setSearchTerm('');
     };
 
     // 개별 이메일 선택/해제
@@ -445,7 +456,7 @@ function CompanyUserEmail() {
                             보낸 메일
 
                         </button>
-                        
+
 
 
                     </div>
@@ -505,6 +516,12 @@ function CompanyUserEmail() {
                             <FontAwesomeIcon icon={faTrashAlt} />
                         </button>
                     </div>
+
+                    {folder === 'trash' && (
+                        <div className={styles['delete-warning-container']}>
+                            <p className={styles['delete-warning']}>! 휴지통의 이메일은 30일 후에 자동으로 영구 삭제됩니다.</p>
+                        </div>
+                    )}
                 </div>
                 {/* 검색 바 및 버튼 추가 */}
                 <div className={styles['search-bar']}>
