@@ -86,10 +86,10 @@ api.sendMessage = async (data) => {
   // 서버에 메시지 저장 요청
   try {
     const response = await api.put('/chat', data);
-    console.log('메시지 서버 저장 완료:', response.data);
+    console.log('api 메시지 서버 저장 완료:', response.data);
     return response;
   } catch (error) {
-    console.error('메시지 전송 중 오류 발생:', error);
+    console.error('api 메시지 전송 중 오류 발생:', error);
     throw error;
   }
 };

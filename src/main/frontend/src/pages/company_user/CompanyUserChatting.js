@@ -234,7 +234,8 @@ function Chatting({ chatData, onSendMessage }) {
         }
         const chatRoomNo = emp.chat_room_no;
         // messageList에서 가장 큰 chat_no를 찾고, 없으면 0을 기본값으로 설정
-        const lastChatNo = messageList.length > 0 ? Math.max(...messageList.map(msg => msg.chat_no)) : -1; // 메시지가 없다면 -1을 기본값으로
+        const messagesInRoom = messageList.filter(msg => msg.chat_room_no === chatRoomNo);
+        const lastChatNo = messageList.length > 0 ? Math.max(...messagesInRoom.map(msg => msg.chat_no)) : -1; // 메시지가 없다면 -1을 기본값으로
         const currentTime = format(new Date(), 'yyyy-MM-dd HH:mm');
         const chatRecipientNo = emp.emp_no;
         const chatRecipientCount = Array.isArray(emp) ? emp.length : 1;
