@@ -113,19 +113,20 @@ const CompanyUserDraftWriteWork = () => {
     if (!reportContent) errors.reportContent = true;
     if (!repoStartTime) errors.repoStartTime = true;
     if (!repoEndTime) errors.repoEndTime = true;
-
+  
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
     }
-
+  
     try {
       const result = await saveDraftRef.current();
       if (result && result.reportId) {
         setReportId(result.reportId);
       }
-
-      navigate('/company/user/draft/form/work', {
+  
+      // reportId를 URL에 포함하여 이동
+      navigate(`/company/user/draft/form/work/${result.reportId}`, {
         state: {
           reportTitle,
           reporter: userData ? userData.emp_name : '',
@@ -137,9 +138,6 @@ const CompanyUserDraftWriteWork = () => {
           selectedApprovers,
           selectedReferences,
           selectedReceivers,
-          reportId,
-          actionType: "submit",
-          token,
           files,
         },
       });

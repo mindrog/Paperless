@@ -56,7 +56,6 @@ public class ReportController {
             // reportId 조회
             Long reportId = reportRequest.getReportId();
             System.out.println("controller reportId : " + reportId);
-            System.out.println("reportRequest.getReportDate() : " + reportRequest.getReportDate());
 
             // 입력된 문자열 형식과 동일한 DateTimeFormatter 설정
             DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy. MM. dd. a hh:mm", Locale.KOREAN);
@@ -75,6 +74,8 @@ public class ReportController {
             Map<String, Object> reportData = new HashMap<>();
             reportData.put("repoEmpNo", repoEmpNo);
             reportData.put("reportDate", formattedDate);
+            reportData.put("repoStartTime",reportRequest.getRepoStartTime());
+            reportData.put("repoEndTime",reportRequest.getRepoEndTime());
             reportData.put("reportTitle", reportRequest.getReportTitle());
             reportData.put("reportContent", reportRequest.getReportContent());
 
@@ -90,7 +91,7 @@ public class ReportController {
 
 
     // 보고서 결재 상신 엔드포인트
-    @PostMapping(value = "/saveworkreport", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/saveworkreport/{reportId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> submitWorkReport(
             @RequestPart("reportData") String reportDataJson, // JSON 데이터를 포함한 DTO
             @RequestPart(value = "files", required = false) List<MultipartFile> files) {

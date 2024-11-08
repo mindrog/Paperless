@@ -130,6 +130,7 @@ CREATE TABLE `Approver` (
     `appr_no` BIGINT NOT NULL AUTO_INCREMENT,
     `appr_repo_no` BIGINT NOT NULL,
     `appr_emp_no` BIGINT NOT NULL,
+    `appr_dept_no` BIGINT NULL,
     `appr_order` INT NOT NULL,
     `appr_status` VARCHAR(100) NOT NULL DEFAULT 'pending',
     `appr_delegate` TINYINT(1) NOT NULL DEFAULT 0, -- 전결 여부 (1: 전결 가능, 0: 전결 불가)
@@ -137,7 +138,8 @@ CREATE TABLE `Approver` (
     `appr_date` TIMESTAMP NULL,
     PRIMARY KEY (`appr_no`),
     FOREIGN KEY (`appr_repo_no`) REFERENCES `Report` (`repo_no`),
-    FOREIGN KEY (`appr_emp_no`) REFERENCES `Employee` (`emp_no`)
+    FOREIGN KEY (`appr_emp_no`) REFERENCES `Employee` (`emp_no`),
+    FOREIGN KEY (`appr_dept_no`) REFERENCES `Department` (`dept_no`)
 );
 
 -- Recipient 테이블 생성
@@ -639,10 +641,57 @@ INSERT INTO `EmailAttachment`(
 
 INSERT INTO `Todolist` (todo_emp_no, todo_content) values (3, '식곤증엔 껌을 씹어봐요~');
 
-commit;
+---- report 더미 데이터
+-- Report 테이블에 더미 데이터 삽입 (PL1001부터 시작하는 직원들 랜덤 배정)
+INSERT INTO Report (repo_emp_no, repo_title, repo_content, repo_status, repo_type, submission_date)
+VALUES
+((SELECT emp_no FROM Employee WHERE emp_code = 'PL1001'), '프로젝트 A 진행 상황 보고', '프로젝트 A 업무 진행 상황 보고서입니다.', 'submitted', 'work', NOW()),
+((SELECT emp_no FROM Employee WHERE emp_code = 'PL1002'), '재무 감사 보고서', '2024년 재무 감사 보고서입니다.', 'submitted', 'work', NOW()),
+((SELECT emp_no FROM Employee WHERE emp_code = 'PL1003'), '신제품 출시 계획', '2024년 신제품 출시 일정 계획입니다.', 'submitted', 'work', NOW()),
+((SELECT emp_no FROM Employee WHERE emp_code = 'PL1004'), '예산 검토 보고', '2025년 예산안 검토 보고서입니다.', 'submitted', 'work', NOW()),
+((SELECT emp_no FROM Employee WHERE emp_code = 'PL1005'), 'IT 인프라 점검 결과', 'IT 인프라 점검 결과를 보고합니다.', 'submitted', 'work', NOW());
 
-select * from company;
-select * from department;
-select * from position; 
-select * from employee;
-select * from inquiry;
+-- WorkReport 테이블에 더미 데이터 삽입 (Report 테이블의 repo_no와 매칭)
+INSERT INTO WorkReport (work_repo_no, repo_start_time, repo_end_time)
+VALUES
+((SELECT repo_no FROM Report WHERE repo_title = '프로젝트 A 진행 상황 보고'), '2024-10-01 09:00:00', '2024-10-01 18:00:00'),
+((SELECT repo_no FROM Report WHERE repo_title = '재무 감사 보고서'), '2024-10-05 09:00:00', '2024-10-05 18:00:00'),
+((SELECT repo_no FROM Report WHERE repo_title = '신제품 출시 계획'), '2024-10-10 09:00:00', '2024-10-10 18:00:00'),
+((SELECT repo_no FROM Report WHERE repo_title = '예산 검토 보고'), '2024-10-15 09:00:00', '2024-10-15 18:00:00'),
+((SELECT repo_no FROM Report WHERE repo_title = 'IT 인프라 점검 결과'), '2024-10-20 09:00:00', '2024-10-20 18:00:00');
+
+-- Approver 테이블에 더미 데이터 삽입 (랜덤 직원 배정)
+INSERT INTO Approver (appr_repo_no, appr_emp_no, appr_order, appr_status)
+VALUES
+((SELECT repo_no FROM Report WHERE repo_title = '프로젝트 A 진행 상황 보고'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1006'), 1, 'approved'),
+((SELECT repo_no FROM Report WHERE repo_title = '프로젝트 A 진행 상황 보고'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1007'), 2, 'approved'),
+((SELECT repo_no FROM Report WHERE repo_title = '재무 감사 보고서'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1008'), 1, 'approved'),
+((SELECT repo_no FROM Report WHERE repo_title = '재무 감사 보고서'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1009'), 2, 'approved'),
+((SELECT repo_no FROM Report WHERE repo_title = '신제품 출시 계획'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1010'), 1, 'approved'),
+((SELECT repo_no FROM Report WHERE repo_title = '신제품 출시 계획'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1011'), 2, 'approved'),
+((SELECT repo_no FROM Report WHERE repo_title = '예산 검토 보고'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1012'), 1, 'approved'),
+((SELECT repo_no FROM Report WHERE repo_title = '예산 검토 보고'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1013'), 2, 'approved'),
+((SELECT repo_no FROM Report WHERE repo_title = 'IT 인프라 점검 결과'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1014'), 1, 'approved');
+
+-- Recipient 테이블에 더미 데이터 삽입 (랜덤 직원 배정)
+INSERT INTO Recipient (reci_repo_no, reci_emp_no)
+VALUES
+((SELECT repo_no FROM Report WHERE repo_title = '프로젝트 A 진행 상황 보고'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1015')),
+((SELECT repo_no FROM Report WHERE repo_title = '프로젝트 A 진행 상황 보고'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1016')),
+((SELECT repo_no FROM Report WHERE repo_title = '재무 감사 보고서'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1017')),
+((SELECT repo_no FROM Report WHERE repo_title = '재무 감사 보고서'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1018')),
+((SELECT repo_no FROM Report WHERE repo_title = '신제품 출시 계획'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1019')),
+((SELECT repo_no FROM Report WHERE repo_title = '신제품 출시 계획'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1020')),
+((SELECT repo_no FROM Report WHERE repo_title = '예산 검토 보고'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1021')),
+((SELECT repo_no FROM Report WHERE repo_title = '예산 검토 보고'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1022')),
+((SELECT repo_no FROM Report WHERE repo_title = 'IT 인프라 점검 결과'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1023'));
+
+-- Reference 테이블에 더미 데이터 삽입 (랜덤 직원 배정)
+INSERT INTO Reference (refe_repo_no, refe_emp_no)
+VALUES
+((SELECT repo_no FROM Report WHERE repo_title = '프로젝트 A 진행 상황 보고'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1024')),
+((SELECT repo_no FROM Report WHERE repo_title = '재무 감사 보고서'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1025')),
+((SELECT repo_no FROM Report WHERE repo_title = '신제품 출시 계획'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1026')),
+((SELECT repo_no FROM Report WHERE repo_title = '예산 검토 보고'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1027')),
+((SELECT repo_no FROM Report WHERE repo_title = 'IT 인프라 점검 결과'), (SELECT emp_no FROM Employee WHERE emp_code = 'PL1028'));
+

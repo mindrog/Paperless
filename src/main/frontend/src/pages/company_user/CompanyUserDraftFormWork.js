@@ -3,11 +3,12 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import styles from '../../styles/company/draftForm/draft_Form_work.module.css';
 import { Button, Table, Modal } from 'react-bootstrap';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';
 import HandleSaveDraftWork from '../../componentFetch/dataSaveFetch/handleSaveDraftWork';
 
 const CompanyUserDraftFormWork = () => {
+  const { reportId } = useParams();
   const location = useLocation();
   const saveDraftRef = useRef();
   const navigate = useNavigate();
@@ -29,7 +30,6 @@ const CompanyUserDraftFormWork = () => {
     selectedReferences = [],
     selectedReceivers = [],
     files = [],
-    reportId,
     token
   } = location.state || {}; // 전달된 state 데이터 가져오기
 
