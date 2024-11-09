@@ -98,9 +98,13 @@
 }
 
 .valueCell {
-    width: 150px;
+    width: 200px;
     height: 40px;
     vertical-align: middle;
+}
+
+.valueCellCode {
+    font-size: 15px;
 }
 
 .docValueAppr{

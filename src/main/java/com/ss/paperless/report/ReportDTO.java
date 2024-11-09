@@ -21,6 +21,10 @@ public class ReportDTO {
 	private int repo_emp_no;				// 작성자 번호 (fk)
 	private String emp_code;				// 작성자 코드
 
+	private String dept_code;
+	private String dept_name;
+	private String dept_team_name;
+	private int emp_dept_no;
 	private String emp_name;				// 작성자 이름
 	private String empName;				// 작성자 이름
 
