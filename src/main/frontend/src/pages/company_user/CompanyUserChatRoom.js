@@ -56,6 +56,10 @@ function CompanyUserChatRoom() {
     // Redux에 저장
     const dispatch = useDispatch();
 
+    // WebSocket 연결 시 넘길 chat_room_no
+    const roomNosQuery = chatRoomList.map(room => room.room_no).join(',');
+    const socketUrl = `${WEBSOCKET_URL}?roomNos=${roomNosQuery}`;
+
     // 보낸 메시지 관리
     // sendMessage: WebSocket 서버로 메시지를 보내는 함수
     //  클라이언트가 서버에 데이터를 전송할 때 사용
@@ -64,7 +68,7 @@ function CompanyUserChatRoom() {
     // readyState: WebSocket의 연결 상태를 나타내는 함수
     //  총 4가지로 0: 연결 시도 중, 1: 연결, 2: 연결 종료 시도 중, 3: 연결 종료
     // WebSocket 연결 설정
-    const { sendMessage, lastMessage, readyState } = useWebSocket(WEBSOCKET_URL, {
+    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
         shouldReconnect: (closeEvent) => {
             // 연결 해제 이벤트를 처리하고, 특정 조건에서만 재연결 허용
             if (closeEvent.code !== 1000) { // 정상적인 종료 코드(1000)가 아닐 때만 재연결 시도
@@ -93,9 +97,8 @@ function CompanyUserChatRoom() {
     // chatRoomList가 변경될 때마다 WebSocket에 다시 방 번호 전송
     useEffect(() => {
         if (readyState === 1 && chatRoomList.length > 0) {
-            chatRoomList.forEach((room) => {
-                sendMessage(JSON.stringify({ action: 'registerRoom', chat_room_no: room.room_no }));
-            });
+            const roomNosQuery = chatRoomList.map(room => room.room_no).join(',');
+            sendMessage(JSON.stringify({ action: 'registerRooms', roomNos: roomNosQuery }));
         }
     }, [chatRoomList, readyState, sendMessage]);
 
