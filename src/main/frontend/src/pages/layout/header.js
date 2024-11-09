@@ -5,6 +5,7 @@ import '../../styles/layout/layout.css';
 import logo from '../../img/logo-img.png'; // 로고 이미지 경로
 import { setUserData } from '../../store/userSlice';
 
+
 const HeaderOne = ({ logoSize, toggleMenu }) => (
     <header className='header-one'>
         <div className='logo_Img_start'>
@@ -34,7 +35,7 @@ const HeaderTwo = ({ toggleMenu }) => (
                 <button type='button' className='header_btn'>문의하기</button>
             </Link>
             <Link to='/inquiry'>
-                <button type='button' className='header_btn'>신청하기</button>
+                <button type='button' className='header_btn'>도입신청</button>
             </Link>
             <Link to='/login'>
                 <button type='button' className='header_btn'>로그인</button>
@@ -43,23 +44,45 @@ const HeaderTwo = ({ toggleMenu }) => (
     </header>
 );
 
-const HeaderThree = ({ toggleMenu, userData, handleLogout }) => (
-    <header className='header-two'>
-        <div className='logo_Img'>
-            <Link to='/system/admin/inquiry'>
-                <img src={logo} className='Header-logo' alt='Logo Two' />
-            </Link>
-        </div>
-        <div className='menu_Container'></div>
-        <div className='btn_Container'>
-            <p className='header_emp_name'>{userData.emp_name} 님 </p>
-            <button type='button' className='header_btn' onClick={handleLogout}>
-                로그아웃
-            </button>
-        </div>
-    </header>
-);
+const HeaderThree = ({ toggleMenu, userData, handleLogout }) => {
+    const navigate = useNavigate();
 
+    const goToLink = () => {
+        if (userData.emp_role === "super") {
+            navigate("/system/admin/inquiry");
+        } else if (userData.emp_role === "admin") {
+            navigate("/company/admin/member");
+        } else {
+            navigate("/company/user");
+        }
+    };
+
+    return (
+        <header className='header-two'>
+            <div className='logo_Img'>
+                <img src={logo} className='Header-logo' alt='Logo Two' onClick={goToLink}/>
+            </div>
+            <div className='menu_Container'></div>
+            <div className='btn_Container'>
+                <p className='header_emp_name'>{userData.emp_name} 님 </p>
+                <button type='button' className='header_btn' onClick={handleLogout}>
+                    로그아웃
+                </button>
+            </div>
+        </header>
+    );
+};
+const GoLink = () => {
+    const userData = useSelector((state) => state.user.data);
+    const navigate = useNavigate();
+    if (userData.emp_role === "super") {
+        navigate("/system/admin/inquiry");
+    } else if (userData.emp_role === "admin") {
+        navigate("/company/admin/member");
+    } else {
+        navigate("/company/user");
+    }
+}
 const Header = ({ toggleMenu }) => {
     const [lastScrollY, setLastScrollY] = useState(0);
     const [headerToShow, setHeaderToShow] = useState('one');

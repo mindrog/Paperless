@@ -3,7 +3,7 @@ import { Table, Button, Form, Modal, Alert } from 'react-bootstrap';
 import styles from '../../styles/company/company_draft_write_work.module.css';
 import style_atten from '../../styles/company/company_draft_write_atten.module.css';
 
-function CompanyUserDraftDetailWork() {
+function CompanyUserDraftDetailAtten() {
   const [reportTitle, setReportTitle] = useState('');
   const [reporter, setReporter] = useState('');
   const [reportDate, setReportDate] = useState('');
@@ -206,4 +206,4 @@ function CompanyUserDraftDetailWork() {
   );
 }
 
-export default CompanyUserDraftDetailWork;
+export default CompanyUserDraftDetailAtten;

@@ -1,159 +1,289 @@
-import React, { useState } from 'react';
-import { Table, Button, Form, Modal, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import styles from '../../styles/company/company_draft_write_work.module.css';
-import ApprovalLine from '../layout/ApprovalLine';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { Table, Button } from 'react-bootstrap';
+import styles from '../../styles/company/company_draft_appr_detail_work.module.css';
+import moment from 'moment';
 
-function CompanyUserDraftDetailAtten() {
-  const [reportTitle, setReportTitle] = useState('');
-  const [reporter, setReporter] = useState('');
-  const [reportDate, setReportDate] = useState('');
-  const [department, setDepartment] = useState('');
-  const [reportContent, setReportContent] = useState('');
-  const [formErrors, setFormErrors] = useState({});
+// 상신 취소 / 회수 버튼 로직 요청 컨포던트
+import { handleCancelSubmission } from '../../componentFetch/apprActionFetch/handleCancelSubmission';
+import { handleRetrieveSubmission } from '../../componentFetch/apprActionFetch/handleRetrieveSubmission';
 
-  // 결재 상태
-  const [appr_status, setApprStatus] = useState("pending"); 
-  
+
+const CompanyUserDraftDetailWork = () => {
+  const { reportId } = useParams();
+
+  const navigate = useNavigate(); // 페이지 이동을 위한 네비게이트 훅
+  const [reportData, setReportData] = useState({});
+  const [empCodeInfo, setEmpCodeInfo] = useState({});
+  const [apprLineInfo, setApprLineInfo] = useState({ approverInfo: [], recipientInfo: [], referenceInfo: [] });
+  const [apprIsRead, setApprIsRead] = useState(0);
+
+  // 로그인한 사용자 정보
+  const [userId, setUserId] = useState(null);
+  const token = localStorage.getItem("jwt");
+
+  useEffect(() => {
+    if (reportId) {
+      const fetchData = async () => {
+        try {
+          const [draftResponse, userInfoResponse, apprsResponse] = await Promise.all([
+            fetch(`/api/report/${reportId}`, {
+              headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+            }),
+            fetch(`/api/getUserInfo`, {
+              headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+            }),
+            fetch(`/api/apprsinfo/${reportId}`, {
+              headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+            })
+          ]);
+
+          if (!draftResponse.ok || !userInfoResponse.ok || !apprsResponse.ok) {
+            throw new Error("Failed to fetch data");
+          }
+
+          const draftInfo = await draftResponse.json();
+          const userInfo = await userInfoResponse.json();
+          const apprsInfo = await apprsResponse.json();
+
+          setReportData(draftInfo);
+          setEmpCodeInfo(userInfo);
+          setApprLineInfo(apprsInfo);
+          setApprIsRead(draftInfo.appr_is_read); // 상신 상태 확인
+          setUserId(userInfo.emp_code);
+        } catch (error) {
+          console.error('Error fetching report data:', error);
+        }
+      };
+      fetchData();
+    }
+  }, [reportId]);
+
+
+  // "상신 취소"와 "회수" 버튼 클릭 이벤트 핸들러 추가
+  const handleCancelSubmission = async () => {
+    try {
+      const response = await fetch(`/api/cancel/${reportId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        alert('상신이 취소되었습니다.');
+        navigate('/company/user/draft/doc/myuser');
+      } else {
+        alert('상신 취소에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error cancelling submission:', error);
+      alert('상신 취소 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleRetrieveSubmission = async () => {
+    try {
+      const response = await fetch(`/api/retrieve/${reportId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        alert('문서가 회수되었습니다.');
+        navigate('/company/user/draft/doc/myuser');
+      } else {
+        alert('회수에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error retrieving submission:', error);
+      alert('회수 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 목록으로 이동 버튼 클릭 핸들러
+  const handleGoBack = () => navigate('/company/user/draft/doc/all');
+
+  console.log("response data:", JSON.stringify(reportData, null, 2));
+  console.log("data.emp_code :", reportData.emp_code);
+  console.log("data.reportStatus :", reportData.reportStatus);
+  console.log("User info data:", JSON.stringify(empCodeInfo, null, 2));
+  console.log("apprs info data:", JSON.stringify(apprLineInfo, null, 2));
+
   return (
-    <div>
-      <div className="container">
-        <div className={styles.apprSumbitBtnBox}>
-          <h2 className={styles.pageTitle}>업무 보고 기안 상세</h2>
-          <div>
-            <Button className={styles.SumbitCancelBtn} disabled={appr_status !== "pending"}>상신 취소</Button>
-          </div>
-          <div>
-            <Button className={styles.WithdrawBtn} disabled={appr_status === "pending"}>회신</Button>
-          </div>
+    <div className="container">
+      <div className={styles.formHeader}>
+        <h2 className={styles.pageTitle}>기안 상세보기</h2>
+      </div>
+
+      <div className={styles.formContent}>
+
+        <div className={styles.btnBox}>
+          <Button className={styles.submitCancelBtn} onClick={handleGoBack}>
+            목록으로
+          </Button>
+          {/* 작성자와 로그인한 사용자가 동일하고 결재 상태가 submitted일 때만 버튼 표시 */}
+          {userId === reportData.emp_code && reportData.reportStatus === 'submitted' && (
+            <div>
+              {apprIsRead === 0 && (
+                <Button className={styles.submitCancelBtn} onClick={handleCancelSubmission}>
+                  상신 취소
+                </Button>
+              )}
+              {apprIsRead === 1 && (
+                <Button className={styles.retrieveBtn} onClick={handleRetrieveSubmission}>
+                  회수
+                </Button>
+              )}
+            </div>
+          )}
         </div>
-        <Form>
-          <Table bordered className={styles.docTitleHeader}>
-            <thead>
-              <tr className={styles.docTitleBox}>
-                <th className={styles.docTitle}>기안 제목</th>
-                <th colSpan={3}>
-                  <Form.Control
-                    type="text"
-                    value={reportTitle}
-                    onChange={(e) => setReportTitle(e.target.value)}
-                    className={`${styles.inputForm} ${formErrors.reportTitle ? styles.errorInput : ''}`} // 오류가 있으면 테두리 색상 변경
-                    placeholder="기안 제목을 입력하세요"
-                    readOnly
-                  />
-                  {formErrors.reportTitle && <span className={styles.errorMessage}>기안 제목을 입력해주세요</span>}
-                </th>
-              </tr>
-            </thead>
-          </Table>
 
-          <div className={styles.docHeader}>
-            <Table bordered size="sm" className={styles.docInfo}>
-              <tbody>
-                <tr>
-                  <th className={styles.docKey}>문서번호</th>
-                  <td className={styles.docValue}>-</td>
-                </tr>
-                <tr>
-                  <td className={styles.docKey}>본&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;부</td>
-                  <td className={styles.docValue}>{department || 'Mark'}</td>
-                </tr>
-                <tr>
-                  <td className={styles.docKey}>부&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;서</td>
-                  <td className={styles.docValue}>{reporter || 'Jacob'}</td>
-                </tr>
-                <tr>
-                  <td className={styles.docKey}>기안일</td>
-                  <td className={styles.docValue}>{reportDate || '2024-10-16(수)'}</td>
-                </tr>
-                <tr>
-                  <td className={styles.docKey}>기안자</td>
-                  <td className={styles.docValue}>배수지</td>
-                </tr>
-                <tr>
-                  <td className={styles.docKey}>시행일자</td>
-                  <td className={styles.docValue}>2024-10-19(금)</td>
-                </tr>
-                <tr>
-                  <td className={styles.docKey}>결재 상태</td>
-                  <td className={styles.docValue}>신청</td>
-                </tr>
-              </tbody>
-            </Table>
-            <Table bordered size="sm" className={styles.apprLineBox}>
-              <tbody className={styles.apprLineTbody}>
-                <tr className={styles.apprLinedocTr}>
-                  <td className={styles.docKey}>상신</td>
-                  <td className={styles.docKey}>결재</td>
-                </tr>
-                <tr>
-                  <td className={styles.docKey}>배수지</td>
-                  <td>
-                    {/* <Button className={styles.cancelBtn} onClick={handleApprLineModal}>결재선 지정</Button> */}
-                  </td>
-                </tr>
-                <tr>
-                  <td className={styles.docValue_date}>2024/10/21</td>
-                  <td>-</td>
-                </tr>
-              </tbody>
-            </Table>
-          </div>
+        <Table bordered className={styles.mainTable}>
+          <tbody>
+            <tr>
+              <td className={styles.labelCellTitle}>제&nbsp;&nbsp;&nbsp;&nbsp;목</td>
+              <td className={styles.valueCell} colSpan="3">{reportData?.reportTitle || ''}</td>
+            </tr>
+          </tbody>
+        </Table>
 
-          <Table bordered className={styles.docContent}>
+        <div className={styles.docInfoSection}>
+          <Table bordered size="sm" className={styles.innerTable}>
             <tbody>
               <tr>
-                <td className={styles.docKey}>수 &nbsp;&nbsp;&nbsp; 신</td>
-                <td></td>
-                <td className={styles.docKey}>참 &nbsp;&nbsp;&nbsp; 조</td>
-                <td></td>
+                <td className={styles.labelCelldoc}>문서번호</td>
+                <td className={styles.valueCell}>{reportData?.repo_code || ''}</td>
               </tr>
               <tr>
-                <td className={styles.docKey}>제 &nbsp;&nbsp;&nbsp; 목</td>
-                <td colSpan={3}>
-                  <Form.Control
-                    type="text"
-                    value={reportTitle}
-                    onChange={(e) => setReportTitle(e.target.value)}
-                    className={`${styles.inputForm} ${formErrors.reportTitle ? styles.errorInput : ''}`}
-                    placeholder="문서 제목을 입력하세요"
-                    readOnly
-                  />
-                  {formErrors.reportTitle && <span className={styles.errorMessage}>문서 제목을 입력해주세요</span>}
+                <td className={styles.labelCelldoc}>부&nbsp;&nbsp;&nbsp;서</td>
+                <td className={styles.valueCell}>{empCodeInfo.dept_name || ''} - {empCodeInfo.dept_team_name || ''}</td>
+              </tr>
+              <tr>
+                <td className={styles.labelCelldoc}>기&nbsp;안&nbsp;일</td>
+                <td className={styles.valueCell}>
+                  {reportData.submission_date ? moment(reportData.submission_date).format("YYYY-MM-DD") : ''}
                 </td>
               </tr>
               <tr>
-                <td colSpan={4}>
-                  <Form.Control
-                    as="textarea"
-                    rows={5}
-                    value={reportContent}
-                    onChange={(e) => setReportContent(e.target.value)}
-                    className={`${styles.inputForm} ${formErrors.reportContent ? styles.errorInput : ''}`}
-                    placeholder="내용을 입력하세요"
-                    readOnly
-                  />
-                  {formErrors.reportContent && <span className={styles.errorMessage}>내용을 입력해주세요</span>}
-                </td>
+                <td className={styles.labelCelldoc}>기 안 자</td>
+                <td className={styles.valueCell}>{reportData?.emp_name || ''}</td>
               </tr>
               <tr>
-                <td colSpan={4} className={styles.docKey}>첨부자료</td>
+                <td className={styles.labelCelldoc}>시행일자</td>
+                <td className={styles.valueCell}>{reportData?.repoStartTime || ''}</td>
               </tr>
               <tr>
-                <td className={styles.docKey}>첨부자료</td>
-                <td
-                  colSpan={5}
-                  className={styles.dropZone}
-                >
-                  파일을 여기에 드롭하거나 클릭하여 추가하세요
-                </td>
+                <td className={styles.labelCelldoc}>마감일자</td>
+                <td className={styles.valueCell}>{reportData?.repoEndTime || ''}</td>
               </tr>
             </tbody>
           </Table>
-        </Form>
+
+          <Table bordered size="sm" className={styles.innerApprTable}>
+            <tbody className="apprLineTbody">
+              <tr className="apprLinedocTr">
+                <td className={styles.valueCellAppr}>상신</td>
+                {apprLineInfo.approverInfo.map((_, index) => (
+                  <td key={index} className={styles.valueCellAppr}>결재</td>
+                ))}
+              </tr>
+
+              <tr>
+                <td className={styles.docValueAppr}>
+                  <div className={styles.apprTypePosi}>
+                    {empCodeInfo.dept_team_name || ''} {empCodeInfo.posi_name || ''}
+                  </div>
+                  <p>{reportData.emp_name || ''}</p>
+                </td>
+                {apprLineInfo.approverInfo.map((approver, index) => (
+                  <td key={index} className={styles.docValueAppr}>
+                    <div style={{ position: 'relative' }}>
+                      {/* 최상위 approver의 posi_name, emp_name 출력 */}
+                      {/* <div className="apprTypePosi">{approver.posi_name}</div>
+                    {approver.emp_name} */}
+                      {/* 중첩된 approverInfo가 존재할 경우에만 접근 */}
+                      {approver.approverInfo && approver.approverInfo.map((innerApprover, innerIndex) => (
+                        <div key={innerIndex} style={{ marginLeft: '10px' }}>
+                          <div className={styles.apprTypePosi}>{innerApprover.dept_team_name} {innerApprover.posi_name}</div>
+                          {innerApprover.emp_name}
+                        </div>
+                      ))}
+                    </div>
+                  </td>
+                ))}
+              </tr>
+
+              <tr>
+                <td className={styles.docValue_date}>
+                  {reportData.submission_date ? moment(reportData.submission_date).format("YYYY-MM-DD") : ''}
+                </td>
+                {apprLineInfo.approverInfo.map((approver, index) => (
+                  <td key={index} className={styles.docValue_date}>
+                    {approver.appr_date ? moment(approver.appr_date).format("YYYY-MM-DD") : ''}
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </Table>
+        </div>
+
+        <Table bordered className={styles.secondaryTable}>
+          <tbody>
+            <tr>
+              <td className={styles.labelCellSec}>참&nbsp;&nbsp;&nbsp;조</td>
+              <td className={styles.valueCell}>
+                {apprLineInfo.referenceInfo.map((ref, index) => (
+                  <span key={index}>{ref.dept_name} {ref.dept_team_name} {ref.emp_name} {ref.posi_name} {index < apprLineInfo.referenceInfo.length - 1 && ', '}</span>
+                ))}
+              </td>
+              <td className={styles.labelCellSec}>수&nbsp;&nbsp;&nbsp;신</td>
+              <td className={styles.valueCell}>
+                {apprLineInfo.recipientInfo.map((recv, index) => (
+                  <span key={index}>{recv.dept_name} {recv.emp_name} {recv.posi_name}{index < apprLineInfo.recipientInfo.length - 1 && ', '}</span>
+                ))}
+              </td>
+            </tr>
+          </tbody>
+        </Table>
+
+        <Table bordered className={styles.secondaryTable}>
+          <tbody>
+            <tr>
+              <td colSpan="4" className={styles.valueCellContent}>
+                <div dangerouslySetInnerHTML={{ __html: reportData?.reportContent }} />
+              </td>
+            </tr>
+          </tbody>
+        </Table>
+
+        <Table bordered>
+          <tbody>
+            <tr>
+              <td colSpan="4" className={styles.labelCellFile}>첨부 파일</td>
+            </tr>
+            <tr>
+              <td colSpan="4" className={styles.valueCellFile}>
+                {reportData.files && reportData.files.length > 0 ? (
+                  <ul>
+                    {reportData.files.map((file, index) => (
+                      <li key={index} className={styles.fileList}>📄 {file}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  '첨부된 파일이 없습니다.'
+                )}
+              </td>
+            </tr>
+          </tbody>
+        </Table>
       </div>
     </div>
   );
-}
+};
 
-export default CompanyUserDraftDetailAtten;
+export default CompanyUserDraftDetailWork;

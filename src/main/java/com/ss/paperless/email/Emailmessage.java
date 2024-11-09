@@ -6,6 +6,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Emailmessage")
@@ -47,7 +49,7 @@ public class Emailmessage {
     @Column(name = "email_title", nullable = false, length = 255)
     private String title;
     
-    
-    @Column(name = "email_deleted_date")
-    private LocalDateTime deletedAt;
+    @OneToMany(mappedBy = "email", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserEmailStatus> userEmailStatuses = new ArrayList<>(); 
+   
 }

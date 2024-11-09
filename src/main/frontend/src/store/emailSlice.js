@@ -12,6 +12,7 @@ const emailSlice = createSlice({
     triggerUnreadCountUpdate(state) {
       if (state.emailUnreadCountState > 0) {
         state.emailUnreadCountState -= 1;
+        console.log("슬라이스 실행 "+state.emailUnreadCountState);
       }
     },
   },

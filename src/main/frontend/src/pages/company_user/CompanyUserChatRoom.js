@@ -76,6 +76,11 @@ function CompanyUserChatRoom() {
         },
         onOpen: () => {
             console.log('WebSocket 연결 성공!');
+            if (chatRoomList.length > 0) {
+                chatRoomList.forEach((room) => {
+                    sendMessage(JSON.stringify({ action: 'registerRoom', chat_room_no: room.room_no }));
+                });
+            }
         },
         onClose: (event) => {
             console.warn('WebSocket 연결 해제됨:', event.code, event.reason);
@@ -85,16 +90,30 @@ function CompanyUserChatRoom() {
         },
     });
 
+    // chatRoomList가 변경될 때마다 WebSocket에 다시 방 번호 전송
     useEffect(() => {
-        if (lastMessage && lastMessage.action === 'read') {
-            const receivedMessage = JSON.parse(lastMessage.data);
-            if (receivedMessage.action === 'update') {
-                const { chat_room_no, chat_content, chat_date, chat_count } = receivedMessage;
+        if (readyState === 1 && chatRoomList.length > 0) {
+            chatRoomList.forEach((room) => {
+                sendMessage(JSON.stringify({ action: 'registerRoom', chat_room_no: room.room_no }));
+            });
+        }
+    }, [chatRoomList, readyState, sendMessage]);
 
-                setRecentMessages(prevMessages => ({
-                    ...prevMessages,
-                    [chat_room_no]: { chat_content_recent: chat_content, chat_date_recent: chat_date, unread: chat_count }
-                }));
+    // WebSocket으로 수신된 메시지 처리
+    useEffect(() => {
+        if (lastMessage) {
+            try {
+                const receivedMessage = JSON.parse(lastMessage.data);
+                if (receivedMessage.action === 'update') {
+                    const { chat_room_no, chat_content, chat_date, chat_count } = receivedMessage;
+
+                    setRecentMessages(prevMessages => ({
+                        ...prevMessages,
+                        [chat_room_no]: { chat_content_recent: chat_content, chat_date_recent: chat_date, unread: chat_count }
+                    }));
+                }
+            } catch (error) {
+                console.error('WebSocket 메시지 처리 중 오류 발생:', error);
             }
         }
     }, [lastMessage]);
@@ -189,9 +208,10 @@ function CompanyUserChatRoom() {
         if (emp_no) {
             // 전달된 emp_no를 통해 사용자 정보를 찾고 업데이트
             const selectedProfile = findUserInOrgChart(emp_no, orgChartData);
-            console.log('selectedProfile:', selectedProfile);
+            const selectedChatRoom = chatRoomList.find(room => room.participantNos[0] === emp_no);
+            const selectedChatRoomNo = selectedChatRoom.room_no;
             if (selectedProfile) {
-                setProfileInfo(selectedProfile);
+                setProfileInfo({ ...selectedProfile, room_no: selectedChatRoomNo });
             } else {
                 console.error(`Profile not found for emp_no: ${emp_no}`);
             }
@@ -202,9 +222,19 @@ function CompanyUserChatRoom() {
         setProfileModal(true);
     }
 
+    // 메일 전송하기 버튼
+    const handleEmail = (emp_email) => {
+        if (window.opener) {
+            // 원래 창의 URL을 변경
+            window.opener.location.href = `/company/user/email/send?receiverEmail=${emp_email}`;
+        }
+        setProfileModal(false);
+    };
+
     // 채팅 새 창
     const chatting = async (room_no) => {
         try {
+            console.log('profileInfo:', profileInfo);
             console.log("room_no:", room_no);
             console.log('chatRoomList:', chatRoomList);
             // 해당 room_no의 채팅방 정보 찾기
@@ -429,16 +459,6 @@ function CompanyUserChatRoom() {
         }
     }, [user]);
 
-    const [newRoomNo, setNewRoomNo] = useState(null);
-
-    useEffect(() => {
-        if (newRoomNo !== null) {
-            console.log('newRoomNo:', newRoomNo);
-            chatting(newRoomNo);
-            setNewRoomNo(null); // 한 번 실행한 후 초기화
-        }
-    }, [chatRoomList, newRoomNo]);
-
     // OrgChart에서 사람 클릭 시 호출 함수
     const handleMemberClick = async (member) => {
         try {
@@ -522,7 +542,7 @@ function CompanyUserChatRoom() {
 
                 // 새로 생성된 채팅방을 chatRoomList에 추가
                 setChatRoomList(prevList => [...prevList, updatedRoomData]);
-                setNewRoomNo(response.data.room.room_no); // useEffect가 실행되도록 설정
+                sendMessage(JSON.stringify({ action: 'registerRoom', chat_room_no: newRoomNo }));
                 return;
             }
         } catch (error) {
@@ -578,7 +598,6 @@ function CompanyUserChatRoom() {
                                                 {recentMessages[room.room_no]?.chat_content_recent}
                                             </div>
                                             <div className={styles.eachChat_unread} style={{ display: recentMessages[room.room_no]?.unread === 0 || recentMessages[room.room_no]?.unread === undefined ? 'none' : 'block' }}>
-                                                {console.log(`Unread for room ${room.room_no}:`, recentMessages[room.room_no]?.unread) /* 콘솔 출력 */}
                                                 {recentMessages[room.room_no]?.unread}
                                             </div>
                                         </div>
@@ -621,10 +640,15 @@ function CompanyUserChatRoom() {
                                     </div>
                                 </Modal.Body>
                                 <Modal.Footer className={styles.modal_footer}>
-                                    <Button variant="primary" onClick={(e) => { e.stopPropagation(); closeProfileModal() }} >
+                                    <Button variant="primary" onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (window.opener) {
+                                            handleEmail(profileInfo.emp_email);
+                                        }
+                                    }} >
                                         메일 전송
                                     </Button>
-                                    <Button variant="primary" onClick={(e) => { e.stopPropagation(); chatting(profileInfo.name); closeProfileModal() }} >
+                                    <Button variant="primary" onClick={(e) => { e.stopPropagation(); chatting(profileInfo.room_no); closeProfileModal() }} >
                                         채팅하기
                                     </Button>
                                 </Modal.Footer>

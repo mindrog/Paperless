@@ -68,6 +68,10 @@
     width: 18.5%;
 }
 
+.labelCell {
+    vertical-align: middle;
+}
+
 .docInfoSection {
     display: flex;
     justify-content: space-between;
@@ -87,9 +91,16 @@
 }
 
 /* innerApprTable col */
+.valueCellrepoTitle {
+    width: 150px;
+    height: 40px;
+    text-align: left;
+}
+
 .valueCell {
     width: 150px;
     height: 40px;
+    vertical-align: middle;
 }
 
 .docValueAppr{

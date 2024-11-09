@@ -16,7 +16,6 @@ const Menubar = ({ isMenuOpen }) => {
     const emp_no = userData.emp_no;
 
     const [notificationCount, setNotificationCount] = useState(0); // 알림 개수 상태
-    const [emailUnreadCount, setEmailUnreadCount] = useState(0); // 읽지 않은 메일 개수 상태
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDocDropdownOpen, setIsDocDropdownOpen] = useState(false); // 기안 문서함 상태
     const [isFormDropdownOpen, setIsFormDropdownOpen] = useState(false); // 기안 양식 상태
@@ -43,24 +42,6 @@ const Menubar = ({ isMenuOpen }) => {
         navigate(itemName); // 해당 경로로 이동
     };
 
-    useEffect(() => {
-        const fetchUnreadCount = async () => {
-            try {
-                const token = localStorage.getItem('jwt');
-                const response = await axios.get('/api/emails/unreadcount', {
-                    headers: { Authorization: token },
-                });
-                setEmailUnreadCount(response.data);
-                dispatch(setUnreadCount(response.data));
-            } catch (error) {
-                console.error('읽지 않은 메일 개수를 가져오는 중 오류:', error);
-            }
-        };
-
-        fetchUnreadCount();
-    }, [emailUnreadCountState, dispatch]);
-
-
     const MenubarSuper = () => {
         return (
             <div className={styles.menubar}>
@@ -72,11 +53,7 @@ const Menubar = ({ isMenuOpen }) => {
                                 <div className={styles.userName}>{userData.emp_name}</div>
                             </div>
                         </div>
-                        <div className={styles.iconbox}>
-                            <button onClick={showEmployeeNotificationModal}><i className="material-icons notifications">notifications</i></button>
-                            <button onClick={() => handleItemClick('/company/user/email')}><i className="material-icons mail">mail</i></button>
-                            <button onClick={() => handleChatItemClick('/chatroom')}><i className="material-icons chat_bubble">chat_bubble</i></button>
-                        </div>
+    
                     </div>
                 </div>
                 <ul className={styles.menuList}>
@@ -87,7 +64,7 @@ const Menubar = ({ isMenuOpen }) => {
                     </li>
 
                     <li className={`${styles.dropdown} ${activeItem === '/system/admin/inquiry' ? styles.active : ''}`}
-                        onClick={() => handleItemClick('/system/admin/member')} >
+                        onClick={() => handleItemClick('/system/admin/inquiry')} >
                         <button className={styles.sublist_member}>
                             ⚙️ 문의 관리
                         </button>
@@ -107,17 +84,10 @@ const Menubar = ({ isMenuOpen }) => {
                                 <div className={styles.userName}>{userData.emp_name}</div>
                             </div>
                         </div>
-                        <div className={styles.iconbox}>
-                            <button onClick={showEmployeeNotificationModal}>
-                                <i className="material-icons notifications">notifications</i>
-                            </button>
-                            <button onClick={() => handleItemClick('/company/user/email')}><i className="material-icons mail">mail</i></button>
-                            <button onClick={() => handleChatItemClick('/chatroom')}><i className="material-icons chat_bubble">chat_bubble</i></button>
-                        </div>
                     </div>
                 </div>
                 <ul className={styles.menuList}>
-                    <li className={`${styles.dropdown} ${activeItem === '/company/user/mypage' ? styles.active : ''}`} onClick={() => handleItemClick('/company/user/mypage')} >
+                    <li className={`${styles.dropdown} ${activeItem === '/company/info' ? styles.active : ''}`} onClick={() => handleItemClick('/company/info')} >
                         <button className={styles.sublist_mypage}>
                             🧑 회사 관리
                         </button>
@@ -141,7 +111,7 @@ const Menubar = ({ isMenuOpen }) => {
                         <div className={styles.profiltitle} onClick={handlerCompanyMain}>
                             <p></p>
                             <div>
-                                {/* 팀이름 */}
+                                {userData.dept_name} {userData.dept_team_name}
                             </div>
                             <div className={styles.titlename}>
                                 <div className={styles.userName}>{userData.emp_name}</div>
@@ -174,7 +144,7 @@ const Menubar = ({ isMenuOpen }) => {
                     {/* 기안 관리 섹션 */}
                     <li className={`${styles.dropdown} ${isDropdownOpen ? styles.active : ''}`}>
                         <button onClick={toggleDropdown} className={`${styles.dropdownToggle} ${isDraftSectionActive ? styles.active : ''}`}>
-                            📑 기안 관리
+                            📑 문서 관리
                         </button>
                         {/* 기안 관리 하위 메뉴 */}
                         {isDropdownOpen && (
@@ -182,7 +152,7 @@ const Menubar = ({ isMenuOpen }) => {
                                 <ul>
                                     <li>
                                         <button onClick={toggleDocDropdown} className={styles.submenu}>
-                                            🗂️ 기안 문서함
+                                        📂 전자 문서함
                                         </button>
                                         {isDocDropdownOpen && (
                                             <ul className={styles.innerSubDropdownMenu_draftList}>
@@ -191,7 +161,7 @@ const Menubar = ({ isMenuOpen }) => {
                                                         className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/all' ? styles.active : ''}`}
                                                         onClick={() => handleDraftSectionClick('/company/user/draft/doc/all')}
                                                     >
-                                                        📁 전체 문서함
+                                                        📄 전체 문서함
                                                     </button>
                                                 </li>
                                                 <li>
@@ -199,14 +169,21 @@ const Menubar = ({ isMenuOpen }) => {
                                                         className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/draft' ? styles.active : ''}`}
                                                         onClick={() => handleDraftSectionClick('/company/user/draft/doc/draft')}
                                                     >
-                                                        📁 임시 저장함
+                                                        📄 임시 저장함
                                                     </button>
                                                 </li>
                                                 <li>
                                                     <button
-                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/approval' ? styles.active : ''}`}
-                                                        onClick={() => handleDraftSectionClick('/company/user/draft/doc/approval')}>
-                                                        📁 결재 문서함
+                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/penforappr' ? styles.active : ''}`}
+                                                        onClick={() => handleDraftSectionClick('/company/user/draft/doc/penforappr')}>
+                                                        📄 결재 대기함
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button
+                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/myuser' ? styles.active : ''}`}
+                                                        onClick={() => handleDraftSectionClick('/company/user/draft/doc/myuser')}>
+                                                        📄 내 문서함
                                                     </button>
                                                 </li>
                                             </ul>
@@ -214,7 +191,7 @@ const Menubar = ({ isMenuOpen }) => {
                                     </li>
                                     <li>
                                         <button onClick={toggleDocDropdown} className={styles.submenu2}>
-                                            📑 기안 양식
+                                            📂 기안 양식
                                         </button>
                                         {isDocDropdownOpen && (
                                             <ul className={styles.innerSubDropdownMenu_draftWrite}>
@@ -257,16 +234,8 @@ const Menubar = ({ isMenuOpen }) => {
 
                     <li className={`${styles.dropdown} ${activeItem === '/company/user/stock' ? styles.active : ''}`}
                         onClick={() => handleItemClick('/company/user/stock')} >
-                        <button className={styles.sublist_member}>
+                        <button className={styles.sublist_cal}>
                             📦 재고 관리
-                        </button>
-                    </li>
-
-
-                    <li className={`${styles.dropdown} ${activeItem === '/company/admin/member' ? styles.active : ''}`}
-                        onClick={() => handleItemClick('/company/admin/member')} >
-                        <button className={styles.sublist_member}>
-                            ⚙️ 직원 관리
                         </button>
                     </li>
                 </ul>
@@ -328,27 +297,13 @@ const Menubar = ({ isMenuOpen }) => {
         }
     };
 
-    // 경로에 따라 프로필 이름 변경
-    const profileName = location.pathname.toLowerCase().startsWith('/company/admin')
-        ? '강동원'
-        : location.pathname.toLowerCase().startsWith('/company/user')
-            ? '배수지'
-            : '사용자';
-
-    // 경로에 따른 직급 설정
-    const getUserGrade = () => {
-        if (location.pathname.toLowerCase().startsWith('/company/admin')) {
-            return '부장'; // 회사 관리자
-        } else if (location.pathname.toLowerCase().startsWith('/company/user')) {
-            return '대리'; // 회사 사용자
-        }
-        return '사용자'; // 기본 값
-    };
-
     const handlerCompanyMain = () => {
-        if (getUserGrade() === '부장') {
-            navigate('/company/admin');
-        } else {
+        console.log('userData.emp_role:', userData.emp_role);
+        if (userData.emp_role === 'super') {
+            navigate('/system/admin/inquiry');
+        } else if (userData.emp_role === 'admin') {
+            navigate('/company/admin/member');
+        } else if (userData.emp_role === 'user') {
             navigate('/company/user');
         }
     }

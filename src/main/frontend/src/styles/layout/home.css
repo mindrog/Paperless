@@ -182,23 +182,34 @@
 }
 
 .top_btn {
-    margin-right: 2vw;
-    width: 10vh;
-    height: 10vh;
+    margin-right:   2vw;
+    width: 8vh;
+    height: 8vh;
+    font-weight: bold;
     background-color: #2e3d86;
     position: fixed;
     border-radius: 100%;
+    border: 0;
     color: #fefefe;
     z-index: 1;
+}
+
+.top_btn:hover {
+    background-color: #5A77B6;
+    color: #fefefe;
+    font-weight: bold;
 }
 
 .next_div_btn {
     margin-right: 47.5%;
     width: 10vh;
     height: 10vh;
-    background-color: #2e3d86;
+    opacity: 70%;
+    color: #fefefe;
+}
 
-    border-radius: 100%;
+.next_div_btn:hover {
+    opacity: 85%;
     color: #fefefe;
 }
 
@@ -436,6 +447,12 @@ p.qa_q{
     padding: 0%;
     margin: 0;
 }
+
+p.qa_a {
+    width: 900px;
+    text-align: left;
+}
+
 .card_text{
     width: 100%;
     height: 15vh;

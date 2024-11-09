@@ -277,6 +277,39 @@ CREATE TABLE `Todolist` (
 );
 
 
+CREATE TABLE UserEmailStatus (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email_no BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    folder VARCHAR(20) NOT NULL DEFAULT 'inbox',  -- 'inbox', 'sent', 'trash'
+    status VARCHAR(20) NOT NULL DEFAULT 'unread', -- 'unread', 'read' 등
+    deleted_at DATETIME DEFAULT NULL,
+    FOREIGN KEY (email_no) REFERENCES Emailmessage(email_no),
+    FOREIGN KEY (user_id) REFERENCES Employee(emp_no)
+);
+DELIMITER $$
+CREATE TRIGGER trg_after_email_insert
+AFTER INSERT ON Emailmessage
+FOR EACH ROW
+BEGIN
+    -- 발신자 상태 추가 (보낸 메일함)
+    INSERT INTO UserEmailStatus (email_no, user_id, folder, status)
+    VALUES (NEW.email_no, NEW.email_writer, 'sent', 'read');
+
+    -- 수신자 상태 추가 (받은 편지함)
+    INSERT INTO UserEmailStatus (email_no, user_id, folder, status)
+    VALUES (NEW.email_no, NEW.email_recipient, 'inbox', 'unread');
+
+    -- 참조자(CC)가 있을 경우 상태 추가
+    IF NEW.email_cc IS NOT NULL THEN
+        INSERT INTO UserEmailStatus (email_no, user_id, folder, status)
+        VALUES (NEW.email_no, NEW.email_cc, 'inbox', 'unread');
+    END IF;
+END$$
+
+DELIMITER ;
+
+
 
 -- 3. 데이터 삽입
 -- company/기업
@@ -366,44 +399,44 @@ VALUES
 ('DS1000', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김성현', 'kim@digitalsolution.com', '010-1234-5678', '김성현 서명', 'https://via.placeholder.com/60', 1, 210, 7, '2019-11-01', 'admin'),
 ('DS1001', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '배수지', 'suzy@digitalsolution.com', '010-1234-5678', '배수지 서명', 'https://via.placeholder.com/60', 1, 100, 4, '2021-05-12', 'user'),  
 ('DS1002', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '강동원', 'dongwon@digitalsolution.com', '010-8765-4321', '강동원 서명', 'https://via.placeholder.com/60', 1, 100, 6, '2020-09-15', 'user'),  
-('DS1003', 'password123', '김태리', 'taeri@digitalsolution.com', '010-2345-6789', '김태리 서명', 'https://via.placeholder.com/60', 1, 500, 3, '2019-04-10', 'user'),  
-('DS1004', 'password123', '이준호', 'junho@digitalsolution.com', '010-3456-7890', '이준호 서명', 'https://via.placeholder.com/60', 1, 110, 4, '2020-01-20', 'user'),
-('DS1005', 'password123', '박서준', 'seojun@digitalsolution.com', '010-5555-1234', '박서준 서명', 'https://via.placeholder.com/60', 1, 200, 3, '2021-07-30', 'user'),  
-('DS1006', 'password123', '이서진', 'seojin@digitalsolution.com', '010-1010-2020', '이서진 서명', 'https://via.placeholder.com/60', 1, 200, 4, '2022-01-10', 'user'),  
-('DS1007', 'password123', '김수현', 'yooain@digitalsolution.com', '010-3030-4040', '김수현 서명', 'https://via.placeholder.com/60', 1, 210, 5, '2021-12-01', 'user'),  
-('DS1008', 'password123', '공효진', 'gonghj@digitalsolution.com', '010-5050-6060', '공효진 서명', 'https://via.placeholder.com/60', 1, 100, 2, '2020-03-12', 'user'),  
-('DS1009', 'password123', '정우성', 'jws@digitalsolution.com', '010-7070-8080', '정우성 서명', 'https://via.placeholder.com/60', 1, 500, 6, '2022-06-25', 'user'),  
-('DS1010', 'password123', '박보영', 'boyoung@digitalsolution.com', '010-9090-0000', '박보영 서명', 'https://via.placeholder.com/60', 1, 100, 3, '2021-10-10', 'user');
+('DS1003', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김태리', 'taeri@digitalsolution.com', '010-2345-6789', '김태리 서명', 'https://via.placeholder.com/60', 1, 500, 3, '2019-04-10', 'user'),  
+('DS1004', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이준호', 'junho@digitalsolution.com', '010-3456-7890', '이준호 서명', 'https://via.placeholder.com/60', 1, 110, 4, '2020-01-20', 'user'),
+('DS1005', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '박서준', 'seojun@digitalsolution.com', '010-5555-1234', '박서준 서명', 'https://via.placeholder.com/60', 1, 200, 3, '2021-07-30', 'user'),  
+('DS1006', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이서진', 'seojin@digitalsolution.com', '010-1010-2020', '이서진 서명', 'https://via.placeholder.com/60', 1, 200, 4, '2022-01-10', 'user'),  
+('DS1007', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김수현', 'yooain@digitalsolution.com', '010-3030-4040', '김수현 서명', 'https://via.placeholder.com/60', 1, 210, 5, '2021-12-01', 'user'),  
+('DS1008', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '공효진', 'gonghj@digitalsolution.com', '010-5050-6060', '공효진 서명', 'https://via.placeholder.com/60', 1, 100, 2, '2020-03-12', 'user'),  
+('DS1009', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '정우성', 'jws@digitalsolution.com', '010-7070-8080', '정우성 서명', 'https://via.placeholder.com/60', 1, 500, 6, '2022-06-25', 'user'),  
+('DS1010', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '박보영', 'boyoung@digitalsolution.com', '010-9090-0000', '박보영 서명', 'https://via.placeholder.com/60', 1, 100, 3, '2021-10-10', 'user');
 
 INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
 VALUES
 -- (nextware 대표)
 ('NW1000', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이지수', 'lee@nextware.co.kr', '010-8765-4321', '이지수 서명', 'https://via.placeholder.com/60', 2, 210, 10, '2019-03-10', 'admin'),  
 ('NW1001', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '장원영', 'wonyoung@nextware.co.kr', '010-1234-5678', '장원영 서명', 'https://via.placeholder.com/60', 2, 100, 3, '2020-05-15', 'user'),  
-('NW1002', 'password123', '김우석', 'wooseok@nextware.co.kr', '010-2345-6789', '김우석 서명', 'https://via.placeholder.com/60', 2, 100, 4, '2019-08-22', 'user'),  
-('NW1003', 'password123', '차은우', 'eunwoo@nextware.co.kr', '010-3456-7890', '차은우 서명', 'https://via.placeholder.com/60', 2, 110, 2, '2021-02-05', 'user'), 
-('NW1004', 'password123', '도경수', 'kyungsoo@nextware.co.kr', '010-4567-8901', '도경수 서명', 'https://via.placeholder.com/60', 2, 110, 6, '2018-09-12', 'user'),  
-('NW1005', 'password123', '전지현', 'jihyun@nextware.co.kr', '010-5678-9012', '전지현 서명', 'https://via.placeholder.com/60', 2, 200, 3, '2021-05-25', 'user'),  
-('NW1006', 'password123', '김세정', 'sejeong@nextware.co.kr', '010-1212-2323', '김세정 서명', 'https://via.placeholder.com/60', 2, 200, 4, '2020-09-15', 'user'),  
-('NW1007', 'password123', '이상윤', 'sangyun@nextware.co.kr', '010-3434-4545', '이상윤 서명', 'https://via.placeholder.com/60', 2, 110, 5, '2021-01-05', 'user'),  
-('NW1008', 'password123', '서강준', 'seo@nextware.co.kr', '010-5656-6767', '서강준 서명', 'https://via.placeholder.com/60', 2, 100, 2, '2022-07-25', 'user'),  
-('NW1009', 'password123', '유연석', 'you@nextware.co.kr', '010-7878-8989', '유연석 서명', 'https://via.placeholder.com/60', 2, 500, 6, '2020-11-12', 'user'),  
-('NW1010', 'password123', '박형식', 'hsik@nextware.co.kr', '010-9091-0011', '박형식 서명', 'https://via.placeholder.com/60', 2, 100, 3, '2022-03-05', 'user');
+('NW1002', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김우석', 'wooseok@nextware.co.kr', '010-2345-6789', '김우석 서명', 'https://via.placeholder.com/60', 2, 100, 4, '2019-08-22', 'user'),  
+('NW1003', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '차은우', 'eunwoo@nextware.co.kr', '010-3456-7890', '차은우 서명', 'https://via.placeholder.com/60', 2, 110, 2, '2021-02-05', 'user'), 
+('NW1004', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '도경수', 'kyungsoo@nextware.co.kr', '010-4567-8901', '도경수 서명', 'https://via.placeholder.com/60', 2, 110, 6, '2018-09-12', 'user'),  
+('NW1005', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '전지현', 'jihyun@nextware.co.kr', '010-5678-9012', '전지현 서명', 'https://via.placeholder.com/60', 2, 200, 3, '2021-05-25', 'user'),  
+('NW1006', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김세정', 'sejeong@nextware.co.kr', '010-1212-2323', '김세정 서명', 'https://via.placeholder.com/60', 2, 200, 4, '2020-09-15', 'user'),  
+('NW1007', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이상윤', 'sangyun@nextware.co.kr', '010-3434-4545', '이상윤 서명', 'https://via.placeholder.com/60', 2, 110, 5, '2021-01-05', 'user'),  
+('NW1008', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '서강준', 'seo@nextware.co.kr', '010-5656-6767', '서강준 서명', 'https://via.placeholder.com/60', 2, 100, 2, '2022-07-25', 'user'),  
+('NW1009', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '유연석', 'you@nextware.co.kr', '010-7878-8989', '유연석 서명', 'https://via.placeholder.com/60', 2, 500, 6, '2020-11-12', 'user'),  
+('NW1010', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '박형식', 'hsik@nextware.co.kr', '010-9091-0011', '박형식 서명', 'https://via.placeholder.com/60', 2, 100, 3, '2022-03-05', 'user');
 
 INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
 VALUES
 -- (itmate 대표)
 ('ITM1000', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '박진영', 'park@itmate.net', '010-2468-1357', '박진영 서명', 'https://via.placeholder.com/60', 3, 300, 10, '2018-07-22', 'admin'),
 ('ITM1001', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이준기', 'junki@itmate.net', '010-1111-1234', '이준기 서명', 'https://via.placeholder.com/60', 3, 100, 3, '2021-06-10', 'user'),  
-('ITM1002', 'password123', '이하늬', 'hani@itmate.net', '010-2222-2345', '이하늬 서명', 'https://via.placeholder.com/60', 3, 100, 4, '2019-10-20', 'user'), 
-('ITM1003', 'password123', '안보현', 'bohyun@itmate.net', '010-3333-3456', '안보현 서명', 'https://via.placeholder.com/60', 3, 110, 2, '2020-01-05', 'user'), 
-('ITM1004', 'password123', '박보검', 'bogum@itmate.net', '010-4444-4567', '박보검 서명', 'https://via.placeholder.com/60', 3, 110, 6, '2018-12-15', 'user'), 
-('ITM1005', 'password123', '김우빈', 'woobin@itmate.net', '010-5555-5678', '김우빈 서명', 'https://via.placeholder.com/60', 3, 300, 3, '2021-03-01', 'user'),
-('ITM1006', 'password123', '강하늘', 'haneul@itmate.net', '010-1212-3434', '강하늘 서명', 'https://via.placeholder.com/60', 3, 300, 6, '2022-01-15', 'user'),  
-('ITM1007', 'password123', '신세경', 'sekyung@itmate.net', '010-4545-5656', '신세경 서명', 'https://via.placeholder.com/60', 3, 110, 5, '2021-05-20', 'user'),  
-('ITM1008', 'password123', '이성경', 'sungkyung@itmate.net', '010-6767-7878', '이성경 서명', 'https://via.placeholder.com/60', 3, 100, 2, '2021-09-25', 'user'),  
-('ITM1009', 'password123', '조정석', 'joseok@itmate.net', '010-8989-9090', '조정석 서명', 'https://via.placeholder.com/60', 3, 100, 4, '2020-08-10', 'user'),  
-('ITM1010', 'password123', '이광수', 'gwangsoo@itmate.net', '010-1111-2222', '이광수 서명', 'https://via.placeholder.com/60', 3, 500, 3, '2019-10-30', 'user');
+('ITM1002', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이하늬', 'hani@itmate.net', '010-2222-2345', '이하늬 서명', 'https://via.placeholder.com/60', 3, 100, 4, '2019-10-20', 'user'), 
+('ITM1003', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '안보현', 'bohyun@itmate.net', '010-3333-3456', '안보현 서명', 'https://via.placeholder.com/60', 3, 110, 2, '2020-01-05', 'user'), 
+('ITM1004', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '박보검', 'bogum@itmate.net', '010-4444-4567', '박보검 서명', 'https://via.placeholder.com/60', 3, 110, 6, '2018-12-15', 'user'), 
+('ITM1005', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김우빈', 'woobin@itmate.net', '010-5555-5678', '김우빈 서명', 'https://via.placeholder.com/60', 3, 300, 3, '2021-03-01', 'user'),
+('ITM1006', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '강하늘', 'haneul@itmate.net', '010-1212-3434', '강하늘 서명', 'https://via.placeholder.com/60', 3, 300, 6, '2022-01-15', 'user'),  
+('ITM1007', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '신세경', 'sekyung@itmate.net', '010-4545-5656', '신세경 서명', 'https://via.placeholder.com/60', 3, 110, 5, '2021-05-20', 'user'),  
+('ITM1008', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이성경', 'sungkyung@itmate.net', '010-6767-7878', '이성경 서명', 'https://via.placeholder.com/60', 3, 100, 2, '2021-09-25', 'user'),  
+('ITM1009', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '조정석', 'joseok@itmate.net', '010-8989-9090', '조정석 서명', 'https://via.placeholder.com/60', 3, 100, 4, '2020-08-10', 'user'),  
+('ITM1010', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이광수', 'gwangsoo@itmate.net', '010-1111-2222', '이광수 서명', 'https://via.placeholder.com/60', 3, 500, 3, '2019-10-30', 'user');
 
 
 INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
@@ -411,15 +444,15 @@ VALUES
 -- (futuretech 대표)
 ('FT1000', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '송민우', 'song@futuretech.co.kr', '010-9753-8642', '송민우 서명', 'https://via.placeholder.com/60', 4, 500, 10, '2021-05-30', 'admin'),
 ('FT1001', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '한소희', 'sohee@futuretech.co.kr', '010-1234-5678', '한소희 서명', 'https://via.placeholder.com/60', 4, 100, 3, '2021-03-10', 'user'), 
-('FT1002', 'password123', '정해인', 'haein@futuretech.co.kr', '010-2345-6789', '정해인 서명', 'https://via.placeholder.com/60', 4, 100, 4, '2020-07-25', 'user'), 
-('FT1003', 'password123', '박보검', 'bogum@futuretech.co.kr', '010-3456-7890', '박보검 서명', 'https://via.placeholder.com/60', 4, 110, 2, '2019-12-15', 'user'),  
-('FT1004', 'password123', '남주혁', 'juhyuk@futuretech.co.kr', '010-4567-8901', '남주혁 서명', 'https://via.placeholder.com/60', 4, 110, 6, '2018-05-10', 'user'),  
-('FT1005', 'password123', '김고은', 'goeun@futuretech.co.kr', '010-5678-9012', '김고은 서명', 'https://via.placeholder.com/60', 4, 500, 3, '2021-01-20', 'user'),
-('FT1006', 'password123', '김수현', 'su@futuretech.co.kr', '010-2323-3434', '김수현 서명', 'https://via.placeholder.com/60', 4, 500, 6, '2022-01-15', 'user'),  
-('FT1007', 'password123', '김세정', 'sejeong@futuretech.co.kr', '010-4545-5656', '김세정 서명', 'https://via.placeholder.com/60', 4, 110, 5, '2021-05-20', 'user'),  
-('FT1008', 'password123', '유승호', 'sung@futuretech.co.kr', '010-6767-7878', '유승호 서명', 'https://via.placeholder.com/60', 4, 100, 2, '2021-09-25', 'user'),  
-('FT1009', 'password123', '이현우', 'hyunwoo@futuretech.co.kr', '010-8989-9090', '이현우 서명', 'https://via.placeholder.com/60', 4, 100, 4, '2020-08-10', 'user'),  
-('FT1010', 'password123', '김민규', 'mingyu@futuretech.co.kr', '010-1111-2323', '김민규 서명', 'https://via.placeholder.com/60', 4, 500, 3, '2019-10-30', 'user');
+('FT1002', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '정해인', 'haein@futuretech.co.kr', '010-2345-6789', '정해인 서명', 'https://via.placeholder.com/60', 4, 100, 4, '2020-07-25', 'user'), 
+('FT1003', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '박보검', 'bogum@futuretech.co.kr', '010-3456-7890', '박보검 서명', 'https://via.placeholder.com/60', 4, 110, 2, '2019-12-15', 'user'),  
+('FT1004', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '남주혁', 'juhyuk@futuretech.co.kr', '010-4567-8901', '남주혁 서명', 'https://via.placeholder.com/60', 4, 110, 6, '2018-05-10', 'user'),  
+('FT1005', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김고은', 'goeun@futuretech.co.kr', '010-5678-9012', '김고은 서명', 'https://via.placeholder.com/60', 4, 500, 3, '2021-01-20', 'user'),
+('FT1006', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김수현', 'su@futuretech.co.kr', '010-2323-3434', '김수현 서명', 'https://via.placeholder.com/60', 4, 500, 6, '2022-01-15', 'user'),  
+('FT1007', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김세정', 'sejeong@futuretech.co.kr', '010-4545-5656', '김세정 서명', 'https://via.placeholder.com/60', 4, 110, 5, '2021-05-20', 'user'),  
+('FT1008', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '유승호', 'sung@futuretech.co.kr', '010-6767-7878', '유승호 서명', 'https://via.placeholder.com/60', 4, 100, 2, '2021-09-25', 'user'),  
+('FT1009', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '이현우', 'hyunwoo@futuretech.co.kr', '010-8989-9090', '이현우 서명', 'https://via.placeholder.com/60', 4, 100, 4, '2020-08-10', 'user'),  
+('FT1010', '$2a$10$Miv1rC.Z5l1z4UREbKskx.Y3rgd/r5cWKD5csJWjCCQvt8ukQp5cC', '김민규', 'mingyu@futuretech.co.kr', '010-1111-2323', '김민규 서명', 'https://via.placeholder.com/60', 4, 500, 3, '2019-10-30', 'user');
 
 INSERT INTO `Employee` (`emp_code`, `emp_pw`, `emp_name`, `emp_email`, `emp_phone`, `emp_sign`, `emp_profile`, `emp_comp_no`, `emp_dept_no`, `emp_posi_no`, `emp_join_date`, `emp_role`)
 VALUES

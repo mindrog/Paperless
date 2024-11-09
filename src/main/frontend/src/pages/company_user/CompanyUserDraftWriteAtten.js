@@ -4,13 +4,18 @@ import style_atten from '../../styles/company/company_draft_write_atten.module.c
 import { Table, Button, Form, Modal, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import ApprovalLine from '../layout/ApprovalLine';
+import useFetchData from '../../componentFetch/useFetchData';
 
 const CompanyUserDraftWriteAtten = () => {
   const [reportTitle, setReportTitle] = useState('');
   const [reporter, setReporter] = useState('');
-  const [reportDate, setReportDate] = useState('');
+  const [reportDate, setReportDate] = useState(() => {});
   const [department, setDepartment] = useState('');
+  const [team, setTeam] = useState('');
   const [reportContent, setReportContent] = useState('');
+
+  const token = localStorage.getItem('jwt');
+  const userData = useFetchData(token);
 
   // 오류
   const [errorMessage, setErrorMessage] = useState(''); // 오류 메시지 상태 추가
@@ -97,6 +102,17 @@ const CompanyUserDraftWriteAtten = () => {
     navigate('/company/user/draft/form/attendance');
     console.log('결재 상신 버튼 클릭됨');
   };
+
+  // 
+  useEffect(() => {
+    setReportDate(new Date().toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }));
+  }, []);
 
   // 휴가 일수 계산 함수
   const calculateLeaveDays = (start, end, vacationType) => {
@@ -186,27 +202,27 @@ const CompanyUserDraftWriteAtten = () => {
         </Table>
 
         <div className={styles.docHeader}>
-          <Table bordered size="sm" className={styles.docInfo}>
+          <Table bordered size="sm" className={`${styles.docInfo} ${style_atten.docInfo}`}>
             <tbody>
               <tr>
-                <th className={styles.docKey}>문서번호</th>
+                <th className={`${styles.docKey} ${style_atten.docKey}`}>문서번호</th>
                 <td className={styles.docValue}>-</td>
               </tr>
               <tr>
-                <td className={styles.docKey}>본&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;부</td>
-                <td className={styles.docValue}>{department || 'Mark'}</td>
+                <td className={styles.docKey}>부 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 서</td>
+                <td className={styles.docValue}>{userData?.dept_name}</td>
               </tr>
               <tr>
-                <td className={styles.docKey}>부&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;서</td>
-                <td className={styles.docValue}>{reporter || 'Jacob'}</td>
+                <td className={styles.docKey}>소 &nbsp;속 &nbsp;팀</td>
+                <td className={styles.docValue}>{userData?.dept_team_name || ''}</td>
               </tr>
               <tr>
-                <td className={styles.docKey}>기안일</td>
-                <td className={styles.docValue}>{reportDate || '2024-10-16(수)'}</td>
+                <td className={styles.docKey}>기 &nbsp;안 &nbsp;일</td>
+                <td className={styles.docValue}>{reportDate}</td>
               </tr>
               <tr>
-                <td className={styles.docKey}>기안자</td>
-                <td className={styles.docValue}>배수지</td>
+                <td className={styles.docKey}>기 &nbsp;안 &nbsp;자</td>
+                <td className={styles.docValue}>{userData?.emp_name}</td>
               </tr>
               <tr>
                 <td className={styles.docKey}>결재 상태</td>
@@ -214,31 +230,21 @@ const CompanyUserDraftWriteAtten = () => {
               </tr>
             </tbody>
           </Table>
-          {/* <Table bordered size="sm" className={styles.apprLineBox}>
-            <tbody className={styles.apprLineTbody}>
-              {approvalLineData.map((person, index) => (
-                <tr key={index}>
-                  <td>{person.department}</td>
-                  <td>{person.username}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table> */}
-          <Table bordered size="sm" className={styles.apprLineBox}>
+          <Table bordered size="sm" className={`${styles.apprLineBox} ${style_atten.apprLineBox}`}>
             <tbody className={styles.apprLineTbody}>
               <tr className={styles.apprLinedocTr}>
                 <td className={styles.docKey}>상신</td>
                 <td className={styles.docKey}>결재</td>
               </tr>
               <tr>
-                <td className={styles.docKey}>배수지</td>
+                <td>{userData?.emp_name}</td>
                 <td>
                   <Button className={styles.apprLineBtn} onClick={handleApprLineModal}>결재선</Button>
                 </td>
               </tr>
               <tr>
-                <td className={styles.docValue_date}>2024/10/21</td>
-                <td>-</td>
+                <td className={styles.docValue_date}></td>
+                <td></td>
               </tr>
             </tbody>
           </Table>

@@ -5,9 +5,37 @@
     width: 95%;
     font-family: 'ONE-Mobile-Regular';
     /* display: flex; */
-    justify-content: center;  /*가로로 가운데 정렬 */
-    align-items: center; /*세로로 가운데 정렬 */
+    justify-content: center;
+    /*가로로 가운데 정렬 */
+    align-items: center;
+    /*세로로 가운데 정렬 */
     /* flex-direction: column; */
+}
+
+.profileImageContainer {
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+
+.cameraIcon {
+    position: absolute;
+    /* 절대 위치 설정 */
+    bottom: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 50%;
+    padding: 8px;
+    cursor: pointer;
+    transform: translate(25%, 25%);
+    /* 아이콘을 이미지 밖으로 약간 이동 */
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    /* 이미지 위에 표시되도록 설정 */
 }
 
 @media (max-width: 992px) {
@@ -28,43 +56,57 @@
 }
 
 .mypageProfil {
-    margin-left: auto; 
-    margin-right: auto; 
+    display: flex;
+    /* Flexbox 활성화 */
+    flex-direction: column;
+    /* 세로 방향으로 정렬 */
+    align-items: center;
+    /* 가로축 중앙 정렬 */
+    justify-content: center;
+    /* 세로축 중앙 정렬 */
+    margin-left: auto;
+    margin-right: auto;
     max-width: 900px;
-    padding: 0px; 
+    padding: 0px;
     margin-top: 20px;
     text-align: center;
+    margin-bottom: 30px;
 }
 
 /* 중간 화면일 때의 스타일 */
 @media (max-width: 992px) {
     .mypageProfil {
-        margin-left: 100px; 
+        margin-left: 100px;
         margin-right: 20px;
-        max-width: 100%; 
+        max-width: 100%;
         padding: 10px;
     }
 }
 
-.profilTd_id{
-    width:auto;
-    text-align: center;
+.profilTd_id {
+    width: auto;
+    text-align: justify;
 }
 
-.profilTd_value{
-    width:auto;
-    text-align: left;  
+.profilTd_id_num {
+    width: 100px;
+    text-align: end;
+}
+
+.profilTd_value {
+    width: auto;
+    text-align: left;
     align-items: center;
 }
 
 .profilTd_value_pw {
-    width:auto;
+    width: auto;
     display: flex;
     padding: 0;
     align-items: center;
 }
 
-.profilTd_input{
+.profilTd_input {
     font-family: 'NanumSquare';
     width: 120px;
 }
@@ -82,9 +124,12 @@
 }
 
 .image {
+    width: 170px;
+    height: 170px;
     border-radius: 100%;
+    border: solid 2px black;
 }
-   
+
 .titlename {
     display: flex;
     justify-content: center;
@@ -93,11 +138,11 @@
     margin-right: auto;
     margin-left: auto;
 }
-  
+
 .titlename .userName {
     font-size: 25px;
 }
-  
+
 .titlename .userGrade {
     margin-left: 6px;
     font-size: 18px;
@@ -112,77 +157,96 @@
 }
 
 .tablebox_profil td {
-    vertical-align: middle; /* 세로 가운데 정렬 */
-    padding: 10px; /* 셀 내부 여백 */
-    height: 50px; /* 모든 셀의 높이를 동일하게 설정 */
+    vertical-align: middle;
+    /* 세로 가운데 정렬 */
+    padding: 10px;
+    /* 셀 내부 여백 */
+    height: 50px;
+    /* 모든 셀의 높이를 동일하게 설정 */
+    text-align: center;
 }
 
 .tablebox_profil tr td {
-    border : none;
+    border: none;
 }
 
 .userInfo {
     margin-top: 30px;
     text-align: left;
-    margin-left: auto; 
-    margin-right: auto; 
-    max-width: 800px; 
-    width: 100%; 
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 800px;
+    width: 100%;
     padding: 20px;
 }
 
 /* 중간 화면일 때의 스타일 */
 @media (max-width: 992px) {
     .userInfo {
-        margin-left: 20px; 
-        margin-right: 20px; 
-        max-width: 100%; 
-        padding: 10px; 
+        margin-left: 20px;
+        margin-right: 20px;
+        max-width: 100%;
+        padding: 10px;
     }
 
     .changePossible {
         display: flex;
-        flex-wrap: nowrap; /* 한 줄로 유지 */
-        justify-content: space-between; /* 공간 균등 분배 */
+        flex-wrap: nowrap;
+        /* 한 줄로 유지 */
+        justify-content: space-between;
+        /* 공간 균등 분배 */
     }
 
-    .userNumBox, .userPwBox {
-        flex-grow: 1; /* 너비를 균등하게 분배 */
+    .userNumBox,
+    .userPwBox {
+        flex-grow: 1;
+        /* 너비를 균등하게 분배 */
     }
 
     .userPwBox {
-        margin-left: 20px; /* 여백 조정 */
+        margin-left: 20px;
+        /* 여백 조정 */
     }
 }
 
 .userNumUpdatebtnInput {
     background-color: #2e3d86;
-    border:#2e3d86;
+    border: #2e3d86;
     margin-left: 10px;
+    padding-left: auto;
+    padding-right: auto;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .userPwChangebtnInput {
     background-color: #2e3d86;
-    border:#2e3d86;
-    margin-left: 0px;
+    border: #2e3d86;
+    margin-left: 15px;
     width: 100px;
+    padding-left: auto;
+    padding-right: auto;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
-.userNumUpdatebtnInput:hover, .userPwChangebtnInput:hover{
+.userNumUpdatebtnInput:hover,
+.userPwChangebtnInput:hover {
     background-color: #7289CF;
-    border:#7289CF;
-    color:#fefefe;
+    border: #7289CF;
+    color: #fefefe;
 }
 
-.userNumUpdatebtnInput:active, .userPwChangebtnInput:active {
+.userNumUpdatebtnInput:active,
+.userPwChangebtnInput:active {
     background-color: #2e3d86 !important;
-    border:#2e3d86 !important;
-    color:#fefefe;
+    border: #2e3d86 !important;
+    color: #fefefe;
 }
 
 .userNumUpdatebtn {
     background-color: #2e3d86;
-    border:#2e3d86;
+    border: #2e3d86;
     margin-left: 10px;
     width: 100px;
     /* margin-top: 10px; */
@@ -204,13 +268,13 @@
 
 .userPwChangebtn {
     background-color: #2e3d86;
-    border:#2e3d86;
+    border: #2e3d86;
     margin-left: 10px;
     width: 100px;
 }
 
 .userPwChangebtn:hover {
-    border:#2e3d86;
+    border: #2e3d86;
     background-color: #2e3d86;
     color: white;
     font-weight: bold;
@@ -224,24 +288,26 @@
 
 /* 연차 정보 */
 .userAnnualInfobox {
-    margin-top: 40px;
-    margin-left: auto;
     text-align: center;
-    width: 95%; /* 화면 크기에 맞게 너비 확장 */
-    padding: 20px; /* 내부 여백 */
+    width: 100%;
+    /* 화면 크기에 맞게 너비 확장 */
+    padding: 0 20px 20px 20px;
+    /* 내부 여백 */
     font-family: 'ONE-Mobile-Regular';
 }
 
 .userAnnualInfo_title {
-    margin-left: 10px; 
-    text-align: left; 
-    margin-bottom: 10px; /* 제목 아래 여백 */
+    margin-left: 10px;
+    text-align: left;
+    margin-bottom: 10px;
+    /* 제목 아래 여백 */
     font-weight: bold;
 }
 
 @media (max-width: 992px) {
     .userAnnualInfobox {
-        max-width: 100%; /* 중간화면에서는 전체 너비 */
+        max-width: 100%;
+        /* 중간화면에서는 전체 너비 */
         margin-left: 20px;
     }
 }
@@ -267,6 +333,11 @@
 .tablebox {
     width: 100%;
     margin: 0 auto;
+    height: auto;
+}
+
+.infoTable {
+    padding: 20px;
 }
 
 .userAnnualInfoTable {
@@ -279,28 +350,32 @@
 
 .infotitle {
     width: 200px;
-    background-color: #2e3d86 !important;
-    color: white !important;
-    border-top: 1px solid rgb(212, 212, 212);
-    border-right: 0.5px solid rgb(212, 212, 212);
+    background-color: #F1F2F6 !important;
+    color: #7E7E7F !important;
+    border: 1px solid rgb(212, 212, 212);
+    font-weight: bold;
 }
 
 .infoValue {
     width: 200px;
     background-color: #ffffff !important;
-    border-top: 1px solid rgb(212, 212, 212);
-    border-right: 0.5px solid rgb(212, 212, 212);
+    border: 1px solid rgb(212, 212, 212);
 }
 
 @media (max-width: 992px) {
-    .mypageContainer, .mypageProfil, .userAnnualInfobox {
-        max-width: 100%; /* 중간 화면에서 전체 너비로 확장 */
+
+    .mypageContainer,
+    .mypageProfil,
+    .userAnnualInfobox {
+        max-width: 100%;
+        /* 중간 화면에서 전체 너비로 확장 */
         padding: 10px;
     }
 }
 
 /* 모달 */
-.userNumModal, .userPwModal {
+.userNumModal,
+.userPwModal {
     font-family: 'ONE-Mobile-Regular';
 }
 
@@ -313,18 +388,21 @@
     margin-left: 26px;
 }
 
-.userNum_form, .password_form{
+.userNum_form,
+.password_form {
     width: 400px;
     margin: auto;
     justify-content: center;
 }
 
-.formPhoneNumber, .formPhoneNumberNew {
+.formPhoneNumber,
+.formPhoneNumberNew {
     margin-top: 5px;
     margin-bottom: 15px;
 }
 
-.formPw, .formPwNew {
+.formPw,
+.formPwNew {
     margin-top: 5px;
 }
 
@@ -344,23 +422,26 @@
 }
 
 .modal_input_pw[type="password"] {
-    color: black !important; 
+    color: black !important;
     font-family: 'NanumSquare';
 }
 
-.modal_input:active, .modal_input:focus, .modal_input_pw:active, .modal_input_pw:focus {
-    border-bottom:3px solid #2e3d86;
+.modal_input:active,
+.modal_input:focus,
+.modal_input_pw:active,
+.modal_input_pw:focus {
+    border-bottom: 3px solid #2e3d86;
     outline: none !important;
     box-shadow: none;
 }
 
 .toggle_password {
-    color:#2e3d86 !important;
+    color: #2e3d86 !important;
     width: 50px;
     margin-bottom: 20px;
 }
 
-.password_container{
+.password_container {
     display: inline-flex;
 }
 

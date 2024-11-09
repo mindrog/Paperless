@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef ,useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styles from '../../styles/company/company_email_send.module.css';
@@ -17,7 +17,10 @@ function CompanyUserEmailSend() {
     const navigate = useNavigate(); // useNavigate 훅 사용
 
     const location = useLocation();
-    const initialReceiverEmail = location.state?.receiverEmail || '';
+    const emailToForward = location.state?.emailToForward;
+
+    const query = new URLSearchParams(location.search);
+    const initialReceiverEmail = query.get('receiverEmail') || '';
 
     const [receiverEmail, setReceiverEmail] = useState(initialReceiverEmail);
     const [ccEmail, setCcEmail] = useState('');
@@ -31,6 +34,17 @@ function CompanyUserEmailSend() {
 
     const MAX_FILES = 10;
     const MAX_TOTAL_SIZE = 25 * 1024 * 1024; // 25MB 
+
+
+    useEffect(() => {
+        if (emailToForward) {
+            setReceiverEmail(''); // 전달 시 받는 사람은 새로 입력
+            setCcEmail('');
+            setTitle(`Fwd: ${emailToForward.title}`);
+            setEmailContent(`\n\n---------- Forwarded message ----------\nFrom: ${emailToForward.writerDisplayInfo} <${emailToForward.writerEmail}>\nDate: ${new Date(emailToForward.sendDate).toLocaleString()}\nSubject: ${emailToForward.title}\nTo: ${emailToForward.recipientDisplayInfo}\n\n${emailToForward.content}`);
+            
+        }
+    }, [emailToForward]);
 
     const handleDragEnter = (e) => {
         e.preventDefault();
@@ -158,6 +172,8 @@ function CompanyUserEmailSend() {
             alert('이메일 전송 중 오류가 발생했습니다.');
         }
     };
+
+
 
     const calculateTotalFileSize = () => {
         const totalSize = files.reduce((acc, file) => acc + file.size, 0);

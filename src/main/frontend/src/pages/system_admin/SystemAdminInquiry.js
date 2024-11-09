@@ -71,30 +71,22 @@ function SystemAdminInquiry() {
 
     return (
         <div className='adminInquiryPage'>
-            <div className='tableContainer'>
-                {/* 버튼을 눌러 테이블 표시 */}
-                <div className="ButtonContainer">
-                <button className="inqubtn" onClick={() => setShowInquiryTable(true)}>도입 문의 보기</button>
+            <div className="ButtonContainer">
+                <div className='inqubtnarea'>
+                <button className="inqubtn"onClick={() => setShowInquiryTable(true)}>도입 문의 보기</button>
+                </div>
+                <div className='requbtnarea'>
                 <button className="requbtn" onClick={() => setShowInquiryTable(false)}>문의 보기</button>
                 </div>
+                </div>
+            <div className='tableContainer'>
+                {/* 버튼을 눌러 테이블 표시 */}
+                
                 {/* 도입 문의 테이블 */}
                 {showInquiryTable && (
                     <div className='inquiryTable'>
                         <div className='inquirytitle'>도입 문의</div>
-                        <Form inline>
-                            <Row>
-                                <Col xs="auto">
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="Search"
-                                        className="mb-sm-2"
-                                    />
-                                </Col>
-                                <Col xs="auto">
-                                    <Button type="submit">Submit</Button>
-                                </Col>
-                            </Row>
-                        </Form>
+                        
                         <Table striped bordered hover>
                             <thead>
                                 <tr>
@@ -133,20 +125,7 @@ function SystemAdminInquiry() {
                 {!showInquiryTable && (
                     <div className='requestTable'>
                         <div className='inquirytitle'>문의</div>
-                        <Form inline>
-                            <Row>
-                                <Col xs="auto">
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="Search"
-                                        className="mr-sm-2"
-                                    />
-                                </Col>
-                                <Col xs="auto">
-                                    <Button type="submit">Submit</Button>
-                                </Col>
-                            </Row>
-                        </Form>
+                        
                         <Table striped bordered hover>
                             <thead>
                                 <tr>

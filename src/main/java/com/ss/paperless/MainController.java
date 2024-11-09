@@ -50,7 +50,10 @@ public class MainController {
 		System.out.println("userinfo locate...");
 		String emp_code =  SecurityContextHolder.getContext().getAuthentication().getName();
 		empService.getEmpInfo(emp_code);
-		EmployeeDTO nowmem = empService.getEmpInfo(emp_code);;
+		EmployeeDTO nowmem = empService.getEmpInfo(emp_code);
+		nowmem.setDept_name(empService.GetDeptName(nowmem.getEmp_dept_no()));
+		nowmem.setPosi_name(empService.GetPosiName(nowmem.getEmp_posi_no()));
+		nowmem.setDept_team_name(empService.GetDeptTeamName(nowmem.getEmp_dept_no()));
 		System.out.println("nowmem : " + nowmem);
 		return nowmem;
 	}

@@ -12,7 +12,7 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
-function Chatting({ chatData, onSendMessage }) {
+function Chatting() {
     // Redux에서 사용자 정보 가져오기
     const userData = useSelector((state) => state.user.data);
 
@@ -57,7 +57,7 @@ function Chatting({ chatData, onSendMessage }) {
     const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
 
     // WebSocket hook
-    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
+    const { sendMessage, lastMessage, readyState } = useWebSocket(WEBSOCKET_URL);
 
     // 검색 초기화 버튼
     const clearSearchTerm = () => {
@@ -69,6 +69,10 @@ function Chatting({ chatData, onSendMessage }) {
     // 검색어 입력 핸들러
     const handleSearchInputChange = (event) => {
         setSearchTerm(event.target.value);
+        // 새로운 검색어 입력 시 이전 결과 초기화
+        setSearchResults([]);
+        // 인덱스 초기화
+        setCurrentSearchIndex(0);
     };
 
     // 검색 실행 함수
@@ -135,7 +139,8 @@ function Chatting({ chatData, onSendMessage }) {
     // emp 데이터가 준비되었을 때 WebSocket URL 설정
     useEffect(() => {
         console.log('emp:', emp);
-        if (emp && emp.chat_room_no) {
+        // console.log('emp.chat_room_no:', emp.chat_room_no);
+        if (emp && emp.chat_room_no < 0) {
             const url = `${WEBSOCKET_URL}?chat_room_no=${emp.chat_room_no}`;
             if (url !== socketUrl) {
                 console.log('emp.chat_room_no:', emp.chat_room_no);
@@ -229,7 +234,8 @@ function Chatting({ chatData, onSendMessage }) {
         }
         const chatRoomNo = emp.chat_room_no;
         // messageList에서 가장 큰 chat_no를 찾고, 없으면 0을 기본값으로 설정
-        const lastChatNo = messageList.length > 0 ? Math.max(...messageList.map(msg => msg.chat_no)) : -1; // 메시지가 없다면 -1을 기본값으로
+        const messagesInRoom = messageList.filter(msg => msg.chat_room_no === chatRoomNo);
+        const lastChatNo = messageList.length > 0 ? Math.max(...messagesInRoom.map(msg => msg.chat_no)) : -1; // 메시지가 없다면 -1을 기본값으로
         const currentTime = format(new Date(), 'yyyy-MM-dd HH:mm');
         const chatRecipientNo = emp.emp_no;
         const chatRecipientCount = Array.isArray(emp) ? emp.length : 1;

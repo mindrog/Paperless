@@ -8,6 +8,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { triggerUnreadCountUpdate } from '../../store/emailSlice';
+import axios from 'axios';
+import { setUnreadCount } from '../../store/emailSlice';
+
 
 function CompanyUserEmailDetail() {
   const location = useLocation();
@@ -30,72 +33,44 @@ function CompanyUserEmailDetail() {
     return localStorage.getItem('jwt');
   };
 
-  useEffect(() => {
-    if (!emailNo) {
-      alert('이메일 정보를 가져올 수 없습니다.');
-      navigate('/Company/user/email');
-      return;
+  const fetchEmail = async () => {
+    try {
+      const token = localStorage.getItem('jwt');
+      const response = await fetch(`/api/emails/${emailNo}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+
+      const data = await response.json();
+      // 이메일 데이터를 상태에 저장
+      setEmail(data);
+      setLoading(false);
+      console.log(data);
+
+      // 읽지 않은 메일 수 다시 가져오기
+      const unreadResponse = await axios.get('/api/emails/unreadcount', {
+        headers: { Authorization: token },
+      });
+      dispatch(setUnreadCount(unreadResponse.data));
+    } catch (error) {
+      console.error('이메일 데이터를 가져오는 중 오류 발생:', error);
+      setError('이메일 데이터를 가져오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      setLoading(false);
     }
-
-    // 이메일 상세 정보 가져오기
-    fetch(`/api/emails/${emailNo}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `${getToken()}`,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setEmail(data);
-        setLoading(false);
-
-        // 이메일 상태가 'unread'인 경우 'read'로 업데이트
-        if (data.status === 'unread') {
-          updateEmailStatus(emailNo, 'read');
-          // Redux 상태 업데이트
-          dispatch(triggerUnreadCountUpdate());
-        }
-      })
-      .catch((error) => {
-        console.error('이메일 데이터를 가져오는 중 오류 발생:', error);
-        setError('이메일 데이터를 가져오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
-        setLoading(false);
-      });
-  }, [emailNo, navigate, dispatch]);
-
-  /**
-   * 이메일 상태 업데이트 함수
-   * @param {number} emailNo - 이메일 번호
-   * @param {string} status - 새로운 상태 ('read' 또는 'unread')
-   */
-  const updateEmailStatus = (emailNo, status) => {
-    fetch(`/api/emails/${emailNo}/status`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `${getToken()}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ status }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`상태 업데이트 실패: ${response.status}`);
-        }
-        // 상태가 성공적으로 업데이트되면, 필요시 추가 로직을 구현할 수 있습니다.
-        console.log(`이메일 ${emailNo} 상태가 '${status}'로 업데이트되었습니다.`);
-      })
-      .catch((error) => {
-        console.error('이메일 상태 업데이트 중 오류 발생:', error);
-        // 상태 업데이트 실패 시 사용자에게 알리거나, 다른 처리를 할 수 있습니다.
-      });
   };
+
+  useEffect(() => {
+    fetchEmail();
+  }, [emailNo, navigate]);
+
 
   // 삭제 버튼 핸들러
   const handleDelete = () => {
@@ -154,6 +129,8 @@ function CompanyUserEmailDetail() {
     return null;
   }
 
+
+
   return (
     <div className={styles.Container}>
       {/* 상단의 버튼 */}
@@ -194,7 +171,7 @@ function CompanyUserEmailDetail() {
           <strong>보낸 사람:</strong> {email.writerDisplayInfo} &lt;{email.writerEmail}&gt;
         </p>
         <p>
-          <strong>받는 사람:</strong> {email.recipientEmail}
+          <strong>받는 사람:</strong> {email.recipientDisplayInfo} &lt;{email.recipientEmail}&gt;
         </p>
         {email.ccEmail && (
           <p>
@@ -210,8 +187,8 @@ function CompanyUserEmailDetail() {
               <strong>첨부파일:</strong>{' '}
               {email.attachments.map((attachment, index) => (
                 <span key={index}>
-                  <a href={attachment.fileUrl} target="_blank" rel="noopener noreferrer">
-                    {attachment.fileName}
+                  <a href={attachment.attaUrl} target="_blank" rel="noopener noreferrer">
+                    {attachment.attaOriginalName}
                   </a>
                   {index < email.attachments.length - 1 && ', '}
                 </span>

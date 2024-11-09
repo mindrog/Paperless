@@ -16,22 +16,37 @@ const ModalContainer = styled.div`
 
 const ButtonContainer = styled.div`
     display: flex;
-    justify-content: space-between;
+    justify-content: end;
     width: 100%;
     margin-top: 20px;
 `;
 
 const Button = styled.button`
-    padding: 10px 20px;
+    padding: 8px 20px;
     font-size: 16px;
+    margin : 0 0.5vw 0 0.5vw;
     cursor: pointer;
     border: none;
     border-radius: 4px;
-    background-color: #007bff;
+    background-color: #2e3d86;
     color: white;
 
     &:hover {
         background-color: #0056b3;
+    }
+`;
+const Button2 = styled.button`
+    padding: 8px 20px;
+    font-size: 16px;
+    margin : 0 0 0 0.5vw;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    background-color: #d1180b;
+    color: white;
+
+    &:hover {
+        background-color: #f33f32;
     }
 `;
 const Label = styled.label`
@@ -55,14 +70,20 @@ const Input = styled.input`
     width: 100%;
     border: 1px solid #ddd;
     border-radius: 4px;
+    &:focus {
+        border: 3px solid #2e3d86;
+    }
 `;
 
 const Select = styled.select`
-    padding: 8px;
+    padding: 6px;
     font-size: 16px;
     width: 100%;
     border: 1px solid #ddd;
     border-radius: 4px;
+    &:focus {
+        border: 3px solid #2e3d86;
+    }
 `;
 const ScheduleModal = ({ isOpen, onRequestClose, onSave }) => {
     const userData = useSelector((state) => state.user.data);
@@ -88,6 +109,8 @@ const ScheduleModal = ({ isOpen, onRequestClose, onSave }) => {
             // 검색 결과 처리
             setResult(response.data);
             console.log("일정추가 성공 : " + result.data);
+            window.location.reload();
+            onRequestClose();
         } catch (error) {
             console.error("일정 추가 실패:", error);
         }
@@ -162,7 +185,7 @@ const ScheduleModal = ({ isOpen, onRequestClose, onSave }) => {
 
                 <ButtonContainer>
                     <Button onClick={handleSave}>저장</Button>
-                    <Button onClick={onRequestClose}>취소</Button>
+                    <Button2 onClick={onRequestClose}>취소</Button2>
                 </ButtonContainer>
             </ModalContainer>
         </Modal>
