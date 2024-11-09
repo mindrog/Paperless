@@ -27,15 +27,12 @@ public interface ReportMapper {
     void AddApproversData(Map<String, Object> approverDataMap);
 
     // Reference 테이블에 참조자 데이터를 추가
-    // referenceDataMap 맵은 참조자 ID, 부서 ID 등의 참조자 관련 데이터를 포함
     void AddReferencesData(Map<String, Object> referenceDataMap);
 
     // Recipient 테이블에 수신자 데이터를 추가
-    // recipientDataMap 맵은 수신자의 ID, 부서 ID 등의 수신자 관련 데이터를 포함
     void AddReceiversData(Map<String, Object> recipientDataMap);
 
     // Attachment 테이블에 첨부 파일 데이터를 추가
-    // attachmentData 맵은 파일의 키, URL, 원본 이름, 파일 크기 등의 첨부 파일 정보 포함
     void AddAttachmentData(Map<Object, Object> attachmentData);
 
     // ReportAttachment 테이블에 보고서와 첨부 파일 간의 관계 데이터를 추가
@@ -78,8 +75,6 @@ public interface ReportMapper {
     void insertRecipient(Map<String, Object> recipientData);
 
     ReportDTO selectReportById(Long reportId);
-
-    ReportDTO selectReportListByDeptNo(Long deptNo);
     
     // 각 유형의 보고서 조회
     List<ReportDTO> selectWorkReports(Long deptNo);
@@ -131,4 +126,7 @@ public interface ReportMapper {
     List<ReportDTO> selectMyDocWorkReports(Long empNo);
     List<ReportDTO> selectMyDocAttenReports(Long empNo);
     List<ReportDTO> selectMyDocPurcReports(Long empNo);
+
+
+    ReportDTO selectReportFormById(Long reportId);
 }

@@ -50,6 +50,10 @@ public class EmployeeDTO {
     @JsonProperty("approvalType")
     private String approvalType;
 
+    private Long deptCode;
+
+    private int appr_order;
+
     @JsonProperty("team_name")
     private String team_name;
 

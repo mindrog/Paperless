@@ -2,6 +2,7 @@ package com.ss.paperless.report;
 
 import com.ss.paperless.attachment.AttachmentDTO;
 import com.ss.paperless.employee.EmployeeDTO;
+import com.ss.paperless.employee.EmployeeMapper;
 import com.ss.paperless.employee.entity.EmployeeEntity;
 import com.ss.paperless.employee.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,10 @@ public class ReportService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private EmployeeMapper employeemapper;
+
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -76,17 +81,113 @@ public class ReportService {
      * @param reportData 보고서 데이터
      * @return Long 저장된 보고서 ID
      */
-    public Long addSaveAsDraftReportData(Map<String, Object> reportData) {
+    public Long addSaveAsDraftReportData(Map<String, Object> reportData, Map<String, List<EmployeeDTO>> selectData) {
 
-        reportMapper.AddReportData(reportData);
-
-        Long reportId = ((BigInteger) reportData.get("repo_no")).longValue(); // 생성된 repo_no 사용
-        reportData.put("repo_no", reportId); // 다음 작업을 위해 ID를 다시 저장
+        // 생성된 repo_no를 사용하여 reportId 설정
+        Long reportId = ((BigInteger) reportData.get("repo_no")).longValue();
+        reportData.put("repo_no", reportId);
+        reportData.put("repo_status", "saved");
 
         System.out.println("reportId : " + reportId);
         System.out.println("reportData : " + reportData);
 
-        reportMapper.AddWorkReportData(reportData); // workReport
+        String reportType = reportMapper.getReportTypeById(reportId);
+        String documentCode = generateDocumentCode(reportId, reportType);
+        reportData.put("documentCode", documentCode);
+
+        System.out.println("Starting approval process for reportId: " + reportId + ", documentCode: " + documentCode);
+
+        // 보고서 데이터 저장
+        reportMapper.AddReportData(reportData);
+
+        // 작업 보고서 데이터 저장
+        reportMapper.AddWorkReportData(reportData);
+
+        System.out.println("selectData : " + selectData);
+
+        // 결재자 저장
+        Map<String, Object> selectApprovers = new HashMap<>();
+        selectApprovers.put("reportId" , reportId);
+        selectApprovers.put("approvers" , selectData.get("approvers"));
+
+        // 결재 type 확인
+        List<EmployeeDTO> approvers = (List<EmployeeDTO>) selectData.get("approvers");
+
+        // 순차적으로 appr_status 값을 설정
+        for (int i = 0; i < approvers.size(); i++) {
+            approvers.get(i).setAppr_order(i + 1); // 1부터 시작하도록 설정
+        }
+
+        for (EmployeeDTO approver : approvers) {
+            String approvalType = approver.getApprovalType(); // approvalType 필드 값 추출
+            System.out.println("Approval Type: " + approvalType);
+
+            if(approvalType.equals("전결")) {
+                selectApprovers.put("appr_delegate" , 1);
+            } else {
+                selectApprovers.put("appr_delegate" , 0);
+            }
+        }
+        reportMapper.AddApproversData(selectApprovers);
+
+        // 참조자 저장
+        Map<String, Object> selectReferences = new HashMap<>();
+        selectReferences.put("reportId" , reportId);
+
+        // 부서코드 확인
+        List<EmployeeDTO> references = (List<EmployeeDTO>) selectData.get("references");
+
+        for (EmployeeDTO reference : references) {
+            if (reference.getDeptName() != null) {
+
+                String deptName = reference.getDeptName();
+                String teamName = reference.getTeamName();
+
+                Map<String, Object> parms = new HashMap<String, Object>();
+                parms.put("deptName", deptName);
+                parms.put("teamName", teamName);
+
+                // 부서명과 팀명에 대응하는 dept_no 조회
+                Long deptNo = employeemapper.findDeptNoByDeptAndTeamName(parms);
+                reference.setDeptCode(deptNo); // 조회한 dept_no를 EmployeeDTO에 설정
+            }
+
+            System.out.println("Receiver emp_no: " + reference.getEmp_no());
+            System.out.println("Receiver deptCode: " + reference.getDeptCode());
+        }
+
+        selectReferences.put("references" , selectData.get("references"));
+
+        reportMapper.AddReferencesData(selectReferences);
+
+        // 수신자 저장
+        Map<String, Object> selectReceivers = new HashMap<>();
+        selectReceivers.put("reportId" , reportId);
+
+        // 부서코드 확인
+        List<EmployeeDTO> receivers = (List<EmployeeDTO>) selectData.get("receivers");
+
+        for (EmployeeDTO receiver : receivers) {
+            if (receiver.getDeptName() != null) {
+
+                String deptName = receiver.getDeptName();
+                String teamName = receiver.getTeamName();
+
+                Map<String, Object> parms = new HashMap<String, Object>();
+                parms.put("deptName", deptName);
+                parms.put("teamName", teamName);
+
+                // 부서명과 팀명에 대응하는 dept_no 조회
+                Long deptNo = employeemapper.findDeptNoByDeptAndTeamName(parms);
+                receiver.setDeptCode(deptNo);
+            }
+
+            System.out.println("Receiver emp_no: " + receiver.getEmp_no());
+            System.out.println("Receiver deptCode: " + receiver.getDeptCode());
+        }
+
+        selectReceivers.put("receivers" , selectData.get("receivers"));
+        reportMapper.AddReceiversData(selectReceivers);
 
         return reportId;
     }
@@ -169,7 +270,7 @@ public class ReportService {
      * 결재 상신 로직
      * @param reportData 결재 데이터
      */
-    public void submitReportForApproval(Map<String, Object> reportData) {
+    public void submitReportForApproval(Map<String, Object> reportData, Map<String, List<EmployeeDTO>> selectData) {
         try {
             // 1. Report ID 가져오기 및 상태 설정
             Long reportId = (Long) reportData.get("reportId");
@@ -177,14 +278,7 @@ public class ReportService {
 
             System.out.println("Starting approval process for reportId: " + reportId);
 
-            // 2. 문서 코드 생성 및 추가
-            String reportType = reportMapper.getReportTypeById(reportId);
-            String documentCode = generateDocumentCode(reportId, reportType);
-            reportData.put("documentCode", documentCode);
-
-            System.out.println("Starting approval process for reportId: " + reportId + ", documentCode: " + documentCode);
-
-            // 3. 결재 데이터 저장
+            // 2. 결재 데이터 저장
             reportMapper.AddReportData(reportData);
             System.out.println("AddReportData mapper method 실행");
             reportMapper.AddWorkReportData(reportData);
@@ -201,42 +295,89 @@ public class ReportService {
             System.out.println("Report status updated to 'submitted' for reportId: " + reportId);
 
             // 5. 결재자, 참조자, 수신자 목록을 Map으로 변환하여 처리
+            // 결재자 저장
+            Map<String, Object> selectApprovers = new HashMap<>();
+            selectApprovers.put("reportId" , reportId);
+            selectApprovers.put("approvers" , selectData.get("approvers"));
 
-            // 결재자 목록 변환
-            List<EmployeeDTO> approversList = (List<EmployeeDTO>) reportData.get("selectedApprovers");
-            List<Map<String, Object>> approversMapList = new ArrayList<>();
-            for (EmployeeDTO approver : approversList) {
-                Map<String, Object> approverMap = new HashMap<>();
-                approverMap.put("appr_emp_no", approver.getEmp_no());
-                approverMap.put("appr_dept_no", approver.getEmp_dept_no());
-                approverMap.put("appr_delegate", approver.getAppr_delegate());
-                approversMapList.add(approverMap);
+            // 결재 type 확인
+            List<EmployeeDTO> approvers = (List<EmployeeDTO>) selectData.get("approvers");
+
+            // 순차적으로 appr_status 값을 설정
+            for (int i = 0; i < approvers.size(); i++) {
+                approvers.get(i).setAppr_order(i + 1); // 1부터 시작하도록 설정
             }
-            saveApprovers(reportId, approversMapList);
 
-            // 참조자 목록 변환
-            List<EmployeeDTO> referencesList = (List<EmployeeDTO>) reportData.get("selectedReferences");
-            List<Map<String, Object>> referencesMapList = new ArrayList<>();
-            for (EmployeeDTO reference : referencesList) {
-                Map<String, Object> referenceMap = new HashMap<>();
-                referenceMap.put("refe_emp_no", reference.getEmp_no());
-                referenceMap.put("refe_dept_no", reference.getEmp_dept_no());
-                referencesMapList.add(referenceMap);
+            for (EmployeeDTO approver : approvers) {
+                String approvalType = approver.getApprovalType(); // approvalType 필드 값 추출
+                System.out.println("Approval Type: " + approvalType);
+
+                if(approvalType.equals("전결")) {
+                    selectApprovers.put("appr_delegate" , 1);
+                } else {
+                    selectApprovers.put("appr_delegate" , 0);
+                }
             }
-            saveReferences(reportId, referencesMapList);
+            reportMapper.AddApproversData(selectApprovers);
 
-            // 수신자 목록 변환
-            List<EmployeeDTO> receiversList = (List<EmployeeDTO>) reportData.get("selectedReceivers");
-            List<Map<String, Object>> receiversMapList = new ArrayList<>();
-            for (EmployeeDTO receiver : receiversList) {
-                Map<String, Object> receiverMap = new HashMap<>();
-                receiverMap.put("reci_emp_no", receiver.getEmp_no());
-                receiverMap.put("reci_dept_no", receiver.getEmp_dept_no());
-                receiversMapList.add(receiverMap);
+            // 참조자 저장
+            Map<String, Object> selectReferences = new HashMap<>();
+            selectReferences.put("reportId" , reportId);
+
+            // 부서코드 확인
+            List<EmployeeDTO> references = (List<EmployeeDTO>) selectData.get("references");
+
+            for (EmployeeDTO reference : references) {
+                if (reference.getDeptName() != null) {
+
+                    String deptName = reference.getDeptName();
+                    String teamName = reference.getTeamName();
+
+                    Map<String, Object> parms = new HashMap<String, Object>();
+                    parms.put("deptName", deptName);
+                    parms.put("teamName", teamName);
+
+                    // 부서명과 팀명에 대응하는 dept_no 조회
+                    Long deptNo = employeemapper.findDeptNoByDeptAndTeamName(parms);
+                    reference.setDeptCode(deptNo); // 조회한 dept_no를 EmployeeDTO에 설정
+                }
+
+                System.out.println("Receiver emp_no: " + reference.getEmp_no());
+                System.out.println("Receiver deptCode: " + reference.getDeptCode());
             }
-            saveRecipients(reportId, receiversMapList);
 
-            System.out.println("Approval process completed for reportId: " + reportId);
+            selectReferences.put("references" , selectData.get("references"));
+
+            reportMapper.AddReferencesData(selectReferences);
+
+            // 수신자 저장
+            Map<String, Object> selectReceivers = new HashMap<>();
+            selectReceivers.put("reportId" , reportId);
+
+            // 부서코드 확인
+            List<EmployeeDTO> receivers = (List<EmployeeDTO>) selectData.get("receivers");
+
+            for (EmployeeDTO receiver : receivers) {
+                if (receiver.getDeptName() != null) {
+
+                    String deptName = receiver.getDeptName();
+                    String teamName = receiver.getTeamName();
+
+                    Map<String, Object> parms = new HashMap<String, Object>();
+                    parms.put("deptName", deptName);
+                    parms.put("teamName", teamName);
+
+                    // 부서명과 팀명에 대응하는 dept_no 조회
+                    Long deptNo = employeemapper.findDeptNoByDeptAndTeamName(parms);
+                    receiver.setDeptCode(deptNo);
+                }
+
+                System.out.println("Receiver emp_no: " + receiver.getEmp_no());
+                System.out.println("Receiver deptCode: " + receiver.getDeptCode());
+            }
+
+            selectReceivers.put("receivers" , selectData.get("receivers"));
+            reportMapper.AddReceiversData(selectReceivers);
 
         } catch (Exception e) {
             System.err.println("Error during report approval process: " + e.getMessage());
@@ -473,5 +614,11 @@ public class ReportService {
         purchaseReports.forEach(report -> reportsMap.put((long) report.getRepo_no(), report));
 
         return reportsMap;
+    }
+
+    public ReportDTO selectReportFormById(long l) {
+        ReportDTO reuslt = reportMapper.selectReportFormById(l);
+        System.out.println("selectReportFormById-reuslt : " + reuslt);
+        return reuslt;
     }
 }

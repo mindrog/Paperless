@@ -67,4 +67,6 @@ public interface EmployeeMapper {
 	
 	@Select("SELECT * FROM Department WHERE dept_no = #{deptNo}")
 	public DepartmentDTO getDepartmentByNo(int deptNo);
+
+    Long findDeptNoByDeptAndTeamName(Map<String, Object> parms);
 }

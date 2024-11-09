@@ -25,7 +25,8 @@ function DocumentList({ docs = [], onRowClick, columns = [] }) {
                                     'submitted': '상신',
                                     'approved': '승인',
                                     'pending': '대기 중',
-                                    'canceled': '반려'
+                                    'canceled': '반려',
+                                    'saved':'임시 저장'
                                 }[value] || value;
                             }
 

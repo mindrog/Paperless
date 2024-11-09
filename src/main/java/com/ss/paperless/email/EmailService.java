@@ -208,11 +208,11 @@ public class EmailService {
 		userEmailStatusRepository.saveAll(statuses);
 	}
 
-	public int getUnreadCount(String emp_code) {
-		EmployeeEntity employee=employeeRepository.findByEmpCode(emp_code);
-		
-		return mapper.getUnreadCount(employee.getEmpNo());
-	}
+//	public int getUnreadCount(String emp_code) {
+//		EmployeeEntity employee=employeeRepository.findByEmpCode(emp_code);
+//
+//		return mapper.getUnreadCount(employee.getEmpNo());
+//	}
 
 	// 이메일 저장
 	public void saveEmail(Emailmessage email, List<EmployeeEntity> recipients) {

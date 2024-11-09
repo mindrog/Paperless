@@ -113,8 +113,10 @@ function App() {
                         <Route path='/company/user/draft/detail/purchase/:reportId' element={<CompanyUserDraftDetailPurc />} />
                         <Route path='/company/user/draft/detail/attendance' element={<CompanyUserDraftDetailAtten />} />
                         <Route path='/company/user/draft/detail/attendance/:reportId' element={<CompanyUserDraftDetailAtten />} />
-                        <Route path='/company/user/draft/form/work' element={<CompanyUserDraftFormWork />} />
+
+                        {/* <Route path='/company/user/draft/form/work' element={<CompanyUserDraftFormWork />} /> */}
                         <Route path='/company/user/draft/form/work/:reportId' element={<CompanyUserDraftFormWork />} />
+
                         <Route path='/company/user/draft/form/purchase' element={<CompanyUserDraftFormPurc />} />
                         <Route path='/company/user/draft/form/purchase/:reportId' element={<CompanyUserDraftFormPurc />} />
                         <Route path='/company/user/draft/form/attendance' element={<CompanyUserDraftFormAtten />} />
