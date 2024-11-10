@@ -65,7 +65,7 @@ const Menubar = ({ isMenuOpen }) => {
         const fetchUnreadCount = async () => {
             try {
                 const token = localStorage.getItem('jwt');
-                const response = await axios.get('/api/emails/unreadcount', {
+                const response = await axios.get('http://localhost:8080/api/emails/unreadcount', {
                     headers: { Authorization: token },
                 });
                 setEmailUnreadCount(response.data);

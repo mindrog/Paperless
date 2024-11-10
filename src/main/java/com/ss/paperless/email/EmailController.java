@@ -55,14 +55,14 @@ public class EmailController {
         this.attachmentRepository = attachmentRepository;
     }
 
-//    @GetMapping("/unreadcount")
-//    public int getUnreadCount() {
-//        System.out.println("unreadCount 실행!");
-//        String emp_code = SecurityContextHolder.getContext().getAuthentication().getName();
-//        int unreadCount = emailService.getUnreadCount(emp_code);
-//        System.out.println("unreadCount: " + unreadCount);
-//        return unreadCount;
-//    }
+    @GetMapping("/unreadcount")
+    public int getUnreadCount() {
+        System.out.println("unreadCount 실행!");
+        String emp_code = SecurityContextHolder.getContext().getAuthentication().getName();
+        int unreadCount = emailService.getUnreadCount(emp_code);
+        System.out.println("unreadCount: " + unreadCount);
+        return unreadCount;
+    }
 
     /**
      * 이메일 전송 API
@@ -275,8 +275,8 @@ public class EmailController {
         }
     }
 
-    @GetMapping("/{emailId}")
-    public ResponseEntity<?> getEmailById(@PathVariable Long emailId, Principal principal) {
+    @GetMapping("/{emailNo}")
+    public ResponseEntity<?> getEmailById(@PathVariable("emailNo") Long emailId, Principal principal) {
         try {
             // 현재 로그인한 사용자 확인
             String currentUserEmpCode = principal.getName();

@@ -10,13 +10,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { triggerUnreadCountUpdate } from '../../store/emailSlice';
 import axios from 'axios';
 import { setUnreadCount } from '../../store/emailSlice';
+import { useParams } from 'react-router-dom';
 
 
 function CompanyUserEmailDetail() {
   const location = useLocation();
   const navigate = useNavigate();
-  const emailNo = location.state?.emailNo; // 이메일 번호를 받아옴
-
+  const { emailId } = useParams();// 이메일 번호를 받아옴
+  const emailNo = parseInt(emailId, 10);
   const [email, setEmail] = useState(null); // 이메일 상세 정보를 저장
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,7 +37,7 @@ function CompanyUserEmailDetail() {
   const fetchEmail = async () => {
     try {
       const token = localStorage.getItem('jwt');
-      const response = await fetch(`/api/emails/${emailNo}`, {
+      const response = await fetch(`http://localhost:8080/api/emails/${emailNo}`, {
         method: 'GET',
         headers: {
           'Authorization': `${token}`,
@@ -56,7 +57,7 @@ function CompanyUserEmailDetail() {
       console.log(data);
 
       // 읽지 않은 메일 수 다시 가져오기
-      const unreadResponse = await axios.get('/api/emails/unreadcount', {
+      const unreadResponse = await axios.get('http://localhost:8080/api/emails/unreadcount', {
         headers: { Authorization: token },
       });
       dispatch(setUnreadCount(unreadResponse.data));
@@ -80,6 +81,7 @@ function CompanyUserEmailDetail() {
       headers: {
         'Authorization': `${getToken()}`,
         'Content-Type': 'application/json',
+      
       },
       body: JSON.stringify({ emailIds: [emailNo] }),
     })

@@ -99,7 +99,7 @@ function App() {
                         {/* 이메일 */}
                         <Route path='/company/user/email' element={<CompanyUserEmail />} />
                         <Route path='/company/user/email/send' element={<CompanyUserEmailSend />} />
-                        <Route path='/company/user/email/detail' element={<CompanyUserEmailDetail />} />
+                        <Route path='/company/user/email/detail/:emailId' element={<CompanyUserEmailDetail />} />
 
                         {/* 기안 관련 */}
                         <Route path='/company/user/draft/doc/all' element={<CompanyUserDraftDocAll />} />
