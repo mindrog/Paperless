@@ -17,6 +17,7 @@ const CompanyUserDraftDetailWork = () => {
   const [empCodeInfo, setEmpCodeInfo] = useState({});
   const [apprLineInfo, setApprLineInfo] = useState({ approverInfo: [], recipientInfo: [], referenceInfo: [] });
   const [apprIsRead, setApprIsRead] = useState(0);
+  const [alertMessage, setAlertMessage] = useState({});
 
   // 로그인한 사용자 정보
   const [userId, setUserId] = useState(null);
@@ -75,7 +76,7 @@ const CompanyUserDraftDetailWork = () => {
         alert('상신이 취소되었습니다.');
         navigate('/company/user/draft/doc/myuser');
       } else {
-        alert('상신 취소에 실패했습니다.');
+        alert('결재 진행 내용이 존재하여 상신 취소할 수 없습니다.');
       }
     } catch (error) {
       console.error('Error cancelling submission:', error);
@@ -105,6 +106,58 @@ const CompanyUserDraftDetailWork = () => {
     }
   };
 
+  // 반려
+  const handleReject = async () => {
+    try {
+      const response = await fetch(`/api/reject/${reportId}`, {
+        method: 'POST',
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          approverId: userId,
+          status: 'rejected',
+        }),
+      });
+      if (response.ok) {
+        setAlertMessage('결재가 반려되었습니다.');
+        navigate('/company/user/draft/doc/penforappr');
+      } else {
+        setAlertMessage('결재 반려에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error rejecting approval:', error);
+      setAlertMessage('결재 반려 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 결재 승인
+  const handleApprove = async () => {
+    try {
+      const response = await fetch(`/api/approve/${reportId}`, {
+        method: 'POST',
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          approverId: userId,
+          status: 'approved',
+        }),
+      });
+      if (response.ok) {
+        setAlertMessage('결재가 승인되었습니다.');
+        navigate('/company/user/draft/doc/penforappr');
+      } else {
+        setAlertMessage('결재 승인에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error approving report:', error);
+      setAlertMessage('결재 승인 중 오류가 발생했습니다.');
+    }
+  };
+
   // 목록으로 이동 버튼 클릭 핸들러
   const handleGoBack = () => navigate('/company/user/draft/doc/all');
 
@@ -114,6 +167,7 @@ const CompanyUserDraftDetailWork = () => {
   console.log("User info data:", JSON.stringify(empCodeInfo, null, 2));
   console.log("apprs info data:", JSON.stringify(apprLineInfo, null, 2));
 
+  console.log("!!!reportData.approverInfo : ", reportData.approverInfo);
   return (
     <div className="container">
       <div className={styles.formHeader}>
@@ -141,6 +195,25 @@ const CompanyUserDraftDetailWork = () => {
               )}
             </div>
           )}
+
+          {(reportData.reportStatus === 'pending' || reportData.reportStatus === 'submitted') &&
+            apprLineInfo.approverInfo &&
+            apprLineInfo.approverInfo.some((approver) => {
+              console.log('approver.emp_code:', approver.emp_code, 'userId:', userId);
+              console.log('emp_code === userId:', approver.emp_code === userId);
+              console.log('appr_status === "pending":', approver.appr_status === 'pending');
+              return approver.emp_code === userId && approver.appr_status === 'pending';
+            }) && (
+              <div>
+                <Button className={styles.rejectBtn} onClick={handleReject}>
+                  반려
+                </Button>
+                <Button className={styles.approveBtn} onClick={handleApprove}>
+                  승인
+                </Button>
+              </div>
+            )}
+
         </div>
 
         <Table bordered className={styles.mainTable}>
@@ -204,15 +277,15 @@ const CompanyUserDraftDetailWork = () => {
                   <td key={index} className={styles.docValueAppr}>
                     <div style={{ position: 'relative' }}>
                       {/* 최상위 approver의 posi_name, emp_name 출력 */}
-                      {/* <div className="apprTypePosi">{approver.posi_name}</div>
-                    {approver.emp_name} */}
+                      <div className={styles.apprTypePosi}>{approver.dept_team_name} {approver.posi_name}</div>
+                      {approver.emp_name}
                       {/* 중첩된 approverInfo가 존재할 경우에만 접근 */}
-                      {approver.approverInfo && approver.approverInfo.map((innerApprover, innerIndex) => (
+                      {/* {approver.approverInfo && approver.approverInfo.map((innerApprover, innerIndex) => (
                         <div key={innerIndex} style={{ marginLeft: '10px' }}>
                           <div className={styles.apprTypePosi}>{innerApprover.dept_team_name} {innerApprover.posi_name}</div>
                           {innerApprover.emp_name}
                         </div>
-                      ))}
+                      ))} */}
                     </div>
                   </td>
                 ))}
@@ -238,13 +311,13 @@ const CompanyUserDraftDetailWork = () => {
               <td className={styles.labelCellSec}>참&nbsp;&nbsp;&nbsp;조</td>
               <td className={styles.valueCell}>
                 {apprLineInfo.referenceInfo.map((ref, index) => (
-                  <span key={index}>{ref.dept_name} {ref.dept_team_name} {ref.emp_name} {ref.posi_name} {index < apprLineInfo.referenceInfo.length - 1 && ', '}</span>
+                  <span key={index}>{ref.dept_name} {ref.dept_team_name} {ref.emp_name} {index < apprLineInfo.referenceInfo.length - 1 && ', '}</span>
                 ))}
               </td>
               <td className={styles.labelCellSec}>수&nbsp;&nbsp;&nbsp;신</td>
               <td className={styles.valueCell}>
                 {apprLineInfo.recipientInfo.map((recv, index) => (
-                  <span key={index}>{recv.dept_name} {recv.emp_name} {recv.posi_name}{index < apprLineInfo.recipientInfo.length - 1 && ', '}</span>
+                  <span key={index}>{recv.dept_name} {recv.dept_team_name} {index < apprLineInfo.recipientInfo.length - 1 && ', '}</span>
                 ))}
               </td>
             </tr>

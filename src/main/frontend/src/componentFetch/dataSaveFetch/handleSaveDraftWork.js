@@ -56,7 +56,7 @@ const HandleSaveDraftWork = forwardRef(({
         }
       }
 
-      const apiUrl = type === 'draft' ? '/api/saveasdraft' : '/api/saveworkreport';
+      const apiUrl = type === 'draft' ? '/api/saveasdraft' : '/api/saveworkreport/${reportId}';
       const token = localStorage.getItem('jwt');
 
       const response = await fetch(apiUrl, {
@@ -71,7 +71,7 @@ const HandleSaveDraftWork = forwardRef(({
 
       const result = await response.json();
       console.log(`${type === 'draft' ? 'Draft' : 'Submission'} result:`, result);
-
+      console.log("result : " , result);
       if (result.reportId) {
         setReportId(result.reportId);
       }

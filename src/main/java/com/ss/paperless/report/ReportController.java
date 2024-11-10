@@ -103,69 +103,81 @@ public class ReportController {
     }
 
     // 보고서 결재 상신 엔드포인트
-    @PostMapping(value = "/saveworkreport", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> submitWorkReport(
-            @RequestPart("reportData") String reportDataJson, // JSON 데이터를 포함한 DTO
-            @RequestPart(value = "files", required = false) List<MultipartFile> files) {
-
+    @PostMapping("/submitApproval/{reportId}")
+    public ResponseEntity<?> submitApproval(@PathVariable Long reportId) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            ReportRequest reportRequest = objectMapper.readValue(reportDataJson, ReportRequest.class);
+            reportService.UpdateReportStatus(reportId);
 
-            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy. MM. dd. a hh:mm", Locale.KOREAN);
-            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-            String reportDateStr = reportRequest.getReportDate();
-            LocalDateTime reportDateTime = LocalDateTime.parse(reportDateStr, inputFormatter);
-            String formattedDate = reportDateTime.format(outputFormatter);
-            System.out.println("formattedDate : " + formattedDate);
-
-            // reportId 조회
-            Long reportId = reportRequest.getReportId();
-            System.out.println("controller reportId : " + reportId);
-
-            // 현재 인증된 사용자의 emp_code로 보고서 작성자 ID 조회
-            String empCode = SecurityContextHolder.getContext().getAuthentication().getName();
-            int repoEmpNo = reportService.getUserEmpNo(empCode);
-
-            // 데이터 저장을 위한 Map 생성
-            Map<String, Object> reportData = new HashMap<>();
-            reportData.put("repoEmpNo", repoEmpNo);
-            reportData.put("reportTitle", reportRequest.getReportTitle());
-            reportData.put("reportContent", reportRequest.getReportContent());
-            reportData.put("reportDate", formattedDate);
-            reportData.put("repoStartTime", reportRequest.getRepoStartTime());
-            reportData.put("repoEndTime", reportRequest.getRepoEndTime());
-            reportData.put("reportId", reportId);
-            reportData.put("repo_status", "submitted");
-            reportData.put("approvers", reportRequest.getSelectedApprovers());
-            reportData.put("references", reportRequest.getSelectedReferences());
-            reportData.put("receivers", reportRequest.getSelectedReceivers());
-
-            Map<String, List<EmployeeDTO>> selectData = new HashMap<>();
-            selectData.put("approvers",reportRequest.getSelectedApprovers());
-            selectData.put("receivers",reportRequest.getSelectedReceivers());
-            selectData.put("references",reportRequest.getSelectedReferences());
-
-            System.out.println("selectData : " + selectData);
-
-            // 결재 상신을 위한 서비스 호출
-            reportService.submitReportForApproval(reportData, selectData);
-
-            // JSON 형식으로 응답을 반환
-            return ResponseEntity.ok(Map.of("message", "Report submitted successfully"));
+            return ResponseEntity.ok(Map.of("message", "Report successfully submitted"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Failed to submit report", "message", e.getMessage()));
         }
     }
 
-    // 보고서 조회
+//    @PostMapping(value = "/saveworkreport/{reportId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+//    public ResponseEntity<?> submitWorkReport(
+//            @RequestPart("reportData") String reportDataJson, // JSON 데이터를 포함한 DTO
+//            @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+//
+//        try {
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            ReportRequest reportRequest = objectMapper.readValue(reportDataJson, ReportRequest.class);
+//
+//            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy. MM. dd. a hh:mm", Locale.KOREAN);
+//            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//
+//            String reportDateStr = reportRequest.getReportDate();
+//            LocalDateTime reportDateTime = LocalDateTime.parse(reportDateStr, inputFormatter);
+//            String formattedDate = reportDateTime.format(outputFormatter);
+//            System.out.println("formattedDate : " + formattedDate);
+//
+//            // reportId 조회
+//            Long reportId = reportRequest.getReportId();
+//            System.out.println("controller reportId : " + reportId);
+//
+//            // 현재 인증된 사용자의 emp_code로 보고서 작성자 ID 조회
+//            String empCode = SecurityContextHolder.getContext().getAuthentication().getName();
+//            int repoEmpNo = reportService.getUserEmpNo(empCode);
+//
+//            // 데이터 저장을 위한 Map 생성
+//            Map<String, Object> reportData = new HashMap<>();
+//            reportData.put("repoEmpNo", repoEmpNo);
+//            reportData.put("reportTitle", reportRequest.getReportTitle());
+//            reportData.put("reportContent", reportRequest.getReportContent());
+//            reportData.put("reportDate", formattedDate);
+//            reportData.put("repoStartTime", reportRequest.getRepoStartTime());
+//            reportData.put("repoEndTime", reportRequest.getRepoEndTime());
+//            reportData.put("reportId", reportId);
+//            reportData.put("repo_status", "submitted");
+//            reportData.put("approvers", reportRequest.getSelectedApprovers());
+//            reportData.put("references", reportRequest.getSelectedReferences());
+//            reportData.put("receivers", reportRequest.getSelectedReceivers());
+//
+//            Map<String, List<EmployeeDTO>> selectData = new HashMap<>();
+//            selectData.put("approvers",reportRequest.getSelectedApprovers());
+//            selectData.put("receivers",reportRequest.getSelectedReceivers());
+//            selectData.put("references",reportRequest.getSelectedReferences());
+//
+//            System.out.println("selectData : " + selectData);
+//
+//            // 결재 상신을 위한 서비스 호출
+//            reportService.submitReportForApproval(reportData, selectData);
+//
+//            // JSON 형식으로 응답을 반환
+//            return ResponseEntity.ok(Map.of("message", "Report submitted successfully"));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(Map.of("error", "Failed to submit report", "message", e.getMessage()));
+//        }
+//    }
+
+    // 보고서 내용 조회
     @GetMapping("/reportform/{reportId}")
     public ResponseEntity<ReportDTO> getReportForm(@PathVariable Long reportId) {
         System.out.println("getReport reportId : " + reportId);
 
-        ReportDTO selectReport = reportService.selectReportFormById(reportId+1);
+        ReportDTO selectReport = reportService.selectReportFormById(reportId);
         System.out.println("selectReport : " + selectReport);
 
         if (selectReport != null) {
@@ -286,7 +298,7 @@ public class ReportController {
             String empCode = SecurityContextHolder.getContext().getAuthentication().getName();
 
             // 회수를 위한 서비스 호출
-            boolean success = reportService.retrieveReport(reportId, empCode);
+            boolean success = reportService.cancelSubmission(reportId, empCode);
 
             if (success) {
                 System.out.println("회수 success");
@@ -307,15 +319,9 @@ public class ReportController {
             // 현재 인증된 사용자의 emp_code로 결재자 ID 확인
             String empCode = SecurityContextHolder.getContext().getAuthentication().getName();
 
-            // 승인을 위한 서비스 호출
-            boolean success = reportService.approveReport(reportId, empCode);
+            reportService.approveReport(reportId, empCode);
 
-            if (success) {
-                System.out.println("승인 success");
-                return ResponseEntity.ok("Report approved successfully.");
-            } else {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to approve this report.");
-            }
+            return ResponseEntity.ok("Report approved successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to approve report: " + e.getMessage());
@@ -336,7 +342,7 @@ public class ReportController {
             boolean success = reportService.rejectReport(reportId, empCode, rejectionReason);
 
             if (success) {
-                System.out.println("승인 success");
+                System.out.println("반려 success");
                 return ResponseEntity.ok("Report rejected successfully.");
             } else {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to reject this report.");

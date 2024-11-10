@@ -38,9 +38,9 @@ public class ReportDTO {
 	private String repo_status; 			// 보고서상태(임시저장, 저장, 상신, 상신취소 등)
 	private String repo_code; 				// 문서코드(승인 시 발급되는 문서번호)
 
-	@JsonProperty("reportDate")
-	@JsonFormat(pattern = "yyyy. MM. dd. a hh:mm", locale = "ko_KR")
-	private LocalDateTime draft_date; 		// 기안일
+	@JsonProperty("repo_date")
+//	@JsonFormat(pattern = "yyyy. MM. dd. a hh:mm", locale = "ko_KR")
+	private LocalDateTime repo_date; 		// 기안일
 
 	@JsonProperty("submission_date")
 	private LocalDateTime submission_date; 	// 상신일
