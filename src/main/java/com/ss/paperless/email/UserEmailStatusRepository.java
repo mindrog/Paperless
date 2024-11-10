@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface UserEmailStatusRepository extends JpaRepository<UserEmailStatus, Long> {
     List<UserEmailStatus> findByUserAndFolderAndDeletedAtIsNull(EmployeeEntity user, String folder);
 
-    Optional<UserEmailStatus> findByEmailAndUser(Emailmessage email, EmployeeEntity user);
+    List<UserEmailStatus> findByEmailAndUser(Emailmessage email, EmployeeEntity user);
 
     List<UserEmailStatus> findByEmailEmailNoInAndUser(List<Long> emailNos, EmployeeEntity user);
 

@@ -64,27 +64,23 @@ public class EmailController {
         return unreadCount;
     }
 
-    /**
-     * 이메일 전송 API
-     *
-     * @param recipientEmail 수신자 이메일
-     * @param ccEmail        참조자 이메일 (선택 사항)
-     * @param title          이메일 제목
-     * @param content        이메일 내용
-     * @param principal      인증된 사용자 정보
-     * @return 응답 메시지
-     */
     @PostMapping("/send")
-    public ResponseEntity<?> sendEmail(@RequestParam("recipientEmail") String recipientEmail,
-            @RequestParam(value = "ccEmail", required = false) String ccEmail, @RequestParam("title") String title,
+    public ResponseEntity<?> sendEmail(
+            @RequestParam("recipientEmail") String recipientEmail,
+            @RequestParam(value = "ccEmail", required = false) String ccEmail,
+            @RequestParam("title") String title,
             @RequestParam("content") String content,
+            @RequestParam(value = "existingAttachmentNos", required = false) List<Long> existingAttachmentNos,
             @RequestParam(value = "attachments", required = false) List<MultipartFile> attachments,
             Principal principal) {
 
         try {
-            // 현재 로그인한 사용자 정보 가져오기 (발신자)
-            String senderEmpCode = principal.getName(); // emp_code 사용
+            // 현재 로그인한 사용자 확인 (발신자)
+            String senderEmpCode = principal.getName();
             EmployeeEntity sender = employeeService.findByEmpCode(senderEmpCode);
+            if (sender == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 정보를 찾을 수 없습니다.");
+            }
 
             // 수신자 이메일로 Employee 조회
             EmployeeEntity recipient = employeeService.findByEmail(recipientEmail);
@@ -100,48 +96,17 @@ public class EmailController {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("참조자를 찾을 수 없습니다.");
                 }
             }
+            System.out.println("existingAttachmentNos received: " + existingAttachmentNos);
 
-            // 이메일 객체 생성
-            Emailmessage email = new Emailmessage();
-            email.setWriter(sender);
-            email.setRecipient(recipient);
-            email.setCc(cc);
-            email.setTitle(title);
-            email.setContent(content);
-            email.setSendDate(LocalDateTime.now());
+            // EmailService를 통해 전송 또는 전달 처리
+            emailService.sendOrForwardEmail(sender, recipient, cc, title, content, existingAttachmentNos, attachments);
 
-            emailmessageRepository.save(email);
-
-            // 첨부파일 처리
-            if (attachments != null && !attachments.isEmpty()) {
-                for (MultipartFile file : attachments) {
-                    String fileUrl = s3Service.uploadFile(file, "email", email.getEmailNo());
-                    // Attachment 엔티티 생성 및 저장
-                    Attachment attachment = Attachment.builder()
-                            .attaKey("emails/" + email.getEmailNo() + "/" + file.getOriginalFilename())
-                            .attaUrl(fileUrl)
-                            .attaOriginalName(file.getOriginalFilename()).attaSize(file.getSize()).build();
-                    attachmentRepository.save(attachment);
-
-                    // EmailAttachment 엔티티 생성 및 저장
-                    EmailAttachment emailAttachment = EmailAttachment.builder().emailNo(email.getEmailNo())
-                            .attaNo(attachment.getAttaNo()).email(email).attachment(attachment).build();
-                    emailAttachmentRepository.save(emailAttachment);
-                }
-            }
-
-            // 이메일 저장 및 UserEmailStatus 생성
-            List<EmployeeEntity> recipients = new ArrayList<>();
-            recipients.add(recipient);
-            if (cc != null) {
-                recipients.add(cc);
-            }
-//            emailService.saveEmail(email, recipients);
-
-            return ResponseEntity.ok("이메일이 성공적으로 전송되었습니다.");
+            // 성공 응답
+            String action = (existingAttachmentNos != null && !existingAttachmentNos.isEmpty()) ? "전달" : "전송";
+            return ResponseEntity.ok(action + "이메일이 성공적으로 완료되었습니다.");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이메일 전송 중 오류가 발생했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이메일 처리 중 오류가 발생했습니다.");
         }
     }
 
@@ -275,8 +240,8 @@ public class EmailController {
         }
     }
 
-    @GetMapping("/{emailId}")
-    public ResponseEntity<?> getEmailById(@PathVariable Long emailId, Principal principal) {
+    @GetMapping("/{emailNo}")
+    public ResponseEntity<?> getEmailById(@PathVariable("emailNo") Long emailId, Principal principal) {
         try {
             // 현재 로그인한 사용자 확인
             String currentUserEmpCode = principal.getName();

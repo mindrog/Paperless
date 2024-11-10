@@ -21,8 +21,10 @@ public class AttachmentDTO {
 	private String attaOriginalName;
 	private Long attaSize;
 
-	public AttachmentDTO(String attaOriginalName, String attaUrl) {
+	public AttachmentDTO(Long attaNo,String attaOriginalName, String attaUrl,Long attaSize) {
 		this.attaOriginalName = attaOriginalName;
 		this.attaUrl = attaUrl;
+		this.attaSize=attaSize;
+		this.attaNo = attaNo;
 	}
 }
