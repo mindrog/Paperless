@@ -210,7 +210,6 @@ public class EmailService {
 
 	public int getUnreadCount(String emp_code) {
 		EmployeeEntity employee=employeeRepository.findByEmpCode(emp_code);
-		
 		return mapper.getUnreadCount(employee.getEmpNo());
 	}
 
