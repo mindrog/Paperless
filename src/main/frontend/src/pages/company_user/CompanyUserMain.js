@@ -8,6 +8,8 @@ import Menubar from '../layout/menubar';
 import GraphChart from '../layout/GraphChart';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope, faEnvelopeOpen } from '@fortawesome/free-solid-svg-icons';
 const reportData = [
     {
         id: 1,
@@ -190,7 +192,7 @@ function CompanyUserMain() {
     }, []);
 
     const handleEmailClick = (email) => {
-        navigate('/Company/user/email/detail', { state: { emailNo: email.emailNo } });
+        navigate(`/Company/user/email/detail/${email.emailNo}`);
         console.log(email.emailNo);
     };
 
@@ -298,7 +300,11 @@ function CompanyUserMain() {
                                                     style={{ cursor: 'pointer' }}
                                                     className={mail.status === 'unread' ? styles.unread : ''}
                                                 >
-                                                    <td>{mail.emailNo}</td>
+                                                    <td>{mail.status === 'unread' ? (
+                                                        <FontAwesomeIcon icon={faEnvelope} style={{ color: '#5A77B6' }} />
+                                                    ) : (
+                                                        <FontAwesomeIcon icon={faEnvelopeOpen} style={{ color: '#5A77B6' }} />
+                                                    )}</td>
                                                     <td>{mail.title}</td>
                                                     <td>{mail.writerDisplayInfo}</td>
                                                     <td>{formatDate(mail.sendDate)}</td>
@@ -369,29 +375,29 @@ function CompanyUserMain() {
                                 <div className={`${styles.gridItem2} ${styles.gridItemperCalendar}`} >
                                     <h3 className={styles.colTitle}>부서 일정</h3>
                                     {deptschedules.length > 0 ? (
-                                    deptschedules.map((schedule, index) => (
-                                        <div key={index} className={styles.inGridText}>
-                                            <p className={styles.scheduletitle}>일정 제목: {schedule.sche_title}</p>
-                                            <p className={styles.scheduleDuring} style={{ marginBottom: '8px' }}>  기간: {new Date(schedule.sche_start).toLocaleDateString('en-CA')} ~ {new Date(schedule.sche_end).toLocaleDateString('en-CA')}</p>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>일정 없음</p>
-                                )}
+                                        deptschedules.map((schedule, index) => (
+                                            <div key={index} className={styles.inGridText}>
+                                                <p className={styles.scheduletitle}>일정 제목: {schedule.sche_title}</p>
+                                                <p className={styles.scheduleDuring} style={{ marginBottom: '8px' }}>  기간: {new Date(schedule.sche_start).toLocaleDateString('en-CA')} ~ {new Date(schedule.sche_end).toLocaleDateString('en-CA')}</p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p>일정 없음</p>
+                                    )}
                                     {/* <hr className={styles.titleBorderBar} /> */}
                                 </div>
                                 <div className={`${styles.gridItem2} ${styles.gridItemteamCalendar}`} >
                                     <h3 className={styles.colTitle}>팀 일정</h3>
                                     {teamschedules.length > 0 ? (
-                                    teamschedules.map((schedule, index) => (
-                                        <div key={index} className={styles.inGridText}>
-                                            <p className={styles.scheduletitle}>일정 제목: {schedule.sche_title}</p>
-                                            <p className={styles.scheduleDuring} style={{ marginBottom: '8px' }}>  기간: {new Date(schedule.sche_start).toLocaleDateString('en-CA')} ~ {new Date(schedule.sche_end).toLocaleDateString('en-CA')}</p>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>일정 없음</p>
-                                )}
+                                        teamschedules.map((schedule, index) => (
+                                            <div key={index} className={styles.inGridText}>
+                                                <p className={styles.scheduletitle}>일정 제목: {schedule.sche_title}</p>
+                                                <p className={styles.scheduleDuring} style={{ marginBottom: '8px' }}>  기간: {new Date(schedule.sche_start).toLocaleDateString('en-CA')} ~ {new Date(schedule.sche_end).toLocaleDateString('en-CA')}</p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p>일정 없음</p>
+                                    )}
                                 </div>
                             </div>
                         </div>

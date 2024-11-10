@@ -18,6 +18,7 @@ function CompanyUserEmailDetail() {
   const navigate = useNavigate();
   const { emailId } = useParams();// 이메일 번호를 받아옴
   const emailNo = parseInt(emailId, 10);
+
   const [email, setEmail] = useState(null); // 이메일 상세 정보를 저장
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -70,7 +71,7 @@ function CompanyUserEmailDetail() {
 
   useEffect(() => {
     fetchEmail();
-  }, [emailNo, navigate]);
+  }, [emailNo]);
 
 
   // 삭제 버튼 핸들러

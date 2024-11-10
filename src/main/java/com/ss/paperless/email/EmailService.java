@@ -16,9 +16,11 @@ import org.apache.catalina.mapper.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,13 +36,15 @@ public class EmailService {
 	private final CompanyService companyService;
 	private final DepartmentService departmentService;
 	private final EmailMapper mapper;
+	private final S3Service s3Service;
 	private final EmployeeRepository employeeRepository;
 
 	@Autowired
 	public EmailService(EmailmessageRepository emailmessageRepository,
 			UserEmailStatusRepository userEmailStatusRepository, EmployeeService employeeService,
 			AttachmentRepository attachmentRepository, EmailAttachmentRepository emailAttachmentRepository,
-			CompanyService companyService, DepartmentService departmentService, EmailMapper mapper,EmployeeRepository employeeRepository) {
+			CompanyService companyService, DepartmentService departmentService, EmailMapper mapper,
+			EmployeeRepository employeeRepository,S3Service s3Service) {
 		this.emailmessageRepository = emailmessageRepository;
 		this.userEmailStatusRepository = userEmailStatusRepository;
 		this.employeeService = employeeService;
@@ -49,7 +53,8 @@ public class EmailService {
 		this.companyService = companyService;
 		this.departmentService = departmentService;
 		this.mapper = mapper;
-		this.employeeRepository= employeeRepository;
+		this.employeeRepository = employeeRepository;
+		this.s3Service=s3Service;
 	}
 
 	// 받은 편지함 조회
@@ -91,15 +96,15 @@ public class EmailService {
 					matches = false;
 				}
 			}
-			
+
 			if (senderEmail != null && !senderEmail.isEmpty()) {
-		        String senderEmpEmail = email.getWriter().getEmpEmail().toLowerCase();
-		        String senderEmpName = email.getWriter().getEmpName().toLowerCase();
-		        String searchTerm = senderEmail.toLowerCase();
-		        if (!(senderEmpEmail.contains(searchTerm) || senderEmpName.contains(searchTerm))) {
-		            matches = false;
-		        }
-		    }
+				String senderEmpEmail = email.getWriter().getEmpEmail().toLowerCase();
+				String senderEmpName = email.getWriter().getEmpName().toLowerCase();
+				String searchTerm = senderEmail.toLowerCase();
+				if (!(senderEmpEmail.contains(searchTerm) || senderEmpName.contains(searchTerm))) {
+					matches = false;
+				}
+			}
 
 			if (recipientEmail != null && !recipientEmail.isEmpty()) {
 				String recipientEmpEmail = email.getRecipient().getEmpEmail().toLowerCase();
@@ -167,16 +172,78 @@ public class EmailService {
 		return new PageImpl<>(pageContent, pageable, emailDTOs.size());
 	}
 
-	// 이메일 상세 조회 시 상태 업데이트 등
-	public void markAsRead(Emailmessage email, EmployeeEntity user) {
-		Optional<UserEmailStatus> optionalStatus = userEmailStatusRepository.findByEmailAndUser(email, user);
-		if (optionalStatus.isPresent()) {
-			UserEmailStatus status = optionalStatus.get();
-			if ("unread".equalsIgnoreCase(status.getStatus())) {
-				status.setStatus("read");
-				userEmailStatusRepository.save(status);
+	@Transactional
+	public void sendOrForwardEmail(EmployeeEntity sender, EmployeeEntity recipient, EmployeeEntity cc, String title,
+			String content, List<Long> existingAttachmentNos, List<MultipartFile> newAttachments) throws IOException {
+
+		// 새로운 이메일 객체 생성
+		Emailmessage email = new Emailmessage();
+		email.setWriter(sender);
+		email.setRecipient(recipient);
+		email.setCc(cc);
+		email.setTitle(title);
+		email.setContent(content);
+		email.setSendDate(LocalDateTime.now());
+
+		emailmessageRepository.save(email);
+
+		// 기존 첨부파일 처리 (전달 시)
+		if (existingAttachmentNos != null && !existingAttachmentNos.isEmpty()) {
+			for (Long attaNo : existingAttachmentNos) {
+				Attachment existingAtt = attachmentRepository.findById(attaNo)
+						.orElseThrow(() -> new RuntimeException("존재하지 않는 첨부파일입니다: " + attaNo));
+
+				// 첨부파일 소유권 검증
+				boolean isOwned = emailAttachmentRepository.existsByAttaNoAndEmailWriterOrEmailRecipient(attaNo,
+						sender);
+				if (!isOwned) {
+					throw new RuntimeException("첨부파일에 대한 권한이 없습니다: " + attaNo);
+				}
+
+				// EmailAttachment 엔티티 생성 및 저장
+				EmailAttachment emailAttachment = EmailAttachment.builder().emailNo(email.getEmailNo())
+						.attaNo(existingAtt.getAttaNo()).email(email).attachment(existingAtt).build();
+				emailAttachmentRepository.save(emailAttachment);
+				System.out.println("전달된 첨부파일 추가: emailNo=" + email.getEmailNo() + ", attaNo=" + existingAtt.getAttaNo());
+			}
+		}else {
+			System.out.println("전달 첨부파일 없음.");
+		}
+
+		// 새로운 첨부파일 처리
+		if (newAttachments != null && !newAttachments.isEmpty()) {
+			for (MultipartFile file : newAttachments) {
+				String fileUrl = s3Service.uploadFile(file, "email", email.getEmailNo());
+				// Attachment 엔티티 생성 및 저장
+				Attachment attachment = Attachment.builder()
+						.attaKey("emails/" + email.getEmailNo() + "/" + file.getOriginalFilename()).attaUrl(fileUrl)
+						.attaOriginalName(file.getOriginalFilename()).attaSize(file.getSize()).build();
+				attachmentRepository.save(attachment);
+
+				// EmailAttachment 엔티티 생성 및 저장
+				EmailAttachment emailAttachment = EmailAttachment.builder().emailNo(email.getEmailNo())
+						.attaNo(attachment.getAttaNo()).email(email).attachment(attachment).build();
+				emailAttachmentRepository.save(emailAttachment);
 			}
 		}
+
+	}
+
+	// 이메일 상세 조회 시 상태 업데이트 등
+	@Transactional
+	public void markAsRead(Emailmessage email, EmployeeEntity user) {
+	    List<UserEmailStatus> userEmailStatuses = userEmailStatusRepository.findByEmailAndUser(email, user);
+	    if (userEmailStatuses == null || userEmailStatuses.isEmpty()) {
+	        // 권한이 없거나 관련 상태가 없는 경우 예외를 던질 수 있습니다.
+	        throw new RuntimeException("이메일 상태를 찾을 수 없습니다.");
+	    }
+
+	    for (UserEmailStatus status : userEmailStatuses) {
+	        if ("unread".equalsIgnoreCase(status.getStatus())) {
+	            status.setStatus("read");
+	            
+	        }
+	    }
 	}
 
 	// 이메일 삭제
@@ -208,12 +275,10 @@ public class EmailService {
 		userEmailStatusRepository.saveAll(statuses);
 	}
 
-
 	public int getUnreadCount(String emp_code) {
-		EmployeeEntity employee=employeeRepository.findByEmpCode(emp_code);
+		EmployeeEntity employee = employeeRepository.findByEmpCode(emp_code);
 		return mapper.getUnreadCount(employee.getEmpNo());
 	}
-
 
 	// 이메일 저장
 	public void saveEmail(Emailmessage email, List<EmployeeEntity> recipients) {
@@ -222,6 +287,7 @@ public class EmailService {
 	}
 
 	// 이메일 상세 조회
+	@Transactional
 	public EmailDTO getEmailById(Long emailId, EmployeeEntity currentUser) {
 		Optional<Emailmessage> optionalEmail = emailmessageRepository.findById(emailId);
 		if (!optionalEmail.isPresent()) {
@@ -231,16 +297,17 @@ public class EmailService {
 		Emailmessage email = optionalEmail.get();
 
 		// 권한 체크: 해당 사용자의 이메일인지 확인
-		Optional<UserEmailStatus> optionalStatus = userEmailStatusRepository.findByEmailAndUser(email, currentUser);
-		if (!optionalStatus.isPresent()) {
-			throw new RuntimeException("이메일에 접근할 권한이 없습니다.");
-		}
+		List<UserEmailStatus> userEmailStatuses = userEmailStatusRepository.findByEmailAndUser(email, currentUser);
+		if (userEmailStatuses.isEmpty()) {
+	        throw new RuntimeException("이메일에 접근할 권한이 없습니다.");
+	    }
+
 
 		// 이메일 읽음 처리
 		markAsRead(email, currentUser);
 
 		// DTO 변환
-		return convertToDTO(email, optionalStatus.get(), currentUser);
+		return convertToDTO(email, userEmailStatuses.get(0), currentUser);
 	}
 
 	// DTO 변환 메서드
@@ -334,7 +401,8 @@ public class EmailService {
 			dto.setHasAttachment(true);
 			List<AttachmentDTO> attachmentDTOs = emailAttachments.stream().map(emailAttachment -> {
 				Attachment attachment = emailAttachment.getAttachment();
-				return new AttachmentDTO(attachment.getAttaOriginalName(), attachment.getAttaUrl());
+				return new AttachmentDTO(attachment.getAttaNo(),attachment.getAttaOriginalName(), attachment.getAttaUrl(),
+						attachment.getAttaSize());
 			}).collect(Collectors.toList());
 			dto.setAttachments(attachmentDTOs);
 		} else {

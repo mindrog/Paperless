@@ -1,4 +1,4 @@
-import React, { useState, useRef ,useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styles from '../../styles/company/company_email_send.module.css';
@@ -11,6 +11,7 @@ import { Modal, Button } from 'react-bootstrap';
 function CompanyUserEmailSend() {
     const [dragOver, setDragOver] = useState(false);
     const [files, setFiles] = useState([]);
+    const [existingAttachments, setExistingAttachments] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const fileInputRef = useRef(null);
@@ -20,7 +21,7 @@ function CompanyUserEmailSend() {
     const emailToForward = location.state?.emailToForward;
     const receiverEmailFromState = location.state?.receiverEmail || '';
 
-    
+
 
     const [receiverEmail, setReceiverEmail] = useState(receiverEmailFromState);
     const [ccEmail, setCcEmail] = useState('');
@@ -42,7 +43,16 @@ function CompanyUserEmailSend() {
             setCcEmail('');
             setTitle(`Fwd: ${emailToForward.title}`);
             setEmailContent(`\n\n---------- Forwarded message ----------\nFrom: ${emailToForward.writerDisplayInfo} <${emailToForward.writerEmail}>\nDate: ${new Date(emailToForward.sendDate).toLocaleString()}\nSubject: ${emailToForward.title}\nTo: ${emailToForward.recipientDisplayInfo}\n\n${emailToForward.content}`);
-            
+
+            if (emailToForward.hasAttachment && emailToForward.attachments) {
+                setExistingAttachments(emailToForward.attachments.map(att => ({
+                    attaNo: att.attaNo,
+                    attaOriginalName: att.attaOriginalName,
+                    attaUrl: att.attaUrl,
+                    attaSize: att.attaSize,
+                })));
+            }
+
         }
     }, [emailToForward]);
 
@@ -99,7 +109,14 @@ function CompanyUserEmailSend() {
         setIsOpen(true);
     };
 
-    const handleDeleteFile = (index) => {
+    // 전달 첨부파일 삭제 핸들러
+    const handleDeleteExistingFile = (attaNo) => {
+        const updatedAttachments = existingAttachments.filter(att => att.attaNo !== attaNo);
+        setExistingAttachments(updatedAttachments);
+    };
+
+    // 새로운 첨부파일 삭제 핸들러 
+    const handleDeleteNewFile = (index) => {
         const updatedFiles = files.filter((_, i) => i !== index);
         setFiles(updatedFiles);
     };
@@ -145,11 +162,16 @@ function CompanyUserEmailSend() {
             formData.append('attachments', file);
         });
 
+        if (existingAttachments && existingAttachments.length > 0) {
+            existingAttachments.forEach((att) => {
+                formData.append('existingAttachmentNos', att.attaNo);
+            });
+        }
         // JWT 토큰 가져오기 
         const token = localStorage.getItem('jwt');
 
-        console.log('JWT Token:', token);
-
+        
+        console.log('FormData existingAttachmentNos:', existingAttachments.map(att => att.attaNo));
         try {
             const response = await fetch('http://localhost:8080/api/emails/send', {
                 method: 'POST',
@@ -176,7 +198,7 @@ function CompanyUserEmailSend() {
 
 
     const calculateTotalFileSize = () => {
-        const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+        const totalSize = files.reduce((acc, file) => acc + file.size, 0) + + existingAttachments.reduce((acc, att) => acc + att.attaSize, 0);
         return formatBytes(totalSize);
     };
 
@@ -270,15 +292,34 @@ function CompanyUserEmailSend() {
                                         onDragOver={handleDragOver}
                                         onDrop={handleDrop}
                                     >
-                                        {files.length === 0 ? (
+                                        {existingAttachments.length === 0 && files.length === 0 ? (
                                             <p>파일을 이 곳으로 끌어오세요</p>
                                         ) : (
                                             <ul className={styles['file-list']}>
-                                                {files.map((file, index) => (
-                                                    <li key={index} className={styles['file-item']}>
+                                                {/* 기존 첨부파일 표시 */}
+                                                {existingAttachments.map((att) => (
+                                                    <li key={`existing-${att.attaNo}`} className={styles['file-item']}>
                                                         <button
                                                             type="button"
-                                                            onClick={() => handleDeleteFile(index)}
+                                                            onClick={() => handleDeleteExistingFile(att.attaNo)}
+                                                            className={styles['delete-button']}
+                                                        >
+                                                            <FontAwesomeIcon icon={faTimes} />
+                                                        </button>
+                                                        <a href={att.attaUrl} target="_blank" rel="noopener noreferrer">
+                                                            {att.attaOriginalName}
+                                                        </a>
+                                                        {/* 첨부파일 크기 표시 (선택 사항) */}
+                                                        {/* <span> ({formatBytes(att.attaSize)})</span> */}
+                                                    </li>
+                                                ))}
+
+                                                {/* 새로운 첨부파일 표시 */}
+                                                {files.map((file, index) => (
+                                                    <li key={`new-${index}`} className={styles['file-item']}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDeleteNewFile(index)}
                                                             className={styles['delete-button']}
                                                         >
                                                             <FontAwesomeIcon icon={faTimes} />
