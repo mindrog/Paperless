@@ -69,9 +69,11 @@ const CompanyUserDraftWriteWork = () => {
 
     try {
       const result = await saveDraftRef.current();
+
       if (result && result.reportId) {
         setReportId(result.reportId);
       }
+
       setAlertMessage(`임시 저장되었습니다.<br/>현재 날짜: ${currentDate}`);
       setShowAlert(true);
     } catch (error) {
@@ -84,46 +86,46 @@ const CompanyUserDraftWriteWork = () => {
   };
 
   const handleSubmitClick = async () => {
-    const errors = {};
-    if (!reportTitle) errors.reportTitle = true;
-    if (!reportContent) errors.reportContent = true;
-    if (!repoStartTime) errors.repoStartTime = true;
-    if (!repoEndTime) errors.repoEndTime = true;
-  
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
+  const errors = {};
+  if (!reportTitle) errors.reportTitle = true;
+  if (!reportContent) errors.reportContent = true;
+  if (!repoStartTime) errors.repoStartTime = true;
+  if (!repoEndTime) errors.repoEndTime = true;
+
+  if (Object.keys(errors).length > 0) {
+    setFormErrors(errors);
+    return;
+  }
+
+  try {
+    // 이미 존재하는 reportId가 있으면 새로 생성하지 않고 업데이트만 진행
+    const result = reportId ? await saveDraftRef.current('draft') : await saveDraftRef.current('submit');
+    
+    const currentReportId = reportId || (result && result.reportId);
+    if (currentReportId) {
+      setReportId(currentReportId);
+
+      navigate(`/company/user/draft/form/work/${currentReportId}`, {
+        state: {
+          reportTitle,
+          reporter: userData ? userData.emp_name : '',
+          department: userData ? userData.dept_name : '',
+          reportDate,
+          reportContent,
+          repoStartTime,
+          repoEndTime,
+          selectedApprovers,
+          selectedReferences,
+          selectedReceivers,
+          files,
+        },
+      });
     }
-  
-    try {
-      const result = await saveDraftRef.current('submit');
-      // 기존 reportId가 있으면 유지하고, 없으면 result.reportId 사용
-      const currentReportId = reportId || (result && result.reportId);
-  
-      if (currentReportId) {
-        setReportId(currentReportId);
-  
-        // form 화면으로 이동하며 현재 데이터 상태를 전달
-        navigate(`/company/user/draft/form/work/${currentReportId}`, {
-          state: {
-            reportTitle,
-            reporter: userData ? userData.emp_name : '',
-            department: userData ? userData.dept_name : '',
-            reportDate,
-            reportContent,
-            repoStartTime,
-            repoEndTime,
-            selectedApprovers,
-            selectedReferences,
-            selectedReceivers,
-            files,
-          },
-        });
-      }
-    } catch (error) {
-      console.error("Error submitting report:", error);
-    }
-  };
+  } catch (error) {
+    console.error("Error submitting report:", error);
+  }
+};
+
   
   // 디버그용
   console.log("====== CompanyUserDraftWriteWork ======");

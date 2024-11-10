@@ -36,7 +36,6 @@ public interface EmployeeMapper {
 
 	public List<String> GetTeamNameList(String dept_name);
 
-
 	public int GetDeptNo(String dept_name, String dept_team_name);
 
 	public List<PositionDTO> GetPosition();

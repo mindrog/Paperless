@@ -24,17 +24,21 @@ function DocumentList({ docs = [], onRowClick, columns = [] }) {
                                 value = {
                                     'submitted': '상신',
                                     'approved': '승인',
-                                    'pending': '대기 중',
+                                    'pending': '결재 대기',
                                     'canceled': '반려',
                                     'saved':'임시 저장'
                                 }[value] || value;
                             }
 
                             // 날짜 포맷
-                            if (column.key === 'submission_date' && value) {
-                                const date = new Date(value);
-                                value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-                            }
+                            // if ((column.key === 'submission_date') && value) {
+                            //     const date = new Date(value);
+                            //     if (!isNaN(date.getTime())) { // 유효한 날짜인지 확인
+                            //         value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                            //     } else {
+                            //         value = '-'; // 유효하지 않은 날짜일 경우
+                            //     }
+                            // }
 
                             return (
                                 <td key={`${column.key}-${doc.repo_no || index}`} className={styles.ellipsis} title={value || ''}>

@@ -17,6 +17,7 @@ const CompanyUserDraftDetailWork = () => {
   const [empCodeInfo, setEmpCodeInfo] = useState({});
   const [apprLineInfo, setApprLineInfo] = useState({ approverInfo: [], recipientInfo: [], referenceInfo: [] });
   const [apprIsRead, setApprIsRead] = useState(0);
+  const [alertMessage, setAlertMessage] = useState({});
 
   // 로그인한 사용자 정보
   const [userId, setUserId] = useState(null);
@@ -105,6 +106,58 @@ const CompanyUserDraftDetailWork = () => {
     }
   };
 
+  // 반려
+  const handleReject = async () => {
+    try {
+      const response = await fetch(`/api/report/reject/${reportData.reportId}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          approverId: userId,
+          status: 'rejected',
+        }),
+      });
+      if (response.ok) {
+        setAlertMessage('결재가 반려되었습니다.');
+        navigate('/company/user/draft/doc/draft');
+      } else {
+        setAlertMessage('결재 반려에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error rejecting approval:', error);
+      setAlertMessage('결재 반려 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 결재 승인
+  const handleApprove = async () => {
+    try {
+      const response = await fetch(`/api/report/approve/${reportData.reportId}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          approverId: userId,
+          status: 'approved',
+        }),
+      });
+      if (response.ok) {
+        setAlertMessage('결재가 승인되었습니다.');
+        navigate('/company/user/draft/doc/draft');
+      } else {
+        setAlertMessage('결재 승인에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error approving report:', error);
+      setAlertMessage('결재 승인 중 오류가 발생했습니다.');
+    }
+  };
+
   // 목록으로 이동 버튼 클릭 핸들러
   const handleGoBack = () => navigate('/company/user/draft/doc/all');
 
@@ -141,6 +194,27 @@ const CompanyUserDraftDetailWork = () => {
               )}
             </div>
           )}
+
+          {(reportData.reportStatus === 'pending' || reportData.reportStatus === 'submitted') && // 보고서 상태가 진행 중 또는 제출된 상태인지 확인
+            reportData.approverInfo &&
+            reportData.approverInfo.some(
+              (approverGroup) =>
+                approverGroup.approverInfo &&
+                approverGroup.approverInfo.some(
+                  (approver) =>
+                    approver.emp_code === userId && // 로그인한 사용자가 결재자인지 확인
+                    approver.appr_status === 'pending' // 결재자의 상태가 'pending'인지 확인
+                )
+            ) && (
+              <div>
+                <Button className={styles.rejectBtn} onClick={handleReject}>
+                  반려
+                </Button>
+                <Button className={styles.approveBtn} onClick={handleApprove}>
+                  승인
+                </Button>
+              </div>
+            )}
         </div>
 
         <Table bordered className={styles.mainTable}>
@@ -238,13 +312,13 @@ const CompanyUserDraftDetailWork = () => {
               <td className={styles.labelCellSec}>참&nbsp;&nbsp;&nbsp;조</td>
               <td className={styles.valueCell}>
                 {apprLineInfo.referenceInfo.map((ref, index) => (
-                  <span key={index}>{ref.dept_name} {ref.dept_team_name} {ref.emp_name} {ref.posi_name} {index < apprLineInfo.referenceInfo.length - 1 && ', '}</span>
+                  <span key={index}>{ref.dept_name} {ref.dept_team_name} {ref.emp_name} {index < apprLineInfo.referenceInfo.length - 1 && ', '}</span>
                 ))}
               </td>
               <td className={styles.labelCellSec}>수&nbsp;&nbsp;&nbsp;신</td>
               <td className={styles.valueCell}>
                 {apprLineInfo.recipientInfo.map((recv, index) => (
-                  <span key={index}>{recv.dept_name} {recv.emp_name} {recv.posi_name}{index < apprLineInfo.recipientInfo.length - 1 && ', '}</span>
+                  <span key={index}>{recv.dept_name} {recv.dept_team_name} {index < apprLineInfo.recipientInfo.length - 1 && ', '}</span>
                 ))}
               </td>
             </tr>

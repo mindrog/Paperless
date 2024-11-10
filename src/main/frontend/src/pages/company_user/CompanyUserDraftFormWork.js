@@ -2,37 +2,57 @@ import React, { useRef, useState, useEffect } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import styles from '../../styles/company/draftForm/draft_Form_work.module.css';
-import { Button, Table, Modal } from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
-import moment from 'moment';
 
 const CompanyUserDraftFormWork = () => {
   const { reportId } = useParams();
-  const saveDraftRef = useRef();
   const navigate = useNavigate();
   const [reportData, setReportData] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [actionType, setActionType] = useState('draft');
-  const currentSaveDraftDate = moment().format("YYYY-MM-DD");
+  const [approverInfo, setApproverInfo] = useState([]);
+  const [recipientInfo, setRecipientInfo] = useState([]);
+  const [referenceInfo, setReferenceInfo] = useState([]);
+  const [alertMessage, setAlertMessage] = useState([]);
+  const [showModal, setShowModal] = useState([]);
   const printRef = useRef();
 
   const fetchReportData = async () => {
     try {
       const token = localStorage.getItem('jwt');
-      const response = await fetch(`/api/reportform/${reportId}`, {
+
+      // 첫 번째 API 요청: report data
+      const reportResponse = await fetch(`/api/reportform/${reportId}`, {
         method: 'GET',
-        headers: {
-          'Authorization': `${token}`
-        }
+        headers: { 'Authorization': `${token}` }
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setReportData(data);
+      // 두 번째 API 요청: approver, recipient, and reference data
+      const apprsInfoResponse = await fetch(`/api/apprsinfo/${reportId}`, {
+        method: 'GET',
+        headers: { 'Authorization': `${token}` }
+      });
+
+      if (reportResponse.ok && apprsInfoResponse.ok) {
+        const reportData = await reportResponse.json();
+        const apprsInfoData = await apprsInfoResponse.json();
+
+        setReportData(reportData);
+
+        // 평탄화 작업을 수행하여 각 상태에 저장
+        const flatApproverInfo = apprsInfoData.approverInfo.flatMap(info => info.approverInfo || []);
+        const flatRecipientInfo = apprsInfoData.recipientInfo.flatMap(info => info.recipientInfo || []);
+        const flatReferenceInfo = apprsInfoData.referenceInfo.flatMap(info => info.referenceInfo || []);
+
+        setApproverInfo(flatApproverInfo);
+        setRecipientInfo(flatRecipientInfo);
+        setReferenceInfo(flatReferenceInfo);
+
+        console.log("Report data:", reportData);
+        console.log("Approver info:", flatApproverInfo);
+        console.log("Recipient info:", flatRecipientInfo);
+        console.log("Reference info:", flatReferenceInfo);
       } else {
-        const errorText = await response.text();
-        console.error('Failed to fetch report data:', response.status, errorText);
+        console.error('Failed to fetch report or approver data');
       }
     } catch (error) {
       console.error('Error fetching report data:', error);
@@ -57,27 +77,55 @@ const CompanyUserDraftFormWork = () => {
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
 
-    if (!element) {
-      console.error("printRef가 올바른 DOM 요소를 참조하지 않습니다.");
-      return;
-    }
-
     pdf.addImage(data, 'PNG', 0, 0, pdfWidth, pdfHeight);
     pdf.save(reportData ? `${reportData.reportTitle}_기안_미리보기.pdf` : '기안_미리보기.pdf');
   };
 
-  const handleSubmitForApproval = () => {
-    if (saveDraftRef.current) {
-      saveDraftRef.current('submit');
-    }
-    setShowModal(true);
-    setTimeout(() => {
-      setShowModal(false);
-      navigate(`/company/user/draft/detail/work/${reportId}`);
-    }, 3000);
-  };
-
   if (!reportData) return <p>Loading...</p>;
+
+  // 결재 상신
+  const handleSubmitForApproval = async () => {
+    try {
+      const token = localStorage.getItem('jwt'); // JWT 토큰 가져오기
+      const apiUrl = `/api/submitApproval/${reportId}`; // 결재 상신 API 엔드포인트
+  
+      // API 요청을 위한 설정
+      const response = await fetch(apiUrl, {
+        method: 'POST', // 상신이므로 POST 요청
+        headers: {
+          'Authorization': `${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reportId }), // 필요한 데이터 포함
+      });
+  
+      // API 응답 처리
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Approval submitted successfully:", result);
+  
+        // 상신 성공 메시지 표시
+        setAlertMessage('결재 상신이 완료되었습니다.');
+        setShowModal(true);
+  
+        // 3초 후에 상세 페이지로 이동
+        setTimeout(() => {
+          setShowModal(false);
+          navigate(`/company/user/draft/detail/work/${reportId}`);
+        }, 3000);
+      } else {
+        // 오류 발생 시 처리
+        const errorText = await response.text();
+        console.error('Failed to submit for approval:', response.status, errorText);
+        setAlertMessage('결재 상신에 실패했습니다.');
+        setShowModal(true);
+      }
+    } catch (error) {
+      console.error('Error submitting for approval:', error);
+      setAlertMessage('결재 상신 중 오류가 발생했습니다.');
+      setShowModal(true);
+    }
+  };
 
   return (
     <div className="container">
@@ -93,59 +141,47 @@ const CompanyUserDraftFormWork = () => {
         </div>
 
         <div className={styles.contentsection}>
-          <Table bordered className={styles.mainTable} style={{ width: '800px', marginTop: '1px', borderCollapse: 'collapse' }}>
+          <Table bordered className={styles.mainTable}>
             <tbody>
               <tr>
                 <td colSpan="2" className={styles.titleCell}>기&nbsp;&nbsp;안&nbsp;&nbsp;용&nbsp;&nbsp;지</td>
               </tr>
-            </tbody>
-          </Table>
-
-          <Table bordered>
-            <tbody>
               <tr>
                 <td className={styles.labelCellTitle}>제&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;목</td>
                 <td className={styles.valueCellrepoTitle}>{reportData.reportTitle}</td>
               </tr>
+              <tr>
+                <td className={styles.labelCell}>문서번호</td>
+                <td className={styles.valueCellCode}>{reportData.repo_code}</td>
+              </tr>
+              <tr>
+                <td className={styles.labelCell}>기&nbsp;안&nbsp;일</td>
+                <td className={styles.valueCell}>{reportData.repo_date || '날짜 없음'}</td>
+              </tr>
+              <tr>
+                <td className={styles.labelCell}>기 안 자</td>
+                <td className={styles.valueCell}>{reportData.emp_name}</td>
+              </tr>
+              <tr>
+                <td className={styles.labelCell}>시행일자</td>
+                <td className={styles.valueCell}>{reportData.repoStartTime}</td>
+              </tr>
+              <tr>
+                <td className={styles.labelCell}>마감일자</td>
+                <td className={styles.valueCell}>{reportData.repoEndTime}</td>
+              </tr>
             </tbody>
           </Table>
-
-          <div className={styles.docInfoSection}>
-            <Table bordered size="sm" className={styles.innerTable}>
-              <tbody>
-                <tr>
-                  <td className={styles.labelCell}>문서번호</td>
-                  <td className={styles.valueCellCode}>{reportData.repo_code}</td>
-                </tr>
-                <tr>
-                  <td className={styles.labelCell}>기&nbsp;안&nbsp;일</td>
-                  <td className={styles.valueCell}>{moment(reportData.reportDate).format("YYYY-MM-DD")}</td>
-                </tr>
-                <tr>
-                  <td className={styles.labelCell}>기 안 자</td>
-                  <td className={styles.valueCell}>{reportData.emp_name}</td>
-                </tr>
-                <tr>
-                  <td className={styles.labelCell}>시행일자</td>
-                  <td className={styles.valueCell}>{reportData.repoStartTime}</td>
-                </tr>
-                <tr>
-                  <td className={styles.labelCell}>마감일자</td>
-                  <td className={styles.valueCell}>{reportData.repoEndTime}</td>
-                </tr>
-              </tbody>
-            </Table>
-          </div>
 
           {/* 결재자 정보 테이블 */}
           <Table bordered>
             <tbody>
-              {reportData.approverInfo && reportData.approverInfo.length > 0 && (
+              {approverInfo.length > 0 && (
                 <>
                   <tr>
                     <td colSpan="2" className={styles.detailsTitle}>결재자 정보</td>
                   </tr>
-                  {reportData.approverInfo.map((approver, index) => (
+                  {approverInfo.map((approver, index) => (
                     <tr key={index}>
                       <td>{approver.emp_name}</td>
                       <td>{approver.dept_team_name}</td>
@@ -156,28 +192,39 @@ const CompanyUserDraftFormWork = () => {
             </tbody>
           </Table>
 
-          <Table bordered className={styles.docContent}>
+          {/* 수신자 정보 */}
+          <Table bordered>
             <tbody>
-              <tr>
-                <td className={styles.docKey}>참 &nbsp;&nbsp;&nbsp; 조</td>
-                <td className={styles.docValueRen}>
-                  {reportData.selectedReferences && reportData.selectedReferences.map((ref, index) => (
-                    <span key={index}>
-                      {ref.type === 'person' ? ref.emp_name : (ref.teamName || ref.deptName)}
-                      {index < reportData.selectedReferences.length - 1 && ', '}
-                    </span>
+              {recipientInfo.length > 0 && (
+                <>
+                  <tr>
+                    <td colSpan="2" className={styles.detailsTitle}>수신자 정보</td>
+                  </tr>
+                  {recipientInfo.map((recipient, index) => (
+                    <tr key={index}>
+                      <td>{recipient.emp_name} {recipient.dept_team_name}</td>
+                    </tr>
                   ))}
-                </td>
-                <td className={styles.docKey}>수 &nbsp;&nbsp;&nbsp; 신</td>
-                <td className={styles.docValueRen}>
-                  {reportData.selectedReceivers && reportData.selectedReceivers.map((recv, index) => (
-                    <span key={index}>
-                      {recv.type === 'person' ? recv.emp_name : (recv.teamName || recv.deptName)}
-                      {index < reportData.selectedReceivers.length - 1 && ', '}
-                    </span>
+                </>
+              )}
+            </tbody>
+          </Table>
+
+          {/* 참조자 정보 */}
+          <Table bordered>
+            <tbody>
+              {referenceInfo.length > 0 && (
+                <>
+                  <tr>
+                    <td colSpan="2" className={styles.detailsTitle}>참조자 정보</td>
+                  </tr>
+                  {referenceInfo.map((reference, index) => (
+                    <tr key={index}>
+                      <td>{reference.dept_team_name} {reference.emp_name}</td>
+                    </tr>
                   ))}
-                </td>
-              </tr>
+                </>
+              )}
             </tbody>
           </Table>
 

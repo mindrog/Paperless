@@ -16,7 +16,7 @@ public interface ReportMapper {
 
     // Report 테이블에 새로운 보고서 데이터 추가
     // reportData 맵은 보고서의 제목, 내용, 작성자 정보, 상태 등 보고서에 필요한 데이터를 포함
-    void AddReportData(Map<String, Object> reportData);
+    Long AddReportData(Map<String, Object> reportData);
 
     // WorkReport 테이블에 업무 보고서 관련 데이터 추가
     // reportData 맵은 업무 보고서의 시작 시간, 종료 시간 등 특정 업무 보고서 데이터 포함
@@ -127,6 +127,7 @@ public interface ReportMapper {
     List<ReportDTO> selectMyDocAttenReports(Long empNo);
     List<ReportDTO> selectMyDocPurcReports(Long empNo);
 
-
     ReportDTO selectReportFormById(Long reportId);
+
+    void updateReportCode(Map<String, Object> param);
 }

@@ -115,11 +115,10 @@
         where emp_code = #{empCode}
     </select>
 
-
     <!-- Report 테이블에 저장 데이터를 삽입하는 SQL (문서번호 추가) -->
     <insert id="AddReportData" parameterType="map" useGeneratedKeys="true" keyProperty="repo_no">
-        INSERT INTO `Report` (repo_code, repo_emp_no, repo_title, repo_content, repo_status, repo_type, repo_date)
-        VALUES (#{documentCode}, #{repoEmpNo}, #{reportTitle}, #{reportContent}, #{repo_status},'work', #{reportDate})
+        INSERT INTO `Report` (repo_emp_no, repo_title, repo_content, repo_status, repo_type, repo_date)
+        VALUES (#{repoEmpNo}, #{reportTitle}, #{reportContent}, #{repo_status},'work', #{reportDate})
     </insert>
 
     <!-- WorkReport 테이블에 임시 저장 데이터를 삽입하는 SQL -->
@@ -258,7 +257,8 @@
 
     <update id="updateReportStatus" parameterType="map">
         UPDATE report
-        SET repo_status = #{status}
+        SET repo_status = #{status},
+            submission_date = NOW()
         WHERE repo_no = #{reportId}
     </update>
 
@@ -269,7 +269,7 @@
 
     <!-- 보고서 전체 목록(부서별) -->
     <select id="selectWorkReports" parameterType="java.lang.Long" resultType="ReportDTO">
-        SELECT DISTINCT *
+        SELECT DISTINCT r.*, e.emp_name, e.emp_dept_no, e.emp_posi_no
         FROM Report r
                  LEFT JOIN WorkReport wr ON r.repo_no = wr.work_repo_no
                  LEFT JOIN Approver a ON r.repo_no = a.appr_repo_no
@@ -283,24 +283,26 @@
     </select>
 
     <select id="selectAttenReports" parameterType="java.lang.Long" resultType="ReportDTO">
-        SELECT DISTINCT *
+        SELECT DISTINCT r.*, e.emp_name, e.emp_dept_no, e.emp_posi_no
         FROM Report r
                  LEFT JOIN Approver a ON r.repo_no = a.appr_repo_no
                  LEFT JOIN Recipient re ON r.repo_no = re.reci_repo_no
                  LEFT JOIN Reference ref ON r.repo_no = ref.refe_repo_no
                  LEFT JOIN AttendanceReport ar ON r.repo_no = ar.atten_repo_no
+                 LEFT JOIN Employee e ON r.repo_emp_no = e.emp_no
         WHERE a.appr_dept_no = #{deptNo}
            OR re.reci_dept_no = #{deptNo}
            OR ref.refe_dept_no = #{deptNo}
     </select>
 
     <select id="selectPurcReports" parameterType="java.lang.Long" resultType="ReportDTO">
-        SELECT DISTINCT *
+        SELECT DISTINCT r.*, e.emp_name, e.emp_dept_no, e.emp_posi_no
         FROM Report r
                  LEFT JOIN Approver a ON r.repo_no = a.appr_repo_no
                  LEFT JOIN Recipient re ON r.repo_no = re.reci_repo_no
                  LEFT JOIN Reference ref ON r.repo_no = ref.refe_repo_no
                  LEFT JOIN PurchaseReport pr ON r.repo_no = pr.purch_repo_no
+                 LEFT JOIN Employee e ON r.repo_emp_no = e.emp_no
         WHERE a.appr_dept_no = #{deptNo}
            OR re.reci_dept_no = #{deptNo}
            OR ref.refe_dept_no = #{deptNo}
@@ -336,48 +338,54 @@
 
     <!-- 결재 대기함 -->
     <select id="selectPendingDocWorkReports" parameterType="java.lang.Long" resultType="ReportDTO">
-        SELECT DISTINCT r.*
+        SELECT DISTINCT r.*, e.emp_name, e.emp_dept_no, e.emp_posi_no
         FROM Report r
                  LEFT JOIN Approver a ON r.repo_no = a.appr_repo_no
                  LEFT JOIN WorkReport wr ON r.repo_no = wr.work_repo_no
+                 JOIN Employee e ON r.repo_emp_no = e.emp_no
         WHERE a.appr_emp_no = #{empNo}
     </select>
 
     <select id="selectPendingDocAttenReports" parameterType="java.lang.Long" resultType="ReportDTO">
-        SELECT DISTINCT r.*
+        SELECT DISTINCT r.*, e.emp_name, e.emp_dept_no, e.emp_posi_no
         FROM Report r
                  LEFT JOIN Approver a ON r.repo_no = a.appr_repo_no
                  LEFT JOIN AttendanceReport ar ON r.repo_no = ar.atten_repo_no
+                 JOIN Employee e ON r.repo_emp_no = e.emp_no
         WHERE a.appr_emp_no = #{empNo}
     </select>
 
     <select id="selectPendingDocPurcReports" parameterType="java.lang.Long" resultType="ReportDTO">
-        SELECT DISTINCT r.*
+        SELECT DISTINCT r.*, e.emp_name, e.emp_dept_no, e.emp_posi_no
         FROM Report r
                  LEFT JOIN Approver a ON r.repo_no = a.appr_repo_no
                  LEFT JOIN PurchaseReport pr ON r.repo_no = pr.purch_repo_no
+                 JOIN Employee e ON r.repo_emp_no = e.emp_no
         WHERE a.appr_emp_no = #{empNo}
     </select>
 
     <!-- 내 문서함 -->
     <select id="selectMyDocWorkReports" parameterType="java.lang.Long" resultType="ReportDTO">
-        SELECT r.*
+        SELECT r.*, e.emp_name, e.emp_dept_no, e.emp_posi_no
         FROM Report r
                  INNER JOIN WorkReport wr ON r.repo_no = wr.work_repo_no
+                 INNER join employee e on e.emp_no = r.repo_emp_no
         WHERE r.repo_emp_no = #{empNo}
     </select>
 
     <select id="selectMyDocAttenReports" parameterType="java.lang.Long" resultType="ReportDTO">
-        SELECT r.*
+        SELECT r.*, e.emp_name, e.emp_dept_no, e.emp_posi_no
         FROM Report r
                  INNER JOIN AttendanceReport ar ON r.repo_no = ar.atten_repo_no
+                 INNER join employee e on e.emp_no = r.repo_emp_no
         WHERE r.repo_emp_no = #{empNo}
     </select>
 
     <select id="selectMyDocPurcReports" parameterType="java.lang.Long" resultType="ReportDTO">
-        SELECT r.*
+        SELECT r.*, e.emp_name, e.emp_dept_no, e.emp_posi_no
         FROM Report r
                  INNER JOIN PurchaseReport pr ON r.repo_no = pr.purch_repo_no
+                 INNER join employee e on e.emp_no = r.repo_emp_no
         WHERE r.repo_emp_no = #{empNo}
     </select>
 
@@ -396,11 +404,14 @@
     <select id="selectReportFormById" resultMap="ReportResultMap" parameterType="Long">
         SELECT * FROM report r
                           left join workreport wr on r.repo_no = wr.work_repo_no
-                          left join approver a on a.appr_repo_no = r.repo_no
-                          left join recipient re on re.reci_repo_no = r.repo_no
-                          left join reference rf on rf.refe_repo_no = r.repo_no
                           left join employee e on e.emp_no = r.repo_emp_no
                           inner join department d on d.dept_no = e.emp_dept_no
+--                           left join workreport wr on r.repo_no = wr.work_repo_no
+--                           left join approver a on a.appr_repo_no = r.repo_no
+--                           left join recipient re on re.reci_repo_no = r.repo_no
+--                           left join reference rf on rf.refe_repo_no = r.repo_no
+--                           left join employee e on e.emp_no = r.repo_emp_no
+--                           inner join department d on d.dept_no = e.emp_dept_no
         WHERE repo_status = 'saved' AND repo_no = #{reportId}
     </select>
 
@@ -443,74 +454,122 @@
 
     <!-- 수신자  -->
     <select id="selectReportRecisInfoById" resultMap="ReportResultMap" parameterType="Long">
-        SELECT
-            r.reci_no,
-            r.reci_repo_no,
-            r.reci_emp_no,
-            r.reci_dept_no,
-            r.reci_is_read,
-            r.reci_date,
-            e.emp_no,
-            e.emp_code,
-            e.emp_name,
-            e.emp_dept_no,
-            d.dept_name,
-            d.dept_team_name,
-            e.emp_posi_no,
-            p.posi_name,
-            e.emp_role
-        FROM
-            recipient r
-                LEFT JOIN
-            employee e
-            ON
-                e.emp_no = r.reci_emp_no
-                LEFT JOIN
-            department d
-            ON
-                d.dept_no = e.emp_dept_no
-                LEFT JOIN
-            position p
-            ON
-                p.posi_no = e.emp_posi_no
-        WHERE
-            r.reci_repo_no = #{reportId}
+        (
+            SELECT
+                r.reci_no,
+                r.reci_repo_no,
+                r.reci_emp_no,
+                r.reci_dept_no,
+                r.reci_is_read,
+                r.reci_date,
+                e.emp_no,
+                e.emp_code,
+                e.emp_name,
+                e.emp_dept_no,
+                d.dept_name,
+                d.dept_team_name,
+                e.emp_posi_no,
+                p.posi_name,
+                e.emp_role
+            FROM
+                recipient r
+                    LEFT JOIN
+                employee e ON e.emp_no = r.reci_emp_no
+                    LEFT JOIN
+                department d ON d.dept_no = e.emp_dept_no
+                    LEFT JOIN
+                position p ON p.posi_no = e.emp_posi_no
+            WHERE
+                r.reci_repo_no = #{reportId} AND r.reci_emp_no IS NOT NULL
+        )
+        UNION ALL
+        (
+            SELECT
+                r.reci_no,
+                r.reci_repo_no,
+                NULL AS reci_emp_no,
+                r.reci_dept_no,
+                r.reci_is_read,
+                r.reci_date,
+                NULL AS emp_no,
+                NULL AS emp_code,
+                NULL AS emp_name,
+                NULL AS emp_dept_no,
+                d.dept_name,
+                d.dept_team_name,
+                NULL AS emp_posi_no,
+                NULL AS posi_name,
+                NULL AS emp_role
+            FROM
+                recipient r
+                    LEFT JOIN
+                department d ON d.dept_no = r.reci_dept_no
+            WHERE
+                r.reci_repo_no = #{reportId} AND r.reci_emp_no IS NULL
+        )
     </select>
 
     <!-- 참조자 -->
     <select id="selectReportRefesInfoById" resultMap="ReportResultMap" parameterType="Long">
-        SELECT
-            rf.refe_no,
-            rf.refe_repo_no,
-            rf.refe_emp_no,
-            rf.refe_dept_no,
-            rf.refe_is_read,
-            rf.refe_date,
-            e.emp_no,
-            e.emp_code,
-            e.emp_name,
-            e.emp_dept_no,
-            d.dept_name,
-            d.dept_team_name,
-            e.emp_posi_no,
-            p.posi_name,
-            e.emp_role
-        FROM
-            reference rf
-                LEFT JOIN
-            employee e
-            ON
-                e.emp_no = rf.refe_emp_no
-                LEFT JOIN
-            department d
-            ON
-                d.dept_no = e.emp_dept_no
-                LEFT JOIN
-            position p
-            ON
-                p.posi_no = e.emp_posi_no
-        WHERE
-            rf.refe_repo_no = #{reportId}
+        (
+            SELECT
+                rf.refe_no,
+                rf.refe_repo_no,
+                rf.refe_emp_no,
+                rf.refe_dept_no,
+                rf.refe_is_read,
+                rf.refe_date,
+                e.emp_no,
+                e.emp_code,
+                e.emp_name,
+                e.emp_dept_no,
+                d.dept_name,
+                d.dept_team_name,
+                e.emp_posi_no,
+                p.posi_name,
+                e.emp_role
+            FROM
+                reference rf
+                    LEFT JOIN
+                employee e ON e.emp_no = rf.refe_emp_no
+                    LEFT JOIN
+                department d ON d.dept_no = e.emp_dept_no
+                    LEFT JOIN
+                position p ON p.posi_no = e.emp_posi_no
+            WHERE
+                rf.refe_repo_no = #{reportId} AND rf.refe_emp_no IS NOT NULL
+        )
+        UNION ALL
+        (
+            SELECT
+                rf.refe_no,
+                rf.refe_repo_no,
+                NULL AS refe_emp_no,
+                rf.refe_dept_no,
+                rf.refe_is_read,
+                rf.refe_date,
+                NULL AS emp_no,
+                NULL AS emp_code,
+                NULL AS emp_name,
+                NULL AS emp_dept_no,
+                d.dept_name,
+                d.dept_team_name,
+                NULL AS emp_posi_no,
+                NULL AS posi_name,
+                NULL AS emp_role
+            FROM
+                reference rf
+                    LEFT JOIN
+                department d ON d.dept_no = rf.refe_dept_no
+            WHERE
+                rf.refe_repo_no = #{reportId} AND rf.refe_emp_no IS NULL
+        )
     </select>
+
+    <update id="updateReportCode" parameterType="map">
+        UPDATE report
+        SET repo_code = #{repoCode}
+        WHERE repo_no = #{reportId};
+    </update>
 	
 </mapper>

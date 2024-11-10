@@ -19,12 +19,11 @@ function CompanyUserDraftDocPenAppr() {
     // 테이블 열 정의
     const completedColumns = [
         { key: 'no', label: 'No', width: '5%' },
-        { key: 'docNumber', label: '문서 번호', width: '10%' },
-        { key: 'docType', label: '문서 양식', width: '10%' },
-        { key: 'title', label: '문서 제목', width: '20%' },
-        { key: 'drafter', label: '기안자', width: '15%' },
-        { key: 'draftDate', label: '기안일', width: '15%' },
-        { key: 'status', label: '결재 상태', width: '10%' },
+        { key: 'repo_code', label: '문서 번호', width: '10%' },
+        { key: 'reportTitle', label: '문서 제목', width: '20%' },
+        { key: 'emp_name', label: '기안자', width: '15%' },
+        { key: 'reportDate', label: '기안일', width: '15%' },
+        { key: 'reportStatus', label: '결재 상태', width: '10%' },
     ];
 
     // 문서 목록 가져오기 - API 호출
