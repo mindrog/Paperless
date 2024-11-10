@@ -286,10 +286,10 @@ function CompanyUserMain() {
                                     <table className={styles.table}>
                                         <thead className={styles.tablehead}>
                                             <tr>
-                                                <th scope="col" className={styles.col}>no</th>
-                                                <th scope="col" className={styles.col}>메일 제목</th>
-                                                <th scope="col" className={styles.col}>발신자</th>
-                                                <th scope="col" className={styles.col}>수신 일시</th>
+                                                <th scope="col" style={{ width: '10%' }}></th>
+                                                <th scope="col" style={{ width: '30%' }}>메일 제목</th>
+                                                <th scope="col" style={{ width: '30%' }}>발신자</th>
+                                                <th scope="col" style={{ width: '30%' }}>수신 일시</th>
                                             </tr>
                                         </thead>
                                         <tbody className={styles.tablebody}>

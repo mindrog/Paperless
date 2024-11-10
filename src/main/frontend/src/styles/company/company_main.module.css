@@ -106,11 +106,20 @@
 }
 
 .table {
+    table-layout: fixed;
     text-align: center;
     justify-items: center;
     color: #000000;
     margin: auto;
+    width: 100%;
 }
+.table th,
+.table td{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 
 .divTodoList {
   display: flex;
