@@ -12,6 +12,7 @@
         <result property="repo_content" column="repo_content"/>
         <result property="repo_status" column="repo_status"/>
         <result property="repo_code" column="repo_code"/>
+        <result property="repo_date" column="repo_date"/>
         <result property="draft_date" column="draft_date"/>
         <result property="submission_date" column="submission_date"/>
         <result property="cancel_date" column="cancel_date"/>
@@ -156,23 +157,24 @@
         INSERT INTO ReportAttachment (repo_no, atta_no) VALUES (#{repoNo}, #{attaNo})
     </insert>
 
-    <select id="getApproversByReportId" resultType="map" parameterType="long">
+    <select id="getApproversByReportId" resultType="com.ss.paperless.report.ApproverDTO" parameterType="long">
         SELECT * FROM Approver WHERE appr_repo_no = #{reportId} ORDER BY appr_order
     </select>
 
     <update id="updateApproverStatus" parameterType="map">
-        UPDATE Approver SET appr_status = #{appr_status}
-                        WHERE appr_repo_no = #{repo_no}
-                          AND appr_emp_no = #{appr_emp_no}
+        UPDATE Approver SET appr_status = #{appr_status},
+                            appr_date = case when #{appr_status} in ('approved','rejected')
+                                        then now()
+                                        end
+                        WHERE appr_repo_no = #{reportId}
+                          AND appr_emp_no = #{empNo}
     </update>
 
     <!-- Approver 테이블에 결재자 데이터를 삽입하는 SQL -->
     <insert id="AddApproversData" parameterType="map">
-        INSERT INTO `Approver` (appr_repo_no, appr_emp_no, appr_dept_no, appr_order, appr_delegate)
+        INSERT INTO `Approver` (appr_repo_no, appr_emp_no, appr_dept_no, appr_order, appr_delegate, appr_status)
         VALUES
-        <foreach item="approver" collection="approvers" separator=",">
-            (#{reportId}, #{approver.emp_no}, #{approver.emp_dept_no}, #{approver.appr_order}, #{approver.appr_delegate})
-        </foreach>
+        (#{reportId}, #{emp_no}, #{emp_dept_no}, #{appr_order}, #{appr_delegate}, #{appr_status})
     </insert>
 
     <!-- Reference 테이블에 참조자 데이터를 삽입하는 SQL -->
@@ -241,6 +243,21 @@
         WHERE appr_repo_no = #{repo_no}
     </update>
 
+    <!-- 결재 테이블에서 해당 보고서 결재자 수 -->
+    <select id="getSelectApproverCount" parameterType="long" resultType="int">
+        select count(*) from approver where appr_repo_no = #{reportId}
+    </select>
+
+    <select id="getSelectApproverInfo" parameterType="long" resultType="com.ss.paperless.report.ApproverDTO">
+        select * from approver
+        where appr_repo_no = #{reportId}
+        order by appr_order
+    </select>
+
+
+
+
+
     <!-- 상신 취소 시 결재자 상태 초기화하는 SQL -->
     <update id="ResetApproverStatus" parameterType="long">
         UPDATE `Approver`
@@ -257,8 +274,15 @@
 
     <update id="updateReportStatus" parameterType="map">
         UPDATE report
-        SET repo_status = #{status},
-            submission_date = NOW()
+        SET
+        repo_status = #{status},
+        cancel_comment = #{rejectionReason}
+        <if test="status == 'submitted'">
+            , submission_date = NOW()
+        </if>
+        <if test="status == 'rejected'">
+            , cancel_date = NOW()
+        </if>
         WHERE repo_no = #{reportId}
     </update>
 
@@ -276,9 +300,11 @@
                  LEFT JOIN Recipient re ON r.repo_no = re.reci_repo_no
                  LEFT JOIN Reference ref ON r.repo_no = ref.refe_repo_no
                  LEFT JOIN Employee e ON r.repo_emp_no = e.emp_no
-        WHERE a.appr_dept_no = #{deptNo}
+        WHERE (a.appr_dept_no = #{deptNo}
            OR re.reci_dept_no = #{deptNo}
-           OR ref.refe_dept_no = #{deptNo}
+           OR ref.refe_dept_no = #{deptNo})
+          AND r.repo_status not in ('saved','canceled')
+
 
     </select>
 
@@ -290,9 +316,10 @@
                  LEFT JOIN Reference ref ON r.repo_no = ref.refe_repo_no
                  LEFT JOIN AttendanceReport ar ON r.repo_no = ar.atten_repo_no
                  LEFT JOIN Employee e ON r.repo_emp_no = e.emp_no
-        WHERE a.appr_dept_no = #{deptNo}
+        WHERE (a.appr_dept_no = #{deptNo}
            OR re.reci_dept_no = #{deptNo}
-           OR ref.refe_dept_no = #{deptNo}
+           OR ref.refe_dept_no = #{deptNo})
+          AND r.repo_status not in ('saved','canceled')
     </select>
 
     <select id="selectPurcReports" parameterType="java.lang.Long" resultType="ReportDTO">
@@ -303,9 +330,10 @@
                  LEFT JOIN Reference ref ON r.repo_no = ref.refe_repo_no
                  LEFT JOIN PurchaseReport pr ON r.repo_no = pr.purch_repo_no
                  LEFT JOIN Employee e ON r.repo_emp_no = e.emp_no
-        WHERE a.appr_dept_no = #{deptNo}
+        WHERE (a.appr_dept_no = #{deptNo}
            OR re.reci_dept_no = #{deptNo}
-           OR ref.refe_dept_no = #{deptNo}
+           OR ref.refe_dept_no = #{deptNo})
+          AND r.repo_status not in ('saved','canceled')
     </select>
 
     <!-- 임시 저장함-->
@@ -344,6 +372,9 @@
                  LEFT JOIN WorkReport wr ON r.repo_no = wr.work_repo_no
                  JOIN Employee e ON r.repo_emp_no = e.emp_no
         WHERE a.appr_emp_no = #{empNo}
+          AND a.appr_status = 'pending'
+          AND r.repo_status not in ('saved','canceled')
+
     </select>
 
     <select id="selectPendingDocAttenReports" parameterType="java.lang.Long" resultType="ReportDTO">
@@ -353,6 +384,8 @@
                  LEFT JOIN AttendanceReport ar ON r.repo_no = ar.atten_repo_no
                  JOIN Employee e ON r.repo_emp_no = e.emp_no
         WHERE a.appr_emp_no = #{empNo}
+          AND a.appr_status = 'pending'
+          AND r.repo_status not in ('saved','canceled')
     </select>
 
     <select id="selectPendingDocPurcReports" parameterType="java.lang.Long" resultType="ReportDTO">
@@ -362,6 +395,8 @@
                  LEFT JOIN PurchaseReport pr ON r.repo_no = pr.purch_repo_no
                  JOIN Employee e ON r.repo_emp_no = e.emp_no
         WHERE a.appr_emp_no = #{empNo}
+          AND a.appr_status = 'pending'
+          AND r.repo_status not in ('saved','canceled')
     </select>
 
     <!-- 내 문서함 -->
@@ -397,7 +432,7 @@
                           left join recipient re on re.reci_repo_no = r.repo_no
                           left join reference rf on rf.refe_repo_no = r.repo_no
                           left join employee e on e.emp_no = r.repo_emp_no
-        WHERE repo_status = 'submitted' AND repo_no = #{reportId}
+        WHERE repo_no = #{reportId}
     </select>
 
     <!-- form으로 넘기는 데이터-->
@@ -406,17 +441,11 @@
                           left join workreport wr on r.repo_no = wr.work_repo_no
                           left join employee e on e.emp_no = r.repo_emp_no
                           inner join department d on d.dept_no = e.emp_dept_no
---                           left join workreport wr on r.repo_no = wr.work_repo_no
---                           left join approver a on a.appr_repo_no = r.repo_no
---                           left join recipient re on re.reci_repo_no = r.repo_no
---                           left join reference rf on rf.refe_repo_no = r.repo_no
---                           left join employee e on e.emp_no = r.repo_emp_no
---                           inner join department d on d.dept_no = e.emp_dept_no
         WHERE repo_status = 'saved' AND repo_no = #{reportId}
     </select>
 
     <!-- 보고서 내에 결재자 정보 조회 -->
-    <select id="selectReportApprsInfoById" resultMap="ReportResultMap" parameterType="Long">
+    <select id="selectReportApprsInfoById" resultType="com.ss.paperless.report.ApproverDTO" parameterType="Long">
         SELECT
             a.appr_no,
             a.appr_repo_no,
@@ -453,7 +482,7 @@
     </select>
 
     <!-- 수신자  -->
-    <select id="selectReportRecisInfoById" resultMap="ReportResultMap" parameterType="Long">
+    <select id="selectReportRecisInfoById" resultType="com.ss.paperless.report.RecipientDTO" parameterType="Long">
         (
             SELECT
                 r.reci_no,
@@ -510,7 +539,7 @@
     </select>
 
     <!-- 참조자 -->
-    <select id="selectReportRefesInfoById" resultMap="ReportResultMap" parameterType="Long">
+    <select id="selectReportRefesInfoById" resultType="com.ss.paperless.report.ReferenceDTO" parameterType="Long">
         (
             SELECT
                 rf.refe_no,

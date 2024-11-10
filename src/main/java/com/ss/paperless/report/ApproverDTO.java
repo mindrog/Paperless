@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -20,7 +21,7 @@ public class ApproverDTO {
     private String appr_status;
     private int appr_delegate;
     private int appr_is_read;
-    private LocalDate appr_date; // 결재 날짜 추가
+    private LocalDateTime appr_date; // 결재 날짜 추가
 
     @JsonProperty("approvalType")
     private String approval_type;    // 결재 유형(전결, 결재 등)

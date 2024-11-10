@@ -298,7 +298,7 @@ public class ReportController {
             String empCode = SecurityContextHolder.getContext().getAuthentication().getName();
 
             // 회수를 위한 서비스 호출
-            boolean success = reportService.retrieveReport(reportId, empCode);
+            boolean success = reportService.cancelSubmission(reportId, empCode);
 
             if (success) {
                 System.out.println("회수 success");
@@ -319,15 +319,9 @@ public class ReportController {
             // 현재 인증된 사용자의 emp_code로 결재자 ID 확인
             String empCode = SecurityContextHolder.getContext().getAuthentication().getName();
 
-            // 승인을 위한 서비스 호출
-            boolean success = reportService.approveReport(reportId, empCode);
+            reportService.approveReport(reportId, empCode);
 
-            if (success) {
-                System.out.println("승인 success");
-                return ResponseEntity.ok("Report approved successfully.");
-            } else {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to approve this report.");
-            }
+            return ResponseEntity.ok("Report approved successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to approve report: " + e.getMessage());
@@ -348,7 +342,7 @@ public class ReportController {
             boolean success = reportService.rejectReport(reportId, empCode, rejectionReason);
 
             if (success) {
-                System.out.println("승인 success");
+                System.out.println("반려 success");
                 return ResponseEntity.ok("Report rejected successfully.");
             } else {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to reject this report.");

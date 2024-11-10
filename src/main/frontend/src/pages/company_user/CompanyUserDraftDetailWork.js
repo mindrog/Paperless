@@ -76,7 +76,7 @@ const CompanyUserDraftDetailWork = () => {
         alert('상신이 취소되었습니다.');
         navigate('/company/user/draft/doc/myuser');
       } else {
-        alert('상신 취소에 실패했습니다.');
+        alert('결재 진행 내용이 존재하여 상신 취소할 수 없습니다.');
       }
     } catch (error) {
       console.error('Error cancelling submission:', error);
@@ -109,10 +109,10 @@ const CompanyUserDraftDetailWork = () => {
   // 반려
   const handleReject = async () => {
     try {
-      const response = await fetch(`/api/report/reject/${reportData.reportId}`, {
+      const response = await fetch(`/api/reject/${reportId}`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+          Authorization: token,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -122,7 +122,7 @@ const CompanyUserDraftDetailWork = () => {
       });
       if (response.ok) {
         setAlertMessage('결재가 반려되었습니다.');
-        navigate('/company/user/draft/doc/draft');
+        navigate('/company/user/draft/doc/penforappr');
       } else {
         setAlertMessage('결재 반려에 실패했습니다.');
       }
@@ -135,10 +135,10 @@ const CompanyUserDraftDetailWork = () => {
   // 결재 승인
   const handleApprove = async () => {
     try {
-      const response = await fetch(`/api/report/approve/${reportData.reportId}`, {
+      const response = await fetch(`/api/approve/${reportId}`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+          Authorization: token,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -148,7 +148,7 @@ const CompanyUserDraftDetailWork = () => {
       });
       if (response.ok) {
         setAlertMessage('결재가 승인되었습니다.');
-        navigate('/company/user/draft/doc/draft');
+        navigate('/company/user/draft/doc/penforappr');
       } else {
         setAlertMessage('결재 승인에 실패했습니다.');
       }
@@ -167,6 +167,7 @@ const CompanyUserDraftDetailWork = () => {
   console.log("User info data:", JSON.stringify(empCodeInfo, null, 2));
   console.log("apprs info data:", JSON.stringify(apprLineInfo, null, 2));
 
+  console.log("!!!reportData.approverInfo : ", reportData.approverInfo);
   return (
     <div className="container">
       <div className={styles.formHeader}>
@@ -195,17 +196,14 @@ const CompanyUserDraftDetailWork = () => {
             </div>
           )}
 
-          {(reportData.reportStatus === 'pending' || reportData.reportStatus === 'submitted') && // 보고서 상태가 진행 중 또는 제출된 상태인지 확인
-            reportData.approverInfo &&
-            reportData.approverInfo.some(
-              (approverGroup) =>
-                approverGroup.approverInfo &&
-                approverGroup.approverInfo.some(
-                  (approver) =>
-                    approver.emp_code === userId && // 로그인한 사용자가 결재자인지 확인
-                    approver.appr_status === 'pending' // 결재자의 상태가 'pending'인지 확인
-                )
-            ) && (
+          {(reportData.reportStatus === 'pending' || reportData.reportStatus === 'submitted') &&
+            apprLineInfo.approverInfo &&
+            apprLineInfo.approverInfo.some((approver) => {
+              console.log('approver.emp_code:', approver.emp_code, 'userId:', userId);
+              console.log('emp_code === userId:', approver.emp_code === userId);
+              console.log('appr_status === "pending":', approver.appr_status === 'pending');
+              return approver.emp_code === userId && approver.appr_status === 'pending';
+            }) && (
               <div>
                 <Button className={styles.rejectBtn} onClick={handleReject}>
                   반려
@@ -215,6 +213,7 @@ const CompanyUserDraftDetailWork = () => {
                 </Button>
               </div>
             )}
+
         </div>
 
         <Table bordered className={styles.mainTable}>
@@ -278,15 +277,15 @@ const CompanyUserDraftDetailWork = () => {
                   <td key={index} className={styles.docValueAppr}>
                     <div style={{ position: 'relative' }}>
                       {/* 최상위 approver의 posi_name, emp_name 출력 */}
-                      {/* <div className="apprTypePosi">{approver.posi_name}</div>
-                    {approver.emp_name} */}
+                      <div className={styles.apprTypePosi}>{approver.dept_team_name} {approver.posi_name}</div>
+                      {approver.emp_name}
                       {/* 중첩된 approverInfo가 존재할 경우에만 접근 */}
-                      {approver.approverInfo && approver.approverInfo.map((innerApprover, innerIndex) => (
+                      {/* {approver.approverInfo && approver.approverInfo.map((innerApprover, innerIndex) => (
                         <div key={innerIndex} style={{ marginLeft: '10px' }}>
                           <div className={styles.apprTypePosi}>{innerApprover.dept_team_name} {innerApprover.posi_name}</div>
                           {innerApprover.emp_name}
                         </div>
-                      ))}
+                      ))} */}
                     </div>
                   </td>
                 ))}
