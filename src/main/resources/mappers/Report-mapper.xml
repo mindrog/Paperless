@@ -119,7 +119,7 @@
     <!-- Report 테이블에 저장 데이터를 삽입하는 SQL (문서번호 추가) -->
     <insert id="AddReportData" parameterType="map" useGeneratedKeys="true" keyProperty="repo_no">
         INSERT INTO `Report` (repo_code, repo_emp_no, repo_title, repo_content, repo_status, repo_type, repo_date)
-        VALUES (#{repoCode}, #{repoEmpNo}, #{reportTitle}, #{reportContent}, 'saved','work', #{reportDate})
+        VALUES (#{documentCode}, #{repoEmpNo}, #{reportTitle}, #{reportContent}, #{repo_status},'work', #{reportDate})
     </insert>
 
     <!-- WorkReport 테이블에 임시 저장 데이터를 삽입하는 SQL -->
@@ -162,40 +162,43 @@
     </select>
 
     <update id="updateApproverStatus" parameterType="map">
-        UPDATE Approver SET appr_status = #{appr_status} WHERE appr_repo_no = #{repo_no} AND appr_emp_no = #{appr_emp_no}
+        UPDATE Approver SET appr_status = #{appr_status}
+                        WHERE appr_repo_no = #{repo_no}
+                          AND appr_emp_no = #{appr_emp_no}
     </update>
 
     <!-- Approver 테이블에 결재자 데이터를 삽입하는 SQL -->
     <insert id="AddApproversData" parameterType="map">
-        INSERT INTO `Approver` (appr_repo_no, appr_emp_no, appr_dept_no, appr_order, appr_status, appr_delegate)
+        INSERT INTO `Approver` (appr_repo_no, appr_emp_no, appr_dept_no, appr_order, appr_delegate)
         VALUES
         <foreach item="approver" collection="approvers" separator=",">
-            (#{repo_no}, #{approver.appr_emp_no}, #{approver.appr_dept_no}, #{approver.appr_order}, #{approver.appr_status}, #{approver.appr_delegate})
+            (#{reportId}, #{approver.emp_no}, #{approver.emp_dept_no}, #{approver.appr_order}, #{approver.appr_delegate})
         </foreach>
     </insert>
 
     <!-- Reference 테이블에 참조자 데이터를 삽입하는 SQL -->
     <insert id="AddReferencesData" parameterType="map">
-        INSERT INTO `Reference` (refe_repo_no, refe_emp_no, refe_dept_no)
-        VALUES
-        <foreach item="reference" collection="references" separator=",">
-            (
-            #{repo_no},
-            <choose>
-                <when test="reference.refe_emp_no != null">
-                    #{reference.refe_emp_no, jdbcType=BIGINT}
-                </when>
-                <otherwise>NULL</otherwise>
-            </choose>,
-            <choose>
-                <when test="reference.refe_dept_no != null">
-                    #{reference.refe_dept_no, jdbcType=BIGINT}
-                </when>
-                <otherwise>NULL</otherwise>
-            </choose>
-            )
-        </foreach>
-    </insert>
+    INSERT INTO `Reference` (refe_repo_no, refe_emp_no, refe_dept_no)
+    VALUES
+    <foreach item="reference" collection="references" separator=",">
+        (
+        #{reportId},
+        <choose>
+            <when test="reference.emp_no != null">
+                #{reference.emp_no, jdbcType=BIGINT}
+            </when>
+            <otherwise>NULL</otherwise>
+        </choose>,
+        <choose>
+            <when test="reference.deptCode != null">
+                #{reference.deptCode, jdbcType=BIGINT}
+            </when>
+            <otherwise>NULL</otherwise>
+        </choose>
+        )
+    </foreach>
+</insert>
+
 
     <!-- Recipient 테이블에 수신자 데이터를 삽입하는 SQL -->
     <insert id="AddReceiversData" parameterType="map">
@@ -203,16 +206,16 @@
         VALUES
         <foreach item="recipient" collection="receivers" separator=",">
             (
-            #{repo_no},
+            #{reportId},
             <choose>
-                <when test="recipient.rece_emp_no != null">
-                    #{recipient.rece_emp_no, jdbcType=BIGINT}
+                <when test="recipient.emp_no != null">
+                    #{recipient.emp_no, jdbcType=BIGINT}
                 </when>
                 <otherwise>NULL</otherwise>
             </choose>,
             <choose>
-                <when test="recipient.rece_dept_no != null">
-                    #{recipient.rece_dept_no, jdbcType=BIGINT}
+                <when test="recipient.deptCode != null">
+                    #{recipient.deptCode, jdbcType=BIGINT}
                 </when>
                 <otherwise>NULL</otherwise>
             </choose>
@@ -255,7 +258,7 @@
 
     <update id="updateReportStatus" parameterType="map">
         UPDATE report
-        SET status = #{status}
+        SET repo_status = #{status}
         WHERE repo_no = #{reportId}
     </update>
 
@@ -266,20 +269,20 @@
 
     <!-- 보고서 전체 목록(부서별) -->
     <select id="selectWorkReports" parameterType="java.lang.Long" resultType="ReportDTO">
-        SELECT DISTINCT r.*
+        SELECT DISTINCT *
         FROM Report r
-                 LEFT JOIN Employee e ON r.repo_emp_no = e.emp_no
+                 LEFT JOIN WorkReport wr ON r.repo_no = wr.work_repo_no
+                 LEFT JOIN Approver a ON r.repo_no = a.appr_repo_no
                  LEFT JOIN Recipient re ON r.repo_no = re.reci_repo_no
                  LEFT JOIN Reference ref ON r.repo_no = ref.refe_repo_no
-                 LEFT JOIN WorkReport wr ON r.repo_no = wr.work_repo_no
-        WHERE e.emp_dept_no = #{deptNo}
+                 LEFT JOIN Employee e ON r.repo_emp_no = e.emp_no
+        WHERE a.appr_dept_no = #{deptNo}
            OR re.reci_dept_no = #{deptNo}
            OR ref.refe_dept_no = #{deptNo}
 
     </select>
 
     <select id="selectAttenReports" parameterType="java.lang.Long" resultType="ReportDTO">
-
         SELECT DISTINCT *
         FROM Report r
                  LEFT JOIN Approver a ON r.repo_no = a.appr_repo_no
@@ -387,6 +390,18 @@
                           left join reference rf on rf.refe_repo_no = r.repo_no
                           left join employee e on e.emp_no = r.repo_emp_no
         WHERE repo_status = 'submitted' AND repo_no = #{reportId}
+    </select>
+
+    <!-- form으로 넘기는 데이터-->
+    <select id="selectReportFormById" resultMap="ReportResultMap" parameterType="Long">
+        SELECT * FROM report r
+                          left join workreport wr on r.repo_no = wr.work_repo_no
+                          left join approver a on a.appr_repo_no = r.repo_no
+                          left join recipient re on re.reci_repo_no = r.repo_no
+                          left join reference rf on rf.refe_repo_no = r.repo_no
+                          left join employee e on e.emp_no = r.repo_emp_no
+                          inner join department d on d.dept_no = e.emp_dept_no
+        WHERE repo_status = 'saved' AND repo_no = #{reportId}
     </select>
 
     <!-- 보고서 내에 결재자 정보 조회 -->

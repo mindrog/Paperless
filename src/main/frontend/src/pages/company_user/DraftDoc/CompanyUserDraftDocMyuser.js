@@ -23,8 +23,7 @@ function CompanyUserDraftDocMyuser() {
         { key: 'repo_type', label: '문서 양식', width: '10%' },
         { key: 'reportTitle', label: '문서 제목', width: '20%' },
         { key: 'emp_name', label: '기안자', width: '15%' },
-        { key: 'submission_date', label: '기안일', width: '15%' },
-        // { key: 'approvalDate', label: '결재일', width: '15%' },
+        { key: 'repo_date', label: '기안일', width: '15%' },
         { key: 'reportStatus', label: '결재 상태', width: '10%' },
     ];
 
@@ -103,23 +102,27 @@ function CompanyUserDraftDocMyuser() {
     };
 
     return (
-        <div className={styles.Container}>
-            <Toolbar
-                sortOption={sortOption}
-                onSortChange={handleSortChange}
-                searchTerm={searchTerm}
-                onSearchTermChange={handleSearchTermChange}
-                onSearch={handleSearch}
-            />
+        <div className="container">
+            <h2 className={styles.pageTitle}>내 문서함</h2>
+            <div className={styles.Container}>
+                <Toolbar
+                    sortOption={sortOption}
+                    onSortChange={handleSortChange}
+                    searchTerm={searchTerm}
+                    onSearchTermChange={handleSearchTermChange}
+                    onSearch={handleSearch}
+                />
 
-            <DocumentList docs={currentDocs} onRowClick={handleRowClick} columns={completedColumns} />
+                <DocumentList docs={currentDocs} onRowClick={handleRowClick} columns={completedColumns} />
 
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                className={styles.pagenation}
-            />
+                <div className={styles.pagenaition}>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

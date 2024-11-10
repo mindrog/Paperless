@@ -1,5 +1,6 @@
 package com.ss.paperless.employee;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.ss.paperless.company.CompanyDTO;
@@ -7,6 +8,7 @@ import com.ss.paperless.employee.entity.EmployeeEntity;
 import com.ss.paperless.s3.S3Service;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -213,6 +215,14 @@ public class EmployeeService implements UserDetailsService {
         employee.setEmpPhone(newPhoneNumber);
         employeeRepository.save(employee);
     }
-    
 
+
+    public Long findDeptNoByDeptAndTeamName(String deptName, String teamName) {
+
+		Map<String, Object> parms = new HashMap<String, Object>();
+		parms.put("deptName", deptName);
+		parms.put("teamName", teamName);
+
+		return mapper.findDeptNoByDeptAndTeamName(parms);
+    }
 }

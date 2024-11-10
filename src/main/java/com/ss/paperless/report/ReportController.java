@@ -2,6 +2,7 @@ package com.ss.paperless.report;
 
 import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.ss.paperless.employee.EmployeeDTO;
+import com.ss.paperless.employee.EmployeeService;
 import com.ss.paperless.employee.entity.EmployeeEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,12 @@ public class ReportController {
     @Autowired
     private ReportService reportService;
 
+    @Autowired
+    private EmployeeService employeeService;
+
     private final String uploadDir = "uploads/"; // 파일 저장 디렉토리 경로
+    @Autowired
+    private ReportMapper reportMapper;
 
     // 사용자 정보 조회
     @GetMapping("/getUserInfo")
@@ -55,10 +61,9 @@ public class ReportController {
 
             // reportId 조회
             Long reportId = reportRequest.getReportId();
-            System.out.println("controller reportId : " + reportId);
-            System.out.println("reportRequest.getReportDate() : " + reportRequest.getReportDate());
+            System.out.println("saveasdraft controller reportId : " + reportId);
 
-            // 입력된 문자열 형식과 동일한 DateTimeFormatter 설정
+            // DateTimeFormatter 설정
             DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy. MM. dd. a hh:mm", Locale.KOREAN);
             DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -75,11 +80,20 @@ public class ReportController {
             Map<String, Object> reportData = new HashMap<>();
             reportData.put("repoEmpNo", repoEmpNo);
             reportData.put("reportDate", formattedDate);
+            reportData.put("repoStartTime",reportRequest.getRepoStartTime());
+            reportData.put("repoEndTime",reportRequest.getRepoEndTime());
             reportData.put("reportTitle", reportRequest.getReportTitle());
             reportData.put("reportContent", reportRequest.getReportContent());
 
+            Map<String, List<EmployeeDTO>> selectData = new HashMap<>();
+            selectData.put("approvers",reportRequest.getSelectedApprovers());
+            selectData.put("receivers",reportRequest.getSelectedReceivers());
+            selectData.put("references",reportRequest.getSelectedReferences());
+
+            System.out.println("selectData : " + selectData);
+
             // 서비스 호출
-            Long report_Id = reportService.addSaveAsDraftReportData(reportData);
+            Long report_Id = reportService.addSaveAsDraftReportData(reportData, selectData);
 
             return ResponseEntity.ok(Map.of("message", "Draft saved successfully", "reportId", report_Id));
         } catch (Exception e) {
@@ -87,7 +101,6 @@ public class ReportController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving draft: " + e.getMessage());
         }
     }
-
 
     // 보고서 결재 상신 엔드포인트
     @PostMapping(value = "/saveworkreport", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -98,6 +111,14 @@ public class ReportController {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             ReportRequest reportRequest = objectMapper.readValue(reportDataJson, ReportRequest.class);
+
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy. MM. dd. a hh:mm", Locale.KOREAN);
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            String reportDateStr = reportRequest.getReportDate();
+            LocalDateTime reportDateTime = LocalDateTime.parse(reportDateStr, inputFormatter);
+            String formattedDate = reportDateTime.format(outputFormatter);
+            System.out.println("formattedDate : " + formattedDate);
 
             // reportId 조회
             Long reportId = reportRequest.getReportId();
@@ -112,33 +133,48 @@ public class ReportController {
             reportData.put("repoEmpNo", repoEmpNo);
             reportData.put("reportTitle", reportRequest.getReportTitle());
             reportData.put("reportContent", reportRequest.getReportContent());
-            reportData.put("reportDate", reportRequest.getReportDate());
+            reportData.put("reportDate", formattedDate);
             reportData.put("repoStartTime", reportRequest.getRepoStartTime());
             reportData.put("repoEndTime", reportRequest.getRepoEndTime());
             reportData.put("reportId", reportId);
-            reportData.put("status", "submitted");
-            reportData.put("selectedApprovers", reportRequest.getSelectedApprovers());
-            reportData.put("selectedReferences", reportRequest.getSelectedReferences());
-            reportData.put("selectedReceivers", reportRequest.getSelectedReceivers());
+            reportData.put("repo_status", "submitted");
+            reportData.put("approvers", reportRequest.getSelectedApprovers());
+            reportData.put("references", reportRequest.getSelectedReferences());
+            reportData.put("receivers", reportRequest.getSelectedReceivers());
 
-//            if (files != null && !files.isEmpty()) {
-//                reportService.saveFiles(reportId, files);
-//            }
+            Map<String, List<EmployeeDTO>> selectData = new HashMap<>();
+            selectData.put("approvers",reportRequest.getSelectedApprovers());
+            selectData.put("receivers",reportRequest.getSelectedReceivers());
+            selectData.put("references",reportRequest.getSelectedReferences());
 
-            System.out.println("reportData 내용:");
-            for (Map.Entry<String, Object> entry : reportData.entrySet()) {
-                System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue() + ", Type: " + (entry.getValue() != null ? entry.getValue().getClass().getName() : "null"));
-            }
+            System.out.println("selectData : " + selectData);
 
             // 결재 상신을 위한 서비스 호출
-            reportService.submitReportForApproval(reportData);
+            reportService.submitReportForApproval(reportData, selectData);
 
-            return ResponseEntity.ok("Report submitted successfully.");
+            // JSON 형식으로 응답을 반환
+            return ResponseEntity.ok(Map.of("message", "Report submitted successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to submit report: " + e.getMessage());
+                    .body(Map.of("error", "Failed to submit report", "message", e.getMessage()));
         }
     }
+
+    // 보고서 조회
+    @GetMapping("/reportform/{reportId}")
+    public ResponseEntity<ReportDTO> getReportForm(@PathVariable Long reportId) {
+        System.out.println("getReport reportId : " + reportId);
+
+        ReportDTO selectReport = reportService.selectReportFormById(reportId+1);
+        System.out.println("selectReport : " + selectReport);
+
+        if (selectReport != null) {
+            return ResponseEntity.ok(selectReport);  // 200 OK와 JSON 데이터 반환
+        } else {
+            return ResponseEntity.notFound().build();  // 404 Not Found 반환
+        }
+    }
+
 
     // 보고서 전체 목록
     @GetMapping("/getreportlist")

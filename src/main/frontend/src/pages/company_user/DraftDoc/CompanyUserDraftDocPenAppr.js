@@ -102,23 +102,27 @@ function CompanyUserDraftDocPenAppr() {
     };
 
     return (
-        <div className={styles.Container}>
-            <Toolbar
-                sortOption={sortOption}
-                onSortChange={handleSortChange}
-                searchTerm={searchTerm}
-                onSearchTermChange={handleSearchTermChange}
-                onSearch={handleSearch}
-            />
+        <div className="container">
+            <h2 className={styles.pageTitle}>결재 대기함</h2>
+            <div className={styles.Container}>
+                <Toolbar
+                    sortOption={sortOption}
+                    onSortChange={handleSortChange}
+                    searchTerm={searchTerm}
+                    onSearchTermChange={handleSearchTermChange}
+                    onSearch={handleSearch}
+                />
 
-            <DocumentList docs={currentDocs} onRowClick={handleRowClick} columns={completedColumns} />
+                <DocumentList docs={currentDocs} onRowClick={handleRowClick} columns={completedColumns} />
 
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                className={styles.pagenation}
-            />
+                <div className={styles.pagenaition}>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

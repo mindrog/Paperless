@@ -12,7 +12,7 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
-function Chatting({ chatData, onSendMessage }) {
+function Chatting() {
     // Redux에서 사용자 정보 가져오기
     const userData = useSelector((state) => state.user.data);
 
@@ -57,7 +57,7 @@ function Chatting({ chatData, onSendMessage }) {
     const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
 
     // WebSocket hook
-    const { sendMessage, lastMessage, readyState } = useWebSocket(WEBSOCKET_URL);
+    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
 
     // 검색 초기화 버튼
     const clearSearchTerm = () => {
@@ -139,14 +139,12 @@ function Chatting({ chatData, onSendMessage }) {
     // emp 데이터가 준비되었을 때 WebSocket URL 설정
     useEffect(() => {
         console.log('emp:', emp);
-        // console.log('emp.chat_room_no:', emp.chat_room_no);
-        if (emp && emp.chat_room_no < 0) {
+        // emp 객체가 있고 chat_room_no가 유효한 값일 때 WebSocket URL 설정
+        if (emp && typeof emp.chat_room_no === 'number') {
             const url = `${WEBSOCKET_URL}?chat_room_no=${emp.chat_room_no}`;
-            if (url !== socketUrl) {
-                console.log('emp.chat_room_no:', emp.chat_room_no);
-                console.log('WebSocket URL 설정:', url);
-                setSocketUrl(url);
-            }
+            console.log('emp.chat_room_no:', emp.chat_room_no);
+            console.log('WebSocket URL 설정:', url);
+            setSocketUrl(url);
         } else {
             console.warn('emp 객체가 없거나 chat_room_no가 설정되지 않았습니다.');
         }

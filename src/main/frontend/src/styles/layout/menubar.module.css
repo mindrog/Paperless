@@ -169,7 +169,7 @@
 
 .dropdown.active {
   margin-top: 6px;
-  background-color: #2e3d86;
+
 }
 
 .toggleDocDropdown {
@@ -177,6 +177,7 @@
 }
 
 .dropdown:hover, 
+.dropdown:hover,
 .dropdown:hover .dropdownToggle {
   background-color: #2e3d86; /* hover 시 배경색을 #2e3d86으로 변경 */
 }
@@ -188,10 +189,10 @@
 
 .dropdownToggle {
   display: block;
-  width: 180px; /* 버튼이 부모 요소의 전체 너비를 차지하도록 */
+  width: 100%;
+  margin:0px;
   text-align: center; 
-  padding-left: 10px;
-  padding-right: 60px;
+  padding-right: 65px;
   border: none;
   cursor: pointer;
   font-size: 16px; 
@@ -246,7 +247,7 @@
   box-shadow: none; 
 }
 
-.sublist, .sublist_mypage, .sublist_cal, .sublist_member {
+.sublist, .sublist_mypage, .sublist_cal, .sublist_member, .sublist_stock {
   width: 150px;
   background: none;
   border: none;   

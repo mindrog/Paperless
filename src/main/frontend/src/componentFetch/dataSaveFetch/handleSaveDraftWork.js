@@ -56,22 +56,6 @@ const HandleSaveDraftWork = forwardRef(({
         }
       }
 
-      // JSON 데이터 구성
-      // const reportData = {
-      //   reportId,
-      //   reportTitle,
-      //   reportContent,
-      //   reportDate,
-      //   repoStartTime,
-      //   repoEndTime,
-      //   reportStatus,
-      //   selectedApprovers,
-      //   selectedReferences,
-      //   selectedReceivers
-      // };
-
-      // console.log("ReportData JSON contents:", reportData);
-
       const apiUrl = type === 'draft' ? '/api/saveasdraft' : '/api/saveworkreport';
       const token = localStorage.getItem('jwt');
 
@@ -82,15 +66,6 @@ const HandleSaveDraftWork = forwardRef(({
         },
         body: formData,
       });
-
-      // const response = await fetch(apiUrl, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',  // JSON 형식으로 지정
-      //     Authorization: `${token}`,     // JWT 토큰을 Bearer로 추가
-      //   },
-      //   body: JSON.stringify(reportData) // JSON 데이터를 문자열로 변환하여 전송
-      // });
 
       if (!response.ok) throw new Error(`Failed to ${type} report`);
 
