@@ -16,7 +16,7 @@ public interface ReportMapper {
 
     // Report 테이블에 새로운 보고서 데이터 추가
     // reportData 맵은 보고서의 제목, 내용, 작성자 정보, 상태 등 보고서에 필요한 데이터를 포함
-    void AddReportData(Map<String, Object> reportData);
+    Long AddReportData(Map<String, Object> reportData);
 
     // WorkReport 테이블에 업무 보고서 관련 데이터 추가
     // reportData 맵은 업무 보고서의 시작 시간, 종료 시간 등 특정 업무 보고서 데이터 포함
@@ -53,11 +53,11 @@ public interface ReportMapper {
 
     // 보고서 ID를 기반으로 결재자 목록을 가져옴
     // reportId는 결재자 목록을 검색할 대상 보고서의 ID
-    List<Map<String, Object>> getApproversByReportId(Long reportId);
+    List<ApproverDTO> getApproversByReportId(Long reportId);
 
     // 특정 결재자의 상태를 업데이트
     // approverData 맵은 결재자의 ID와 새로운 결재 상태를 포함
-    void updateApproverStatus(Map<String, Object> approverData);
+    boolean updateApproverStatus(Map<String, Object> approverData);
 
     // 보고서 ID와 상태를 기반으로 보고서의 상태를 업데이트
     // reportId는 상태 업데이트할 보고서의 ID, submitted는 업데이트할 상태
@@ -85,9 +85,6 @@ public interface ReportMapper {
 
     // 보고서 상태 업데이트
     int updateReportStatus(Map<String, Object> params);
-
-    // 반려 사유와 함께 상태 업데이트
-    int rejectReport(Map<String, Object> params);
 
     // 보고서 작성자 번호 가져오기
     @Select("SELECT repo_emp_no FROM report WHERE repo_no = #{reportId}")
@@ -127,6 +124,13 @@ public interface ReportMapper {
     List<ReportDTO> selectMyDocAttenReports(Long empNo);
     List<ReportDTO> selectMyDocPurcReports(Long empNo);
 
-
     ReportDTO selectReportFormById(Long reportId);
+
+    void updateReportCode(Map<String, Object> param);
+
+    // 결재 승인
+    int getSelectApproverCount(Long reportId);
+
+    // 해당 보고서의 결재자 조회
+    List<ApproverDTO> getSelectApproverInfo(Long reportId);
 }

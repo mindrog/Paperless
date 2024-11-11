@@ -19,11 +19,10 @@ function CompanyUserDraftDocMyuser() {
     // 테이블 열 정의
     const completedColumns = [
         { key: 'no', label: 'No', width: '5%' },
-        { key: 'repo_code', label: '문서 번호', width: '10%' },
-        { key: 'repo_type', label: '문서 양식', width: '10%' },
+        { key: 'repo_code', label: '문서 번호', width: '15%' },
         { key: 'reportTitle', label: '문서 제목', width: '20%' },
-        { key: 'emp_name', label: '기안자', width: '15%' },
-        { key: 'repo_date', label: '기안일', width: '15%' },
+        { key: 'emp_name', label: '기안자', width: '10%' },
+        { key: 'submission_date', label: '기안일', width: '10%' },
         { key: 'reportStatus', label: '결재 상태', width: '10%' },
     ];
 

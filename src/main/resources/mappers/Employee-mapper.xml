@@ -197,6 +197,7 @@ join
 				AND dept_team_name = #{teamName}
 			</when>
 		</choose>
+		LIMIT 1
 	</select>
 
 </mapper>

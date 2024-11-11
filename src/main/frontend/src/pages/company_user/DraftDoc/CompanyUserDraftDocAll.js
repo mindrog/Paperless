@@ -22,8 +22,9 @@ function CompanyUserDraftDocAll() {
         { key: 'repo_code', label: '문서코드', width: '20%' },
         { key: 'reportTitle', label: '제목', width: '30%' },
         { key: 'emp_name', label: '작성자', width: '20%' },
-        { key: 'reportStatus', label: '상태', width: '20%' },
-        { key: 'submission_date', label: '작성일', width: '20%' }
+        { key: 'submission_date', label: '작성일', width: '20%' },
+        { key: 'reportStatus', label: '상태', width: '20%' }
+
     ];
 
     // 문서 목록 가져오기 - API 호출
