@@ -20,7 +20,7 @@ const api = axios.create({
 // 1. 채팅방 목록 조회 (GET 요청)
 api.getChatRoomsByParticipant = (emp_no) => {
   // 서버로부터 모든 채팅방 목록을 가져옴
-  return api.get('/chatroom', {
+  return api.get('/api/chatroom', {
     params: {
       emp_no: emp_no,
     },
