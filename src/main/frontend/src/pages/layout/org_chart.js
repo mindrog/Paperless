@@ -107,7 +107,7 @@ const OrgChart = forwardRef((props, ref) => {
                 <ul>
                     {menu.teams.map((team) => (
                         <li key={team.teamName} style={{ listStyle: 'none' }}>
-                            <DraggableWrapper data={{ teamName: team.teamName, deptName: menu.deptName, type: 'team' }}>
+                            <DraggableWrapper data={{ teamName: team.teamName, deptName: menu.deptName, deptCode:menu.dept_code, type: 'team' }}>
                                 <button onClick={() => toggleDropdown(team.teamName)}>
                                     {isDropdown[team.teamName] ? '📂' : '📁'} {team.teamName}
                                 </button>
@@ -148,11 +148,6 @@ const OrgChart = forwardRef((props, ref) => {
                 ) : (
                     <li>조직도 데이터를 불러오는 중입니다...</li>
                 )}
-                {/* {Array.isArray(menuList) && menuList.length > 0 ? (
-                    menuList.map((menu) => renderMenu(menu))
-                ) : (
-                    <li>조직도 데이터를 불러오는 중입니다...</li>
-                )} */}
             </ul>
         </div>
     );

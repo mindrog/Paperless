@@ -5,7 +5,6 @@ import styles from '../../../styles/company/company_draft_write_work.module.css'
 const ApprovalLineTable = ({ handleApprLineModal, reporter, approvers, posiName }) => {
   // approvers 데이터 콘솔 출력
   console.log("Approvers Data:", approvers);
-
   return (
     <Table bordered size="sm" className={styles.apprLineBox}>
       <tbody className={styles.apprLineTbody}>

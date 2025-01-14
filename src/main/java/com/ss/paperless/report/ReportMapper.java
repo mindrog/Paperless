@@ -1,6 +1,7 @@
 package com.ss.paperless.report;
 
 import com.ss.paperless.attachment.AttachmentDTO;
+import com.ss.paperless.employee.EmployeeDTO;
 import com.ss.paperless.employee.entity.EmployeeEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -15,7 +16,7 @@ public interface ReportMapper {
 
     // Report 테이블에 새로운 보고서 데이터 추가
     // reportData 맵은 보고서의 제목, 내용, 작성자 정보, 상태 등 보고서에 필요한 데이터를 포함
-    void AddReportData(Map<String, Object> reportData);
+    Long AddReportData(Map<String, Object> reportData);
 
     // WorkReport 테이블에 업무 보고서 관련 데이터 추가
     // reportData 맵은 업무 보고서의 시작 시간, 종료 시간 등 특정 업무 보고서 데이터 포함
@@ -26,15 +27,12 @@ public interface ReportMapper {
     void AddApproversData(Map<String, Object> approverDataMap);
 
     // Reference 테이블에 참조자 데이터를 추가
-    // referenceDataMap 맵은 참조자 ID, 부서 ID 등의 참조자 관련 데이터를 포함
     void AddReferencesData(Map<String, Object> referenceDataMap);
 
     // Recipient 테이블에 수신자 데이터를 추가
-    // recipientDataMap 맵은 수신자의 ID, 부서 ID 등의 수신자 관련 데이터를 포함
     void AddReceiversData(Map<String, Object> recipientDataMap);
 
     // Attachment 테이블에 첨부 파일 데이터를 추가
-    // attachmentData 맵은 파일의 키, URL, 원본 이름, 파일 크기 등의 첨부 파일 정보 포함
     void AddAttachmentData(Map<Object, Object> attachmentData);
 
     // ReportAttachment 테이블에 보고서와 첨부 파일 간의 관계 데이터를 추가
@@ -55,11 +53,11 @@ public interface ReportMapper {
 
     // 보고서 ID를 기반으로 결재자 목록을 가져옴
     // reportId는 결재자 목록을 검색할 대상 보고서의 ID
-    List<Map<String, Object>> getApproversByReportId(Long reportId);
+    List<ApproverDTO> getApproversByReportId(Long reportId);
 
     // 특정 결재자의 상태를 업데이트
     // approverData 맵은 결재자의 ID와 새로운 결재 상태를 포함
-    void updateApproverStatus(Map<String, Object> approverData);
+    boolean updateApproverStatus(Map<String, Object> approverData);
 
     // 보고서 ID와 상태를 기반으로 보고서의 상태를 업데이트
     // reportId는 상태 업데이트할 보고서의 ID, submitted는 업데이트할 상태
@@ -77,8 +75,6 @@ public interface ReportMapper {
     void insertRecipient(Map<String, Object> recipientData);
 
     ReportDTO selectReportById(Long reportId);
-
-    ReportDTO selectReportListByDeptNo(Long deptNo);
     
     // 각 유형의 보고서 조회
     List<ReportDTO> selectWorkReports(Long deptNo);
@@ -88,12 +84,7 @@ public interface ReportMapper {
     // 결재 로직 ----------------------
 
     // 보고서 상태 업데이트
-    @Update("UPDATE report SET status = #{status} WHERE repo_no = #{reportId}")
-    int updateReportStatus(@Param("reportId") Long reportId, @Param("status") String status);
-
-    // 반려 사유와 함께 상태 업데이트
-    @Update("UPDATE report SET status = #{status}, rejection_reason = #{rejectionReason} WHERE repo_no = #{reportId}")
-    int rejectReport(@Param("reportId") Long reportId, @Param("status") String status, @Param("rejectionReason") String rejectionReason);
+    int updateReportStatus(Map<String, Object> params);
 
     // 보고서 작성자 번호 가져오기
     @Select("SELECT repo_emp_no FROM report WHERE repo_no = #{reportId}")
@@ -115,4 +106,31 @@ public interface ReportMapper {
     List<ApproverDTO> selectReportApprsInfoById(Long reportId);
     List<RecipientDTO> selectReportRecisInfoById(Long reportId);
     List<ReferenceDTO> selectReportRefesInfoById(Long reportId);
+
+    EmployeeDTO findByEmpCode(String empCode);
+
+    // 임시 저장함
+    List<ReportDTO> selectDraftAsSaveWorkReports(Map<String, Object> param);
+    List<ReportDTO> selectDraftAsSaveAttenReports(Map<String, Object> param);
+    List<ReportDTO> selectDraftAsSavePurcReports(Map<String, Object> param);
+
+    // 결재 대기함
+    List<ReportDTO> selectPendingDocWorkReports(Map<String, Object> param);
+    List<ReportDTO> selectPendingDocAttenReports(Map<String, Object> param);
+    List<ReportDTO> selectPendingDocPurcReports(Map<String, Object> param);
+
+    // 내 문서함
+    List<ReportDTO> selectMyDocWorkReports(Long empNo);
+    List<ReportDTO> selectMyDocAttenReports(Long empNo);
+    List<ReportDTO> selectMyDocPurcReports(Long empNo);
+
+    ReportDTO selectReportFormById(Long reportId);
+
+    void updateReportCode(Map<String, Object> param);
+
+    // 결재 승인
+    int getSelectApproverCount(Long reportId);
+
+    // 해당 보고서의 결재자 조회
+    List<ApproverDTO> getSelectApproverInfo(Long reportId);
 }

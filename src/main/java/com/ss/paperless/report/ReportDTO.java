@@ -21,6 +21,10 @@ public class ReportDTO {
 	private int repo_emp_no;				// 작성자 번호 (fk)
 	private String emp_code;				// 작성자 코드
 
+	private String dept_code;
+	private String dept_name;
+	private String dept_team_name;
+	private int emp_dept_no;
 	private String emp_name;				// 작성자 이름
 	private String empName;				// 작성자 이름
 
@@ -34,9 +38,9 @@ public class ReportDTO {
 	private String repo_status; 			// 보고서상태(임시저장, 저장, 상신, 상신취소 등)
 	private String repo_code; 				// 문서코드(승인 시 발급되는 문서번호)
 
-	@JsonProperty("reportDate")
-	@JsonFormat(pattern = "yyyy. MM. dd. a hh:mm", locale = "ko_KR")
-	private String draft_date; 		// 기안일
+	@JsonProperty("repo_date")
+//	@JsonFormat(pattern = "yyyy. MM. dd. a hh:mm", locale = "ko_KR")
+	private LocalDateTime repo_date; 		// 기안일
 
 	@JsonProperty("submission_date")
 	private LocalDateTime submission_date; 	// 상신일

@@ -1,22 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { Table, Button } from 'react-bootstrap';
 import styles from '../../styles/company/company_draft_appr_detail_work.module.css';
 import moment from 'moment';
 
+// 상신 취소 / 회수 버튼 로직 요청 컨포던트
+import { handleCancelSubmission } from '../../componentFetch/apprActionFetch/handleCancelSubmission';
+import { handleRetrieveSubmission } from '../../componentFetch/apprActionFetch/handleRetrieveSubmission';
+
+
 const CompanyUserDraftDetailWork = () => {
   const { reportId } = useParams();
+
+  const navigate = useNavigate(); // 페이지 이동을 위한 네비게이트 훅
   const [reportData, setReportData] = useState({});
   const [empCodeInfo, setEmpCodeInfo] = useState({});
   const [apprLineInfo, setApprLineInfo] = useState({ approverInfo: [], recipientInfo: [], referenceInfo: [] });
   const [apprIsRead, setApprIsRead] = useState(0);
-  const navigate = useNavigate();
+  const [alertMessage, setAlertMessage] = useState({});
+
+  // 로그인한 사용자 정보
+  const [userId, setUserId] = useState(null);
+  const token = localStorage.getItem("jwt");
 
   useEffect(() => {
     if (reportId) {
       const fetchData = async () => {
         try {
-          const token = localStorage.getItem("jwt");
           const [draftResponse, userInfoResponse, apprsResponse] = await Promise.all([
             fetch(`/api/report/${reportId}`, {
               headers: { 'Authorization': token, 'Content-Type': 'application/json' },
@@ -41,22 +51,123 @@ const CompanyUserDraftDetailWork = () => {
           setEmpCodeInfo(userInfo);
           setApprLineInfo(apprsInfo);
           setApprIsRead(draftInfo.appr_is_read); // 상신 상태 확인
-
+          setUserId(userInfo.emp_code);
         } catch (error) {
-          console.error('Error fetching data:', error);
+          console.error('Error fetching report data:', error);
         }
       };
       fetchData();
     }
   }, [reportId]);
 
+
+  // "상신 취소"와 "회수" 버튼 클릭 이벤트 핸들러 추가
+  const handleCancelSubmission = async () => {
+    try {
+      const response = await fetch(`/api/cancel/${reportId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        alert('상신이 취소되었습니다.');
+        navigate('/company/user/draft/doc/myuser');
+      } else {
+        alert('결재 진행 내용이 존재하여 상신 취소할 수 없습니다.');
+      }
+    } catch (error) {
+      console.error('Error cancelling submission:', error);
+      alert('상신 취소 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleRetrieveSubmission = async () => {
+    try {
+      const response = await fetch(`/api/retrieve/${reportId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        alert('문서가 회수되었습니다.');
+        navigate('/company/user/draft/doc/myuser');
+      } else {
+        alert('회수에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error retrieving submission:', error);
+      alert('회수 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 반려
+  const handleReject = async () => {
+    try {
+      const response = await fetch(`/api/reject/${reportId}`, {
+        method: 'POST',
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          approverId: userId,
+          status: 'rejected',
+        }),
+      });
+      if (response.ok) {
+        setAlertMessage('결재가 반려되었습니다.');
+        navigate('/company/user/draft/doc/penforappr');
+      } else {
+        setAlertMessage('결재 반려에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error rejecting approval:', error);
+      setAlertMessage('결재 반려 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 결재 승인
+  const handleApprove = async () => {
+    try {
+      const response = await fetch(`/api/approve/${reportId}`, {
+        method: 'POST',
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          approverId: userId,
+          status: 'approved',
+        }),
+      });
+      if (response.ok) {
+        setAlertMessage('결재가 승인되었습니다.');
+        navigate('/company/user/draft/doc/penforappr');
+      } else {
+        setAlertMessage('결재 승인에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error approving report:', error);
+      setAlertMessage('결재 승인 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 목록으로 이동 버튼 클릭 핸들러
   const handleGoBack = () => navigate('/company/user/draft/doc/all');
 
   console.log("response data:", JSON.stringify(reportData, null, 2));
   console.log("data.emp_code :", reportData.emp_code);
+  console.log("data.reportStatus :", reportData.reportStatus);
   console.log("User info data:", JSON.stringify(empCodeInfo, null, 2));
   console.log("apprs info data:", JSON.stringify(apprLineInfo, null, 2));
 
+  console.log("!!!reportData.approverInfo : ", reportData.approverInfo);
   return (
     <div className="container">
       <div className={styles.formHeader}>
@@ -64,19 +175,52 @@ const CompanyUserDraftDetailWork = () => {
       </div>
 
       <div className={styles.formContent}>
+
         <div className={styles.btnBox}>
-          <Button className={styles.submitCancelBtn} onClick={handleGoBack}>목록으로</Button>
-          <div>
-            {apprIsRead === 0 && <Button className={styles.submitCancelBtn}>상신 취소</Button>}
-            {apprIsRead === 1 && <Button className={styles.retrieveBtn}>회수</Button>}
-          </div>
+          <Button className={styles.submitCancelBtn} onClick={handleGoBack}>
+            목록으로
+          </Button>
+          {/* 작성자와 로그인한 사용자가 동일하고 결재 상태가 submitted일 때만 버튼 표시 */}
+          {userId === reportData.emp_code && reportData.reportStatus === 'submitted' && (
+            <div>
+              {apprIsRead === 0 && (
+                <Button className={styles.submitCancelBtn} onClick={handleCancelSubmission}>
+                  상신 취소
+                </Button>
+              )}
+              {apprIsRead === 1 && (
+                <Button className={styles.retrieveBtn} onClick={handleRetrieveSubmission}>
+                  회수
+                </Button>
+              )}
+            </div>
+          )}
+
+          {(reportData.reportStatus === 'pending' || reportData.reportStatus === 'submitted') &&
+            apprLineInfo.approverInfo &&
+            apprLineInfo.approverInfo.some((approver) => {
+              console.log('approver.emp_code:', approver.emp_code, 'userId:', userId);
+              console.log('emp_code === userId:', approver.emp_code === userId);
+              console.log('appr_status === "pending":', approver.appr_status === 'pending');
+              return approver.emp_code === userId && approver.appr_status === 'pending';
+            }) && (
+              <div>
+                <Button className={styles.rejectBtn} onClick={handleReject}>
+                  반려
+                </Button>
+                <Button className={styles.approveBtn} onClick={handleApprove}>
+                  승인
+                </Button>
+              </div>
+            )}
+
         </div>
 
         <Table bordered className={styles.mainTable}>
           <tbody>
             <tr>
               <td className={styles.labelCellTitle}>제&nbsp;&nbsp;&nbsp;&nbsp;목</td>
-              <td className={styles.valueCell} colSpan="3">{reportData.reportTitle || ''}</td>
+              <td className={styles.valueCell} colSpan="3">{reportData?.reportTitle || ''}</td>
             </tr>
           </tbody>
         </Table>
@@ -86,7 +230,7 @@ const CompanyUserDraftDetailWork = () => {
             <tbody>
               <tr>
                 <td className={styles.labelCelldoc}>문서번호</td>
-                <td className={styles.valueCell}>{reportData.repo_code || ''}</td>
+                <td className={styles.valueCell}>{reportData?.repo_code || ''}</td>
               </tr>
               <tr>
                 <td className={styles.labelCelldoc}>부&nbsp;&nbsp;&nbsp;서</td>
@@ -100,7 +244,7 @@ const CompanyUserDraftDetailWork = () => {
               </tr>
               <tr>
                 <td className={styles.labelCelldoc}>기 안 자</td>
-                <td className={styles.valueCell}>{reportData.emp_name || ''}</td>
+                <td className={styles.valueCell}>{reportData?.emp_name || ''}</td>
               </tr>
               <tr>
                 <td className={styles.labelCelldoc}>시행일자</td>
@@ -114,30 +258,47 @@ const CompanyUserDraftDetailWork = () => {
           </Table>
 
           <Table bordered size="sm" className={styles.innerApprTable}>
-            <tbody>
-              <tr>
+            <tbody className="apprLineTbody">
+              <tr className="apprLinedocTr">
                 <td className={styles.valueCellAppr}>상신</td>
                 {apprLineInfo.approverInfo.map((_, index) => (
                   <td key={index} className={styles.valueCellAppr}>결재</td>
                 ))}
               </tr>
+
               <tr>
-                <td className={styles.docValueAppr}>{reportData.emp_name || ''}</td>
-                {apprLineInfo?.approverInfo?.map((approver, index) => (
+                <td className={styles.docValueAppr}>
+                  <div className={styles.apprTypePosi}>
+                    {empCodeInfo.dept_team_name || ''} {empCodeInfo.posi_name || ''}
+                  </div>
+                  <p>{reportData.emp_name || ''}</p>
+                </td>
+                {apprLineInfo.approverInfo.map((approver, index) => (
                   <td key={index} className={styles.docValueAppr}>
                     <div style={{ position: 'relative' }}>
-                      <div className="apprTypePosi">{approver.dept_team_name}</div>
+                      {/* 최상위 approver의 posi_name, emp_name 출력 */}
+                      <div className={styles.apprTypePosi}>{approver.dept_team_name} {approver.posi_name}</div>
                       {approver.emp_name}
+                      {/* 중첩된 approverInfo가 존재할 경우에만 접근 */}
+                      {/* {approver.approverInfo && approver.approverInfo.map((innerApprover, innerIndex) => (
+                        <div key={innerIndex} style={{ marginLeft: '10px' }}>
+                          <div className={styles.apprTypePosi}>{innerApprover.dept_team_name} {innerApprover.posi_name}</div>
+                          {innerApprover.emp_name}
+                        </div>
+                      ))} */}
                     </div>
                   </td>
                 ))}
               </tr>
+
               <tr>
                 <td className={styles.docValue_date}>
                   {reportData.submission_date ? moment(reportData.submission_date).format("YYYY-MM-DD") : ''}
                 </td>
                 {apprLineInfo.approverInfo.map((approver, index) => (
-                  <td key={index} className={styles.docValue_date}></td>
+                  <td key={index} className={styles.docValue_date}>
+                    {approver.appr_date ? moment(approver.appr_date).format("YYYY-MM-DD") : ''}
+                  </td>
                 ))}
               </tr>
             </tbody>
@@ -150,24 +311,24 @@ const CompanyUserDraftDetailWork = () => {
               <td className={styles.labelCellSec}>참&nbsp;&nbsp;&nbsp;조</td>
               <td className={styles.valueCell}>
                 {apprLineInfo.referenceInfo.map((ref, index) => (
-                  <span key={index}>{ref.emp_name}{index < apprLineInfo.referenceInfo.length - 1 && ', '}</span>
+                  <span key={index}>{ref.dept_name} {ref.dept_team_name} {ref.emp_name} {index < apprLineInfo.referenceInfo.length - 1 && ', '}</span>
                 ))}
               </td>
               <td className={styles.labelCellSec}>수&nbsp;&nbsp;&nbsp;신</td>
               <td className={styles.valueCell}>
                 {apprLineInfo.recipientInfo.map((recv, index) => (
-                  <span key={index}>{recv.emp_name}{index < apprLineInfo.recipientInfo.length - 1 && ', '}</span>
+                  <span key={index}>{recv.dept_name} {recv.dept_team_name} {index < apprLineInfo.recipientInfo.length - 1 && ', '}</span>
                 ))}
               </td>
             </tr>
           </tbody>
         </Table>
-        
+
         <Table bordered className={styles.secondaryTable}>
           <tbody>
             <tr>
               <td colSpan="4" className={styles.valueCellContent}>
-                {reportData?.reportContent || ''}
+                <div dangerouslySetInnerHTML={{ __html: reportData?.reportContent }} />
               </td>
             </tr>
           </tbody>

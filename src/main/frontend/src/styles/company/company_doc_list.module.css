@@ -3,11 +3,26 @@
     border: 1px solid #ddd;
     padding: 20px;
     color: #2e3d86;
-    margin-left: 220px;
-    height: 85vh;
+    /* margin-left: 250px; */
+    height: 76vh;
     width: 80vw;
     position: relative;
+    padding-bottom: 60px;
 }
-.pagenaition{
-    margin-top: 10px;
+
+.pagenaition {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 설정 */
+    padding: 80px 0; /* 페이지네이션 높이 설정 */
+    text-align: center; /* 페이지네이션 내용 중앙 정렬 */
 }
+
+.pageTitle {
+    text-align: left;
+    margin: 15px 0 15PX 0;
+    color: gray;
+}
+  

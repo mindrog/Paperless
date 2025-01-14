@@ -32,9 +32,10 @@ import CompanyUserDraftFormAtten from './pages/company_user/CompanyUserDraftForm
 import CompanyUserDraftDetailWork from './pages/company_user/CompanyUserDraftDetailWork';
 import CompanyUserDraftDetailPurc from './pages/company_user/CompanyUserDraftDetailPurc';
 import CompanyUserDraftDetailAtten from './pages/company_user/CompanyUserDraftDetailAtten';
-import CompanyUserDraftDocAll from './pages/company_user/CompanyUserDraftDocAll';
-import CompanyUserDraftDocDraft from './pages/company_user/CompanyUserDraftDocDraft';
-import CompanyUserDraftDocAppr from './pages/company_user/CompanyUserDraftDocAppr';
+import CompanyUserDraftDocAll from './pages/company_user/DraftDoc/CompanyUserDraftDocAll';
+import CompanyUserDraftDocDraft from './pages/company_user/DraftDoc/CompanyUserDraftDocDraft';
+import CompanyUserDraftDocPenAppr from './pages/company_user/DraftDoc/CompanyUserDraftDocPenAppr';
+import CompanyUserDraftDocMyuser from './pages/company_user/DraftDoc/CompanyUserDraftDocMyuser';
 import CompanyUserStock from './pages/company_user/CompanyUserStock';
 import CompanyUserCalender from './pages/company_user/CompanyUserCalender';
 import CompanyPage from './pages/company_admin/CompanyCompanypage';
@@ -98,21 +99,28 @@ function App() {
                         {/* 이메일 */}
                         <Route path='/company/user/email' element={<CompanyUserEmail />} />
                         <Route path='/company/user/email/send' element={<CompanyUserEmailSend />} />
-                        <Route path='/company/user/email/detail' element={<CompanyUserEmailDetail />} />
+                        <Route path='/company/user/email/detail/:emailId' element={<CompanyUserEmailDetail />} />
 
                         {/* 기안 관련 */}
                         <Route path='/company/user/draft/doc/all' element={<CompanyUserDraftDocAll />} />
                         <Route path='/company/user/draft/doc/draft' element={<CompanyUserDraftDocDraft />} />
-                        <Route path='/company/user/draft/doc/approval' element={<CompanyUserDraftDocAppr />} />
+                        <Route path='/company/user/draft/doc/penforappr' element={<CompanyUserDraftDocPenAppr />} />
+                        <Route path='/company/user/draft/doc/myuser' element={<CompanyUserDraftDocMyuser />} />
+
                         <Route path='/company/user/draft/detail/work' element={<CompanyUserDraftDetailWork />} />
                         <Route path='/company/user/draft/detail/work/:reportId' element={<CompanyUserDraftDetailWork />} />
                         <Route path='/company/user/draft/detail/purchase' element={<CompanyUserDraftDetailPurc />} />
                         <Route path='/company/user/draft/detail/purchase/:reportId' element={<CompanyUserDraftDetailPurc />} />
                         <Route path='/company/user/draft/detail/attendance' element={<CompanyUserDraftDetailAtten />} />
                         <Route path='/company/user/draft/detail/attendance/:reportId' element={<CompanyUserDraftDetailAtten />} />
-                        <Route path='/company/user/draft/form/work' element={<CompanyUserDraftFormWork />} />
+
+                        {/* <Route path='/company/user/draft/form/work' element={<CompanyUserDraftFormWork />} /> */}
+                        <Route path='/company/user/draft/form/work/:reportId' element={<CompanyUserDraftFormWork />} />
+
                         <Route path='/company/user/draft/form/purchase' element={<CompanyUserDraftFormPurc />} />
+                        <Route path='/company/user/draft/form/purchase/:reportId' element={<CompanyUserDraftFormPurc />} />
                         <Route path='/company/user/draft/form/attendance' element={<CompanyUserDraftFormAtten />} />
+                        <Route path='/company/user/draft/form/attendance/:reportId' element={<CompanyUserDraftFormAtten />} />
                         <Route path='/company/user/draft/write/work' element={<CompanyUserDraftWriteWork />} />
                         <Route path='/company/user/draft/write/attendance' element={<CompanyUserDraftWriteAtten />} />
                         <Route path='/company/user/draft/write/purchase' element={<CompanyUserDraftWritePurc />} />

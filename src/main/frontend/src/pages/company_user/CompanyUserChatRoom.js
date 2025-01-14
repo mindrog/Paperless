@@ -8,14 +8,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import useFetchUserInfo from '../../componentFetch/useFetchUserInfo';
 import useWebSocket from 'react-use-websocket';
 import { setTotalUnreadCount } from '../../store/chatSlice.js';
-import { useNavigate } from 'react-router-dom';
 
 // .env 파일
 const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL;
 
 function CompanyUserChatRoom() {
-    const navigate = useNavigate();
-
     // Redux에서 사용자 정보 가져오기
     const userData = useSelector((state) => state.user.data);
 
@@ -59,6 +56,10 @@ function CompanyUserChatRoom() {
     // Redux에 저장
     const dispatch = useDispatch();
 
+    // WebSocket 연결 시 넘길 chat_room_no
+    const roomNosQuery = chatRoomList.map(room => room.room_no).join(',');
+    const socketUrl = `${WEBSOCKET_URL}?roomNos=${roomNosQuery}`;
+
     // 보낸 메시지 관리
     // sendMessage: WebSocket 서버로 메시지를 보내는 함수
     //  클라이언트가 서버에 데이터를 전송할 때 사용
@@ -67,7 +68,7 @@ function CompanyUserChatRoom() {
     // readyState: WebSocket의 연결 상태를 나타내는 함수
     //  총 4가지로 0: 연결 시도 중, 1: 연결, 2: 연결 종료 시도 중, 3: 연결 종료
     // WebSocket 연결 설정
-    const { sendMessage, lastMessage, readyState } = useWebSocket(WEBSOCKET_URL, {
+    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
         shouldReconnect: (closeEvent) => {
             // 연결 해제 이벤트를 처리하고, 특정 조건에서만 재연결 허용
             if (closeEvent.code !== 1000) { // 정상적인 종료 코드(1000)가 아닐 때만 재연결 시도
@@ -79,6 +80,11 @@ function CompanyUserChatRoom() {
         },
         onOpen: () => {
             console.log('WebSocket 연결 성공!');
+            if (chatRoomList.length > 0) {
+                chatRoomList.forEach((room) => {
+                    sendMessage(JSON.stringify({ action: 'registerRoom', chat_room_no: room.room_no }));
+                });
+            }
         },
         onClose: (event) => {
             console.warn('WebSocket 연결 해제됨:', event.code, event.reason);
@@ -88,16 +94,29 @@ function CompanyUserChatRoom() {
         },
     });
 
+    // chatRoomList가 변경될 때마다 WebSocket에 다시 방 번호 전송
     useEffect(() => {
-        if (lastMessage && lastMessage.action === 'read') {
-            const receivedMessage = JSON.parse(lastMessage.data);
-            if (receivedMessage.action === 'update') {
-                const { chat_room_no, chat_content, chat_date, chat_count } = receivedMessage;
+        if (readyState === 1 && chatRoomList.length > 0) {
+            const roomNosQuery = chatRoomList.map(room => room.room_no).join(',');
+            sendMessage(JSON.stringify({ action: 'registerRooms', roomNos: roomNosQuery }));
+        }
+    }, [chatRoomList, readyState, sendMessage]);
 
-                setRecentMessages(prevMessages => ({
-                    ...prevMessages,
-                    [chat_room_no]: { chat_content_recent: chat_content, chat_date_recent: chat_date, unread: chat_count }
-                }));
+    // WebSocket으로 수신된 메시지 처리
+    useEffect(() => {
+        if (lastMessage) {
+            try {
+                const receivedMessage = JSON.parse(lastMessage.data);
+                if (receivedMessage.action === 'update') {
+                    const { chat_room_no, chat_content, chat_date, chat_count } = receivedMessage;
+
+                    setRecentMessages(prevMessages => ({
+                        ...prevMessages,
+                        [chat_room_no]: { chat_content_recent: chat_content, chat_date_recent: chat_date, unread: chat_count }
+                    }));
+                }
+            } catch (error) {
+                console.error('WebSocket 메시지 처리 중 오류 발생:', error);
             }
         }
     }, [lastMessage]);
@@ -195,7 +214,7 @@ function CompanyUserChatRoom() {
             const selectedChatRoom = chatRoomList.find(room => room.participantNos[0] === emp_no);
             const selectedChatRoomNo = selectedChatRoom.room_no;
             if (selectedProfile) {
-                setProfileInfo({...selectedProfile, room_no: selectedChatRoomNo});
+                setProfileInfo({ ...selectedProfile, room_no: selectedChatRoomNo });
             } else {
                 console.error(`Profile not found for emp_no: ${emp_no}`);
             }
@@ -443,16 +462,6 @@ function CompanyUserChatRoom() {
         }
     }, [user]);
 
-    const [newRoomNo, setNewRoomNo] = useState(null);
-
-    useEffect(() => {
-        if (newRoomNo !== null) {
-            console.log('newRoomNo:', newRoomNo);
-            chatting(newRoomNo);
-            setNewRoomNo(null); // 한 번 실행한 후 초기화
-        }
-    }, [chatRoomList, newRoomNo]);
-
     // OrgChart에서 사람 클릭 시 호출 함수
     const handleMemberClick = async (member) => {
         try {
@@ -536,7 +545,7 @@ function CompanyUserChatRoom() {
 
                 // 새로 생성된 채팅방을 chatRoomList에 추가
                 setChatRoomList(prevList => [...prevList, updatedRoomData]);
-                setNewRoomNo(response.data.room.room_no); // useEffect가 실행되도록 설정
+                sendMessage(JSON.stringify({ action: 'registerRoom', chat_room_no: newRoomNo }));
                 return;
             }
         } catch (error) {

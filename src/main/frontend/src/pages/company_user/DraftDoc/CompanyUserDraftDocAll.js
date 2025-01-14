@@ -1,18 +1,18 @@
-// CompanyUserDraftDocAll.js
+// 전체 문서함
 
 import React, { useEffect, useState } from 'react';
-import styles from '../../styles/company/company_doc_list.module.css';
-import '../../styles/style.css';
+import styles from '../../../styles/company/company_doc_list.module.css';
+import '../../../styles/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import DocumentList from '../component/DocumentList';
-import Toolbar from '../component/Toolbar';
-import Pagination from '../component/Pagination';
+import DocumentList from '../../component/DocumentList';
+import Toolbar from '../../component/Toolbar';
+import Pagination from '../../component/Pagination';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function CompanyUserDraftDocAll() {
     const navigate = useNavigate();
-    const [docs, setDocs] = useState([]); 
+    const [docs, setDocs] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const docsPerPage = 10; // 페이지 당 문서 수
 
@@ -22,10 +22,11 @@ function CompanyUserDraftDocAll() {
         { key: 'repo_code', label: '문서코드', width: '20%' },
         { key: 'reportTitle', label: '제목', width: '30%' },
         { key: 'emp_name', label: '작성자', width: '20%' },
-        { key: 'reportStatus', label: '상태', width: '20%' },
-        { key: 'submission_date', label: '작성일', width: '20%' }
+        { key: 'submission_date', label: '작성일', width: '20%' },
+        { key: 'reportStatus', label: '상태', width: '20%' }
+
     ];
-    
+
     // 문서 목록 가져오기 - API 호출
     useEffect(() => {
         const fetchdocRequest = async () => {
@@ -40,9 +41,9 @@ function CompanyUserDraftDocAll() {
                         'Authorization': token
                     }
                 });
-    
+
                 // 응답 데이터를 배열로 변환하여 상태에 설정
-                setDocs(Object.values(response.data)); 
+                setDocs(Object.values(response.data));
                 console.log("Raw response data:", response.data);
             } catch (error) {
                 console.error('호출이 실패 했습니다 :', error);
@@ -56,7 +57,7 @@ function CompanyUserDraftDocAll() {
     const indexOfFirstDoc = indexOfLastDoc - docsPerPage; // 첫 문서 인덱스 계산
 
     // 현재 페이지에 해당하는 문서 목록 (docs가 undefined일 때 빈 배열로 처리)
-    const currentDocs = docs ? docs.slice(indexOfFirstDoc, indexOfLastDoc) : []; 
+    const currentDocs = docs ? docs.slice(indexOfFirstDoc, indexOfLastDoc) : [];
 
     // 총 페이지 수 계산 (docs가 undefined일 때 기본값 1로 설정)
     const totalPages = docs ? Math.ceil(docs.length / docsPerPage) : 1;
@@ -108,26 +109,31 @@ function CompanyUserDraftDocAll() {
     };
 
     return (
-        <div className={styles.Container}>
-            {/* 정렬 및 검색을 위한 툴바 컴포넌트 */}
-            <Toolbar
-                sortOption={sortOption}
-                onSortChange={handleSortChange}
-                searchTerm={searchTerm}
-                onSearchTermChange={handleSearchTermChange}
-                onSearch={handleSearch}
-            />
+        <div className="container">
+            <h2 className={styles.pageTitle}>전체 문서함</h2>
+            <div className={styles.Container}>
 
-            {/* 문서 리스트 컴포넌트 */}
-            <DocumentList docs={currentDocs} onRowClick={handleRowClick} columns={completedColumns} />
+                {/* 정렬 및 검색을 위한 툴바 컴포넌트 */}
+                <Toolbar
+                    sortOption={sortOption}
+                    onSortChange={handleSortChange}
+                    searchTerm={searchTerm}
+                    onSearchTermChange={handleSearchTermChange}
+                    onSearch={handleSearch}
+                />
 
-            {/* 페이지네이션 컴포넌트 */}
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                className={styles.pagenation}
-            />
+                {/* 문서 리스트 컴포넌트 */}
+                <DocumentList docs={currentDocs} onRowClick={handleRowClick} columns={completedColumns}/>
+
+                {/* 페이지네이션 컴포넌트 */}
+                <div className={styles.pagenaition}>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

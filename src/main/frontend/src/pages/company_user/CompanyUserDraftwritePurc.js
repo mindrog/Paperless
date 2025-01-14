@@ -23,7 +23,7 @@ const CompanyUserDraftWriteWork = () => {
   const [saveDate, setSaveDate] = useState(''); // 임시 저장 날짜
   const [showAlert, setShowAlert] = useState(false); // 임시 저장 알림 상태
   const [formErrors, setFormErrors] = useState({});
-
+  
   const navigate = useNavigate();
 
   // 빈 행 생성 함수

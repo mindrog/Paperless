@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ss.paperless.employee.entity.EmployeeEntity;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,10 +138,10 @@ public class EmployeeController {
     }
 
     @GetMapping("/empsearch")
-    public List<EmployeeDTO> EmpSearch(@RequestParam String category, @RequestParam String query) {
+    public List<EmployeeDTO> EmpSearch(@RequestParam String category, @RequestParam String query,@RequestParam int comp_no) {
         switch (category) {
             case "name":
-                List<EmployeeDTO> returnList = employeeService.empNameSearch(query);
+                List<EmployeeDTO> returnList = employeeService.empNameSearch(query,comp_no);
                 for (int i = 0; i < returnList.size(); i++) {
                     returnList.get(i).setDept_name(employeeService.GetDeptName(returnList.get(i).getEmp_dept_no()));
                     returnList.get(i).setPosi_name(employeeService.GetPosiName(returnList.get(i).getEmp_posi_no()));
@@ -146,7 +149,7 @@ public class EmployeeController {
                 }
                 return returnList;
             case "email":
-                List<EmployeeDTO> returnEmailList = employeeService.empEmailSearch(query);
+                List<EmployeeDTO> returnEmailList = employeeService.empEmailSearch(query,comp_no);
                 for (int i = 0; i < returnEmailList.size(); i++) {
                     returnEmailList.get(i).setDept_name(employeeService.GetDeptName(returnEmailList.get(i).getEmp_dept_no()));
                     returnEmailList.get(i).setPosi_name(employeeService.GetPosiName(returnEmailList.get(i).getEmp_posi_no()));
@@ -154,7 +157,7 @@ public class EmployeeController {
                 }
                 return returnEmailList;
             case "department":
-                List<EmployeeDTO> returnDeptList = employeeService.empDeptSearch(query);
+                List<EmployeeDTO> returnDeptList = employeeService.empDeptSearch(query,comp_no);
                 for (int i = 0; i < returnDeptList.size(); i++) {
                     returnDeptList.get(i).setDept_name(employeeService.GetDeptName(returnDeptList.get(i).getEmp_dept_no()));
                     returnDeptList.get(i).setPosi_name(employeeService.GetPosiName(returnDeptList.get(i).getEmp_posi_no()));
@@ -162,7 +165,7 @@ public class EmployeeController {
                 }
                 return returnDeptList;
             case "position":
-                List<EmployeeDTO> returnPosiList = employeeService.empPosiSearch(query);
+                List<EmployeeDTO> returnPosiList = employeeService.empPosiSearch(query,comp_no);
                 for (int i = 0; i < returnPosiList.size(); i++) {
                     returnPosiList.get(i).setDept_name(employeeService.GetDeptName(returnPosiList.get(i).getEmp_dept_no()));
                     returnPosiList.get(i).setPosi_name(employeeService.GetPosiName(returnPosiList.get(i).getEmp_posi_no()));
@@ -277,4 +280,6 @@ public class EmployeeController {
         }
     }
    
+   
+        
 }

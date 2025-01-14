@@ -112,6 +112,16 @@
     height: 40px;
 }
 
+/* 결재자 */
+.docValueAppr p{
+    margin-bottom:0;
+}
+
+.apprTypePosi {
+    font-size: small;
+    color:#7E7E7F;
+}
+
 /* 참조, 수신 */
 .labelCellSec {
     width: 15%;

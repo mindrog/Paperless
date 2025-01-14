@@ -36,7 +36,6 @@ public interface EmployeeMapper {
 
 	public List<String> GetTeamNameList(String dept_name);
 
-
 	public int GetDeptNo(String dept_name, String dept_team_name);
 
 	public List<PositionDTO> GetPosition();
@@ -55,16 +54,18 @@ public interface EmployeeMapper {
 
 	public int DeleteEmp(Long emp_no);
 
-	public List<EmployeeDTO> empNameSearch(String query);
+	public List<EmployeeDTO> empNameSearch(String query,int comp_no);
 
-	public List<EmployeeDTO> empEmailSearch(String query);
+	public List<EmployeeDTO> empEmailSearch(String query,int comp_no);
 
-	public List<EmployeeDTO> empDeptSearch(String query);
+	public List<EmployeeDTO> empDeptSearch(String query,int comp_no);
 
-	public List<EmployeeDTO> empPosiSearch(String query);
+	public List<EmployeeDTO> empPosiSearch(String query,int comp_no);
 
 	public int userEdit(EmployeeDTO emp);
 	
 	@Select("SELECT * FROM Department WHERE dept_no = #{deptNo}")
 	public DepartmentDTO getDepartmentByNo(int deptNo);
+
+    Long findDeptNoByDeptAndTeamName(Map<String, Object> parms);
 }

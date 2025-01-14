@@ -21,7 +21,7 @@ const Menubar = ({ isMenuOpen }) => {
     const [isDocDropdownOpen, setIsDocDropdownOpen] = useState(false); // 기안 문서함 상태
     const [isFormDropdownOpen, setIsFormDropdownOpen] = useState(false); // 기안 양식 상태
     const [notificationModal, setNotificationModal] = useState(false); // 알림 모달
-    const [activeItem, setActiveItem] = useState(null); // 클릭된 메뉴 항목을 추적하는 상태
+
     const [isDraftSectionActive, setIsDraftSectionActive] = useState(false); // 기안 관리 섹션 활성화 상태
     const [openChatRoom, setOpenChatRoom] = useState(); // 창이 열려있는지 추적하는 상태
 
@@ -33,21 +33,39 @@ const Menubar = ({ isMenuOpen }) => {
         console.log('Unread count updated:', totalUnreadCount);
     }, [totalUnreadCount]);
 
+    // 메뉴 항목 초기 경로 설정용 훅
+    useEffect(() => {
+        setActiveItem(location.pathname);
+    }, []);
+
+    const [activeItem, setActiveItem] = useState(location.pathname); // 클릭된 메뉴 항목을 추적하는 상태
+
     // 일반적인 메뉴 항목 클릭
     const handleItemClick = (itemName) => {
-        setActiveItem(itemName); // 클릭된 항목을 active 상태로 설정
-        setIsDraftSectionActive(false); // 다른 메뉴 클릭 시 기안 관리 섹션 비활성화
-        setIsDropdownOpen(false); // 드롭다운 닫기
-        setIsDocDropdownOpen(false); // 기안 문서함 드롭다운 닫기
-        setIsFormDropdownOpen(false); // 기안 양식 드롭다운 닫기
-        navigate(itemName); // 해당 경로로 이동
+        if (activeItem !== itemName) {  
+            setActiveItem(itemName); 
+            setIsDraftSectionActive(false); 
+            setIsDropdownOpen(false); 
+            setIsDocDropdownOpen(false); 
+            setIsFormDropdownOpen(false); 
+            navigate(itemName); 
+        }
     };
 
+    // 경로 이동 처리용 훅
+    useEffect(() => {
+        if (activeItem && location.pathname !== activeItem) { 
+            navigate(location.pathname);
+            console.log("Navigating to:", location.pathname);
+            setActiveItem(location.pathname); 
+        }
+    }, [activeItem, location.pathname]); 
+    
     useEffect(() => {
         const fetchUnreadCount = async () => {
             try {
                 const token = localStorage.getItem('jwt');
-                const response = await axios.get('/api/emails/unreadcount', {
+                const response = await axios.get('http://localhost:8080/api/emails/unreadcount', {
                     headers: { Authorization: token },
                 });
                 setEmailUnreadCount(response.data);
@@ -59,9 +77,6 @@ const Menubar = ({ isMenuOpen }) => {
 
         fetchUnreadCount();
     }, [emailUnreadCountState, dispatch]);
-
-    
-
 
     const MenubarSuper = () => {
         return (
@@ -164,8 +179,8 @@ const Menubar = ({ isMenuOpen }) => {
 
                     {/* 기안 관리 섹션 */}
                     <li className={`${styles.dropdown} ${isDropdownOpen ? styles.active : ''}`}>
-                        <button onClick={toggleDropdown} className={`${styles.dropdownToggle} ${isDraftSectionActive ? styles.active : ''}`}>
-                            📑 기안 관리
+                        <button onClick={toggleDropdown} className={`${styles.dropdownToggle} ${isDropdownOpen ? styles.active : ''}`}>
+                            📑 문서 관리
                         </button>
                         {/* 기안 관리 하위 메뉴 */}
                         {isDropdownOpen && (
@@ -173,7 +188,7 @@ const Menubar = ({ isMenuOpen }) => {
                                 <ul>
                                     <li>
                                         <button onClick={toggleDocDropdown} className={styles.submenu}>
-                                            🗂️ 기안 문서함
+                                        📂 전자 문서함
                                         </button>
                                         {isDocDropdownOpen && (
                                             <ul className={styles.innerSubDropdownMenu_draftList}>
@@ -182,7 +197,7 @@ const Menubar = ({ isMenuOpen }) => {
                                                         className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/all' ? styles.active : ''}`}
                                                         onClick={() => handleDraftSectionClick('/company/user/draft/doc/all')}
                                                     >
-                                                        📁 전체 문서함
+                                                        📄 전체 문서함
                                                     </button>
                                                 </li>
                                                 <li>
@@ -190,14 +205,21 @@ const Menubar = ({ isMenuOpen }) => {
                                                         className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/draft' ? styles.active : ''}`}
                                                         onClick={() => handleDraftSectionClick('/company/user/draft/doc/draft')}
                                                     >
-                                                        📁 임시 저장함
+                                                        📄 임시 저장함
                                                     </button>
                                                 </li>
                                                 <li>
                                                     <button
-                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/approval' ? styles.active : ''}`}
-                                                        onClick={() => handleDraftSectionClick('/company/user/draft/doc/approval')}>
-                                                        📁 결재 문서함
+                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/penforappr' ? styles.active : ''}`}
+                                                        onClick={() => handleDraftSectionClick('/company/user/draft/doc/penforappr')}>
+                                                        📄 결재 대기함
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button
+                                                        className={`${styles.lastsubmenu} ${activeItem === '/company/user/draft/doc/myuser' ? styles.active : ''}`}
+                                                        onClick={() => handleDraftSectionClick('/company/user/draft/doc/myuser')}>
+                                                        📄 내 문서함
                                                     </button>
                                                 </li>
                                             </ul>
@@ -205,7 +227,7 @@ const Menubar = ({ isMenuOpen }) => {
                                     </li>
                                     <li>
                                         <button onClick={toggleDocDropdown} className={styles.submenu2}>
-                                            📑 기안 양식
+                                            📂 기안 양식
                                         </button>
                                         {isDocDropdownOpen && (
                                             <ul className={styles.innerSubDropdownMenu_draftWrite}>
@@ -238,19 +260,17 @@ const Menubar = ({ isMenuOpen }) => {
                         )}
                     </li>
 
-                    <li className={`${styles.dropdown} ${activeItem === '/company/user/calendar' ? styles.active : ''}`}
-                        onClick={() => handleItemClick('/company/user/calendar')} >
-                        <button className={styles.sublist_cal}>
-                            📅 일정 관리
-                        </button>
+                    <li
+                        className={`${styles.dropdown} ${activeItem === '/company/user/calendar' ? styles.active : ''}`}
+                        onClick={() => handleItemClick('/company/user/calendar')}
+                    >
+                        <button className={styles.sublist_cal}>📅 일정 관리</button>
                     </li>
-
-
-                    <li className={`${styles.dropdown} ${activeItem === '/company/user/stock' ? styles.active : ''}`}
-                        onClick={() => handleItemClick('/company/user/stock')} >
-                        <button className={styles.sublist_member}>
-                            📦 재고 관리
-                        </button>
+                    <li
+                        className={`${styles.dropdown} ${activeItem === '/company/user/stock' ? styles.active : ''}`}
+                        onClick={() => handleItemClick('/company/user/stock')}
+                    >
+                        <button className={styles.sublist_stock}>📦 재고 관리</button>
                     </li>
                 </ul>
             </div>);
@@ -300,15 +320,9 @@ const Menubar = ({ isMenuOpen }) => {
 
     // 기안 관리 하위 메뉴 클릭
     const handleDraftSectionClick = (itemName) => {
-        const isAdminPath = location.pathname.toLowerCase().startsWith('/company/admin');
-
-        if (isAdminPath && itemName === '/company/user/draft/doc/approval') {
-            setActiveItem('/company/admin/approval'); // 관리자는 '/company/admin/approval' 경로로 설정
-            navigate('/company/admin/approval');
-        } else {
-            setActiveItem(itemName); // 일반 사용자는 기존 경로로 설정
-            navigate(itemName);
-        }
+        setActiveItem(itemName); // 하위 메뉴도 active 상태 설정
+        setIsDropdownOpen(true); // 문서 관리 드롭다운 열기 유지
+        navigate(itemName);
     };
 
     const handlerCompanyMain = () => {
@@ -332,6 +346,9 @@ const Menubar = ({ isMenuOpen }) => {
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
+        setIsDocDropdownOpen(false);
+        setIsFormDropdownOpen(false);
+        setActiveItem(isDropdownOpen === '')
     };
 
     const toggleDocDropdown = () => {

@@ -79,6 +79,7 @@ public class SecurityConfig {
 						"/api/empsearch","/api/getemps","/api/getscheduls","/api/scheduleinsert","/api/scheduledelete","/api/scheduleedit","/api/getcompinfo","/api/getpersschedules","/api/getdeptschedules","/api/getteamschedules")
 
 				.permitAll().mvcMatchers("/api/updateEmp","api/userinsert").hasRole("admin")
+
 				.mvcMatchers("/api/emails/send").authenticated().anyRequest().authenticated());
 
 		http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);

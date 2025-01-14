@@ -20,7 +20,7 @@ const api = axios.create({
 // 1. 채팅방 목록 조회 (GET 요청)
 api.getChatRoomsByParticipant = (emp_no) => {
   // 서버로부터 모든 채팅방 목록을 가져옴
-  return api.get('/chatroom', {
+  return api.get('/api/chatroom', {
     params: {
       emp_no: emp_no,
     },
@@ -86,10 +86,10 @@ api.sendMessage = async (data) => {
   // 서버에 메시지 저장 요청
   try {
     const response = await api.put('/chat', data);
-    console.log('메시지 서버 저장 완료:', response.data);
+    console.log('api 메시지 서버 저장 완료:', response.data);
     return response;
   } catch (error) {
-    console.error('메시지 전송 중 오류 발생:', error);
+    console.error('api 메시지 전송 중 오류 발생:', error);
     throw error;
   }
 };

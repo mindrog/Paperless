@@ -1,5 +1,6 @@
 package com.ss.paperless.employee;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.ss.paperless.company.CompanyDTO;
@@ -7,6 +8,7 @@ import com.ss.paperless.employee.entity.EmployeeEntity;
 import com.ss.paperless.s3.S3Service;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -146,24 +148,24 @@ public class EmployeeService implements UserDetailsService {
 
 	}
 
-	public List<EmployeeDTO> empNameSearch(String query) {
+	public List<EmployeeDTO> empNameSearch(String query, int comp_no) {
 		// TODO Auto-generated method stub
-		return mapper.empNameSearch(query);
+		return mapper.empNameSearch(query,comp_no);
 	}
 
-	public List<EmployeeDTO> empEmailSearch(String query) {
+	public List<EmployeeDTO> empEmailSearch(String query,int comp_no) {
 		// TODO Auto-generated method stub
-		return mapper.empEmailSearch(query);
+		return mapper.empEmailSearch(query,comp_no);
 	}
 
-	public List<EmployeeDTO> empDeptSearch(String query) {
+	public List<EmployeeDTO> empDeptSearch(String query,int comp_no) {
 		// TODO Auto-generated method stub
-		return mapper.empDeptSearch(query);
+		return mapper.empDeptSearch(query,comp_no);
 	}
 
-	public List<EmployeeDTO> empPosiSearch(String query) {
+	public List<EmployeeDTO> empPosiSearch(String query,int comp_no) {
 		// TODO Auto-generated method stub
-		return mapper.empPosiSearch(query);
+		return mapper.empPosiSearch(query,comp_no);
 	}
 
 	public int userEdit(EmployeeDTO emp) {
@@ -213,6 +215,14 @@ public class EmployeeService implements UserDetailsService {
         employee.setEmpPhone(newPhoneNumber);
         employeeRepository.save(employee);
     }
-    
 
+
+    public Long findDeptNoByDeptAndTeamName(String deptName, String teamName) {
+
+		Map<String, Object> parms = new HashMap<String, Object>();
+		parms.put("deptName", deptName);
+		parms.put("teamName", teamName);
+
+		return mapper.findDeptNoByDeptAndTeamName(parms);
+    }
 }

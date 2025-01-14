@@ -166,6 +166,8 @@
     border-radius: 10px;
     margin-top: 10px;
     height: 495px;
+    overflow: auto;
+    height: 85%;
 }
 
 .email-detail h2 {
